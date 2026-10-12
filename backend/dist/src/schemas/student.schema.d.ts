@@ -52,3 +52,26 @@ export declare const AutoPromoteSchema: z.ZodObject<{
         }, z.core.$strip>>;
     }, z.core.$strip>;
 }, z.core.$strip>;
+export declare const ClassMigrationWizardSchema: z.ZodObject<{
+    body: z.ZodObject<{
+        sourceClassId: z.ZodString;
+        targetAcademicYear: z.ZodPipe<z.ZodUnion<readonly [z.ZodString, z.ZodNumber]>, z.ZodTransform<number, string | number>>;
+        targetTerm: z.ZodDefault<z.ZodUnion<readonly [z.ZodString, z.ZodNumber]>>;
+        decisions: z.ZodArray<z.ZodObject<{
+            studentId: z.ZodString;
+            action: z.ZodEnum<{
+                PROMOTE: "PROMOTE";
+                REPEAT: "REPEAT";
+                GRADUATE: "GRADUATE";
+            }>;
+            targetClassId: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+            targetPart: z.ZodNullable<z.ZodOptional<z.ZodUnion<readonly [z.ZodNumber, z.ZodString]>>>;
+            note: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        }, z.core.$strip>>;
+        options: z.ZodDefault<z.ZodOptional<z.ZodObject<{
+            carryForwardFees: z.ZodDefault<z.ZodBoolean>;
+            resetBoardingAllocation: z.ZodDefault<z.ZodBoolean>;
+            graduatedRoleAlumni: z.ZodDefault<z.ZodBoolean>;
+        }, z.core.$strip>>>;
+    }, z.core.$strip>;
+}, z.core.$strip>;

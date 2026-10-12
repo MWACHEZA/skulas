@@ -15,6 +15,7 @@ const validation_1 = require("../middleware/validation");
 const student_schema_1 = require("../schemas/student.schema");
 const multer_1 = __importDefault(require("multer"));
 const xlsx_utils_1 = require("../lib/xlsx-utils");
+const migration_service_1 = require("../services/migration.service");
 const upload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage() });
 const router = (0, express_1.Router)();
 /**
@@ -846,20 +847,8 @@ router.get('/me/books', auth_1.requireAuth, (0, auth_1.requireRole)('STUDENT'), 
  */
 router.get('/by-class/:classId', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'TEACHER', 'BURSAR'), async (req, res) => {
     try {
-        const students = await prisma_1.default.student.findMany({
-            where: {
-                classId: req.params.classId,
-                schoolId: req.user.schoolId
-            },
-            select: {
-                id: true,
-                studentId: true,
-                name: true,
-                part: true
-            },
-            orderBy: { name: 'asc' }
-        });
-        res.json(students);
+        const enrichedStudents = await migration_service_1.MigrationService.getClassRegistrySummary(req.user.schoolId, req.params.classId);
+        res.json(enrichedStudents);
     }
     catch (error) {
         res.status(500).json({ error: 'Failed to fetch students for class' });
@@ -919,6 +908,30 @@ router.post('/migrate', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMI
     }
     catch (error) {
         res.status(500).json({ error: 'Migration failed: ' + error.message });
+    }
+});
+/**
+ * @route   POST /api/students/migration-wizard
+ * @desc    [SCHOOL_ADMIN, BURSAR] Comprehensive Class Migration Wizard
+ *          Supports PROMOTE / REPEAT / GRADUATE (with Alumni conversion),
+ *          Fee Balance Carry-Over, Boarding Allocation Reset, and In-Place Updates (Zero Duplicate Records).
+ */
+router.post('/migration-wizard', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR'), (0, validation_1.validate)(student_schema_1.ClassMigrationWizardSchema), async (req, res) => {
+    try {
+        const result = await migration_service_1.MigrationService.executeMigrationWizard({
+            schoolId: req.user.schoolId,
+            migratedByEmail: req.user.email || 'Admin',
+            sourceClassId: req.body.sourceClassId,
+            targetAcademicYear: req.body.targetAcademicYear,
+            targetTerm: req.body.targetTerm,
+            decisions: req.body.decisions,
+            options: req.body.options
+        });
+        res.json({ success: true, ...result });
+    }
+    catch (error) {
+        console.error('Migration Wizard error:', error);
+        res.status(400).json({ error: error.message || 'Class migration wizard failed' });
     }
 });
 /**

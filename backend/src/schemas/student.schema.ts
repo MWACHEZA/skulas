@@ -69,3 +69,29 @@ export const AutoPromoteSchema = z.object({
     ).min(1, 'At least one mapping is required'),
   })
 });
+
+export const ClassMigrationWizardSchema = z.object({
+  body: z.object({
+    sourceClassId: z.string().min(1, 'Source class ID is required'),
+    targetAcademicYear: z.union([z.string(), z.number()]).transform((val) => Number(val)),
+    targetTerm: z.union([z.string(), z.number()]).default(1),
+    decisions: z.array(
+      z.object({
+        studentId: z.string().min(1, 'Student ID is required'),
+        action: z.enum(['PROMOTE', 'REPEAT', 'GRADUATE']),
+        targetClassId: z.string().optional().nullable(),
+        targetPart: z.union([z.number(), z.string()]).optional().nullable(),
+        note: z.string().optional().nullable(),
+      })
+    ).min(1, 'At least one student decision is required'),
+    options: z.object({
+      carryForwardFees: z.boolean().default(true),
+      resetBoardingAllocation: z.boolean().default(true),
+      graduatedRoleAlumni: z.boolean().default(true),
+    }).optional().default({
+      carryForwardFees: true,
+      resetBoardingAllocation: true,
+      graduatedRoleAlumni: true,
+    })
+  })
+});

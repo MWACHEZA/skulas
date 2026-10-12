@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AutoPromoteSchema = exports.BulkClassAssignmentSchema = exports.SubmitAssignmentSchema = exports.GenerateReportSchema = exports.UpdateStudentSchema = exports.CreateStudentSchema = void 0;
+exports.ClassMigrationWizardSchema = exports.AutoPromoteSchema = exports.BulkClassAssignmentSchema = exports.SubmitAssignmentSchema = exports.GenerateReportSchema = exports.UpdateStudentSchema = exports.CreateStudentSchema = void 0;
 const zod_1 = require("zod");
 exports.CreateStudentSchema = zod_1.z.object({
     body: zod_1.z.object({
@@ -64,6 +64,29 @@ exports.AutoPromoteSchema = zod_1.z.object({
             targetClassId: zod_1.z.string(),
             targetPart: zod_1.z.union([zod_1.z.number(), zod_1.z.string()]).optional().nullable(),
         })).min(1, 'At least one mapping is required'),
+    })
+});
+exports.ClassMigrationWizardSchema = zod_1.z.object({
+    body: zod_1.z.object({
+        sourceClassId: zod_1.z.string().min(1, 'Source class ID is required'),
+        targetAcademicYear: zod_1.z.union([zod_1.z.string(), zod_1.z.number()]).transform((val) => Number(val)),
+        targetTerm: zod_1.z.union([zod_1.z.string(), zod_1.z.number()]).default(1),
+        decisions: zod_1.z.array(zod_1.z.object({
+            studentId: zod_1.z.string().min(1, 'Student ID is required'),
+            action: zod_1.z.enum(['PROMOTE', 'REPEAT', 'GRADUATE']),
+            targetClassId: zod_1.z.string().optional().nullable(),
+            targetPart: zod_1.z.union([zod_1.z.number(), zod_1.z.string()]).optional().nullable(),
+            note: zod_1.z.string().optional().nullable(),
+        })).min(1, 'At least one student decision is required'),
+        options: zod_1.z.object({
+            carryForwardFees: zod_1.z.boolean().default(true),
+            resetBoardingAllocation: zod_1.z.boolean().default(true),
+            graduatedRoleAlumni: zod_1.z.boolean().default(true),
+        }).optional().default({
+            carryForwardFees: true,
+            resetBoardingAllocation: true,
+            graduatedRoleAlumni: true,
+        })
     })
 });
 //# sourceMappingURL=student.schema.js.map

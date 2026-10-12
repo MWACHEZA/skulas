@@ -8,9 +8,10 @@ import { submissionUpload } from '../middleware/upload';
 import { uploadLimiter } from '../middleware/rate-limit';
 
 import { validate } from '../middleware/validation';
-import { CreateStudentSchema, UpdateStudentSchema, GenerateReportSchema, SubmitAssignmentSchema, BulkClassAssignmentSchema, AutoPromoteSchema } from '../schemas/student.schema';
+import { CreateStudentSchema, UpdateStudentSchema, GenerateReportSchema, SubmitAssignmentSchema, BulkClassAssignmentSchema, AutoPromoteSchema, ClassMigrationWizardSchema } from '../schemas/student.schema';
 import multer from 'multer';
 import { parseExcelBuffer, generateStudentTemplateBuffer } from '../lib/xlsx-utils';
+import { MigrationService } from '../services/migration.service';
 
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -908,20 +909,11 @@ router.get('/me/books', requireAuth, requireRole('STUDENT'), async (req: AuthReq
  */
 router.get('/by-class/:classId', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER', 'BURSAR'), async (req: AuthRequest, res: Response) => {
   try {
-    const students = await prisma.student.findMany({
-      where: { 
-        classId: req.params.classId as string,
-        schoolId: req.user!.schoolId
-      },
-      select: {
-        id: true,
-        studentId: true,
-        name: true,
-        part: true
-      },
-      orderBy: { name: 'asc' }
-    });
-    res.json(students);
+    const enrichedStudents = await MigrationService.getClassRegistrySummary(
+      req.user!.schoolId!,
+      req.params.classId as string
+    );
+    res.json(enrichedStudents);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch students for class' });
   }
@@ -985,6 +977,30 @@ router.post('/migrate', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), vali
     res.json({ success: true, count: result.count });
   } catch (error: any) {
     res.status(500).json({ error: 'Migration failed: ' + error.message });
+  }
+});
+
+/**
+ * @route   POST /api/students/migration-wizard
+ * @desc    [SCHOOL_ADMIN, BURSAR] Comprehensive Class Migration Wizard
+ *          Supports PROMOTE / REPEAT / GRADUATE (with Alumni conversion),
+ *          Fee Balance Carry-Over, Boarding Allocation Reset, and In-Place Updates (Zero Duplicate Records).
+ */
+router.post('/migration-wizard', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), validate(ClassMigrationWizardSchema), async (req: AuthRequest, res: Response) => {
+  try {
+    const result = await MigrationService.executeMigrationWizard({
+      schoolId: req.user!.schoolId!,
+      migratedByEmail: req.user!.email || 'Admin',
+      sourceClassId: req.body.sourceClassId,
+      targetAcademicYear: req.body.targetAcademicYear,
+      targetTerm: req.body.targetTerm,
+      decisions: req.body.decisions,
+      options: req.body.options
+    });
+    res.json({ success: true, ...result });
+  } catch (error: any) {
+    console.error('Migration Wizard error:', error);
+    res.status(400).json({ error: error.message || 'Class migration wizard failed' });
   }
 });
 
