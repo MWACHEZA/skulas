@@ -1340,6 +1340,13 @@ model Book {
   subjectId String?
   subject   Subject? @relation(fields: [subjectId], references: [id])
 
+  syllabusId String?
+  syllabus   Syllabus? @relation("SyllabusBooks", fields: [syllabusId], references: [id])
+
+  curriculum String? // ZIMSEC, Cambridge, National
+  level      String? // e.g. O-Level, A-Level, Primary, Form 1-4
+  topics     String[] @default([])
+
   classId String?
   class   SchoolClass? @relation(fields: [classId], references: [id])
 
@@ -1504,36 +1511,41 @@ model BookReservation {
 }
 
 model LibraryDigitalResource {
-  id                String           @id @default(cuid())
-  schoolId          String
-  school            School           @relation(fields: [schoolId], references: [id])
-  title             String
-  author            String
-  resourceType      String // eBook, eJournal, Thesis, Video, Audio, Past Exam Paper, Report
-  fileUrl           String?
-  externalLink      String?
-  fileFormat        String // PDF, MP4, MP3, Link, etc.
-  categoryId        String?
-  category          LibraryCategory? @relation(fields: [categoryId], references: [id])
-  subjectId         String?
-  subject           Subject?         @relation(fields: [subjectId], references: [id])
-  accessLevel       String           @default("Public") // Public, Students Only, Staff Only, Private
+  id           String           @id @default(cuid())
+  schoolId     String
+  school       School           @relation(fields: [schoolId], references: [id])
+  title        String
+  author       String
+  resourceType String // eBook, eJournal, Thesis, Video, Audio, Past Exam Paper, Report
+  fileUrl      String?
+  externalLink String?
+  fileFormat   String // PDF, MP4, MP3, Link, etc.
+  categoryId   String?
+  category     LibraryCategory? @relation(fields: [categoryId], references: [id])
+  subjectId    String?
+  subject      Subject?         @relation(fields: [subjectId], references: [id])
+
+  syllabusId        String?
+  syllabus          Syllabus? @relation("SyllabusDigitalResources", fields: [syllabusId], references: [id])
+  curriculum        String? // ZIMSEC, Cambridge, National
+  level             String? // O-Level, A-Level, Primary, etc.
+  accessLevel       String    @default("Public") // Public, Students Only, Staff Only, Private
   yearPublished     Int?
   description       String?
-  keywords          String[]         @default([])
-  language          String?          @default("English")
+  keywords          String[]  @default([])
+  language          String?   @default("English")
   thumbnailUrl      String?
   fileSize          BigInt?
-  licenseStatus     String           @default("Open Access") // Restricted, Creative Commons, Open Access
-  permissionGranted Boolean          @default(true)
+  licenseStatus     String    @default("Open Access") // Restricted, Creative Commons, Open Access
+  permissionGranted Boolean   @default(true)
   addedById         String?
-  addedBy           User?            @relation("LibraryDigitalResourceAddedBy", fields: [addedById], references: [id])
-  downloadCount     Int              @default(0)
-  viewCount         Int              @default(0)
+  addedBy           User?     @relation("LibraryDigitalResourceAddedBy", fields: [addedById], references: [id])
+  downloadCount     Int       @default(0)
+  viewCount         Int       @default(0)
   expiryDate        DateTime?
-  status            String           @default("Active") // Active, Inactive, Under Review
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
+  status            String    @default("Active") // Active, Inactive, Under Review
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   @@index([schoolId])
   @@index([categoryId])
@@ -4806,8 +4818,10 @@ model Syllabus {
   uploadedById String?
   uploadedBy   User?   @relation("SyllabusUploader", fields: [uploadedById], references: [id])
 
-  topics  SyllabusTopic[]
-  schemes SchemeOfWork[]
+  topics           SyllabusTopic[]
+  schemes          SchemeOfWork[]
+  books            Book[]                   @relation("SyllabusBooks")
+  digitalResources LibraryDigitalResource[] @relation("SyllabusDigitalResources")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

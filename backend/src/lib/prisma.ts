@@ -47,7 +47,7 @@ const prisma = basePrisma.$extends({
           'SchoolTrip', 'TripConsent', 'Exeat', 'MedicalConsent',
           'SchemeOfWork', 'SchemeItem', 'LessonPlanResource', 'AssessmentType', 'Assessment',
           'AssessmentQuestion', 'QuestionBank', 'ExamTimetable', 'StudentAssessment',
-          'DisciplineRecord', 'GoodsReceivedNote', 'AssetDepreciation'
+          'DisciplineRecord', 'GoodsReceivedNote', 'AssetDepreciation', 'BookLoanFine'
         ];
 
         if (context?.schoolId && tenantScopedModels.includes(model)) {

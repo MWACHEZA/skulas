@@ -10,6 +10,7 @@ import { computeLoanFine, runLibraryReminders } from '../jobs/library-reminder-j
 import { NotificationService } from '../services/notifications';
 import { BursarService } from '../services/bursar.service';
 import { CreditNoteService } from '../services/credit-note.service';
+import { LibraryService } from '../services/library.service';
 
 const router = Router();
 
@@ -134,11 +135,15 @@ router.get('/books', requireAuth, requireModuleAccess('library', 'request_only')
     const categoryFilter = req.query.category as string;
     const yearFilter = req.query.year as string;
     const languageFilter = req.query.language as string;
+    const syllabusFilter = req.query.syllabusId as string;
+    const curriculumFilter = req.query.curriculum as string;
+    const levelFilter = req.query.level as string;
+    const subjectFilter = req.query.subjectId as string;
     const availableOnly = req.query.available === 'true';
 
     const books = await prisma.book.findMany({
       where: { schoolId },
-      include: { category: true, subject: true },
+      include: { category: true, subject: true, syllabus: true },
       orderBy: { title: 'asc' }
     });
 
@@ -161,6 +166,18 @@ router.get('/books', requireAuth, requireModuleAccess('library', 'request_only')
       if (languageFilter && languageFilter !== 'all') {
         const lang = (book.language || 'English').toLowerCase();
         if (lang !== languageFilter.toLowerCase()) return false;
+      }
+      if (syllabusFilter && book.syllabusId !== syllabusFilter) {
+        return false;
+      }
+      if (curriculumFilter && (book.curriculum || '').toLowerCase() !== curriculumFilter.toLowerCase()) {
+        return false;
+      }
+      if (levelFilter && (book.level || '').toLowerCase() !== levelFilter.toLowerCase()) {
+        return false;
+      }
+      if (subjectFilter && book.subjectId !== subjectFilter) {
+        return false;
       }
       if (availableOnly && book.available <= 0) {
         return false;
@@ -1350,40 +1367,23 @@ router.post('/loans/:id/renew', requireAuth, requireModuleAccess('library', 'ful
 router.post('/loans/:id/return', requireAuth, requireModuleAccess('library', 'full'), async (req: AuthRequest, res: Response) => {
   const id = req.params.id as string;
   try {
-    const loan = await prisma.bookLoan.findFirst({ where: { id, schoolId: req.user!.schoolId! } });
-    if (!loan || loan.status === 'returned') {
-      return res.status(400).json({ error: 'Loan is already returned or does not exist' });
-    }
+    const schoolId = req.user!.schoolId!;
+    const { returnDate, condition, waivedAmount, waiverReason } = req.body || {};
 
-    const updated = await prisma.$transaction(async (tx) => {
-      const l = await tx.bookLoan.update({
-        where: { id },
-        data: { status: 'returned', returnedAt: new Date() }
-      });
-
-      await tx.book.update({
-        where: { id: loan.bookId },
-        data: { available: { increment: 1 } }
-      });
-
-      // Check if there is an approved reservation waiting for this book
-      const pendingRes = await tx.bookReservation.findFirst({
-        where: { bookId: loan.bookId, status: 'Approved' },
-        orderBy: { requestDate: 'asc' }
-      });
-      if (pendingRes) {
-        await tx.bookReservation.update({
-          where: { id: pendingRes.id },
-          data: { status: 'Ready for Pickup', readyAt: new Date() }
-        });
-      }
-
-      return l;
+    const result = await LibraryService.returnBookWithFineSettlement({
+      schoolId,
+      loanId: id,
+      returnDate: returnDate ? new Date(returnDate) : new Date(),
+      condition,
+      waivedAmount: waivedAmount !== undefined ? parseFloat(waivedAmount) : 0,
+      waiverReason,
+      authorizedById: req.user!.id
     });
 
-    res.json(updated);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to return book' });
+    res.json(result);
+  } catch (error: any) {
+    console.error('Failed to return book:', error);
+    res.status(400).json({ error: error.message || 'Failed to return book' });
   }
 });
 
@@ -2793,12 +2793,126 @@ router.get('/reports', requireAuth, requireModuleAccess('library', 'request_only
  * @route   POST /api/library/reminders/trigger
  * @desc    Manually trigger the 8am reminder sweep on demand
  */
-router.post('/reminders/trigger', requireAuth, requireModuleAccess('library', 'full'), async (req: AuthRequest, res: Response) => {
+/**
+ * @route   POST /api/library/fines/process-daily
+ * @desc    Run automated daily overdue fine sweep and post fine invoices to Bursar
+ */
+router.post('/fines/process-daily', requireAuth, requireModuleAccess('library', 'full'), async (req: AuthRequest, res: Response) => {
   try {
-    const result = await runLibraryReminders();
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to trigger reminders' });
+    const schoolId = req.user!.schoolId!;
+    const { asOfDate } = req.body || {};
+    const parsedDate = asOfDate ? new Date(asOfDate) : new Date();
+
+    const result = await LibraryService.processDailyOverdueFines({
+      schoolId,
+      asOfDate: parsedDate
+    });
+
+    res.json({
+      success: true,
+      message: `Daily overdue fine calculation complete. Processed ${result.totalOverdueProcessed} overdue loans, accrued $${result.totalFinesAccrued}, created ${result.totalInvoicesCreated} invoices.`,
+      result
+    });
+  } catch (error: any) {
+    console.error('Failed to process daily overdue fines:', error);
+    res.status(500).json({ error: error.message || 'Failed to process daily overdue fines' });
+  }
+});
+
+/**
+ * @route   POST /api/library/loans/:id/waive-fine
+ * @desc    Waive a fine with an administrative reason
+ */
+router.post('/loans/:id/waive-fine', requireAuth, requireModuleAccess('library', 'full'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const loanId = req.params.id as string;
+    const { fineId, amount, reason } = req.body;
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: 'Waiver amount must be strictly greater than 0' });
+    }
+    if (!reason) {
+      return res.status(400).json({ error: 'Waiver reason is required' });
+    }
+
+    const result = await LibraryService.waiveFine({
+      schoolId,
+      loanId,
+      fineId,
+      amount: parseFloat(amount),
+      reason,
+      authorizedById: req.user!.id
+    });
+
+    res.json({ success: true, result });
+  } catch (error: any) {
+    console.error('Failed to waive fine:', error);
+    res.status(400).json({ error: error.message || 'Failed to waive fine' });
+  }
+});
+
+/**
+ * @route   POST /api/library/books/:id/link-syllabus
+ * @desc    Link book catalogue item to syllabus and curriculum (ZIMSEC, Cambridge, etc.)
+ */
+router.post('/books/:id/link-syllabus', requireAuth, requireModuleAccess('library', 'full'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const bookId = req.params.id as string;
+    const { syllabusId, curriculum, level, topics } = req.body;
+
+    if (!syllabusId) {
+      return res.status(400).json({ error: 'Syllabus ID is required' });
+    }
+
+    const updatedBook = await LibraryService.linkBookToSyllabus({
+      schoolId,
+      bookId,
+      syllabusId,
+      curriculum,
+      level,
+      topics
+    });
+
+    res.json({ success: true, book: updatedBook });
+  } catch (error: any) {
+    console.error('Failed to link book to syllabus:', error);
+    res.status(400).json({ error: error.message || 'Failed to link book to syllabus' });
+  }
+});
+
+/**
+ * @route   POST /api/library/books/:id/unlink-syllabus
+ * @desc    Unlink book catalogue item from syllabus
+ */
+router.post('/books/:id/unlink-syllabus', requireAuth, requireModuleAccess('library', 'full'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const bookId = req.params.id as string;
+
+    const updatedBook = await LibraryService.unlinkBookFromSyllabus(schoolId, bookId);
+    res.json({ success: true, book: updatedBook });
+  } catch (error: any) {
+    console.error('Failed to unlink book from syllabus:', error);
+    res.status(400).json({ error: error.message || 'Failed to unlink book from syllabus' });
+  }
+});
+
+/**
+ * @route   GET /api/library/syllabus/:syllabusId/resources
+ * @desc    Get all books, textbooks, and digital resources linked to a syllabus
+ */
+router.get('/syllabus/:syllabusId/resources', requireAuth, requireModuleAccess('library', 'request_only'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const syllabusId = req.params.syllabusId as string;
+
+    const resources = await LibraryService.getSyllabusResources(schoolId, syllabusId);
+    res.json(resources);
+  } catch (error: any) {
+    console.error('Failed to fetch syllabus resources:', error);
+    res.status(400).json({ error: error.message || 'Failed to fetch syllabus resources' });
   }
 });
 

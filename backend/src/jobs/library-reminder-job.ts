@@ -1,5 +1,6 @@
 import prisma from '../lib/prisma';
 import { NotificationService } from '../services/notifications';
+import { LibraryService } from '../services/library.service';
 
 /**
  * Calculates business days or calendar days between two dates
@@ -236,6 +237,7 @@ export class LibraryReminderWorker {
       if (now.getHours() === 8 && now.getMinutes() === 0 && now.getDate() !== lastRunDay) {
         lastRunDay = now.getDate();
         await runLibraryReminders().catch(console.error);
+        await LibraryService.processDailyOverdueFines().catch(console.error);
       }
     }, 60000);
   }

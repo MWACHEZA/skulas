@@ -9,6 +9,7 @@ exports.computeLoanFine = computeLoanFine;
 exports.runLibraryReminders = runLibraryReminders;
 const prisma_1 = __importDefault(require("../lib/prisma"));
 const notifications_1 = require("../services/notifications");
+const library_service_1 = require("../services/library.service");
 /**
  * Calculates business days or calendar days between two dates
  */
@@ -212,6 +213,7 @@ class LibraryReminderWorker {
             if (now.getHours() === 8 && now.getMinutes() === 0 && now.getDate() !== lastRunDay) {
                 lastRunDay = now.getDate();
                 await runLibraryReminders().catch(console.error);
+                await library_service_1.LibraryService.processDailyOverdueFines().catch(console.error);
             }
         }, 60000);
     }

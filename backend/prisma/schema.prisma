@@ -1340,6 +1340,13 @@ model Book {
   subjectId String?
   subject   Subject? @relation(fields: [subjectId], references: [id])
 
+  syllabusId String?
+  syllabus   Syllabus? @relation("SyllabusBooks", fields: [syllabusId], references: [id])
+
+  curriculum String? // ZIMSEC, Cambridge, National
+  level      String? // e.g. O-Level, A-Level, Primary, Form 1-4
+  topics     String[] @default([])
+
   classId String?
   class   SchoolClass? @relation(fields: [classId], references: [id])
 
@@ -1517,6 +1524,11 @@ model LibraryDigitalResource {
   category          LibraryCategory? @relation(fields: [categoryId], references: [id])
   subjectId         String?
   subject           Subject?         @relation(fields: [subjectId], references: [id])
+
+  syllabusId        String?
+  syllabus          Syllabus?        @relation("SyllabusDigitalResources", fields: [syllabusId], references: [id])
+  curriculum        String? // ZIMSEC, Cambridge, National
+  level             String? // O-Level, A-Level, Primary, etc.
   accessLevel       String           @default("Public") // Public, Students Only, Staff Only, Private
   yearPublished     Int?
   description       String?
@@ -4806,8 +4818,10 @@ model Syllabus {
   uploadedById String?
   uploadedBy   User?   @relation("SyllabusUploader", fields: [uploadedById], references: [id])
 
-  topics  SyllabusTopic[]
-  schemes SchemeOfWork[]
+  topics           SyllabusTopic[]
+  schemes          SchemeOfWork[]
+  books            Book[]                   @relation("SyllabusBooks")
+  digitalResources LibraryDigitalResource[] @relation("SyllabusDigitalResources")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

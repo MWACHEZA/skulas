@@ -27722,11 +27722,15 @@ export namespace Prisma {
   export type SyllabusCountOutputType = {
     topics: number
     schemes: number
+    books: number
+    digitalResources: number
   }
 
   export type SyllabusCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     topics?: boolean | SyllabusCountOutputTypeCountTopicsArgs
     schemes?: boolean | SyllabusCountOutputTypeCountSchemesArgs
+    books?: boolean | SyllabusCountOutputTypeCountBooksArgs
+    digitalResources?: boolean | SyllabusCountOutputTypeCountDigitalResourcesArgs
   }
 
   // Custom InputTypes
@@ -27752,6 +27756,20 @@ export namespace Prisma {
    */
   export type SyllabusCountOutputTypeCountSchemesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SchemeOfWorkWhereInput
+  }
+
+  /**
+   * SyllabusCountOutputType without action
+   */
+  export type SyllabusCountOutputTypeCountBooksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BookWhereInput
+  }
+
+  /**
+   * SyllabusCountOutputType without action
+   */
+  export type SyllabusCountOutputTypeCountDigitalResourcesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LibraryDigitalResourceWhereInput
   }
 
 
@@ -82477,6 +82495,9 @@ export namespace Prisma {
     condition: string | null
     categoryId: string | null
     subjectId: string | null
+    syllabusId: string | null
+    curriculum: string | null
+    level: string | null
     classId: string | null
     teacherId: string | null
     coverUrl: string | null
@@ -82509,6 +82530,9 @@ export namespace Prisma {
     condition: string | null
     categoryId: string | null
     subjectId: string | null
+    syllabusId: string | null
+    curriculum: string | null
+    level: string | null
     classId: string | null
     teacherId: string | null
     coverUrl: string | null
@@ -82543,6 +82567,10 @@ export namespace Prisma {
     condition: number
     categoryId: number
     subjectId: number
+    syllabusId: number
+    curriculum: number
+    level: number
+    topics: number
     classId: number
     teacherId: number
     coverUrl: number
@@ -82589,6 +82617,9 @@ export namespace Prisma {
     condition?: true
     categoryId?: true
     subjectId?: true
+    syllabusId?: true
+    curriculum?: true
+    level?: true
     classId?: true
     teacherId?: true
     coverUrl?: true
@@ -82621,6 +82652,9 @@ export namespace Prisma {
     condition?: true
     categoryId?: true
     subjectId?: true
+    syllabusId?: true
+    curriculum?: true
+    level?: true
     classId?: true
     teacherId?: true
     coverUrl?: true
@@ -82655,6 +82689,10 @@ export namespace Prisma {
     condition?: true
     categoryId?: true
     subjectId?: true
+    syllabusId?: true
+    curriculum?: true
+    level?: true
+    topics?: true
     classId?: true
     teacherId?: true
     coverUrl?: true
@@ -82776,6 +82814,10 @@ export namespace Prisma {
     condition: string | null
     categoryId: string | null
     subjectId: string | null
+    syllabusId: string | null
+    curriculum: string | null
+    level: string | null
+    topics: string[]
     classId: string | null
     teacherId: string | null
     coverUrl: string | null
@@ -82829,6 +82871,10 @@ export namespace Prisma {
     condition?: boolean
     categoryId?: boolean
     subjectId?: boolean
+    syllabusId?: boolean
+    curriculum?: boolean
+    level?: boolean
+    topics?: boolean
     classId?: boolean
     teacherId?: boolean
     coverUrl?: boolean
@@ -82840,6 +82886,7 @@ export namespace Prisma {
     updatedAt?: boolean
     category?: boolean | Book$categoryArgs<ExtArgs>
     subject?: boolean | Book$subjectArgs<ExtArgs>
+    syllabus?: boolean | Book$syllabusArgs<ExtArgs>
     class?: boolean | Book$classArgs<ExtArgs>
     teacher?: boolean | Book$teacherArgs<ExtArgs>
     loans?: boolean | Book$loansArgs<ExtArgs>
@@ -82871,6 +82918,10 @@ export namespace Prisma {
     condition?: boolean
     categoryId?: boolean
     subjectId?: boolean
+    syllabusId?: boolean
+    curriculum?: boolean
+    level?: boolean
+    topics?: boolean
     classId?: boolean
     teacherId?: boolean
     coverUrl?: boolean
@@ -82882,6 +82933,7 @@ export namespace Prisma {
     updatedAt?: boolean
     category?: boolean | Book$categoryArgs<ExtArgs>
     subject?: boolean | Book$subjectArgs<ExtArgs>
+    syllabus?: boolean | Book$syllabusArgs<ExtArgs>
     class?: boolean | Book$classArgs<ExtArgs>
     teacher?: boolean | Book$teacherArgs<ExtArgs>
     school?: boolean | SchoolDefaultArgs<ExtArgs>
@@ -82910,6 +82962,10 @@ export namespace Prisma {
     condition?: boolean
     categoryId?: boolean
     subjectId?: boolean
+    syllabusId?: boolean
+    curriculum?: boolean
+    level?: boolean
+    topics?: boolean
     classId?: boolean
     teacherId?: boolean
     coverUrl?: boolean
@@ -82924,6 +82980,7 @@ export namespace Prisma {
   export type BookInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     category?: boolean | Book$categoryArgs<ExtArgs>
     subject?: boolean | Book$subjectArgs<ExtArgs>
+    syllabus?: boolean | Book$syllabusArgs<ExtArgs>
     class?: boolean | Book$classArgs<ExtArgs>
     teacher?: boolean | Book$teacherArgs<ExtArgs>
     loans?: boolean | Book$loansArgs<ExtArgs>
@@ -82934,6 +82991,7 @@ export namespace Prisma {
   export type BookIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     category?: boolean | Book$categoryArgs<ExtArgs>
     subject?: boolean | Book$subjectArgs<ExtArgs>
+    syllabus?: boolean | Book$syllabusArgs<ExtArgs>
     class?: boolean | Book$classArgs<ExtArgs>
     teacher?: boolean | Book$teacherArgs<ExtArgs>
     school?: boolean | SchoolDefaultArgs<ExtArgs>
@@ -82944,6 +83002,7 @@ export namespace Prisma {
     objects: {
       category: Prisma.$LibraryCategoryPayload<ExtArgs> | null
       subject: Prisma.$SubjectPayload<ExtArgs> | null
+      syllabus: Prisma.$SyllabusPayload<ExtArgs> | null
       class: Prisma.$SchoolClassPayload<ExtArgs> | null
       teacher: Prisma.$TeacherPayload<ExtArgs> | null
       loans: Prisma.$BookLoanPayload<ExtArgs>[]
@@ -82973,6 +83032,10 @@ export namespace Prisma {
       condition: string | null
       categoryId: string | null
       subjectId: string | null
+      syllabusId: string | null
+      curriculum: string | null
+      level: string | null
+      topics: string[]
       classId: string | null
       teacherId: string | null
       coverUrl: string | null
@@ -83348,6 +83411,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     category<T extends Book$categoryArgs<ExtArgs> = {}>(args?: Subset<T, Book$categoryArgs<ExtArgs>>): Prisma__LibraryCategoryClient<$Result.GetResult<Prisma.$LibraryCategoryPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     subject<T extends Book$subjectArgs<ExtArgs> = {}>(args?: Subset<T, Book$subjectArgs<ExtArgs>>): Prisma__SubjectClient<$Result.GetResult<Prisma.$SubjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    syllabus<T extends Book$syllabusArgs<ExtArgs> = {}>(args?: Subset<T, Book$syllabusArgs<ExtArgs>>): Prisma__SyllabusClient<$Result.GetResult<Prisma.$SyllabusPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     class<T extends Book$classArgs<ExtArgs> = {}>(args?: Subset<T, Book$classArgs<ExtArgs>>): Prisma__SchoolClassClient<$Result.GetResult<Prisma.$SchoolClassPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     teacher<T extends Book$teacherArgs<ExtArgs> = {}>(args?: Subset<T, Book$teacherArgs<ExtArgs>>): Prisma__TeacherClient<$Result.GetResult<Prisma.$TeacherPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     loans<T extends Book$loansArgs<ExtArgs> = {}>(args?: Subset<T, Book$loansArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BookLoanPayload<ExtArgs>, T, "findMany"> | Null>
@@ -83404,6 +83468,10 @@ export namespace Prisma {
     readonly condition: FieldRef<"Book", 'String'>
     readonly categoryId: FieldRef<"Book", 'String'>
     readonly subjectId: FieldRef<"Book", 'String'>
+    readonly syllabusId: FieldRef<"Book", 'String'>
+    readonly curriculum: FieldRef<"Book", 'String'>
+    readonly level: FieldRef<"Book", 'String'>
+    readonly topics: FieldRef<"Book", 'String[]'>
     readonly classId: FieldRef<"Book", 'String'>
     readonly teacherId: FieldRef<"Book", 'String'>
     readonly coverUrl: FieldRef<"Book", 'String'>
@@ -83758,6 +83826,21 @@ export namespace Prisma {
      */
     include?: SubjectInclude<ExtArgs> | null
     where?: SubjectWhereInput
+  }
+
+  /**
+   * Book.syllabus
+   */
+  export type Book$syllabusArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Syllabus
+     */
+    select?: SyllabusSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SyllabusInclude<ExtArgs> | null
+    where?: SyllabusWhereInput
   }
 
   /**
@@ -91347,6 +91430,9 @@ export namespace Prisma {
     fileFormat: string | null
     categoryId: string | null
     subjectId: string | null
+    syllabusId: string | null
+    curriculum: string | null
+    level: string | null
     accessLevel: string | null
     yearPublished: number | null
     description: string | null
@@ -91375,6 +91461,9 @@ export namespace Prisma {
     fileFormat: string | null
     categoryId: string | null
     subjectId: string | null
+    syllabusId: string | null
+    curriculum: string | null
+    level: string | null
     accessLevel: string | null
     yearPublished: number | null
     description: string | null
@@ -91403,6 +91492,9 @@ export namespace Prisma {
     fileFormat: number
     categoryId: number
     subjectId: number
+    syllabusId: number
+    curriculum: number
+    level: number
     accessLevel: number
     yearPublished: number
     description: number
@@ -91448,6 +91540,9 @@ export namespace Prisma {
     fileFormat?: true
     categoryId?: true
     subjectId?: true
+    syllabusId?: true
+    curriculum?: true
+    level?: true
     accessLevel?: true
     yearPublished?: true
     description?: true
@@ -91476,6 +91571,9 @@ export namespace Prisma {
     fileFormat?: true
     categoryId?: true
     subjectId?: true
+    syllabusId?: true
+    curriculum?: true
+    level?: true
     accessLevel?: true
     yearPublished?: true
     description?: true
@@ -91504,6 +91602,9 @@ export namespace Prisma {
     fileFormat?: true
     categoryId?: true
     subjectId?: true
+    syllabusId?: true
+    curriculum?: true
+    level?: true
     accessLevel?: true
     yearPublished?: true
     description?: true
@@ -91620,6 +91721,9 @@ export namespace Prisma {
     fileFormat: string
     categoryId: string | null
     subjectId: string | null
+    syllabusId: string | null
+    curriculum: string | null
+    level: string | null
     accessLevel: string
     yearPublished: number | null
     description: string | null
@@ -91668,6 +91772,9 @@ export namespace Prisma {
     fileFormat?: boolean
     categoryId?: boolean
     subjectId?: boolean
+    syllabusId?: boolean
+    curriculum?: boolean
+    level?: boolean
     accessLevel?: boolean
     yearPublished?: boolean
     description?: boolean
@@ -91687,6 +91794,7 @@ export namespace Prisma {
     school?: boolean | SchoolDefaultArgs<ExtArgs>
     category?: boolean | LibraryDigitalResource$categoryArgs<ExtArgs>
     subject?: boolean | LibraryDigitalResource$subjectArgs<ExtArgs>
+    syllabus?: boolean | LibraryDigitalResource$syllabusArgs<ExtArgs>
     addedBy?: boolean | LibraryDigitalResource$addedByArgs<ExtArgs>
   }, ExtArgs["result"]["libraryDigitalResource"]>
 
@@ -91701,6 +91809,9 @@ export namespace Prisma {
     fileFormat?: boolean
     categoryId?: boolean
     subjectId?: boolean
+    syllabusId?: boolean
+    curriculum?: boolean
+    level?: boolean
     accessLevel?: boolean
     yearPublished?: boolean
     description?: boolean
@@ -91720,6 +91831,7 @@ export namespace Prisma {
     school?: boolean | SchoolDefaultArgs<ExtArgs>
     category?: boolean | LibraryDigitalResource$categoryArgs<ExtArgs>
     subject?: boolean | LibraryDigitalResource$subjectArgs<ExtArgs>
+    syllabus?: boolean | LibraryDigitalResource$syllabusArgs<ExtArgs>
     addedBy?: boolean | LibraryDigitalResource$addedByArgs<ExtArgs>
   }, ExtArgs["result"]["libraryDigitalResource"]>
 
@@ -91734,6 +91846,9 @@ export namespace Prisma {
     fileFormat?: boolean
     categoryId?: boolean
     subjectId?: boolean
+    syllabusId?: boolean
+    curriculum?: boolean
+    level?: boolean
     accessLevel?: boolean
     yearPublished?: boolean
     description?: boolean
@@ -91756,12 +91871,14 @@ export namespace Prisma {
     school?: boolean | SchoolDefaultArgs<ExtArgs>
     category?: boolean | LibraryDigitalResource$categoryArgs<ExtArgs>
     subject?: boolean | LibraryDigitalResource$subjectArgs<ExtArgs>
+    syllabus?: boolean | LibraryDigitalResource$syllabusArgs<ExtArgs>
     addedBy?: boolean | LibraryDigitalResource$addedByArgs<ExtArgs>
   }
   export type LibraryDigitalResourceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     school?: boolean | SchoolDefaultArgs<ExtArgs>
     category?: boolean | LibraryDigitalResource$categoryArgs<ExtArgs>
     subject?: boolean | LibraryDigitalResource$subjectArgs<ExtArgs>
+    syllabus?: boolean | LibraryDigitalResource$syllabusArgs<ExtArgs>
     addedBy?: boolean | LibraryDigitalResource$addedByArgs<ExtArgs>
   }
 
@@ -91771,6 +91888,7 @@ export namespace Prisma {
       school: Prisma.$SchoolPayload<ExtArgs>
       category: Prisma.$LibraryCategoryPayload<ExtArgs> | null
       subject: Prisma.$SubjectPayload<ExtArgs> | null
+      syllabus: Prisma.$SyllabusPayload<ExtArgs> | null
       addedBy: Prisma.$UserPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -91784,6 +91902,9 @@ export namespace Prisma {
       fileFormat: string
       categoryId: string | null
       subjectId: string | null
+      syllabusId: string | null
+      curriculum: string | null
+      level: string | null
       accessLevel: string
       yearPublished: number | null
       description: string | null
@@ -92167,6 +92288,7 @@ export namespace Prisma {
     school<T extends SchoolDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SchoolDefaultArgs<ExtArgs>>): Prisma__SchoolClient<$Result.GetResult<Prisma.$SchoolPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
     category<T extends LibraryDigitalResource$categoryArgs<ExtArgs> = {}>(args?: Subset<T, LibraryDigitalResource$categoryArgs<ExtArgs>>): Prisma__LibraryCategoryClient<$Result.GetResult<Prisma.$LibraryCategoryPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     subject<T extends LibraryDigitalResource$subjectArgs<ExtArgs> = {}>(args?: Subset<T, LibraryDigitalResource$subjectArgs<ExtArgs>>): Prisma__SubjectClient<$Result.GetResult<Prisma.$SubjectPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    syllabus<T extends LibraryDigitalResource$syllabusArgs<ExtArgs> = {}>(args?: Subset<T, LibraryDigitalResource$syllabusArgs<ExtArgs>>): Prisma__SyllabusClient<$Result.GetResult<Prisma.$SyllabusPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     addedBy<T extends LibraryDigitalResource$addedByArgs<ExtArgs> = {}>(args?: Subset<T, LibraryDigitalResource$addedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -92207,6 +92329,9 @@ export namespace Prisma {
     readonly fileFormat: FieldRef<"LibraryDigitalResource", 'String'>
     readonly categoryId: FieldRef<"LibraryDigitalResource", 'String'>
     readonly subjectId: FieldRef<"LibraryDigitalResource", 'String'>
+    readonly syllabusId: FieldRef<"LibraryDigitalResource", 'String'>
+    readonly curriculum: FieldRef<"LibraryDigitalResource", 'String'>
+    readonly level: FieldRef<"LibraryDigitalResource", 'String'>
     readonly accessLevel: FieldRef<"LibraryDigitalResource", 'String'>
     readonly yearPublished: FieldRef<"LibraryDigitalResource", 'Int'>
     readonly description: FieldRef<"LibraryDigitalResource", 'String'>
@@ -92568,6 +92693,21 @@ export namespace Prisma {
      */
     include?: SubjectInclude<ExtArgs> | null
     where?: SubjectWhereInput
+  }
+
+  /**
+   * LibraryDigitalResource.syllabus
+   */
+  export type LibraryDigitalResource$syllabusArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Syllabus
+     */
+    select?: SyllabusSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: SyllabusInclude<ExtArgs> | null
+    where?: SyllabusWhereInput
   }
 
   /**
@@ -250326,6 +250466,8 @@ export namespace Prisma {
     uploadedBy?: boolean | Syllabus$uploadedByArgs<ExtArgs>
     topics?: boolean | Syllabus$topicsArgs<ExtArgs>
     schemes?: boolean | Syllabus$schemesArgs<ExtArgs>
+    books?: boolean | Syllabus$booksArgs<ExtArgs>
+    digitalResources?: boolean | Syllabus$digitalResourcesArgs<ExtArgs>
     _count?: boolean | SyllabusCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["syllabus"]>
 
@@ -250370,6 +250512,8 @@ export namespace Prisma {
     uploadedBy?: boolean | Syllabus$uploadedByArgs<ExtArgs>
     topics?: boolean | Syllabus$topicsArgs<ExtArgs>
     schemes?: boolean | Syllabus$schemesArgs<ExtArgs>
+    books?: boolean | Syllabus$booksArgs<ExtArgs>
+    digitalResources?: boolean | Syllabus$digitalResourcesArgs<ExtArgs>
     _count?: boolean | SyllabusCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type SyllabusIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -250386,6 +250530,8 @@ export namespace Prisma {
       uploadedBy: Prisma.$UserPayload<ExtArgs> | null
       topics: Prisma.$SyllabusTopicPayload<ExtArgs>[]
       schemes: Prisma.$SchemeOfWorkPayload<ExtArgs>[]
+      books: Prisma.$BookPayload<ExtArgs>[]
+      digitalResources: Prisma.$LibraryDigitalResourcePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -250770,6 +250916,8 @@ export namespace Prisma {
     uploadedBy<T extends Syllabus$uploadedByArgs<ExtArgs> = {}>(args?: Subset<T, Syllabus$uploadedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
     topics<T extends Syllabus$topicsArgs<ExtArgs> = {}>(args?: Subset<T, Syllabus$topicsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SyllabusTopicPayload<ExtArgs>, T, "findMany"> | Null>
     schemes<T extends Syllabus$schemesArgs<ExtArgs> = {}>(args?: Subset<T, Syllabus$schemesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SchemeOfWorkPayload<ExtArgs>, T, "findMany"> | Null>
+    books<T extends Syllabus$booksArgs<ExtArgs> = {}>(args?: Subset<T, Syllabus$booksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BookPayload<ExtArgs>, T, "findMany"> | Null>
+    digitalResources<T extends Syllabus$digitalResourcesArgs<ExtArgs> = {}>(args?: Subset<T, Syllabus$digitalResourcesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LibraryDigitalResourcePayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -251182,6 +251330,46 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SchemeOfWorkScalarFieldEnum | SchemeOfWorkScalarFieldEnum[]
+  }
+
+  /**
+   * Syllabus.books
+   */
+  export type Syllabus$booksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Book
+     */
+    select?: BookSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BookInclude<ExtArgs> | null
+    where?: BookWhereInput
+    orderBy?: BookOrderByWithRelationInput | BookOrderByWithRelationInput[]
+    cursor?: BookWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BookScalarFieldEnum | BookScalarFieldEnum[]
+  }
+
+  /**
+   * Syllabus.digitalResources
+   */
+  export type Syllabus$digitalResourcesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the LibraryDigitalResource
+     */
+    select?: LibraryDigitalResourceSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LibraryDigitalResourceInclude<ExtArgs> | null
+    where?: LibraryDigitalResourceWhereInput
+    orderBy?: LibraryDigitalResourceOrderByWithRelationInput | LibraryDigitalResourceOrderByWithRelationInput[]
+    cursor?: LibraryDigitalResourceWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LibraryDigitalResourceScalarFieldEnum | LibraryDigitalResourceScalarFieldEnum[]
   }
 
   /**
@@ -301134,6 +301322,10 @@ export namespace Prisma {
     condition: 'condition',
     categoryId: 'categoryId',
     subjectId: 'subjectId',
+    syllabusId: 'syllabusId',
+    curriculum: 'curriculum',
+    level: 'level',
+    topics: 'topics',
     classId: 'classId',
     teacherId: 'teacherId',
     coverUrl: 'coverUrl',
@@ -301280,6 +301472,9 @@ export namespace Prisma {
     fileFormat: 'fileFormat',
     categoryId: 'categoryId',
     subjectId: 'subjectId',
+    syllabusId: 'syllabusId',
+    curriculum: 'curriculum',
+    level: 'level',
     accessLevel: 'accessLevel',
     yearPublished: 'yearPublished',
     description: 'description',
@@ -310161,6 +310356,10 @@ export namespace Prisma {
     condition?: StringNullableFilter<"Book"> | string | null
     categoryId?: StringNullableFilter<"Book"> | string | null
     subjectId?: StringNullableFilter<"Book"> | string | null
+    syllabusId?: StringNullableFilter<"Book"> | string | null
+    curriculum?: StringNullableFilter<"Book"> | string | null
+    level?: StringNullableFilter<"Book"> | string | null
+    topics?: StringNullableListFilter<"Book">
     classId?: StringNullableFilter<"Book"> | string | null
     teacherId?: StringNullableFilter<"Book"> | string | null
     coverUrl?: StringNullableFilter<"Book"> | string | null
@@ -310172,6 +310371,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Book"> | Date | string
     category?: XOR<LibraryCategoryNullableRelationFilter, LibraryCategoryWhereInput> | null
     subject?: XOR<SubjectNullableRelationFilter, SubjectWhereInput> | null
+    syllabus?: XOR<SyllabusNullableRelationFilter, SyllabusWhereInput> | null
     class?: XOR<SchoolClassNullableRelationFilter, SchoolClassWhereInput> | null
     teacher?: XOR<TeacherNullableRelationFilter, TeacherWhereInput> | null
     loans?: BookLoanListRelationFilter
@@ -310202,6 +310402,10 @@ export namespace Prisma {
     condition?: SortOrderInput | SortOrder
     categoryId?: SortOrderInput | SortOrder
     subjectId?: SortOrderInput | SortOrder
+    syllabusId?: SortOrderInput | SortOrder
+    curriculum?: SortOrderInput | SortOrder
+    level?: SortOrderInput | SortOrder
+    topics?: SortOrder
     classId?: SortOrderInput | SortOrder
     teacherId?: SortOrderInput | SortOrder
     coverUrl?: SortOrderInput | SortOrder
@@ -310213,6 +310417,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     category?: LibraryCategoryOrderByWithRelationInput
     subject?: SubjectOrderByWithRelationInput
+    syllabus?: SyllabusOrderByWithRelationInput
     class?: SchoolClassOrderByWithRelationInput
     teacher?: TeacherOrderByWithRelationInput
     loans?: BookLoanOrderByRelationAggregateInput
@@ -310246,6 +310451,10 @@ export namespace Prisma {
     condition?: StringNullableFilter<"Book"> | string | null
     categoryId?: StringNullableFilter<"Book"> | string | null
     subjectId?: StringNullableFilter<"Book"> | string | null
+    syllabusId?: StringNullableFilter<"Book"> | string | null
+    curriculum?: StringNullableFilter<"Book"> | string | null
+    level?: StringNullableFilter<"Book"> | string | null
+    topics?: StringNullableListFilter<"Book">
     classId?: StringNullableFilter<"Book"> | string | null
     teacherId?: StringNullableFilter<"Book"> | string | null
     coverUrl?: StringNullableFilter<"Book"> | string | null
@@ -310257,6 +310466,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Book"> | Date | string
     category?: XOR<LibraryCategoryNullableRelationFilter, LibraryCategoryWhereInput> | null
     subject?: XOR<SubjectNullableRelationFilter, SubjectWhereInput> | null
+    syllabus?: XOR<SyllabusNullableRelationFilter, SyllabusWhereInput> | null
     class?: XOR<SchoolClassNullableRelationFilter, SchoolClassWhereInput> | null
     teacher?: XOR<TeacherNullableRelationFilter, TeacherWhereInput> | null
     loans?: BookLoanListRelationFilter
@@ -310287,6 +310497,10 @@ export namespace Prisma {
     condition?: SortOrderInput | SortOrder
     categoryId?: SortOrderInput | SortOrder
     subjectId?: SortOrderInput | SortOrder
+    syllabusId?: SortOrderInput | SortOrder
+    curriculum?: SortOrderInput | SortOrder
+    level?: SortOrderInput | SortOrder
+    topics?: SortOrder
     classId?: SortOrderInput | SortOrder
     teacherId?: SortOrderInput | SortOrder
     coverUrl?: SortOrderInput | SortOrder
@@ -310329,6 +310543,10 @@ export namespace Prisma {
     condition?: StringNullableWithAggregatesFilter<"Book"> | string | null
     categoryId?: StringNullableWithAggregatesFilter<"Book"> | string | null
     subjectId?: StringNullableWithAggregatesFilter<"Book"> | string | null
+    syllabusId?: StringNullableWithAggregatesFilter<"Book"> | string | null
+    curriculum?: StringNullableWithAggregatesFilter<"Book"> | string | null
+    level?: StringNullableWithAggregatesFilter<"Book"> | string | null
+    topics?: StringNullableListFilter<"Book">
     classId?: StringNullableWithAggregatesFilter<"Book"> | string | null
     teacherId?: StringNullableWithAggregatesFilter<"Book"> | string | null
     coverUrl?: StringNullableWithAggregatesFilter<"Book"> | string | null
@@ -311006,6 +311224,9 @@ export namespace Prisma {
     fileFormat?: StringFilter<"LibraryDigitalResource"> | string
     categoryId?: StringNullableFilter<"LibraryDigitalResource"> | string | null
     subjectId?: StringNullableFilter<"LibraryDigitalResource"> | string | null
+    syllabusId?: StringNullableFilter<"LibraryDigitalResource"> | string | null
+    curriculum?: StringNullableFilter<"LibraryDigitalResource"> | string | null
+    level?: StringNullableFilter<"LibraryDigitalResource"> | string | null
     accessLevel?: StringFilter<"LibraryDigitalResource"> | string
     yearPublished?: IntNullableFilter<"LibraryDigitalResource"> | number | null
     description?: StringNullableFilter<"LibraryDigitalResource"> | string | null
@@ -311025,6 +311246,7 @@ export namespace Prisma {
     school?: XOR<SchoolRelationFilter, SchoolWhereInput>
     category?: XOR<LibraryCategoryNullableRelationFilter, LibraryCategoryWhereInput> | null
     subject?: XOR<SubjectNullableRelationFilter, SubjectWhereInput> | null
+    syllabus?: XOR<SyllabusNullableRelationFilter, SyllabusWhereInput> | null
     addedBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
   }
 
@@ -311039,6 +311261,9 @@ export namespace Prisma {
     fileFormat?: SortOrder
     categoryId?: SortOrderInput | SortOrder
     subjectId?: SortOrderInput | SortOrder
+    syllabusId?: SortOrderInput | SortOrder
+    curriculum?: SortOrderInput | SortOrder
+    level?: SortOrderInput | SortOrder
     accessLevel?: SortOrder
     yearPublished?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
@@ -311058,6 +311283,7 @@ export namespace Prisma {
     school?: SchoolOrderByWithRelationInput
     category?: LibraryCategoryOrderByWithRelationInput
     subject?: SubjectOrderByWithRelationInput
+    syllabus?: SyllabusOrderByWithRelationInput
     addedBy?: UserOrderByWithRelationInput
   }
 
@@ -311075,6 +311301,9 @@ export namespace Prisma {
     fileFormat?: StringFilter<"LibraryDigitalResource"> | string
     categoryId?: StringNullableFilter<"LibraryDigitalResource"> | string | null
     subjectId?: StringNullableFilter<"LibraryDigitalResource"> | string | null
+    syllabusId?: StringNullableFilter<"LibraryDigitalResource"> | string | null
+    curriculum?: StringNullableFilter<"LibraryDigitalResource"> | string | null
+    level?: StringNullableFilter<"LibraryDigitalResource"> | string | null
     accessLevel?: StringFilter<"LibraryDigitalResource"> | string
     yearPublished?: IntNullableFilter<"LibraryDigitalResource"> | number | null
     description?: StringNullableFilter<"LibraryDigitalResource"> | string | null
@@ -311094,6 +311323,7 @@ export namespace Prisma {
     school?: XOR<SchoolRelationFilter, SchoolWhereInput>
     category?: XOR<LibraryCategoryNullableRelationFilter, LibraryCategoryWhereInput> | null
     subject?: XOR<SubjectNullableRelationFilter, SubjectWhereInput> | null
+    syllabus?: XOR<SyllabusNullableRelationFilter, SyllabusWhereInput> | null
     addedBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
   }, "id">
 
@@ -311108,6 +311338,9 @@ export namespace Prisma {
     fileFormat?: SortOrder
     categoryId?: SortOrderInput | SortOrder
     subjectId?: SortOrderInput | SortOrder
+    syllabusId?: SortOrderInput | SortOrder
+    curriculum?: SortOrderInput | SortOrder
+    level?: SortOrderInput | SortOrder
     accessLevel?: SortOrder
     yearPublished?: SortOrderInput | SortOrder
     description?: SortOrderInput | SortOrder
@@ -311145,6 +311378,9 @@ export namespace Prisma {
     fileFormat?: StringWithAggregatesFilter<"LibraryDigitalResource"> | string
     categoryId?: StringNullableWithAggregatesFilter<"LibraryDigitalResource"> | string | null
     subjectId?: StringNullableWithAggregatesFilter<"LibraryDigitalResource"> | string | null
+    syllabusId?: StringNullableWithAggregatesFilter<"LibraryDigitalResource"> | string | null
+    curriculum?: StringNullableWithAggregatesFilter<"LibraryDigitalResource"> | string | null
+    level?: StringNullableWithAggregatesFilter<"LibraryDigitalResource"> | string | null
     accessLevel?: StringWithAggregatesFilter<"LibraryDigitalResource"> | string
     yearPublished?: IntNullableWithAggregatesFilter<"LibraryDigitalResource"> | number | null
     description?: StringNullableWithAggregatesFilter<"LibraryDigitalResource"> | string | null
@@ -325234,6 +325470,8 @@ export namespace Prisma {
     uploadedBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     topics?: SyllabusTopicListRelationFilter
     schemes?: SchemeOfWorkListRelationFilter
+    books?: BookListRelationFilter
+    digitalResources?: LibraryDigitalResourceListRelationFilter
   }
 
   export type SyllabusOrderByWithRelationInput = {
@@ -325255,6 +325493,8 @@ export namespace Prisma {
     uploadedBy?: UserOrderByWithRelationInput
     topics?: SyllabusTopicOrderByRelationAggregateInput
     schemes?: SchemeOfWorkOrderByRelationAggregateInput
+    books?: BookOrderByRelationAggregateInput
+    digitalResources?: LibraryDigitalResourceOrderByRelationAggregateInput
   }
 
   export type SyllabusWhereUniqueInput = Prisma.AtLeast<{
@@ -325279,6 +325519,8 @@ export namespace Prisma {
     uploadedBy?: XOR<UserNullableRelationFilter, UserWhereInput> | null
     topics?: SyllabusTopicListRelationFilter
     schemes?: SchemeOfWorkListRelationFilter
+    books?: BookListRelationFilter
+    digitalResources?: LibraryDigitalResourceListRelationFilter
   }, "id">
 
   export type SyllabusOrderByWithAggregationInput = {
@@ -335821,6 +336063,9 @@ export namespace Prisma {
     keywords?: BookCreatekeywordsInput | string[]
     source?: string | null
     condition?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     coverUrl?: string | null
     pdfUrl?: string | null
     copies?: number
@@ -335829,6 +336074,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     category?: LibraryCategoryCreateNestedOneWithoutBooksInput
     subject?: SubjectCreateNestedOneWithoutBooksInput
+    syllabus?: SyllabusCreateNestedOneWithoutBooksInput
     class?: SchoolClassCreateNestedOneWithoutBooksInput
     teacher?: TeacherCreateNestedOneWithoutTextbooksInput
     loans?: BookLoanCreateNestedManyWithoutBookInput
@@ -335859,6 +336105,10 @@ export namespace Prisma {
     condition?: string | null
     categoryId?: string | null
     subjectId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     classId?: string | null
     teacherId?: string | null
     coverUrl?: string | null
@@ -335893,6 +336143,9 @@ export namespace Prisma {
     keywords?: BookUpdatekeywordsInput | string[]
     source?: NullableStringFieldUpdateOperationsInput | string | null
     condition?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     copies?: IntFieldUpdateOperationsInput | number
@@ -335901,6 +336154,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: LibraryCategoryUpdateOneWithoutBooksNestedInput
     subject?: SubjectUpdateOneWithoutBooksNestedInput
+    syllabus?: SyllabusUpdateOneWithoutBooksNestedInput
     class?: SchoolClassUpdateOneWithoutBooksNestedInput
     teacher?: TeacherUpdateOneWithoutTextbooksNestedInput
     loans?: BookLoanUpdateManyWithoutBookNestedInput
@@ -335931,6 +336185,10 @@ export namespace Prisma {
     condition?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     classId?: NullableStringFieldUpdateOperationsInput | string | null
     teacherId?: NullableStringFieldUpdateOperationsInput | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -335967,6 +336225,10 @@ export namespace Prisma {
     condition?: string | null
     categoryId?: string | null
     subjectId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     classId?: string | null
     teacherId?: string | null
     coverUrl?: string | null
@@ -335999,6 +336261,9 @@ export namespace Prisma {
     keywords?: BookUpdatekeywordsInput | string[]
     source?: NullableStringFieldUpdateOperationsInput | string | null
     condition?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     copies?: IntFieldUpdateOperationsInput | number
@@ -336030,6 +336295,10 @@ export namespace Prisma {
     condition?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     classId?: NullableStringFieldUpdateOperationsInput | string | null
     teacherId?: NullableStringFieldUpdateOperationsInput | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -336754,6 +337023,8 @@ export namespace Prisma {
     fileUrl?: string | null
     externalLink?: string | null
     fileFormat: string
+    curriculum?: string | null
+    level?: string | null
     accessLevel?: string
     yearPublished?: number | null
     description?: string | null
@@ -336772,6 +337043,7 @@ export namespace Prisma {
     school: SchoolCreateNestedOneWithoutLibraryDigitalResourcesInput
     category?: LibraryCategoryCreateNestedOneWithoutDigitalResourcesInput
     subject?: SubjectCreateNestedOneWithoutLibraryDigitalResourcesInput
+    syllabus?: SyllabusCreateNestedOneWithoutDigitalResourcesInput
     addedBy?: UserCreateNestedOneWithoutLibraryDigitalResourcesInput
   }
 
@@ -336786,6 +337058,9 @@ export namespace Prisma {
     fileFormat: string
     categoryId?: string | null
     subjectId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
     accessLevel?: string
     yearPublished?: number | null
     description?: string | null
@@ -336812,6 +337087,8 @@ export namespace Prisma {
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     externalLink?: NullableStringFieldUpdateOperationsInput | string | null
     fileFormat?: StringFieldUpdateOperationsInput | string
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
     accessLevel?: StringFieldUpdateOperationsInput | string
     yearPublished?: NullableIntFieldUpdateOperationsInput | number | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -336830,6 +337107,7 @@ export namespace Prisma {
     school?: SchoolUpdateOneRequiredWithoutLibraryDigitalResourcesNestedInput
     category?: LibraryCategoryUpdateOneWithoutDigitalResourcesNestedInput
     subject?: SubjectUpdateOneWithoutLibraryDigitalResourcesNestedInput
+    syllabus?: SyllabusUpdateOneWithoutDigitalResourcesNestedInput
     addedBy?: UserUpdateOneWithoutLibraryDigitalResourcesNestedInput
   }
 
@@ -336844,6 +337122,9 @@ export namespace Prisma {
     fileFormat?: StringFieldUpdateOperationsInput | string
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
     accessLevel?: StringFieldUpdateOperationsInput | string
     yearPublished?: NullableIntFieldUpdateOperationsInput | number | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -336873,6 +337154,9 @@ export namespace Prisma {
     fileFormat: string
     categoryId?: string | null
     subjectId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
     accessLevel?: string
     yearPublished?: number | null
     description?: string | null
@@ -336899,6 +337183,8 @@ export namespace Prisma {
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     externalLink?: NullableStringFieldUpdateOperationsInput | string | null
     fileFormat?: StringFieldUpdateOperationsInput | string
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
     accessLevel?: StringFieldUpdateOperationsInput | string
     yearPublished?: NullableIntFieldUpdateOperationsInput | number | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -336927,6 +337213,9 @@ export namespace Prisma {
     fileFormat?: StringFieldUpdateOperationsInput | string
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
     accessLevel?: StringFieldUpdateOperationsInput | string
     yearPublished?: NullableIntFieldUpdateOperationsInput | number | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -352541,6 +352830,8 @@ export namespace Prisma {
     uploadedBy?: UserCreateNestedOneWithoutUploadedSyllabusesInput
     topics?: SyllabusTopicCreateNestedManyWithoutSyllabusInput
     schemes?: SchemeOfWorkCreateNestedManyWithoutSyllabusInput
+    books?: BookCreateNestedManyWithoutSyllabusInput
+    digitalResources?: LibraryDigitalResourceCreateNestedManyWithoutSyllabusInput
   }
 
   export type SyllabusUncheckedCreateInput = {
@@ -352559,6 +352850,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     topics?: SyllabusTopicUncheckedCreateNestedManyWithoutSyllabusInput
     schemes?: SchemeOfWorkUncheckedCreateNestedManyWithoutSyllabusInput
+    books?: BookUncheckedCreateNestedManyWithoutSyllabusInput
+    digitalResources?: LibraryDigitalResourceUncheckedCreateNestedManyWithoutSyllabusInput
   }
 
   export type SyllabusUpdateInput = {
@@ -352577,6 +352870,8 @@ export namespace Prisma {
     uploadedBy?: UserUpdateOneWithoutUploadedSyllabusesNestedInput
     topics?: SyllabusTopicUpdateManyWithoutSyllabusNestedInput
     schemes?: SchemeOfWorkUpdateManyWithoutSyllabusNestedInput
+    books?: BookUpdateManyWithoutSyllabusNestedInput
+    digitalResources?: LibraryDigitalResourceUpdateManyWithoutSyllabusNestedInput
   }
 
   export type SyllabusUncheckedUpdateInput = {
@@ -352595,6 +352890,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     topics?: SyllabusTopicUncheckedUpdateManyWithoutSyllabusNestedInput
     schemes?: SchemeOfWorkUncheckedUpdateManyWithoutSyllabusNestedInput
+    books?: BookUncheckedUpdateManyWithoutSyllabusNestedInput
+    digitalResources?: LibraryDigitalResourceUncheckedUpdateManyWithoutSyllabusNestedInput
   }
 
   export type SyllabusCreateManyInput = {
@@ -362476,6 +362773,11 @@ export namespace Prisma {
     isNot?: SubjectWhereInput | null
   }
 
+  export type SyllabusNullableRelationFilter = {
+    is?: SyllabusWhereInput | null
+    isNot?: SyllabusWhereInput | null
+  }
+
   export type BookCountOrderByAggregateInput = {
     id?: SortOrder
     title?: SortOrder
@@ -362499,6 +362801,10 @@ export namespace Prisma {
     condition?: SortOrder
     categoryId?: SortOrder
     subjectId?: SortOrder
+    syllabusId?: SortOrder
+    curriculum?: SortOrder
+    level?: SortOrder
+    topics?: SortOrder
     classId?: SortOrder
     teacherId?: SortOrder
     coverUrl?: SortOrder
@@ -362537,6 +362843,9 @@ export namespace Prisma {
     condition?: SortOrder
     categoryId?: SortOrder
     subjectId?: SortOrder
+    syllabusId?: SortOrder
+    curriculum?: SortOrder
+    level?: SortOrder
     classId?: SortOrder
     teacherId?: SortOrder
     coverUrl?: SortOrder
@@ -362569,6 +362878,9 @@ export namespace Prisma {
     condition?: SortOrder
     categoryId?: SortOrder
     subjectId?: SortOrder
+    syllabusId?: SortOrder
+    curriculum?: SortOrder
+    level?: SortOrder
     classId?: SortOrder
     teacherId?: SortOrder
     coverUrl?: SortOrder
@@ -362967,6 +363279,9 @@ export namespace Prisma {
     fileFormat?: SortOrder
     categoryId?: SortOrder
     subjectId?: SortOrder
+    syllabusId?: SortOrder
+    curriculum?: SortOrder
+    level?: SortOrder
     accessLevel?: SortOrder
     yearPublished?: SortOrder
     description?: SortOrder
@@ -363003,6 +363318,9 @@ export namespace Prisma {
     fileFormat?: SortOrder
     categoryId?: SortOrder
     subjectId?: SortOrder
+    syllabusId?: SortOrder
+    curriculum?: SortOrder
+    level?: SortOrder
     accessLevel?: SortOrder
     yearPublished?: SortOrder
     description?: SortOrder
@@ -363031,6 +363349,9 @@ export namespace Prisma {
     fileFormat?: SortOrder
     categoryId?: SortOrder
     subjectId?: SortOrder
+    syllabusId?: SortOrder
+    curriculum?: SortOrder
+    level?: SortOrder
     accessLevel?: SortOrder
     yearPublished?: SortOrder
     description?: SortOrder
@@ -371347,11 +371668,6 @@ export namespace Prisma {
   export type SyllabusTopicNullableRelationFilter = {
     is?: SyllabusTopicWhereInput | null
     isNot?: SyllabusTopicWhereInput | null
-  }
-
-  export type SyllabusNullableRelationFilter = {
-    is?: SyllabusWhereInput | null
-    isNot?: SyllabusWhereInput | null
   }
 
   export type SchemeOfWorkCountOrderByAggregateInput = {
@@ -391400,6 +391716,10 @@ export namespace Prisma {
     set: string[]
   }
 
+  export type BookCreatetopicsInput = {
+    set: string[]
+  }
+
   export type LibraryCategoryCreateNestedOneWithoutBooksInput = {
     create?: XOR<LibraryCategoryCreateWithoutBooksInput, LibraryCategoryUncheckedCreateWithoutBooksInput>
     connectOrCreate?: LibraryCategoryCreateOrConnectWithoutBooksInput
@@ -391410,6 +391730,12 @@ export namespace Prisma {
     create?: XOR<SubjectCreateWithoutBooksInput, SubjectUncheckedCreateWithoutBooksInput>
     connectOrCreate?: SubjectCreateOrConnectWithoutBooksInput
     connect?: SubjectWhereUniqueInput
+  }
+
+  export type SyllabusCreateNestedOneWithoutBooksInput = {
+    create?: XOR<SyllabusCreateWithoutBooksInput, SyllabusUncheckedCreateWithoutBooksInput>
+    connectOrCreate?: SyllabusCreateOrConnectWithoutBooksInput
+    connect?: SyllabusWhereUniqueInput
   }
 
   export type SchoolClassCreateNestedOneWithoutBooksInput = {
@@ -391468,6 +391794,11 @@ export namespace Prisma {
     push?: string | string[]
   }
 
+  export type BookUpdatetopicsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
   export type LibraryCategoryUpdateOneWithoutBooksNestedInput = {
     create?: XOR<LibraryCategoryCreateWithoutBooksInput, LibraryCategoryUncheckedCreateWithoutBooksInput>
     connectOrCreate?: LibraryCategoryCreateOrConnectWithoutBooksInput
@@ -391486,6 +391817,16 @@ export namespace Prisma {
     delete?: SubjectWhereInput | boolean
     connect?: SubjectWhereUniqueInput
     update?: XOR<XOR<SubjectUpdateToOneWithWhereWithoutBooksInput, SubjectUpdateWithoutBooksInput>, SubjectUncheckedUpdateWithoutBooksInput>
+  }
+
+  export type SyllabusUpdateOneWithoutBooksNestedInput = {
+    create?: XOR<SyllabusCreateWithoutBooksInput, SyllabusUncheckedCreateWithoutBooksInput>
+    connectOrCreate?: SyllabusCreateOrConnectWithoutBooksInput
+    upsert?: SyllabusUpsertWithoutBooksInput
+    disconnect?: SyllabusWhereInput | boolean
+    delete?: SyllabusWhereInput | boolean
+    connect?: SyllabusWhereUniqueInput
+    update?: XOR<XOR<SyllabusUpdateToOneWithWhereWithoutBooksInput, SyllabusUpdateWithoutBooksInput>, SyllabusUncheckedUpdateWithoutBooksInput>
   }
 
   export type SchoolClassUpdateOneWithoutBooksNestedInput = {
@@ -392026,6 +392367,12 @@ export namespace Prisma {
     connect?: SubjectWhereUniqueInput
   }
 
+  export type SyllabusCreateNestedOneWithoutDigitalResourcesInput = {
+    create?: XOR<SyllabusCreateWithoutDigitalResourcesInput, SyllabusUncheckedCreateWithoutDigitalResourcesInput>
+    connectOrCreate?: SyllabusCreateOrConnectWithoutDigitalResourcesInput
+    connect?: SyllabusWhereUniqueInput
+  }
+
   export type UserCreateNestedOneWithoutLibraryDigitalResourcesInput = {
     create?: XOR<UserCreateWithoutLibraryDigitalResourcesInput, UserUncheckedCreateWithoutLibraryDigitalResourcesInput>
     connectOrCreate?: UserCreateOrConnectWithoutLibraryDigitalResourcesInput
@@ -392071,6 +392418,16 @@ export namespace Prisma {
     delete?: SubjectWhereInput | boolean
     connect?: SubjectWhereUniqueInput
     update?: XOR<XOR<SubjectUpdateToOneWithWhereWithoutLibraryDigitalResourcesInput, SubjectUpdateWithoutLibraryDigitalResourcesInput>, SubjectUncheckedUpdateWithoutLibraryDigitalResourcesInput>
+  }
+
+  export type SyllabusUpdateOneWithoutDigitalResourcesNestedInput = {
+    create?: XOR<SyllabusCreateWithoutDigitalResourcesInput, SyllabusUncheckedCreateWithoutDigitalResourcesInput>
+    connectOrCreate?: SyllabusCreateOrConnectWithoutDigitalResourcesInput
+    upsert?: SyllabusUpsertWithoutDigitalResourcesInput
+    disconnect?: SyllabusWhereInput | boolean
+    delete?: SyllabusWhereInput | boolean
+    connect?: SyllabusWhereUniqueInput
+    update?: XOR<XOR<SyllabusUpdateToOneWithWhereWithoutDigitalResourcesInput, SyllabusUpdateWithoutDigitalResourcesInput>, SyllabusUncheckedUpdateWithoutDigitalResourcesInput>
   }
 
   export type UserUpdateOneWithoutLibraryDigitalResourcesNestedInput = {
@@ -399436,6 +399793,20 @@ export namespace Prisma {
     connect?: SchemeOfWorkWhereUniqueInput | SchemeOfWorkWhereUniqueInput[]
   }
 
+  export type BookCreateNestedManyWithoutSyllabusInput = {
+    create?: XOR<BookCreateWithoutSyllabusInput, BookUncheckedCreateWithoutSyllabusInput> | BookCreateWithoutSyllabusInput[] | BookUncheckedCreateWithoutSyllabusInput[]
+    connectOrCreate?: BookCreateOrConnectWithoutSyllabusInput | BookCreateOrConnectWithoutSyllabusInput[]
+    createMany?: BookCreateManySyllabusInputEnvelope
+    connect?: BookWhereUniqueInput | BookWhereUniqueInput[]
+  }
+
+  export type LibraryDigitalResourceCreateNestedManyWithoutSyllabusInput = {
+    create?: XOR<LibraryDigitalResourceCreateWithoutSyllabusInput, LibraryDigitalResourceUncheckedCreateWithoutSyllabusInput> | LibraryDigitalResourceCreateWithoutSyllabusInput[] | LibraryDigitalResourceUncheckedCreateWithoutSyllabusInput[]
+    connectOrCreate?: LibraryDigitalResourceCreateOrConnectWithoutSyllabusInput | LibraryDigitalResourceCreateOrConnectWithoutSyllabusInput[]
+    createMany?: LibraryDigitalResourceCreateManySyllabusInputEnvelope
+    connect?: LibraryDigitalResourceWhereUniqueInput | LibraryDigitalResourceWhereUniqueInput[]
+  }
+
   export type SyllabusTopicUncheckedCreateNestedManyWithoutSyllabusInput = {
     create?: XOR<SyllabusTopicCreateWithoutSyllabusInput, SyllabusTopicUncheckedCreateWithoutSyllabusInput> | SyllabusTopicCreateWithoutSyllabusInput[] | SyllabusTopicUncheckedCreateWithoutSyllabusInput[]
     connectOrCreate?: SyllabusTopicCreateOrConnectWithoutSyllabusInput | SyllabusTopicCreateOrConnectWithoutSyllabusInput[]
@@ -399448,6 +399819,20 @@ export namespace Prisma {
     connectOrCreate?: SchemeOfWorkCreateOrConnectWithoutSyllabusInput | SchemeOfWorkCreateOrConnectWithoutSyllabusInput[]
     createMany?: SchemeOfWorkCreateManySyllabusInputEnvelope
     connect?: SchemeOfWorkWhereUniqueInput | SchemeOfWorkWhereUniqueInput[]
+  }
+
+  export type BookUncheckedCreateNestedManyWithoutSyllabusInput = {
+    create?: XOR<BookCreateWithoutSyllabusInput, BookUncheckedCreateWithoutSyllabusInput> | BookCreateWithoutSyllabusInput[] | BookUncheckedCreateWithoutSyllabusInput[]
+    connectOrCreate?: BookCreateOrConnectWithoutSyllabusInput | BookCreateOrConnectWithoutSyllabusInput[]
+    createMany?: BookCreateManySyllabusInputEnvelope
+    connect?: BookWhereUniqueInput | BookWhereUniqueInput[]
+  }
+
+  export type LibraryDigitalResourceUncheckedCreateNestedManyWithoutSyllabusInput = {
+    create?: XOR<LibraryDigitalResourceCreateWithoutSyllabusInput, LibraryDigitalResourceUncheckedCreateWithoutSyllabusInput> | LibraryDigitalResourceCreateWithoutSyllabusInput[] | LibraryDigitalResourceUncheckedCreateWithoutSyllabusInput[]
+    connectOrCreate?: LibraryDigitalResourceCreateOrConnectWithoutSyllabusInput | LibraryDigitalResourceCreateOrConnectWithoutSyllabusInput[]
+    createMany?: LibraryDigitalResourceCreateManySyllabusInputEnvelope
+    connect?: LibraryDigitalResourceWhereUniqueInput | LibraryDigitalResourceWhereUniqueInput[]
   }
 
   export type SchoolUpdateOneRequiredWithoutSyllabusesNestedInput = {
@@ -399504,6 +399889,34 @@ export namespace Prisma {
     deleteMany?: SchemeOfWorkScalarWhereInput | SchemeOfWorkScalarWhereInput[]
   }
 
+  export type BookUpdateManyWithoutSyllabusNestedInput = {
+    create?: XOR<BookCreateWithoutSyllabusInput, BookUncheckedCreateWithoutSyllabusInput> | BookCreateWithoutSyllabusInput[] | BookUncheckedCreateWithoutSyllabusInput[]
+    connectOrCreate?: BookCreateOrConnectWithoutSyllabusInput | BookCreateOrConnectWithoutSyllabusInput[]
+    upsert?: BookUpsertWithWhereUniqueWithoutSyllabusInput | BookUpsertWithWhereUniqueWithoutSyllabusInput[]
+    createMany?: BookCreateManySyllabusInputEnvelope
+    set?: BookWhereUniqueInput | BookWhereUniqueInput[]
+    disconnect?: BookWhereUniqueInput | BookWhereUniqueInput[]
+    delete?: BookWhereUniqueInput | BookWhereUniqueInput[]
+    connect?: BookWhereUniqueInput | BookWhereUniqueInput[]
+    update?: BookUpdateWithWhereUniqueWithoutSyllabusInput | BookUpdateWithWhereUniqueWithoutSyllabusInput[]
+    updateMany?: BookUpdateManyWithWhereWithoutSyllabusInput | BookUpdateManyWithWhereWithoutSyllabusInput[]
+    deleteMany?: BookScalarWhereInput | BookScalarWhereInput[]
+  }
+
+  export type LibraryDigitalResourceUpdateManyWithoutSyllabusNestedInput = {
+    create?: XOR<LibraryDigitalResourceCreateWithoutSyllabusInput, LibraryDigitalResourceUncheckedCreateWithoutSyllabusInput> | LibraryDigitalResourceCreateWithoutSyllabusInput[] | LibraryDigitalResourceUncheckedCreateWithoutSyllabusInput[]
+    connectOrCreate?: LibraryDigitalResourceCreateOrConnectWithoutSyllabusInput | LibraryDigitalResourceCreateOrConnectWithoutSyllabusInput[]
+    upsert?: LibraryDigitalResourceUpsertWithWhereUniqueWithoutSyllabusInput | LibraryDigitalResourceUpsertWithWhereUniqueWithoutSyllabusInput[]
+    createMany?: LibraryDigitalResourceCreateManySyllabusInputEnvelope
+    set?: LibraryDigitalResourceWhereUniqueInput | LibraryDigitalResourceWhereUniqueInput[]
+    disconnect?: LibraryDigitalResourceWhereUniqueInput | LibraryDigitalResourceWhereUniqueInput[]
+    delete?: LibraryDigitalResourceWhereUniqueInput | LibraryDigitalResourceWhereUniqueInput[]
+    connect?: LibraryDigitalResourceWhereUniqueInput | LibraryDigitalResourceWhereUniqueInput[]
+    update?: LibraryDigitalResourceUpdateWithWhereUniqueWithoutSyllabusInput | LibraryDigitalResourceUpdateWithWhereUniqueWithoutSyllabusInput[]
+    updateMany?: LibraryDigitalResourceUpdateManyWithWhereWithoutSyllabusInput | LibraryDigitalResourceUpdateManyWithWhereWithoutSyllabusInput[]
+    deleteMany?: LibraryDigitalResourceScalarWhereInput | LibraryDigitalResourceScalarWhereInput[]
+  }
+
   export type SyllabusTopicUncheckedUpdateManyWithoutSyllabusNestedInput = {
     create?: XOR<SyllabusTopicCreateWithoutSyllabusInput, SyllabusTopicUncheckedCreateWithoutSyllabusInput> | SyllabusTopicCreateWithoutSyllabusInput[] | SyllabusTopicUncheckedCreateWithoutSyllabusInput[]
     connectOrCreate?: SyllabusTopicCreateOrConnectWithoutSyllabusInput | SyllabusTopicCreateOrConnectWithoutSyllabusInput[]
@@ -399530,6 +399943,34 @@ export namespace Prisma {
     update?: SchemeOfWorkUpdateWithWhereUniqueWithoutSyllabusInput | SchemeOfWorkUpdateWithWhereUniqueWithoutSyllabusInput[]
     updateMany?: SchemeOfWorkUpdateManyWithWhereWithoutSyllabusInput | SchemeOfWorkUpdateManyWithWhereWithoutSyllabusInput[]
     deleteMany?: SchemeOfWorkScalarWhereInput | SchemeOfWorkScalarWhereInput[]
+  }
+
+  export type BookUncheckedUpdateManyWithoutSyllabusNestedInput = {
+    create?: XOR<BookCreateWithoutSyllabusInput, BookUncheckedCreateWithoutSyllabusInput> | BookCreateWithoutSyllabusInput[] | BookUncheckedCreateWithoutSyllabusInput[]
+    connectOrCreate?: BookCreateOrConnectWithoutSyllabusInput | BookCreateOrConnectWithoutSyllabusInput[]
+    upsert?: BookUpsertWithWhereUniqueWithoutSyllabusInput | BookUpsertWithWhereUniqueWithoutSyllabusInput[]
+    createMany?: BookCreateManySyllabusInputEnvelope
+    set?: BookWhereUniqueInput | BookWhereUniqueInput[]
+    disconnect?: BookWhereUniqueInput | BookWhereUniqueInput[]
+    delete?: BookWhereUniqueInput | BookWhereUniqueInput[]
+    connect?: BookWhereUniqueInput | BookWhereUniqueInput[]
+    update?: BookUpdateWithWhereUniqueWithoutSyllabusInput | BookUpdateWithWhereUniqueWithoutSyllabusInput[]
+    updateMany?: BookUpdateManyWithWhereWithoutSyllabusInput | BookUpdateManyWithWhereWithoutSyllabusInput[]
+    deleteMany?: BookScalarWhereInput | BookScalarWhereInput[]
+  }
+
+  export type LibraryDigitalResourceUncheckedUpdateManyWithoutSyllabusNestedInput = {
+    create?: XOR<LibraryDigitalResourceCreateWithoutSyllabusInput, LibraryDigitalResourceUncheckedCreateWithoutSyllabusInput> | LibraryDigitalResourceCreateWithoutSyllabusInput[] | LibraryDigitalResourceUncheckedCreateWithoutSyllabusInput[]
+    connectOrCreate?: LibraryDigitalResourceCreateOrConnectWithoutSyllabusInput | LibraryDigitalResourceCreateOrConnectWithoutSyllabusInput[]
+    upsert?: LibraryDigitalResourceUpsertWithWhereUniqueWithoutSyllabusInput | LibraryDigitalResourceUpsertWithWhereUniqueWithoutSyllabusInput[]
+    createMany?: LibraryDigitalResourceCreateManySyllabusInputEnvelope
+    set?: LibraryDigitalResourceWhereUniqueInput | LibraryDigitalResourceWhereUniqueInput[]
+    disconnect?: LibraryDigitalResourceWhereUniqueInput | LibraryDigitalResourceWhereUniqueInput[]
+    delete?: LibraryDigitalResourceWhereUniqueInput | LibraryDigitalResourceWhereUniqueInput[]
+    connect?: LibraryDigitalResourceWhereUniqueInput | LibraryDigitalResourceWhereUniqueInput[]
+    update?: LibraryDigitalResourceUpdateWithWhereUniqueWithoutSyllabusInput | LibraryDigitalResourceUpdateWithWhereUniqueWithoutSyllabusInput[]
+    updateMany?: LibraryDigitalResourceUpdateManyWithWhereWithoutSyllabusInput | LibraryDigitalResourceUpdateManyWithWhereWithoutSyllabusInput[]
+    deleteMany?: LibraryDigitalResourceScalarWhereInput | LibraryDigitalResourceScalarWhereInput[]
   }
 
   export type SyllabusCreateNestedOneWithoutTopicsInput = {
@@ -402939,6 +403380,8 @@ export namespace Prisma {
     uploadedBy?: UserCreateNestedOneWithoutUploadedSyllabusesInput
     topics?: SyllabusTopicCreateNestedManyWithoutSyllabusInput
     schemes?: SchemeOfWorkCreateNestedManyWithoutSyllabusInput
+    books?: BookCreateNestedManyWithoutSyllabusInput
+    digitalResources?: LibraryDigitalResourceCreateNestedManyWithoutSyllabusInput
   }
 
   export type SyllabusUncheckedCreateWithoutSchoolInput = {
@@ -402956,6 +403399,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     topics?: SyllabusTopicUncheckedCreateNestedManyWithoutSyllabusInput
     schemes?: SchemeOfWorkUncheckedCreateNestedManyWithoutSyllabusInput
+    books?: BookUncheckedCreateNestedManyWithoutSyllabusInput
+    digitalResources?: LibraryDigitalResourceUncheckedCreateNestedManyWithoutSyllabusInput
   }
 
   export type SyllabusCreateOrConnectWithoutSchoolInput = {
@@ -404672,6 +405117,9 @@ export namespace Prisma {
     keywords?: BookCreatekeywordsInput | string[]
     source?: string | null
     condition?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     coverUrl?: string | null
     pdfUrl?: string | null
     copies?: number
@@ -404680,6 +405128,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     category?: LibraryCategoryCreateNestedOneWithoutBooksInput
     subject?: SubjectCreateNestedOneWithoutBooksInput
+    syllabus?: SyllabusCreateNestedOneWithoutBooksInput
     class?: SchoolClassCreateNestedOneWithoutBooksInput
     teacher?: TeacherCreateNestedOneWithoutTextbooksInput
     loans?: BookLoanCreateNestedManyWithoutBookInput
@@ -404709,6 +405158,10 @@ export namespace Prisma {
     condition?: string | null
     categoryId?: string | null
     subjectId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     classId?: string | null
     teacherId?: string | null
     coverUrl?: string | null
@@ -405062,6 +405515,8 @@ export namespace Prisma {
     fileUrl?: string | null
     externalLink?: string | null
     fileFormat: string
+    curriculum?: string | null
+    level?: string | null
     accessLevel?: string
     yearPublished?: number | null
     description?: string | null
@@ -405079,6 +405534,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     category?: LibraryCategoryCreateNestedOneWithoutDigitalResourcesInput
     subject?: SubjectCreateNestedOneWithoutLibraryDigitalResourcesInput
+    syllabus?: SyllabusCreateNestedOneWithoutDigitalResourcesInput
     addedBy?: UserCreateNestedOneWithoutLibraryDigitalResourcesInput
   }
 
@@ -405092,6 +405548,9 @@ export namespace Prisma {
     fileFormat: string
     categoryId?: string | null
     subjectId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
     accessLevel?: string
     yearPublished?: number | null
     description?: string | null
@@ -411691,6 +412150,10 @@ export namespace Prisma {
     condition?: StringNullableFilter<"Book"> | string | null
     categoryId?: StringNullableFilter<"Book"> | string | null
     subjectId?: StringNullableFilter<"Book"> | string | null
+    syllabusId?: StringNullableFilter<"Book"> | string | null
+    curriculum?: StringNullableFilter<"Book"> | string | null
+    level?: StringNullableFilter<"Book"> | string | null
+    topics?: StringNullableListFilter<"Book">
     classId?: StringNullableFilter<"Book"> | string | null
     teacherId?: StringNullableFilter<"Book"> | string | null
     coverUrl?: StringNullableFilter<"Book"> | string | null
@@ -412004,6 +412467,9 @@ export namespace Prisma {
     fileFormat?: StringFilter<"LibraryDigitalResource"> | string
     categoryId?: StringNullableFilter<"LibraryDigitalResource"> | string | null
     subjectId?: StringNullableFilter<"LibraryDigitalResource"> | string | null
+    syllabusId?: StringNullableFilter<"LibraryDigitalResource"> | string | null
+    curriculum?: StringNullableFilter<"LibraryDigitalResource"> | string | null
+    level?: StringNullableFilter<"LibraryDigitalResource"> | string | null
     accessLevel?: StringFilter<"LibraryDigitalResource"> | string
     yearPublished?: IntNullableFilter<"LibraryDigitalResource"> | number | null
     description?: StringNullableFilter<"LibraryDigitalResource"> | string | null
@@ -429764,6 +430230,8 @@ export namespace Prisma {
     subject: SubjectCreateNestedOneWithoutSyllabusesInput
     topics?: SyllabusTopicCreateNestedManyWithoutSyllabusInput
     schemes?: SchemeOfWorkCreateNestedManyWithoutSyllabusInput
+    books?: BookCreateNestedManyWithoutSyllabusInput
+    digitalResources?: LibraryDigitalResourceCreateNestedManyWithoutSyllabusInput
   }
 
   export type SyllabusUncheckedCreateWithoutUploadedByInput = {
@@ -429781,6 +430249,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     topics?: SyllabusTopicUncheckedCreateNestedManyWithoutSyllabusInput
     schemes?: SchemeOfWorkUncheckedCreateNestedManyWithoutSyllabusInput
+    books?: BookUncheckedCreateNestedManyWithoutSyllabusInput
+    digitalResources?: LibraryDigitalResourceUncheckedCreateNestedManyWithoutSyllabusInput
   }
 
   export type SyllabusCreateOrConnectWithoutUploadedByInput = {
@@ -431007,6 +431477,8 @@ export namespace Prisma {
     fileUrl?: string | null
     externalLink?: string | null
     fileFormat: string
+    curriculum?: string | null
+    level?: string | null
     accessLevel?: string
     yearPublished?: number | null
     description?: string | null
@@ -431025,6 +431497,7 @@ export namespace Prisma {
     school: SchoolCreateNestedOneWithoutLibraryDigitalResourcesInput
     category?: LibraryCategoryCreateNestedOneWithoutDigitalResourcesInput
     subject?: SubjectCreateNestedOneWithoutLibraryDigitalResourcesInput
+    syllabus?: SyllabusCreateNestedOneWithoutDigitalResourcesInput
   }
 
   export type LibraryDigitalResourceUncheckedCreateWithoutAddedByInput = {
@@ -431038,6 +431511,9 @@ export namespace Prisma {
     fileFormat: string
     categoryId?: string | null
     subjectId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
     accessLevel?: string
     yearPublished?: number | null
     description?: string | null
@@ -438702,6 +439178,9 @@ export namespace Prisma {
     keywords?: BookCreatekeywordsInput | string[]
     source?: string | null
     condition?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     coverUrl?: string | null
     pdfUrl?: string | null
     copies?: number
@@ -438710,6 +439189,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     category?: LibraryCategoryCreateNestedOneWithoutBooksInput
     subject?: SubjectCreateNestedOneWithoutBooksInput
+    syllabus?: SyllabusCreateNestedOneWithoutBooksInput
     class?: SchoolClassCreateNestedOneWithoutBooksInput
     loans?: BookLoanCreateNestedManyWithoutBookInput
     reservations?: BookReservationCreateNestedManyWithoutBookInput
@@ -438739,6 +439219,10 @@ export namespace Prisma {
     condition?: string | null
     categoryId?: string | null
     subjectId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     classId?: string | null
     coverUrl?: string | null
     pdfUrl?: string | null
@@ -444970,6 +445454,9 @@ export namespace Prisma {
     keywords?: BookCreatekeywordsInput | string[]
     source?: string | null
     condition?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     coverUrl?: string | null
     pdfUrl?: string | null
     copies?: number
@@ -444978,6 +445465,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     category?: LibraryCategoryCreateNestedOneWithoutBooksInput
     subject?: SubjectCreateNestedOneWithoutBooksInput
+    syllabus?: SyllabusCreateNestedOneWithoutBooksInput
     teacher?: TeacherCreateNestedOneWithoutTextbooksInput
     loans?: BookLoanCreateNestedManyWithoutBookInput
     reservations?: BookReservationCreateNestedManyWithoutBookInput
@@ -445007,6 +445495,10 @@ export namespace Prisma {
     condition?: string | null
     categoryId?: string | null
     subjectId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     teacherId?: string | null
     coverUrl?: string | null
     pdfUrl?: string | null
@@ -447431,6 +447923,8 @@ export namespace Prisma {
     uploadedBy?: UserCreateNestedOneWithoutUploadedSyllabusesInput
     topics?: SyllabusTopicCreateNestedManyWithoutSyllabusInput
     schemes?: SchemeOfWorkCreateNestedManyWithoutSyllabusInput
+    books?: BookCreateNestedManyWithoutSyllabusInput
+    digitalResources?: LibraryDigitalResourceCreateNestedManyWithoutSyllabusInput
   }
 
   export type SyllabusUncheckedCreateWithoutSubjectInput = {
@@ -447448,6 +447942,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     topics?: SyllabusTopicUncheckedCreateNestedManyWithoutSyllabusInput
     schemes?: SchemeOfWorkUncheckedCreateNestedManyWithoutSyllabusInput
+    books?: BookUncheckedCreateNestedManyWithoutSyllabusInput
+    digitalResources?: LibraryDigitalResourceUncheckedCreateNestedManyWithoutSyllabusInput
   }
 
   export type SyllabusCreateOrConnectWithoutSubjectInput = {
@@ -448439,6 +448935,8 @@ export namespace Prisma {
     fileUrl?: string | null
     externalLink?: string | null
     fileFormat: string
+    curriculum?: string | null
+    level?: string | null
     accessLevel?: string
     yearPublished?: number | null
     description?: string | null
@@ -448456,6 +448954,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     school: SchoolCreateNestedOneWithoutLibraryDigitalResourcesInput
     category?: LibraryCategoryCreateNestedOneWithoutDigitalResourcesInput
+    syllabus?: SyllabusCreateNestedOneWithoutDigitalResourcesInput
     addedBy?: UserCreateNestedOneWithoutLibraryDigitalResourcesInput
   }
 
@@ -448469,6 +448968,9 @@ export namespace Prisma {
     externalLink?: string | null
     fileFormat: string
     categoryId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
     accessLevel?: string
     yearPublished?: number | null
     description?: string | null
@@ -448518,6 +449020,9 @@ export namespace Prisma {
     keywords?: BookCreatekeywordsInput | string[]
     source?: string | null
     condition?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     coverUrl?: string | null
     pdfUrl?: string | null
     copies?: number
@@ -448525,6 +449030,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     category?: LibraryCategoryCreateNestedOneWithoutBooksInput
+    syllabus?: SyllabusCreateNestedOneWithoutBooksInput
     class?: SchoolClassCreateNestedOneWithoutBooksInput
     teacher?: TeacherCreateNestedOneWithoutTextbooksInput
     loans?: BookLoanCreateNestedManyWithoutBookInput
@@ -448554,6 +449060,10 @@ export namespace Prisma {
     source?: string | null
     condition?: string | null
     categoryId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     classId?: string | null
     teacherId?: string | null
     coverUrl?: string | null
@@ -468953,6 +469463,49 @@ export namespace Prisma {
     create: XOR<SubjectCreateWithoutBooksInput, SubjectUncheckedCreateWithoutBooksInput>
   }
 
+  export type SyllabusCreateWithoutBooksInput = {
+    id?: string
+    form: string
+    level?: string | null
+    curriculum?: string
+    year?: number | null
+    totalHours?: number | null
+    status?: string
+    url?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    school: SchoolCreateNestedOneWithoutSyllabusesInput
+    subject: SubjectCreateNestedOneWithoutSyllabusesInput
+    uploadedBy?: UserCreateNestedOneWithoutUploadedSyllabusesInput
+    topics?: SyllabusTopicCreateNestedManyWithoutSyllabusInput
+    schemes?: SchemeOfWorkCreateNestedManyWithoutSyllabusInput
+    digitalResources?: LibraryDigitalResourceCreateNestedManyWithoutSyllabusInput
+  }
+
+  export type SyllabusUncheckedCreateWithoutBooksInput = {
+    id?: string
+    schoolId: string
+    subjectId: string
+    form: string
+    level?: string | null
+    curriculum?: string
+    year?: number | null
+    totalHours?: number | null
+    status?: string
+    url?: string | null
+    uploadedById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    topics?: SyllabusTopicUncheckedCreateNestedManyWithoutSyllabusInput
+    schemes?: SchemeOfWorkUncheckedCreateNestedManyWithoutSyllabusInput
+    digitalResources?: LibraryDigitalResourceUncheckedCreateNestedManyWithoutSyllabusInput
+  }
+
+  export type SyllabusCreateOrConnectWithoutBooksInput = {
+    where: SyllabusWhereUniqueInput
+    create: XOR<SyllabusCreateWithoutBooksInput, SyllabusUncheckedCreateWithoutBooksInput>
+  }
+
   export type SchoolClassCreateWithoutBooksInput = {
     id?: string
     name: string
@@ -469670,6 +470223,55 @@ export namespace Prisma {
     lessonPlans?: LessonPlanUncheckedUpdateManyWithoutSubjectNestedInput
     assessments?: AssessmentUncheckedUpdateManyWithoutSubjectNestedInput
     questionBanks?: QuestionBankUncheckedUpdateManyWithoutSubjectNestedInput
+  }
+
+  export type SyllabusUpsertWithoutBooksInput = {
+    update: XOR<SyllabusUpdateWithoutBooksInput, SyllabusUncheckedUpdateWithoutBooksInput>
+    create: XOR<SyllabusCreateWithoutBooksInput, SyllabusUncheckedCreateWithoutBooksInput>
+    where?: SyllabusWhereInput
+  }
+
+  export type SyllabusUpdateToOneWithWhereWithoutBooksInput = {
+    where?: SyllabusWhereInput
+    data: XOR<SyllabusUpdateWithoutBooksInput, SyllabusUncheckedUpdateWithoutBooksInput>
+  }
+
+  export type SyllabusUpdateWithoutBooksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    form?: StringFieldUpdateOperationsInput | string
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: StringFieldUpdateOperationsInput | string
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    totalHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    school?: SchoolUpdateOneRequiredWithoutSyllabusesNestedInput
+    subject?: SubjectUpdateOneRequiredWithoutSyllabusesNestedInput
+    uploadedBy?: UserUpdateOneWithoutUploadedSyllabusesNestedInput
+    topics?: SyllabusTopicUpdateManyWithoutSyllabusNestedInput
+    schemes?: SchemeOfWorkUpdateManyWithoutSyllabusNestedInput
+    digitalResources?: LibraryDigitalResourceUpdateManyWithoutSyllabusNestedInput
+  }
+
+  export type SyllabusUncheckedUpdateWithoutBooksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    subjectId?: StringFieldUpdateOperationsInput | string
+    form?: StringFieldUpdateOperationsInput | string
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: StringFieldUpdateOperationsInput | string
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    totalHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    topics?: SyllabusTopicUncheckedUpdateManyWithoutSyllabusNestedInput
+    schemes?: SchemeOfWorkUncheckedUpdateManyWithoutSyllabusNestedInput
+    digitalResources?: LibraryDigitalResourceUncheckedUpdateManyWithoutSyllabusNestedInput
   }
 
   export type SchoolClassUpsertWithoutBooksInput = {
@@ -473889,6 +474491,9 @@ export namespace Prisma {
     keywords?: BookCreatekeywordsInput | string[]
     source?: string | null
     condition?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     coverUrl?: string | null
     pdfUrl?: string | null
     copies?: number
@@ -473896,6 +474501,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     subject?: SubjectCreateNestedOneWithoutBooksInput
+    syllabus?: SyllabusCreateNestedOneWithoutBooksInput
     class?: SchoolClassCreateNestedOneWithoutBooksInput
     teacher?: TeacherCreateNestedOneWithoutTextbooksInput
     loans?: BookLoanCreateNestedManyWithoutBookInput
@@ -473925,6 +474531,10 @@ export namespace Prisma {
     source?: string | null
     condition?: string | null
     subjectId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     classId?: string | null
     teacherId?: string | null
     coverUrl?: string | null
@@ -473956,6 +474566,8 @@ export namespace Prisma {
     fileUrl?: string | null
     externalLink?: string | null
     fileFormat: string
+    curriculum?: string | null
+    level?: string | null
     accessLevel?: string
     yearPublished?: number | null
     description?: string | null
@@ -473973,6 +474585,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     school: SchoolCreateNestedOneWithoutLibraryDigitalResourcesInput
     subject?: SubjectCreateNestedOneWithoutLibraryDigitalResourcesInput
+    syllabus?: SyllabusCreateNestedOneWithoutDigitalResourcesInput
     addedBy?: UserCreateNestedOneWithoutLibraryDigitalResourcesInput
   }
 
@@ -473986,6 +474599,9 @@ export namespace Prisma {
     externalLink?: string | null
     fileFormat: string
     subjectId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
     accessLevel?: string
     yearPublished?: number | null
     description?: string | null
@@ -474470,6 +475086,9 @@ export namespace Prisma {
     keywords?: BookCreatekeywordsInput | string[]
     source?: string | null
     condition?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     coverUrl?: string | null
     pdfUrl?: string | null
     copies?: number
@@ -474478,6 +475097,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     category?: LibraryCategoryCreateNestedOneWithoutBooksInput
     subject?: SubjectCreateNestedOneWithoutBooksInput
+    syllabus?: SyllabusCreateNestedOneWithoutBooksInput
     class?: SchoolClassCreateNestedOneWithoutBooksInput
     teacher?: TeacherCreateNestedOneWithoutTextbooksInput
     reservations?: BookReservationCreateNestedManyWithoutBookInput
@@ -474507,6 +475127,10 @@ export namespace Prisma {
     condition?: string | null
     categoryId?: string | null
     subjectId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     classId?: string | null
     teacherId?: string | null
     coverUrl?: string | null
@@ -475413,6 +476037,9 @@ export namespace Prisma {
     keywords?: BookUpdatekeywordsInput | string[]
     source?: NullableStringFieldUpdateOperationsInput | string | null
     condition?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     copies?: IntFieldUpdateOperationsInput | number
@@ -475421,6 +476048,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: LibraryCategoryUpdateOneWithoutBooksNestedInput
     subject?: SubjectUpdateOneWithoutBooksNestedInput
+    syllabus?: SyllabusUpdateOneWithoutBooksNestedInput
     class?: SchoolClassUpdateOneWithoutBooksNestedInput
     teacher?: TeacherUpdateOneWithoutTextbooksNestedInput
     reservations?: BookReservationUpdateManyWithoutBookNestedInput
@@ -475450,6 +476078,10 @@ export namespace Prisma {
     condition?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     classId?: NullableStringFieldUpdateOperationsInput | string | null
     teacherId?: NullableStringFieldUpdateOperationsInput | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -477136,6 +477768,9 @@ export namespace Prisma {
     keywords?: BookCreatekeywordsInput | string[]
     source?: string | null
     condition?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     coverUrl?: string | null
     pdfUrl?: string | null
     copies?: number
@@ -477144,6 +477779,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     category?: LibraryCategoryCreateNestedOneWithoutBooksInput
     subject?: SubjectCreateNestedOneWithoutBooksInput
+    syllabus?: SyllabusCreateNestedOneWithoutBooksInput
     class?: SchoolClassCreateNestedOneWithoutBooksInput
     teacher?: TeacherCreateNestedOneWithoutTextbooksInput
     loans?: BookLoanCreateNestedManyWithoutBookInput
@@ -477173,6 +477809,10 @@ export namespace Prisma {
     condition?: string | null
     categoryId?: string | null
     subjectId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     classId?: string | null
     teacherId?: string | null
     coverUrl?: string | null
@@ -478041,6 +478681,9 @@ export namespace Prisma {
     keywords?: BookUpdatekeywordsInput | string[]
     source?: NullableStringFieldUpdateOperationsInput | string | null
     condition?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     copies?: IntFieldUpdateOperationsInput | number
@@ -478049,6 +478692,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: LibraryCategoryUpdateOneWithoutBooksNestedInput
     subject?: SubjectUpdateOneWithoutBooksNestedInput
+    syllabus?: SyllabusUpdateOneWithoutBooksNestedInput
     class?: SchoolClassUpdateOneWithoutBooksNestedInput
     teacher?: TeacherUpdateOneWithoutTextbooksNestedInput
     loans?: BookLoanUpdateManyWithoutBookNestedInput
@@ -478078,6 +478722,10 @@ export namespace Prisma {
     condition?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     classId?: NullableStringFieldUpdateOperationsInput | string | null
     teacherId?: NullableStringFieldUpdateOperationsInput | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -479422,6 +480070,49 @@ export namespace Prisma {
     create: XOR<SubjectCreateWithoutLibraryDigitalResourcesInput, SubjectUncheckedCreateWithoutLibraryDigitalResourcesInput>
   }
 
+  export type SyllabusCreateWithoutDigitalResourcesInput = {
+    id?: string
+    form: string
+    level?: string | null
+    curriculum?: string
+    year?: number | null
+    totalHours?: number | null
+    status?: string
+    url?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    school: SchoolCreateNestedOneWithoutSyllabusesInput
+    subject: SubjectCreateNestedOneWithoutSyllabusesInput
+    uploadedBy?: UserCreateNestedOneWithoutUploadedSyllabusesInput
+    topics?: SyllabusTopicCreateNestedManyWithoutSyllabusInput
+    schemes?: SchemeOfWorkCreateNestedManyWithoutSyllabusInput
+    books?: BookCreateNestedManyWithoutSyllabusInput
+  }
+
+  export type SyllabusUncheckedCreateWithoutDigitalResourcesInput = {
+    id?: string
+    schoolId: string
+    subjectId: string
+    form: string
+    level?: string | null
+    curriculum?: string
+    year?: number | null
+    totalHours?: number | null
+    status?: string
+    url?: string | null
+    uploadedById?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    topics?: SyllabusTopicUncheckedCreateNestedManyWithoutSyllabusInput
+    schemes?: SchemeOfWorkUncheckedCreateNestedManyWithoutSyllabusInput
+    books?: BookUncheckedCreateNestedManyWithoutSyllabusInput
+  }
+
+  export type SyllabusCreateOrConnectWithoutDigitalResourcesInput = {
+    where: SyllabusWhereUniqueInput
+    create: XOR<SyllabusCreateWithoutDigitalResourcesInput, SyllabusUncheckedCreateWithoutDigitalResourcesInput>
+  }
+
   export type UserCreateWithoutLibraryDigitalResourcesInput = {
     id?: string
     email: string
@@ -480154,6 +480845,55 @@ export namespace Prisma {
     lessonPlans?: LessonPlanUncheckedUpdateManyWithoutSubjectNestedInput
     assessments?: AssessmentUncheckedUpdateManyWithoutSubjectNestedInput
     questionBanks?: QuestionBankUncheckedUpdateManyWithoutSubjectNestedInput
+  }
+
+  export type SyllabusUpsertWithoutDigitalResourcesInput = {
+    update: XOR<SyllabusUpdateWithoutDigitalResourcesInput, SyllabusUncheckedUpdateWithoutDigitalResourcesInput>
+    create: XOR<SyllabusCreateWithoutDigitalResourcesInput, SyllabusUncheckedCreateWithoutDigitalResourcesInput>
+    where?: SyllabusWhereInput
+  }
+
+  export type SyllabusUpdateToOneWithWhereWithoutDigitalResourcesInput = {
+    where?: SyllabusWhereInput
+    data: XOR<SyllabusUpdateWithoutDigitalResourcesInput, SyllabusUncheckedUpdateWithoutDigitalResourcesInput>
+  }
+
+  export type SyllabusUpdateWithoutDigitalResourcesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    form?: StringFieldUpdateOperationsInput | string
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: StringFieldUpdateOperationsInput | string
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    totalHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    school?: SchoolUpdateOneRequiredWithoutSyllabusesNestedInput
+    subject?: SubjectUpdateOneRequiredWithoutSyllabusesNestedInput
+    uploadedBy?: UserUpdateOneWithoutUploadedSyllabusesNestedInput
+    topics?: SyllabusTopicUpdateManyWithoutSyllabusNestedInput
+    schemes?: SchemeOfWorkUpdateManyWithoutSyllabusNestedInput
+    books?: BookUpdateManyWithoutSyllabusNestedInput
+  }
+
+  export type SyllabusUncheckedUpdateWithoutDigitalResourcesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    subjectId?: StringFieldUpdateOperationsInput | string
+    form?: StringFieldUpdateOperationsInput | string
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: StringFieldUpdateOperationsInput | string
+    year?: NullableIntFieldUpdateOperationsInput | number | null
+    totalHours?: NullableFloatFieldUpdateOperationsInput | number | null
+    status?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    uploadedById?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    topics?: SyllabusTopicUncheckedUpdateManyWithoutSyllabusNestedInput
+    schemes?: SchemeOfWorkUncheckedUpdateManyWithoutSyllabusNestedInput
+    books?: BookUncheckedUpdateManyWithoutSyllabusNestedInput
   }
 
   export type UserUpsertWithoutLibraryDigitalResourcesInput = {
@@ -598312,6 +599052,166 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type BookCreateWithoutSyllabusInput = {
+    id?: string
+    title: string
+    author: string
+    authors?: BookCreateauthorsInput | string[]
+    isbn?: string | null
+    isbn10?: string | null
+    isbn13?: string | null
+    edition?: string | null
+    publisher?: string | null
+    price?: number | null
+    publishedDate?: Date | string | null
+    description?: string | null
+    status?: string
+    shelfLocation?: string | null
+    barcode?: string | null
+    accessionNumber?: string | null
+    language?: string | null
+    keywords?: BookCreatekeywordsInput | string[]
+    source?: string | null
+    condition?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
+    coverUrl?: string | null
+    pdfUrl?: string | null
+    copies?: number
+    available?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    category?: LibraryCategoryCreateNestedOneWithoutBooksInput
+    subject?: SubjectCreateNestedOneWithoutBooksInput
+    class?: SchoolClassCreateNestedOneWithoutBooksInput
+    teacher?: TeacherCreateNestedOneWithoutTextbooksInput
+    loans?: BookLoanCreateNestedManyWithoutBookInput
+    reservations?: BookReservationCreateNestedManyWithoutBookInput
+    school: SchoolCreateNestedOneWithoutBooksInput
+  }
+
+  export type BookUncheckedCreateWithoutSyllabusInput = {
+    id?: string
+    title: string
+    author: string
+    authors?: BookCreateauthorsInput | string[]
+    isbn?: string | null
+    isbn10?: string | null
+    isbn13?: string | null
+    edition?: string | null
+    publisher?: string | null
+    price?: number | null
+    publishedDate?: Date | string | null
+    description?: string | null
+    status?: string
+    shelfLocation?: string | null
+    barcode?: string | null
+    accessionNumber?: string | null
+    language?: string | null
+    keywords?: BookCreatekeywordsInput | string[]
+    source?: string | null
+    condition?: string | null
+    categoryId?: string | null
+    subjectId?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
+    classId?: string | null
+    teacherId?: string | null
+    coverUrl?: string | null
+    pdfUrl?: string | null
+    copies?: number
+    available?: number
+    schoolId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    loans?: BookLoanUncheckedCreateNestedManyWithoutBookInput
+    reservations?: BookReservationUncheckedCreateNestedManyWithoutBookInput
+  }
+
+  export type BookCreateOrConnectWithoutSyllabusInput = {
+    where: BookWhereUniqueInput
+    create: XOR<BookCreateWithoutSyllabusInput, BookUncheckedCreateWithoutSyllabusInput>
+  }
+
+  export type BookCreateManySyllabusInputEnvelope = {
+    data: BookCreateManySyllabusInput | BookCreateManySyllabusInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type LibraryDigitalResourceCreateWithoutSyllabusInput = {
+    id?: string
+    title: string
+    author: string
+    resourceType: string
+    fileUrl?: string | null
+    externalLink?: string | null
+    fileFormat: string
+    curriculum?: string | null
+    level?: string | null
+    accessLevel?: string
+    yearPublished?: number | null
+    description?: string | null
+    keywords?: LibraryDigitalResourceCreatekeywordsInput | string[]
+    language?: string | null
+    thumbnailUrl?: string | null
+    fileSize?: bigint | number | null
+    licenseStatus?: string
+    permissionGranted?: boolean
+    downloadCount?: number
+    viewCount?: number
+    expiryDate?: Date | string | null
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    school: SchoolCreateNestedOneWithoutLibraryDigitalResourcesInput
+    category?: LibraryCategoryCreateNestedOneWithoutDigitalResourcesInput
+    subject?: SubjectCreateNestedOneWithoutLibraryDigitalResourcesInput
+    addedBy?: UserCreateNestedOneWithoutLibraryDigitalResourcesInput
+  }
+
+  export type LibraryDigitalResourceUncheckedCreateWithoutSyllabusInput = {
+    id?: string
+    schoolId: string
+    title: string
+    author: string
+    resourceType: string
+    fileUrl?: string | null
+    externalLink?: string | null
+    fileFormat: string
+    categoryId?: string | null
+    subjectId?: string | null
+    curriculum?: string | null
+    level?: string | null
+    accessLevel?: string
+    yearPublished?: number | null
+    description?: string | null
+    keywords?: LibraryDigitalResourceCreatekeywordsInput | string[]
+    language?: string | null
+    thumbnailUrl?: string | null
+    fileSize?: bigint | number | null
+    licenseStatus?: string
+    permissionGranted?: boolean
+    addedById?: string | null
+    downloadCount?: number
+    viewCount?: number
+    expiryDate?: Date | string | null
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type LibraryDigitalResourceCreateOrConnectWithoutSyllabusInput = {
+    where: LibraryDigitalResourceWhereUniqueInput
+    create: XOR<LibraryDigitalResourceCreateWithoutSyllabusInput, LibraryDigitalResourceUncheckedCreateWithoutSyllabusInput>
+  }
+
+  export type LibraryDigitalResourceCreateManySyllabusInputEnvelope = {
+    data: LibraryDigitalResourceCreateManySyllabusInput | LibraryDigitalResourceCreateManySyllabusInput[]
+    skipDuplicates?: boolean
+  }
+
   export type SchoolUpsertWithoutSyllabusesInput = {
     update: XOR<SchoolUpdateWithoutSyllabusesInput, SchoolUncheckedUpdateWithoutSyllabusesInput>
     create: XOR<SchoolCreateWithoutSyllabusesInput, SchoolUncheckedCreateWithoutSyllabusesInput>
@@ -599055,6 +599955,38 @@ export namespace Prisma {
     data: XOR<SchemeOfWorkUpdateManyMutationInput, SchemeOfWorkUncheckedUpdateManyWithoutSyllabusInput>
   }
 
+  export type BookUpsertWithWhereUniqueWithoutSyllabusInput = {
+    where: BookWhereUniqueInput
+    update: XOR<BookUpdateWithoutSyllabusInput, BookUncheckedUpdateWithoutSyllabusInput>
+    create: XOR<BookCreateWithoutSyllabusInput, BookUncheckedCreateWithoutSyllabusInput>
+  }
+
+  export type BookUpdateWithWhereUniqueWithoutSyllabusInput = {
+    where: BookWhereUniqueInput
+    data: XOR<BookUpdateWithoutSyllabusInput, BookUncheckedUpdateWithoutSyllabusInput>
+  }
+
+  export type BookUpdateManyWithWhereWithoutSyllabusInput = {
+    where: BookScalarWhereInput
+    data: XOR<BookUpdateManyMutationInput, BookUncheckedUpdateManyWithoutSyllabusInput>
+  }
+
+  export type LibraryDigitalResourceUpsertWithWhereUniqueWithoutSyllabusInput = {
+    where: LibraryDigitalResourceWhereUniqueInput
+    update: XOR<LibraryDigitalResourceUpdateWithoutSyllabusInput, LibraryDigitalResourceUncheckedUpdateWithoutSyllabusInput>
+    create: XOR<LibraryDigitalResourceCreateWithoutSyllabusInput, LibraryDigitalResourceUncheckedCreateWithoutSyllabusInput>
+  }
+
+  export type LibraryDigitalResourceUpdateWithWhereUniqueWithoutSyllabusInput = {
+    where: LibraryDigitalResourceWhereUniqueInput
+    data: XOR<LibraryDigitalResourceUpdateWithoutSyllabusInput, LibraryDigitalResourceUncheckedUpdateWithoutSyllabusInput>
+  }
+
+  export type LibraryDigitalResourceUpdateManyWithWhereWithoutSyllabusInput = {
+    where: LibraryDigitalResourceScalarWhereInput
+    data: XOR<LibraryDigitalResourceUpdateManyMutationInput, LibraryDigitalResourceUncheckedUpdateManyWithoutSyllabusInput>
+  }
+
   export type SyllabusCreateWithoutTopicsInput = {
     id?: string
     form: string
@@ -599070,6 +600002,8 @@ export namespace Prisma {
     subject: SubjectCreateNestedOneWithoutSyllabusesInput
     uploadedBy?: UserCreateNestedOneWithoutUploadedSyllabusesInput
     schemes?: SchemeOfWorkCreateNestedManyWithoutSyllabusInput
+    books?: BookCreateNestedManyWithoutSyllabusInput
+    digitalResources?: LibraryDigitalResourceCreateNestedManyWithoutSyllabusInput
   }
 
   export type SyllabusUncheckedCreateWithoutTopicsInput = {
@@ -599087,6 +600021,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     schemes?: SchemeOfWorkUncheckedCreateNestedManyWithoutSyllabusInput
+    books?: BookUncheckedCreateNestedManyWithoutSyllabusInput
+    digitalResources?: LibraryDigitalResourceUncheckedCreateNestedManyWithoutSyllabusInput
   }
 
   export type SyllabusCreateOrConnectWithoutTopicsInput = {
@@ -599525,6 +600461,8 @@ export namespace Prisma {
     subject?: SubjectUpdateOneRequiredWithoutSyllabusesNestedInput
     uploadedBy?: UserUpdateOneWithoutUploadedSyllabusesNestedInput
     schemes?: SchemeOfWorkUpdateManyWithoutSyllabusNestedInput
+    books?: BookUpdateManyWithoutSyllabusNestedInput
+    digitalResources?: LibraryDigitalResourceUpdateManyWithoutSyllabusNestedInput
   }
 
   export type SyllabusUncheckedUpdateWithoutTopicsInput = {
@@ -599542,6 +600480,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     schemes?: SchemeOfWorkUncheckedUpdateManyWithoutSyllabusNestedInput
+    books?: BookUncheckedUpdateManyWithoutSyllabusNestedInput
+    digitalResources?: LibraryDigitalResourceUncheckedUpdateManyWithoutSyllabusNestedInput
   }
 
   export type UserUpsertWithoutCoveredTopicsInput = {
@@ -600434,6 +601374,8 @@ export namespace Prisma {
     subject: SubjectCreateNestedOneWithoutSyllabusesInput
     uploadedBy?: UserCreateNestedOneWithoutUploadedSyllabusesInput
     topics?: SyllabusTopicCreateNestedManyWithoutSyllabusInput
+    books?: BookCreateNestedManyWithoutSyllabusInput
+    digitalResources?: LibraryDigitalResourceCreateNestedManyWithoutSyllabusInput
   }
 
   export type SyllabusUncheckedCreateWithoutSchemesInput = {
@@ -600451,6 +601393,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     topics?: SyllabusTopicUncheckedCreateNestedManyWithoutSyllabusInput
+    books?: BookUncheckedCreateNestedManyWithoutSyllabusInput
+    digitalResources?: LibraryDigitalResourceUncheckedCreateNestedManyWithoutSyllabusInput
   }
 
   export type SyllabusCreateOrConnectWithoutSchemesInput = {
@@ -601492,6 +602436,8 @@ export namespace Prisma {
     subject?: SubjectUpdateOneRequiredWithoutSyllabusesNestedInput
     uploadedBy?: UserUpdateOneWithoutUploadedSyllabusesNestedInput
     topics?: SyllabusTopicUpdateManyWithoutSyllabusNestedInput
+    books?: BookUpdateManyWithoutSyllabusNestedInput
+    digitalResources?: LibraryDigitalResourceUpdateManyWithoutSyllabusNestedInput
   }
 
   export type SyllabusUncheckedUpdateWithoutSchemesInput = {
@@ -601509,6 +602455,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     topics?: SyllabusTopicUncheckedUpdateManyWithoutSyllabusNestedInput
+    books?: BookUncheckedUpdateManyWithoutSyllabusNestedInput
+    digitalResources?: LibraryDigitalResourceUncheckedUpdateManyWithoutSyllabusNestedInput
   }
 
   export type SchoolClassUpsertWithoutSchemesOfWorkInput = {
@@ -655516,6 +656464,10 @@ export namespace Prisma {
     condition?: string | null
     categoryId?: string | null
     subjectId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     classId?: string | null
     teacherId?: string | null
     coverUrl?: string | null
@@ -655645,6 +656597,9 @@ export namespace Prisma {
     fileFormat: string
     categoryId?: string | null
     subjectId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
     accessLevel?: string
     yearPublished?: number | null
     description?: string | null
@@ -657496,6 +658451,8 @@ export namespace Prisma {
     uploadedBy?: UserUpdateOneWithoutUploadedSyllabusesNestedInput
     topics?: SyllabusTopicUpdateManyWithoutSyllabusNestedInput
     schemes?: SchemeOfWorkUpdateManyWithoutSyllabusNestedInput
+    books?: BookUpdateManyWithoutSyllabusNestedInput
+    digitalResources?: LibraryDigitalResourceUpdateManyWithoutSyllabusNestedInput
   }
 
   export type SyllabusUncheckedUpdateWithoutSchoolInput = {
@@ -657513,6 +658470,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     topics?: SyllabusTopicUncheckedUpdateManyWithoutSyllabusNestedInput
     schemes?: SchemeOfWorkUncheckedUpdateManyWithoutSyllabusNestedInput
+    books?: BookUncheckedUpdateManyWithoutSyllabusNestedInput
+    digitalResources?: LibraryDigitalResourceUncheckedUpdateManyWithoutSyllabusNestedInput
   }
 
   export type SyllabusUncheckedUpdateManyWithoutSchoolInput = {
@@ -659408,6 +660367,9 @@ export namespace Prisma {
     keywords?: BookUpdatekeywordsInput | string[]
     source?: NullableStringFieldUpdateOperationsInput | string | null
     condition?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     copies?: IntFieldUpdateOperationsInput | number
@@ -659416,6 +660378,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: LibraryCategoryUpdateOneWithoutBooksNestedInput
     subject?: SubjectUpdateOneWithoutBooksNestedInput
+    syllabus?: SyllabusUpdateOneWithoutBooksNestedInput
     class?: SchoolClassUpdateOneWithoutBooksNestedInput
     teacher?: TeacherUpdateOneWithoutTextbooksNestedInput
     loans?: BookLoanUpdateManyWithoutBookNestedInput
@@ -659445,6 +660408,10 @@ export namespace Prisma {
     condition?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     classId?: NullableStringFieldUpdateOperationsInput | string | null
     teacherId?: NullableStringFieldUpdateOperationsInput | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -659480,6 +660447,10 @@ export namespace Prisma {
     condition?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     classId?: NullableStringFieldUpdateOperationsInput | string | null
     teacherId?: NullableStringFieldUpdateOperationsInput | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -659833,6 +660804,8 @@ export namespace Prisma {
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     externalLink?: NullableStringFieldUpdateOperationsInput | string | null
     fileFormat?: StringFieldUpdateOperationsInput | string
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
     accessLevel?: StringFieldUpdateOperationsInput | string
     yearPublished?: NullableIntFieldUpdateOperationsInput | number | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -659850,6 +660823,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: LibraryCategoryUpdateOneWithoutDigitalResourcesNestedInput
     subject?: SubjectUpdateOneWithoutLibraryDigitalResourcesNestedInput
+    syllabus?: SyllabusUpdateOneWithoutDigitalResourcesNestedInput
     addedBy?: UserUpdateOneWithoutLibraryDigitalResourcesNestedInput
   }
 
@@ -659863,6 +660837,9 @@ export namespace Prisma {
     fileFormat?: StringFieldUpdateOperationsInput | string
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
     accessLevel?: StringFieldUpdateOperationsInput | string
     yearPublished?: NullableIntFieldUpdateOperationsInput | number | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -659891,6 +660868,9 @@ export namespace Prisma {
     fileFormat?: StringFieldUpdateOperationsInput | string
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
     accessLevel?: StringFieldUpdateOperationsInput | string
     yearPublished?: NullableIntFieldUpdateOperationsInput | number | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -666189,6 +667169,9 @@ export namespace Prisma {
     fileFormat: string
     categoryId?: string | null
     subjectId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
     accessLevel?: string
     yearPublished?: number | null
     description?: string | null
@@ -667503,6 +668486,8 @@ export namespace Prisma {
     subject?: SubjectUpdateOneRequiredWithoutSyllabusesNestedInput
     topics?: SyllabusTopicUpdateManyWithoutSyllabusNestedInput
     schemes?: SchemeOfWorkUpdateManyWithoutSyllabusNestedInput
+    books?: BookUpdateManyWithoutSyllabusNestedInput
+    digitalResources?: LibraryDigitalResourceUpdateManyWithoutSyllabusNestedInput
   }
 
   export type SyllabusUncheckedUpdateWithoutUploadedByInput = {
@@ -667520,6 +668505,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     topics?: SyllabusTopicUncheckedUpdateManyWithoutSyllabusNestedInput
     schemes?: SchemeOfWorkUncheckedUpdateManyWithoutSyllabusNestedInput
+    books?: BookUncheckedUpdateManyWithoutSyllabusNestedInput
+    digitalResources?: LibraryDigitalResourceUncheckedUpdateManyWithoutSyllabusNestedInput
   }
 
   export type SyllabusUncheckedUpdateManyWithoutUploadedByInput = {
@@ -667997,6 +668984,8 @@ export namespace Prisma {
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     externalLink?: NullableStringFieldUpdateOperationsInput | string | null
     fileFormat?: StringFieldUpdateOperationsInput | string
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
     accessLevel?: StringFieldUpdateOperationsInput | string
     yearPublished?: NullableIntFieldUpdateOperationsInput | number | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -668015,6 +669004,7 @@ export namespace Prisma {
     school?: SchoolUpdateOneRequiredWithoutLibraryDigitalResourcesNestedInput
     category?: LibraryCategoryUpdateOneWithoutDigitalResourcesNestedInput
     subject?: SubjectUpdateOneWithoutLibraryDigitalResourcesNestedInput
+    syllabus?: SyllabusUpdateOneWithoutDigitalResourcesNestedInput
   }
 
   export type LibraryDigitalResourceUncheckedUpdateWithoutAddedByInput = {
@@ -668028,6 +669018,9 @@ export namespace Prisma {
     fileFormat?: StringFieldUpdateOperationsInput | string
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
     accessLevel?: StringFieldUpdateOperationsInput | string
     yearPublished?: NullableIntFieldUpdateOperationsInput | number | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -668056,6 +669049,9 @@ export namespace Prisma {
     fileFormat?: StringFieldUpdateOperationsInput | string
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
     accessLevel?: StringFieldUpdateOperationsInput | string
     yearPublished?: NullableIntFieldUpdateOperationsInput | number | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -672229,6 +673225,10 @@ export namespace Prisma {
     condition?: string | null
     categoryId?: string | null
     subjectId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     classId?: string | null
     coverUrl?: string | null
     pdfUrl?: string | null
@@ -672809,6 +673809,9 @@ export namespace Prisma {
     keywords?: BookUpdatekeywordsInput | string[]
     source?: NullableStringFieldUpdateOperationsInput | string | null
     condition?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     copies?: IntFieldUpdateOperationsInput | number
@@ -672817,6 +673820,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: LibraryCategoryUpdateOneWithoutBooksNestedInput
     subject?: SubjectUpdateOneWithoutBooksNestedInput
+    syllabus?: SyllabusUpdateOneWithoutBooksNestedInput
     class?: SchoolClassUpdateOneWithoutBooksNestedInput
     loans?: BookLoanUpdateManyWithoutBookNestedInput
     reservations?: BookReservationUpdateManyWithoutBookNestedInput
@@ -672846,6 +673850,10 @@ export namespace Prisma {
     condition?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     classId?: NullableStringFieldUpdateOperationsInput | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -672881,6 +673889,10 @@ export namespace Prisma {
     condition?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     classId?: NullableStringFieldUpdateOperationsInput | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -675851,6 +676863,10 @@ export namespace Prisma {
     condition?: string | null
     categoryId?: string | null
     subjectId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     teacherId?: string | null
     coverUrl?: string | null
     pdfUrl?: string | null
@@ -676514,6 +677530,9 @@ export namespace Prisma {
     keywords?: BookUpdatekeywordsInput | string[]
     source?: NullableStringFieldUpdateOperationsInput | string | null
     condition?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     copies?: IntFieldUpdateOperationsInput | number
@@ -676522,6 +677541,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: LibraryCategoryUpdateOneWithoutBooksNestedInput
     subject?: SubjectUpdateOneWithoutBooksNestedInput
+    syllabus?: SyllabusUpdateOneWithoutBooksNestedInput
     teacher?: TeacherUpdateOneWithoutTextbooksNestedInput
     loans?: BookLoanUpdateManyWithoutBookNestedInput
     reservations?: BookReservationUpdateManyWithoutBookNestedInput
@@ -676551,6 +677571,10 @@ export namespace Prisma {
     condition?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     teacherId?: NullableStringFieldUpdateOperationsInput | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -676586,6 +677610,10 @@ export namespace Prisma {
     condition?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     teacherId?: NullableStringFieldUpdateOperationsInput | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -677593,6 +678621,9 @@ export namespace Prisma {
     externalLink?: string | null
     fileFormat: string
     categoryId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
     accessLevel?: string
     yearPublished?: number | null
     description?: string | null
@@ -677633,6 +678664,10 @@ export namespace Prisma {
     source?: string | null
     condition?: string | null
     categoryId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     classId?: string | null
     teacherId?: string | null
     coverUrl?: string | null
@@ -677802,6 +678837,8 @@ export namespace Prisma {
     uploadedBy?: UserUpdateOneWithoutUploadedSyllabusesNestedInput
     topics?: SyllabusTopicUpdateManyWithoutSyllabusNestedInput
     schemes?: SchemeOfWorkUpdateManyWithoutSyllabusNestedInput
+    books?: BookUpdateManyWithoutSyllabusNestedInput
+    digitalResources?: LibraryDigitalResourceUpdateManyWithoutSyllabusNestedInput
   }
 
   export type SyllabusUncheckedUpdateWithoutSubjectInput = {
@@ -677819,6 +678856,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     topics?: SyllabusTopicUncheckedUpdateManyWithoutSyllabusNestedInput
     schemes?: SchemeOfWorkUncheckedUpdateManyWithoutSyllabusNestedInput
+    books?: BookUncheckedUpdateManyWithoutSyllabusNestedInput
+    digitalResources?: LibraryDigitalResourceUncheckedUpdateManyWithoutSyllabusNestedInput
   }
 
   export type SyllabusUncheckedUpdateManyWithoutSubjectInput = {
@@ -678183,6 +679222,8 @@ export namespace Prisma {
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     externalLink?: NullableStringFieldUpdateOperationsInput | string | null
     fileFormat?: StringFieldUpdateOperationsInput | string
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
     accessLevel?: StringFieldUpdateOperationsInput | string
     yearPublished?: NullableIntFieldUpdateOperationsInput | number | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -678200,6 +679241,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     school?: SchoolUpdateOneRequiredWithoutLibraryDigitalResourcesNestedInput
     category?: LibraryCategoryUpdateOneWithoutDigitalResourcesNestedInput
+    syllabus?: SyllabusUpdateOneWithoutDigitalResourcesNestedInput
     addedBy?: UserUpdateOneWithoutLibraryDigitalResourcesNestedInput
   }
 
@@ -678213,6 +679255,9 @@ export namespace Prisma {
     externalLink?: NullableStringFieldUpdateOperationsInput | string | null
     fileFormat?: StringFieldUpdateOperationsInput | string
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
     accessLevel?: StringFieldUpdateOperationsInput | string
     yearPublished?: NullableIntFieldUpdateOperationsInput | number | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -678241,6 +679286,9 @@ export namespace Prisma {
     externalLink?: NullableStringFieldUpdateOperationsInput | string | null
     fileFormat?: StringFieldUpdateOperationsInput | string
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
     accessLevel?: StringFieldUpdateOperationsInput | string
     yearPublished?: NullableIntFieldUpdateOperationsInput | number | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -678280,6 +679328,9 @@ export namespace Prisma {
     keywords?: BookUpdatekeywordsInput | string[]
     source?: NullableStringFieldUpdateOperationsInput | string | null
     condition?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     copies?: IntFieldUpdateOperationsInput | number
@@ -678287,6 +679338,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     category?: LibraryCategoryUpdateOneWithoutBooksNestedInput
+    syllabus?: SyllabusUpdateOneWithoutBooksNestedInput
     class?: SchoolClassUpdateOneWithoutBooksNestedInput
     teacher?: TeacherUpdateOneWithoutTextbooksNestedInput
     loans?: BookLoanUpdateManyWithoutBookNestedInput
@@ -678316,6 +679368,10 @@ export namespace Prisma {
     source?: NullableStringFieldUpdateOperationsInput | string | null
     condition?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     classId?: NullableStringFieldUpdateOperationsInput | string | null
     teacherId?: NullableStringFieldUpdateOperationsInput | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -678351,6 +679407,10 @@ export namespace Prisma {
     source?: NullableStringFieldUpdateOperationsInput | string | null
     condition?: NullableStringFieldUpdateOperationsInput | string | null
     categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     classId?: NullableStringFieldUpdateOperationsInput | string | null
     teacherId?: NullableStringFieldUpdateOperationsInput | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -680587,6 +681647,10 @@ export namespace Prisma {
     source?: string | null
     condition?: string | null
     subjectId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
     classId?: string | null
     teacherId?: string | null
     coverUrl?: string | null
@@ -680608,6 +681672,9 @@ export namespace Prisma {
     externalLink?: string | null
     fileFormat: string
     subjectId?: string | null
+    syllabusId?: string | null
+    curriculum?: string | null
+    level?: string | null
     accessLevel?: string
     yearPublished?: number | null
     description?: string | null
@@ -680647,6 +681714,9 @@ export namespace Prisma {
     keywords?: BookUpdatekeywordsInput | string[]
     source?: NullableStringFieldUpdateOperationsInput | string | null
     condition?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
     pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
     copies?: IntFieldUpdateOperationsInput | number
@@ -680654,6 +681724,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     subject?: SubjectUpdateOneWithoutBooksNestedInput
+    syllabus?: SyllabusUpdateOneWithoutBooksNestedInput
     class?: SchoolClassUpdateOneWithoutBooksNestedInput
     teacher?: TeacherUpdateOneWithoutTextbooksNestedInput
     loans?: BookLoanUpdateManyWithoutBookNestedInput
@@ -680683,6 +681754,10 @@ export namespace Prisma {
     source?: NullableStringFieldUpdateOperationsInput | string | null
     condition?: NullableStringFieldUpdateOperationsInput | string | null
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     classId?: NullableStringFieldUpdateOperationsInput | string | null
     teacherId?: NullableStringFieldUpdateOperationsInput | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -680718,6 +681793,10 @@ export namespace Prisma {
     source?: NullableStringFieldUpdateOperationsInput | string | null
     condition?: NullableStringFieldUpdateOperationsInput | string | null
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
     classId?: NullableStringFieldUpdateOperationsInput | string | null
     teacherId?: NullableStringFieldUpdateOperationsInput | string | null
     coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -680737,6 +681816,8 @@ export namespace Prisma {
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
     externalLink?: NullableStringFieldUpdateOperationsInput | string | null
     fileFormat?: StringFieldUpdateOperationsInput | string
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
     accessLevel?: StringFieldUpdateOperationsInput | string
     yearPublished?: NullableIntFieldUpdateOperationsInput | number | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -680754,6 +681835,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     school?: SchoolUpdateOneRequiredWithoutLibraryDigitalResourcesNestedInput
     subject?: SubjectUpdateOneWithoutLibraryDigitalResourcesNestedInput
+    syllabus?: SyllabusUpdateOneWithoutDigitalResourcesNestedInput
     addedBy?: UserUpdateOneWithoutLibraryDigitalResourcesNestedInput
   }
 
@@ -680767,6 +681849,9 @@ export namespace Prisma {
     externalLink?: NullableStringFieldUpdateOperationsInput | string | null
     fileFormat?: StringFieldUpdateOperationsInput | string
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
     accessLevel?: StringFieldUpdateOperationsInput | string
     yearPublished?: NullableIntFieldUpdateOperationsInput | number | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -680795,6 +681880,9 @@ export namespace Prisma {
     externalLink?: NullableStringFieldUpdateOperationsInput | string | null
     fileFormat?: StringFieldUpdateOperationsInput | string
     subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    syllabusId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
     accessLevel?: StringFieldUpdateOperationsInput | string
     yearPublished?: NullableIntFieldUpdateOperationsInput | number | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
@@ -686474,6 +687562,74 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type BookCreateManySyllabusInput = {
+    id?: string
+    title: string
+    author: string
+    authors?: BookCreateauthorsInput | string[]
+    isbn?: string | null
+    isbn10?: string | null
+    isbn13?: string | null
+    edition?: string | null
+    publisher?: string | null
+    price?: number | null
+    publishedDate?: Date | string | null
+    description?: string | null
+    status?: string
+    shelfLocation?: string | null
+    barcode?: string | null
+    accessionNumber?: string | null
+    language?: string | null
+    keywords?: BookCreatekeywordsInput | string[]
+    source?: string | null
+    condition?: string | null
+    categoryId?: string | null
+    subjectId?: string | null
+    curriculum?: string | null
+    level?: string | null
+    topics?: BookCreatetopicsInput | string[]
+    classId?: string | null
+    teacherId?: string | null
+    coverUrl?: string | null
+    pdfUrl?: string | null
+    copies?: number
+    available?: number
+    schoolId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type LibraryDigitalResourceCreateManySyllabusInput = {
+    id?: string
+    schoolId: string
+    title: string
+    author: string
+    resourceType: string
+    fileUrl?: string | null
+    externalLink?: string | null
+    fileFormat: string
+    categoryId?: string | null
+    subjectId?: string | null
+    curriculum?: string | null
+    level?: string | null
+    accessLevel?: string
+    yearPublished?: number | null
+    description?: string | null
+    keywords?: LibraryDigitalResourceCreatekeywordsInput | string[]
+    language?: string | null
+    thumbnailUrl?: string | null
+    fileSize?: bigint | number | null
+    licenseStatus?: string
+    permissionGranted?: boolean
+    addedById?: string | null
+    downloadCount?: number
+    viewCount?: number
+    expiryDate?: Date | string | null
+    status?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type SyllabusTopicUpdateWithoutSyllabusInput = {
     id?: StringFieldUpdateOperationsInput | string
     code?: NullableStringFieldUpdateOperationsInput | string | null
@@ -686599,6 +687755,214 @@ export namespace Prisma {
     classId?: NullableStringFieldUpdateOperationsInput | string | null
     hodApprovedById?: NullableStringFieldUpdateOperationsInput | string | null
     hodApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BookUpdateWithoutSyllabusInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    author?: StringFieldUpdateOperationsInput | string
+    authors?: BookUpdateauthorsInput | string[]
+    isbn?: NullableStringFieldUpdateOperationsInput | string | null
+    isbn10?: NullableStringFieldUpdateOperationsInput | string | null
+    isbn13?: NullableStringFieldUpdateOperationsInput | string | null
+    edition?: NullableStringFieldUpdateOperationsInput | string | null
+    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableFloatFieldUpdateOperationsInput | number | null
+    publishedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    shelfLocation?: NullableStringFieldUpdateOperationsInput | string | null
+    barcode?: NullableStringFieldUpdateOperationsInput | string | null
+    accessionNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    keywords?: BookUpdatekeywordsInput | string[]
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
+    coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    copies?: IntFieldUpdateOperationsInput | number
+    available?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: LibraryCategoryUpdateOneWithoutBooksNestedInput
+    subject?: SubjectUpdateOneWithoutBooksNestedInput
+    class?: SchoolClassUpdateOneWithoutBooksNestedInput
+    teacher?: TeacherUpdateOneWithoutTextbooksNestedInput
+    loans?: BookLoanUpdateManyWithoutBookNestedInput
+    reservations?: BookReservationUpdateManyWithoutBookNestedInput
+    school?: SchoolUpdateOneRequiredWithoutBooksNestedInput
+  }
+
+  export type BookUncheckedUpdateWithoutSyllabusInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    author?: StringFieldUpdateOperationsInput | string
+    authors?: BookUpdateauthorsInput | string[]
+    isbn?: NullableStringFieldUpdateOperationsInput | string | null
+    isbn10?: NullableStringFieldUpdateOperationsInput | string | null
+    isbn13?: NullableStringFieldUpdateOperationsInput | string | null
+    edition?: NullableStringFieldUpdateOperationsInput | string | null
+    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableFloatFieldUpdateOperationsInput | number | null
+    publishedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    shelfLocation?: NullableStringFieldUpdateOperationsInput | string | null
+    barcode?: NullableStringFieldUpdateOperationsInput | string | null
+    accessionNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    keywords?: BookUpdatekeywordsInput | string[]
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
+    classId?: NullableStringFieldUpdateOperationsInput | string | null
+    teacherId?: NullableStringFieldUpdateOperationsInput | string | null
+    coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    copies?: IntFieldUpdateOperationsInput | number
+    available?: IntFieldUpdateOperationsInput | number
+    schoolId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    loans?: BookLoanUncheckedUpdateManyWithoutBookNestedInput
+    reservations?: BookReservationUncheckedUpdateManyWithoutBookNestedInput
+  }
+
+  export type BookUncheckedUpdateManyWithoutSyllabusInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    author?: StringFieldUpdateOperationsInput | string
+    authors?: BookUpdateauthorsInput | string[]
+    isbn?: NullableStringFieldUpdateOperationsInput | string | null
+    isbn10?: NullableStringFieldUpdateOperationsInput | string | null
+    isbn13?: NullableStringFieldUpdateOperationsInput | string | null
+    edition?: NullableStringFieldUpdateOperationsInput | string | null
+    publisher?: NullableStringFieldUpdateOperationsInput | string | null
+    price?: NullableFloatFieldUpdateOperationsInput | number | null
+    publishedDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    shelfLocation?: NullableStringFieldUpdateOperationsInput | string | null
+    barcode?: NullableStringFieldUpdateOperationsInput | string | null
+    accessionNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    keywords?: BookUpdatekeywordsInput | string[]
+    source?: NullableStringFieldUpdateOperationsInput | string | null
+    condition?: NullableStringFieldUpdateOperationsInput | string | null
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    topics?: BookUpdatetopicsInput | string[]
+    classId?: NullableStringFieldUpdateOperationsInput | string | null
+    teacherId?: NullableStringFieldUpdateOperationsInput | string | null
+    coverUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    pdfUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    copies?: IntFieldUpdateOperationsInput | number
+    available?: IntFieldUpdateOperationsInput | number
+    schoolId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LibraryDigitalResourceUpdateWithoutSyllabusInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    author?: StringFieldUpdateOperationsInput | string
+    resourceType?: StringFieldUpdateOperationsInput | string
+    fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    externalLink?: NullableStringFieldUpdateOperationsInput | string | null
+    fileFormat?: StringFieldUpdateOperationsInput | string
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    accessLevel?: StringFieldUpdateOperationsInput | string
+    yearPublished?: NullableIntFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    keywords?: LibraryDigitalResourceUpdatekeywordsInput | string[]
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    thumbnailUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    fileSize?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    licenseStatus?: StringFieldUpdateOperationsInput | string
+    permissionGranted?: BoolFieldUpdateOperationsInput | boolean
+    downloadCount?: IntFieldUpdateOperationsInput | number
+    viewCount?: IntFieldUpdateOperationsInput | number
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    school?: SchoolUpdateOneRequiredWithoutLibraryDigitalResourcesNestedInput
+    category?: LibraryCategoryUpdateOneWithoutDigitalResourcesNestedInput
+    subject?: SubjectUpdateOneWithoutLibraryDigitalResourcesNestedInput
+    addedBy?: UserUpdateOneWithoutLibraryDigitalResourcesNestedInput
+  }
+
+  export type LibraryDigitalResourceUncheckedUpdateWithoutSyllabusInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    author?: StringFieldUpdateOperationsInput | string
+    resourceType?: StringFieldUpdateOperationsInput | string
+    fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    externalLink?: NullableStringFieldUpdateOperationsInput | string | null
+    fileFormat?: StringFieldUpdateOperationsInput | string
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    accessLevel?: StringFieldUpdateOperationsInput | string
+    yearPublished?: NullableIntFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    keywords?: LibraryDigitalResourceUpdatekeywordsInput | string[]
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    thumbnailUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    fileSize?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    licenseStatus?: StringFieldUpdateOperationsInput | string
+    permissionGranted?: BoolFieldUpdateOperationsInput | boolean
+    addedById?: NullableStringFieldUpdateOperationsInput | string | null
+    downloadCount?: IntFieldUpdateOperationsInput | number
+    viewCount?: IntFieldUpdateOperationsInput | number
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LibraryDigitalResourceUncheckedUpdateManyWithoutSyllabusInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    author?: StringFieldUpdateOperationsInput | string
+    resourceType?: StringFieldUpdateOperationsInput | string
+    fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    externalLink?: NullableStringFieldUpdateOperationsInput | string | null
+    fileFormat?: StringFieldUpdateOperationsInput | string
+    categoryId?: NullableStringFieldUpdateOperationsInput | string | null
+    subjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    curriculum?: NullableStringFieldUpdateOperationsInput | string | null
+    level?: NullableStringFieldUpdateOperationsInput | string | null
+    accessLevel?: StringFieldUpdateOperationsInput | string
+    yearPublished?: NullableIntFieldUpdateOperationsInput | number | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    keywords?: LibraryDigitalResourceUpdatekeywordsInput | string[]
+    language?: NullableStringFieldUpdateOperationsInput | string | null
+    thumbnailUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    fileSize?: NullableBigIntFieldUpdateOperationsInput | bigint | number | null
+    licenseStatus?: StringFieldUpdateOperationsInput | string
+    permissionGranted?: BoolFieldUpdateOperationsInput | boolean
+    addedById?: NullableStringFieldUpdateOperationsInput | string | null
+    downloadCount?: IntFieldUpdateOperationsInput | number
+    viewCount?: IntFieldUpdateOperationsInput | number
+    expiryDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
