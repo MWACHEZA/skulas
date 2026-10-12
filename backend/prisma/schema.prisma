@@ -247,6 +247,14 @@ model School {
   staffAttendanceDailies StaffAttendanceDaily[]
   biometricRawLogs     BiometricRawLog[]
   hrTardinessLogs      HrTardinessLog[]
+  schemeItems          SchemeItem[]
+  lessonPlanResources  LessonPlanResource[]
+  assessmentTypes      AssessmentType[]
+  assessments          Assessment[]
+  assessmentQuestions  AssessmentQuestion[]
+  questionBanks        QuestionBank[]
+  examTimetables       ExamTimetable[]
+  studentAssessments   StudentAssessment[]
 
   @@index([code])
 }
@@ -602,6 +610,13 @@ model User {
   parentTripConsents      TripConsent[]             @relation("ParentTripConsents")
   parentMedicalConsents   MedicalConsent[]          @relation("ParentMedicalConsents")
 
+  schemesHodApproved      SchemeOfWork[]            @relation("SchemeHodApprover")
+  lessonPlansHodReviewed  LessonPlan[]              @relation("LessonPlanHodReviewer")
+  assessmentsCreated      Assessment[]              @relation("AssessmentCreatedBy")
+  assessmentsModerated    Assessment[]              @relation("AssessmentModeratedBy")
+  questionBankCreated     QuestionBank[]            @relation("QuestionBankCreatedBy")
+  assessmentsMarked       StudentAssessment[]       @relation("AssessmentMarker")
+
   @@index([schoolId])
 }
 
@@ -645,6 +660,9 @@ model Teacher {
   questionPapers QuestionPaper[]
   houseMastered  StudentHouse[]         @relation("HouseMaster")
   textbooks      Book[]
+  coverLessonPlans    LessonPlan[]       @relation("CoverTeacher")
+  authoredLessonPlans LessonPlan[]       @relation("LessonPlanTeacher")
+  invigilatedExams    ExamTimetable[]    @relation("ExamInvigilator")
   createdAt      DateTime               @default(now())
   updatedAt      DateTime               @updatedAt
 
@@ -675,6 +693,7 @@ model Student {
   bookReservations  BookReservation[]
   submissions       AssignmentSubmission[]
   courseEnrollments CourseEnrollment[]
+  studentAssessments StudentAssessment[]
 
   leadershipAssignments LeadershipAssignment[]
   studentRequisitions   Requisition[]          @relation("StudentRequisitions")
@@ -801,6 +820,10 @@ model SchoolClass {
   announcements       Announcement[]
   cbtExams            CbtExam[]
   attendanceSessions  AttendanceSession[]
+  schemesOfWork       SchemeOfWork[]
+  lessonPlans         LessonPlan[]
+  assessments         Assessment[]
+  examTimetables      ExamTimetable[]
 
   @@unique([schoolId, name])
   @@index([schoolId])
@@ -855,6 +878,9 @@ model Subject {
   StudyMaterial  StudyMaterial[]
   questions      Question[]
   cbtExams       CbtExam[]
+  lessonPlans    LessonPlan[]
+  assessments    Assessment[]
+  questionBanks  QuestionBank[]
 
   @@index([schoolId])
 }
@@ -4690,17 +4716,24 @@ model Syllabus {
   subjectId    String
   subject      Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
   form         String
+  level        String? // e.g. O-Level, A-Level, Primary
+  curriculum   String  @default("ZIMSEC") // ZIMSEC, Cambridge, National
+  year         Int?
+  totalHours   Float?
+  status       String  @default("active")
   url          String?
   uploadedById String?
   uploadedBy   User?   @relation("SyllabusUploader", fields: [uploadedById], references: [id])
 
-  topics SyllabusTopic[]
+  topics  SyllabusTopic[]
+  schemes SchemeOfWork[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([schoolId])
   @@index([subjectId])
+  @@map("syllabi")
 }
 
 model SyllabusTopic {
@@ -4709,23 +4742,33 @@ model SyllabusTopic {
   syllabus     Syllabus  @relation(fields: [syllabusId], references: [id], onDelete: Cascade)
   code         String?
   topic        String
+  term         Int?      @default(1)
+  week         Int?
   expectedWeek Int?
-  objectives   String?
+  topicTitle   String?
+  objectives   String?   @db.Text
+  content      String?   @db.Text
+  competencies String?   @db.Text
+  hours        Float?
+  status       String    @default("pending") // pending, in_progress, covered
   isCovered    Boolean   @default(false)
   coveredAt    DateTime?
   coveredById  String?
   coveredBy    User?     @relation("SyllabusCoveredBy", fields: [coveredById], references: [id])
 
-  schemes SchemeOfWork[]
+  schemes             SchemeOfWork[]
+  schemeItems         SchemeItem[]
+  questions           QuestionBank[]
+  assessmentQuestions AssessmentQuestion[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([syllabusId])
+  @@map("syllabus_topics")
 }
 
 model SchemeOfWork {
-  lessonPlans     LessonPlan[]
   id              String        @id @default(cuid())
   schoolId        String
   school          School        @relation(fields: [schoolId], references: [id], onDelete: Cascade)
@@ -4736,10 +4779,22 @@ model SchemeOfWork {
   form            String
   term            Int
   year            Int
-  status          String        @default("draft") // draft/pending/approved/rejected
+  status          String        @default("draft") // draft/hod_approved/locked/rejected
   comments        String?
-  syllabusTopicId String
-  syllabusTopic   SyllabusTopic @relation(fields: [syllabusTopicId], references: [id])
+  rejectionReason String?
+  syllabusTopicId String?
+  syllabusTopic   SyllabusTopic? @relation(fields: [syllabusTopicId], references: [id])
+
+  syllabusId      String?
+  syllabus        Syllabus?     @relation(fields: [syllabusId], references: [id], onDelete: Cascade)
+  classId         String?
+  schoolClass     SchoolClass?  @relation(fields: [classId], references: [id])
+  hodApprovedById String?
+  hodApprovedBy   User?         @relation("SchemeHodApprover", fields: [hodApprovedById], references: [id])
+  hodApprovedAt   DateTime?
+
+  items       SchemeItem[]
+  lessonPlans LessonPlan[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -4747,28 +4802,276 @@ model SchemeOfWork {
   @@index([schoolId])
   @@index([teacherId])
   @@index([subjectId])
+  @@map("schemes_of_work")
 }
 
-model LessonPlan {
-  id              String       @id @default(cuid())
-  schoolId        String
-  school          School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  schemeId        String
-  scheme          SchemeOfWork @relation(fields: [schemeId], references: [id], onDelete: Cascade)
-  date            DateTime
-  objectives      String?
-  flow            String?
-  resources       String?
-  assessment      String?
-  homework        String?
-  differentiation String?
-  reflection      String?
+model SchemeItem {
+  id               String        @id @default(cuid())
+  schoolId         String
+  school           School        @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  schemeId         String
+  scheme           SchemeOfWork  @relation(fields: [schemeId], references: [id], onDelete: Cascade)
+  syllabusTopicId  String?
+  syllabusTopic    SyllabusTopic? @relation(fields: [syllabusTopicId], references: [id])
+  week             Int
+  plannedDate      DateTime?
+  periodsRequired  Int           @default(1)
+  subTopic         String?
+  activities       String?       @db.Text
+  resources        String?
+  assessmentMethod String?
+  status           String        @default("planned") // planned, taught, missed, deferred
+
+  lessonPlans LessonPlan[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([schoolId])
   @@index([schemeId])
+  @@map("scheme_items")
+}
+
+model LessonPlan {
+  id              String        @id @default(cuid())
+  schoolId        String
+  school          School        @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  schemeId        String?
+  scheme          SchemeOfWork? @relation(fields: [schemeId], references: [id], onDelete: Cascade)
+  schemeItemId    String?
+  schemeItem      SchemeItem?   @relation(fields: [schemeItemId], references: [id], onDelete: Cascade)
+  teacherId       String?
+  teacher         Teacher?      @relation("LessonPlanTeacher", fields: [teacherId], references: [id])
+  classId         String?
+  schoolClass     SchoolClass?  @relation(fields: [classId], references: [id])
+  subjectId       String?
+  subject         Subject?      @relation(fields: [subjectId], references: [id])
+  date            DateTime
+  period          Int?          @default(1)
+  objectives      String?       @db.Text
+  flow            String?       @db.Text
+  resources       String?       @db.Text
+  assessment      String?       @db.Text
+  homework        String?       @db.Text
+  differentiation String?       @db.Text
+  reflection      String?       @db.Text
+
+  // Pedagogical flow:
+  introduction String? @db.Text
+  development  String? @db.Text
+  conclusion   String? @db.Text
+  aids         String? @db.Text
+  evaluation   String? @db.Text
+
+  status         String   @default("draft") // draft, submitted, hod_reviewed, taught, missed
+  missedReason   String?  @db.Text
+  coverTeacherId String?
+  coverTeacher   Teacher? @relation("CoverTeacher", fields: [coverTeacherId], references: [id])
+
+  hodReviewedById String?
+  hodReviewedBy   User?     @relation("LessonPlanHodReviewer", fields: [hodReviewedById], references: [id])
+  hodReviewedAt   DateTime?
+  hodFeedback     String?   @db.Text
+
+  resourcesList LessonPlanResource[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([schoolId])
+  @@index([schemeId])
+  @@index([teacherId])
+  @@map("lesson_plans")
+}
+
+model LessonPlanResource {
+  id           String     @id @default(cuid())
+  schoolId     String
+  school       School     @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  lessonPlanId String
+  lessonPlan   LessonPlan @relation(fields: [lessonPlanId], references: [id], onDelete: Cascade)
+  title        String
+  url          String
+  fileType     String?
+  createdAt    DateTime   @default(now())
+
+  @@index([schoolId])
+  @@index([lessonPlanId])
+  @@map("lesson_plan_resources")
+}
+
+model AssessmentType {
+  id            String       @id @default(cuid())
+  schoolId      String
+  school        School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  name          String
+  weightDefault Float        @default(20)
+  isExam        Boolean      @default(false)
+  category      String       @default("CA") // "CA" or "EXAM"
+  description   String?
+  assessments   Assessment[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@unique([schoolId, name])
+  @@index([schoolId])
+  @@map("assessment_types")
+}
+
+model Assessment {
+  id               String          @id @default(cuid())
+  schoolId         String
+  school           School          @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  title            String
+  subjectId        String
+  subject          Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  classId          String?
+  schoolClass      SchoolClass?    @relation(fields: [classId], references: [id])
+  term             String // e.g. "Term 1", "Term 2", "Term 3"
+  year             Int
+  assessmentTypeId String?
+  assessmentType   AssessmentType? @relation(fields: [assessmentTypeId], references: [id])
+  syllabusTopicIds Json? // Array of syllabusTopic IDs covered
+  totalMarks       Float           @default(100)
+  passMark         Float           @default(50)
+  weight           Float           @default(20)
+  date             DateTime?
+  durationMinutes  Int?
+  status           String          @default("draft") // draft, scheduled, in_progress, marking, moderated, published
+  createdById      String?
+  createdBy        User?           @relation("AssessmentCreatedBy", fields: [createdById], references: [id])
+  isExam           Boolean         @default(false)
+  instructions     String?         @db.Text
+  publishedAt      DateTime?
+  moderatedById    String?
+  moderatedBy      User?           @relation("AssessmentModeratedBy", fields: [moderatedById], references: [id])
+  moderatedAt      DateTime?
+  moderationNotes  String?         @db.Text
+
+  questions          AssessmentQuestion[]
+  studentAssessments StudentAssessment[]
+  timetables         ExamTimetable[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([schoolId])
+  @@index([subjectId])
+  @@index([classId])
+  @@map("assessments")
+}
+
+model AssessmentQuestion {
+  id              String         @id @default(cuid())
+  schoolId        String
+  school          School         @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  assessmentId    String
+  assessment      Assessment     @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  questionBankId  String?
+  questionBank    QuestionBank?  @relation(fields: [questionBankId], references: [id])
+  questionOrder   Int            @default(1)
+  section         String?        @default("A")
+  questionText    String         @db.Text
+  type            String         @default("MULTIPLE_CHOICE")
+  options         Json?
+  correctAnswer   String?
+  marks           Float          @default(1)
+  syllabusTopicId String?
+  syllabusTopic   SyllabusTopic? @relation(fields: [syllabusTopicId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([schoolId])
+  @@index([assessmentId])
+  @@map("assessment_questions")
+}
+
+model QuestionBank {
+  id              String        @id @default(cuid())
+  schoolId        String
+  school          School        @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  subjectId       String
+  subject         Subject       @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  syllabusTopicId String // REQUIRED per spec!
+  syllabusTopic   SyllabusTopic @relation(fields: [syllabusTopicId], references: [id], onDelete: Cascade)
+  difficulty      String        @default("MEDIUM") // EASY, MEDIUM, HARD
+  type            String        @default("MULTIPLE_CHOICE") // MULTIPLE_CHOICE, STRUCTURED, ESSAY, TRUE_FALSE
+  questionText    String        @db.Text
+  options         Json?
+  answer          String?       @db.Text
+  marks           Float         @default(1)
+  imageUrl        String?
+  explanation     String?       @db.Text
+  createdById     String?
+  createdBy       User?         @relation("QuestionBankCreatedBy", fields: [createdById], references: [id])
+
+  assessmentQuestions AssessmentQuestion[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([schoolId])
+  @@index([subjectId])
+  @@index([syllabusTopicId])
+  @@map("question_bank")
+}
+
+model ExamTimetable {
+  id            String      @id @default(cuid())
+  schoolId      String
+  school        School      @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  assessmentId  String
+  assessment    Assessment  @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  classId       String
+  schoolClass   SchoolClass @relation(fields: [classId], references: [id], onDelete: Cascade)
+  date          DateTime
+  startTime     String // e.g. "09:00"
+  endTime       String // e.g. "11:30"
+  roomId        String?
+  roomName      String?
+  invigilatorId String?
+  invigilator   Teacher?    @relation("ExamInvigilator", fields: [invigilatorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([schoolId])
+  @@index([assessmentId])
+  @@index([classId])
+  @@map("exam_timetables")
+}
+
+model StudentAssessment {
+  id                String     @id @default(cuid())
+  schoolId          String
+  school            School     @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  assessmentId      String
+  assessment        Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  studentId         String
+  student           Student    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  marksObtained     Float?
+  percentage        Float?
+  grade             String?
+  comment           String?
+  markedById        String?
+  markedBy          User?      @relation("AssessmentMarker", fields: [markedById], references: [id])
+  markedAt          DateTime?
+  moderatedMarks    Float?
+  moderatedGrade    String?
+  moderationComment String?
+  isModerated       Boolean    @default(false)
+  status            String     @default("pending") // pending, submitted, marked, moderated
+  answers           Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([assessmentId, studentId])
+  @@index([schoolId])
+  @@index([assessmentId])
+  @@index([studentId])
+  @@map("student_assessments")
 }
 
 model Question {

@@ -7,6 +7,7 @@ const express_1 = require("express");
 const prisma_1 = __importDefault(require("../lib/prisma"));
 const auth_1 = require("../middleware/auth");
 const security_logger_1 = require("../lib/security-logger");
+const weighting_service_1 = require("../services/weighting.service");
 const router = (0, express_1.Router)();
 // ============================================================================
 // ASSESSMENT COLUMNS CONFIGURATION
@@ -275,6 +276,32 @@ router.post('/submit-approval', auth_1.requireAuth, (0, auth_1.requireRole)('TEA
     }
     catch (error) {
         res.status(500).json({ error: 'Failed to submit marks for approval: ' + error.message });
+    }
+});
+// ============================================================================
+// ZIMBABWE CA (30%) + EXAM (70%) WEIGHTING ENGINE & RANKING
+// ============================================================================
+/**
+ * @route   GET /api/marks/calculate-zimbabwe-weighted
+ * @desc    Compute student continuous assessment, summative exam, weighted total, grade, and competition rank
+ */
+router.get('/calculate-zimbabwe-weighted', auth_1.requireAuth, async (req, res) => {
+    const schoolId = req.user.schoolId;
+    const { classId, subjectId, term, year } = req.query;
+    if (!classId || !subjectId || !term || !year) {
+        return res.status(400).json({ error: 'classId, subjectId, term, and year are required parameters' });
+    }
+    try {
+        const rankings = await weighting_service_1.WeightingService.calculateSubjectClassRankings(String(subjectId), String(classId), String(term), Number(year), schoolId);
+        res.json({
+            success: true,
+            count: rankings.length,
+            rankings
+        });
+    }
+    catch (error) {
+        console.error('Error calculating Zimbabwe weighted marks:', error);
+        res.status(500).json({ error: 'Failed to calculate weighted marks: ' + error.message });
     }
 });
 exports.default = router;

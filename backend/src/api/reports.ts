@@ -5,7 +5,48 @@ import multer from 'multer';
 import path from 'path';
 import { generateAcademicReportPDF } from '../lib/pdf-generator';
 import { signatureUpload, brandingUpload } from '../middleware/upload';
+import { WeightingService } from '../services/weighting.service';
 const router = Router();
+
+/**
+ * @route   GET /api/reports/enriched/:studentId
+ * @desc    Get enriched academic report card with CA breakdown, exam mark, ranking, attendance %, discipline, and fee withholding check
+ */
+router.get('/enriched/:studentId', requireAuth, async (req: AuthRequest, res: Response) => {
+  const schoolId = req.user?.schoolId;
+  const studentId = req.params.studentId as string;
+  const { term, year } = req.query;
+
+  if (!schoolId) return res.status(400).json({ error: 'School ID missing from user session' });
+  if (!term || !year) return res.status(400).json({ error: 'term and year are required query parameters' });
+
+  try {
+    const reportData = await WeightingService.generateEnrichedReportCard(
+      studentId,
+      String(term),
+      Number(year),
+      schoolId
+    );
+
+    const userRole = (req.user?.role || '').toUpperCase();
+    const isStudentOrParent = userRole === 'STUDENT' || userRole === 'PARENT';
+
+    // If report is withheld due to fee defaulter rule and user is student or parent
+    if (reportData.financialStatus.isWithheld && isStudentOrParent) {
+      return res.status(403).json({
+        error: reportData.financialStatus.withholdReason || 'Report card withheld due to overdue balance.',
+        isWithheld: true,
+        financialStatus: reportData.financialStatus
+      });
+    }
+
+    return res.json({ success: true, report: reportData });
+  } catch (error: any) {
+    console.error('Error generating enriched report card:', error);
+    return res.status(500).json({ error: 'Failed to generate enriched report card: ' + error.message });
+  }
+});
+
 
 /**
  * @route   GET /api/reports/classes

@@ -4,6 +4,7 @@ import TeacherSyllabusManager from './SyllabusManager';
 import TeacherLessonPlanner from './LessonPlanner';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
+import api from '../../../lib/api';
 
 export type CurriculumTab = 'syllabus' | 'schemes' | 'lesson-plans' | 'observations';
 
@@ -85,6 +86,92 @@ export default function TeacherCurriculum() {
     strengths: '',
     growthAreas: ''
   });
+
+  // Schemes of Work state
+  const [schemes, setSchemes] = useState<any[]>([]);
+  const [subjects, setSubjects] = useState<any[]>([]);
+  const [classes, setClasses] = useState<any[]>([]);
+  const [syllabi, setSyllabi] = useState<any[]>([]);
+  const [showSchemeModal, setShowSchemeModal] = useState(false);
+  const [viewScheme, setViewScheme] = useState<any>(null);
+  const [newScheme, setNewScheme] = useState({
+    subjectId: '',
+    classId: '',
+    form: 'Form 3',
+    term: 1,
+    year: new Date().getFullYear(),
+    syllabusId: '',
+    weeksCount: 12,
+    comments: ''
+  });
+
+  const fetchSchemes = async () => {
+    try {
+      const [schRes, subRes, clsRes, sylRes] = await Promise.all([
+        api.get('/api/schemes'),
+        api.get('/api/subjects').catch(() => ({ data: [] })),
+        api.get('/api/classes').catch(() => ({ data: [] })),
+        api.get('/api/syllabus').catch(() => ({ data: { syllabi: [] } }))
+      ]);
+      setSchemes(schRes.data?.schemes || []);
+      setSubjects(subRes.data || []);
+      setClasses(clsRes.data || []);
+      setSyllabi(sylRes.data?.syllabi || []);
+    } catch (err) {
+      console.error('Failed to load schemes:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchSchemes();
+  }, []);
+
+  const handleCreateScheme = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newScheme.subjectId) {
+      showToast('Subject is required', 'error');
+      return;
+    }
+    try {
+      const items = Array.from({ length: Number(newScheme.weeksCount) || 12 }, (_, i) => ({
+        week: i + 1,
+        periodsRequired: 4,
+        subTopic: `Week ${i + 1} Teaching Unit`,
+        activities: 'Lecture, classroom discussion and guided practice',
+        status: 'planned'
+      }));
+
+      await api.post('/api/schemes', {
+        ...newScheme,
+        items
+      });
+      showToast('Scheme of work draft created successfully!', 'success');
+      setShowSchemeModal(false);
+      await fetchSchemes();
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to create scheme', 'error');
+    }
+  };
+
+  const handleApproveScheme = async (id: string) => {
+    try {
+      await api.post(`/api/schemes/${id}/approve`);
+      showToast('Scheme of work approved by HOD', 'success');
+      await fetchSchemes();
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to approve scheme', 'error');
+    }
+  };
+
+  const handleSubmitScheme = async (id: string) => {
+    try {
+      await api.post(`/api/schemes/${id}/submit`);
+      showToast('Scheme submitted for HOD approval', 'success');
+      await fetchSchemes();
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to submit scheme', 'error');
+    }
+  };
 
   useEffect(() => {
     const tabParam = searchParams.get('tab') as CurriculumTab;
@@ -256,7 +343,7 @@ export default function TeacherCurriculum() {
               </div>
               <button 
                 className="portal-btn-primary"
-                onClick={() => showToast('Scheme editor initialized', 'info')}
+                onClick={() => setShowSchemeModal(true)}
               >
                 <i className="fas fa-plus mr-2" /> New Scheme Draft
               </button>
@@ -269,32 +356,244 @@ export default function TeacherCurriculum() {
                   <th style={{ padding: 12 }}>Weeks Planned</th>
                   <th style={{ padding: 12 }}>HOD Review</th>
                   <th style={{ padding: 12 }}>Status</th>
-                  <th style={{ padding: 12 }}>Actions</th>
+                  <th style={{ padding: 12, textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                  <td style={{ padding: 12, fontWeight: 600 }}>Mathematics &bull; Form 3A</td>
-                  <td style={{ padding: 12 }}>Term 3, 2026</td>
-                  <td style={{ padding: 12 }}>12 Weeks (Weeks 1-12)</td>
-                  <td style={{ padding: 12, color: '#15803d', fontWeight: 600 }}>Approved by Dr. Ndlovu</td>
-                  <td style={{ padding: 12 }}><span className="portal-badge success">Active</span></td>
-                  <td style={{ padding: 12 }}>
-                    <button className="portal-btn-ghost" style={{ padding: '4px 8px', fontSize: '0.85rem' }}>View Weeks</button>
-                  </td>
-                </tr>
-                <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                  <td style={{ padding: 12, fontWeight: 600 }}>Physical Science &bull; Form 4B</td>
-                  <td style={{ padding: 12 }}>Term 3, 2026</td>
-                  <td style={{ padding: 12 }}>12 Weeks (Weeks 1-12)</td>
-                  <td style={{ padding: 12, color: '#b45309', fontWeight: 600 }}>Pending HOD Sign-off</td>
-                  <td style={{ padding: 12 }}><span className="portal-badge warning">Under Review</span></td>
-                  <td style={{ padding: 12 }}>
-                    <button className="portal-btn-ghost" style={{ padding: '4px 8px', fontSize: '0.85rem' }}>Edit Draft</button>
-                  </td>
-                </tr>
+                {schemes.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} style={{ textAlign: 'center', padding: 40, color: '#94a3b8' }}>
+                      <i className="fas fa-project-diagram" style={{ fontSize: '2rem', display: 'block', marginBottom: 8 }} />
+                      No schemes of work created yet. Click "New Scheme Draft" to set up your term syllabus pacing.
+                    </td>
+                  </tr>
+                ) : (
+                  schemes.map((s: any) => (
+                    <tr key={s.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td style={{ padding: 12, fontWeight: 600 }}>
+                        {s.subject?.name} &bull; {s.schoolClass?.name || s.form}
+                      </td>
+                      <td style={{ padding: 12 }}>Term {s.term}, {s.year}</td>
+                      <td style={{ padding: 12 }}>{s.weeksPlanned || s.items?.length || 0} Weeks</td>
+                      <td style={{ padding: 12 }}>
+                        {s.status === 'hod_approved' || s.status === 'locked' ? (
+                          <span style={{ color: '#15803d', fontWeight: 600 }}>
+                            <i className="fas fa-check-circle mr-1" />
+                            Approved {s.hodApprovedBy?.name ? `by ${s.hodApprovedBy.name}` : ''}
+                          </span>
+                        ) : s.status === 'pending_approval' ? (
+                          <span style={{ color: '#b45309', fontWeight: 600 }}>
+                            <i className="fas fa-clock mr-1" /> Under HOD Review
+                          </span>
+                        ) : s.status === 'rejected' ? (
+                          <span style={{ color: '#dc2626', fontWeight: 600 }}>
+                            <i className="fas fa-undo mr-1" /> Revision Requested
+                          </span>
+                        ) : (
+                          <span style={{ color: '#64748b' }}>Draft</span>
+                        )}
+                      </td>
+                      <td style={{ padding: 12 }}>
+                        <span className={`portal-badge ${
+                          s.status === 'hod_approved' || s.status === 'locked' ? 'success' :
+                          s.status === 'pending_approval' ? 'warning' :
+                          s.status === 'rejected' ? 'danger' : 'neutral'
+                        }`}>
+                          {s.status === 'hod_approved' ? 'Approved' :
+                           s.status === 'locked' ? 'Locked' :
+                           s.status === 'pending_approval' ? 'Under Review' :
+                           s.status === 'rejected' ? 'Rejected' : 'Draft'}
+                        </span>
+                      </td>
+                      <td style={{ padding: 12, textAlign: 'right' }}>
+                        <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                          <button
+                            className="portal-btn-ghost"
+                            style={{ padding: '4px 8px', fontSize: '0.85rem' }}
+                            onClick={() => setViewScheme(s)}
+                          >
+                            View Items
+                          </button>
+                          {s.status === 'draft' && (
+                            <button
+                              className="portal-btn-ghost"
+                              style={{ padding: '4px 8px', fontSize: '0.85rem', color: '#0284c7' }}
+                              onClick={() => handleSubmitScheme(s.id)}
+                            >
+                              Submit
+                            </button>
+                          )}
+                          {(s.status === 'pending_approval' || s.status === 'draft') && isHodOrAdmin && (
+                            <button
+                              className="portal-btn-ghost"
+                              style={{ padding: '4px 8px', fontSize: '0.85rem', color: '#16a34a' }}
+                              onClick={() => handleApproveScheme(s.id)}
+                            >
+                              Approve
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
+
+            {/* View Scheme Items Modal */}
+            {viewScheme && (
+              <div className="portal-modal-overlay">
+                <div className="portal-modal-content" style={{ maxWidth: 700, background: '#fff', borderRadius: 8 }}>
+                  <div className="portal-modal-header" style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between' }}>
+                    <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700 }}>
+                      Scheme Items: {viewScheme.subject?.name} ({viewScheme.form})
+                    </h2>
+                    <button className="portal-btn-ghost" onClick={() => setViewScheme(null)}><i className="fas fa-times" /></button>
+                  </div>
+                  <div style={{ padding: 20, maxHeight: 450, overflowY: 'auto' }}>
+                    <table className="portal-table" style={{ width: '100%' }}>
+                      <thead>
+                        <tr style={{ background: '#f8fafc', textAlign: 'left' }}>
+                          <th style={{ padding: 8 }}>Week</th>
+                          <th style={{ padding: 8 }}>Topic / SubTopic</th>
+                          <th style={{ padding: 8 }}>Activities</th>
+                          <th style={{ padding: 8 }}>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(viewScheme.items || []).map((it: any) => (
+                          <tr key={it.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                            <td style={{ padding: 8, fontWeight: 700 }}>Wk {it.week}</td>
+                            <td style={{ padding: 8 }}>{it.subTopic || it.syllabusTopic?.topic || 'Topic'}</td>
+                            <td style={{ padding: 8, fontSize: '0.85rem', color: '#475569' }}>{it.activities || 'Activities'}</td>
+                            <td style={{ padding: 8 }}><span className="portal-badge neutral">{it.status}</span></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* New Scheme Modal */}
+            {showSchemeModal && (
+              <div className="portal-modal-overlay">
+                <div className="portal-modal-content" style={{ maxWidth: 520, background: '#fff', borderRadius: 8 }}>
+                  <div className="portal-modal-header" style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between' }}>
+                    <h2 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700 }}>New Scheme of Work Draft</h2>
+                    <button className="portal-btn-ghost" onClick={() => setShowSchemeModal(false)}><i className="fas fa-times" /></button>
+                  </div>
+                  <form onSubmit={handleCreateScheme} style={{ padding: 20 }}>
+                    <div className="portal-form-group" style={{ marginBottom: 14 }}>
+                      <label style={{ display: 'block', fontWeight: 600, marginBottom: 4 }}>Subject *</label>
+                      <select
+                        className="portal-input"
+                        required
+                        value={newScheme.subjectId}
+                        onChange={e => setNewScheme({ ...newScheme, subjectId: e.target.value })}
+                      >
+                        <option value="">Select subject...</option>
+                        {subjects.map(s => (
+                          <option key={s.id} value={s.id}>{s.name} ({s.code || ''})</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
+                      <div className="portal-form-group">
+                        <label style={{ display: 'block', fontWeight: 600, marginBottom: 4 }}>Class</label>
+                        <select
+                          className="portal-input"
+                          value={newScheme.classId}
+                          onChange={e => setNewScheme({ ...newScheme, classId: e.target.value })}
+                        >
+                          <option value="">Select class (optional)...</option>
+                          {classes.map(c => (
+                            <option key={c.id} value={c.id}>{c.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="portal-form-group">
+                        <label style={{ display: 'block', fontWeight: 600, marginBottom: 4 }}>Form / Grade</label>
+                        <input
+                          type="text"
+                          className="portal-input"
+                          value={newScheme.form}
+                          onChange={e => setNewScheme({ ...newScheme, form: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12, marginBottom: 14 }}>
+                      <div className="portal-form-group">
+                        <label style={{ display: 'block', fontWeight: 600, marginBottom: 4 }}>Term (1-3) *</label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="3"
+                          className="portal-input"
+                          value={newScheme.term}
+                          onChange={e => setNewScheme({ ...newScheme, term: Number(e.target.value) })}
+                          required
+                        />
+                      </div>
+                      <div className="portal-form-group">
+                        <label style={{ display: 'block', fontWeight: 600, marginBottom: 4 }}>Year *</label>
+                        <input
+                          type="number"
+                          className="portal-input"
+                          value={newScheme.year}
+                          onChange={e => setNewScheme({ ...newScheme, year: Number(e.target.value) })}
+                          required
+                        />
+                      </div>
+                      <div className="portal-form-group">
+                        <label style={{ display: 'block', fontWeight: 600, marginBottom: 4 }}>Weeks</label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="15"
+                          className="portal-input"
+                          value={newScheme.weeksCount}
+                          onChange={e => setNewScheme({ ...newScheme, weeksCount: Number(e.target.value) })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="portal-form-group" style={{ marginBottom: 14 }}>
+                      <label style={{ display: 'block', fontWeight: 600, marginBottom: 4 }}>Curriculum Syllabus</label>
+                      <select
+                        className="portal-input"
+                        value={newScheme.syllabusId}
+                        onChange={e => setNewScheme({ ...newScheme, syllabusId: e.target.value })}
+                      >
+                        <option value="">Link to Syllabus (optional)...</option>
+                        {syllabi.map(s => (
+                          <option key={s.id} value={s.id}>{s.subject?.name} • {s.form} ({s.curriculum})</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="portal-form-group" style={{ marginBottom: 20 }}>
+                      <label style={{ display: 'block', fontWeight: 600, marginBottom: 4 }}>Pedagogical Comments / Goals</label>
+                      <textarea
+                        className="portal-input"
+                        rows={2}
+                        placeholder="Departmental objectives and pacing targets..."
+                        value={newScheme.comments}
+                        onChange={e => setNewScheme({ ...newScheme, comments: e.target.value })}
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+                      <button type="button" className="portal-btn-secondary" onClick={() => setShowSchemeModal(false)}>Cancel</button>
+                      <button type="submit" className="portal-btn-primary">Create Scheme Draft</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

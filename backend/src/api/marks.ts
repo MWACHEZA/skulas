@@ -2,6 +2,7 @@ import { Router, Response } from 'express';
 import prisma from '../lib/prisma';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 import { logSecurityEvent } from '../lib/security-logger';
+import { WeightingService } from '../services/weighting.service';
 
 const router = Router();
 
@@ -300,4 +301,41 @@ router.post('/submit-approval', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMI
   }
 });
 
+// ============================================================================
+// ZIMBABWE CA (30%) + EXAM (70%) WEIGHTING ENGINE & RANKING
+// ============================================================================
+
+/**
+ * @route   GET /api/marks/calculate-zimbabwe-weighted
+ * @desc    Compute student continuous assessment, summative exam, weighted total, grade, and competition rank
+ */
+router.get('/calculate-zimbabwe-weighted', requireAuth, async (req: AuthRequest, res: Response): Promise<any> => {
+  const schoolId = req.user!.schoolId!;
+  const { classId, subjectId, term, year } = req.query;
+
+  if (!classId || !subjectId || !term || !year) {
+    return res.status(400).json({ error: 'classId, subjectId, term, and year are required parameters' });
+  }
+
+  try {
+    const rankings = await WeightingService.calculateSubjectClassRankings(
+      String(subjectId),
+      String(classId),
+      String(term),
+      Number(year),
+      schoolId
+    );
+
+    res.json({
+      success: true,
+      count: rankings.length,
+      rankings
+    });
+  } catch (error: any) {
+    console.error('Error calculating Zimbabwe weighted marks:', error);
+    res.status(500).json({ error: 'Failed to calculate weighted marks: ' + error.message });
+  }
+});
+
 export default router;
+

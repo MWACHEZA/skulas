@@ -8,7 +8,39 @@ const prisma_1 = __importDefault(require("../lib/prisma"));
 const auth_1 = require("../middleware/auth");
 const pdf_generator_1 = require("../lib/pdf-generator");
 const upload_1 = require("../middleware/upload");
+const weighting_service_1 = require("../services/weighting.service");
 const router = (0, express_1.Router)();
+/**
+ * @route   GET /api/reports/enriched/:studentId
+ * @desc    Get enriched academic report card with CA breakdown, exam mark, ranking, attendance %, discipline, and fee withholding check
+ */
+router.get('/enriched/:studentId', auth_1.requireAuth, async (req, res) => {
+    const schoolId = req.user?.schoolId;
+    const studentId = req.params.studentId;
+    const { term, year } = req.query;
+    if (!schoolId)
+        return res.status(400).json({ error: 'School ID missing from user session' });
+    if (!term || !year)
+        return res.status(400).json({ error: 'term and year are required query parameters' });
+    try {
+        const reportData = await weighting_service_1.WeightingService.generateEnrichedReportCard(studentId, String(term), Number(year), schoolId);
+        const userRole = (req.user?.role || '').toUpperCase();
+        const isStudentOrParent = userRole === 'STUDENT' || userRole === 'PARENT';
+        // If report is withheld due to fee defaulter rule and user is student or parent
+        if (reportData.financialStatus.isWithheld && isStudentOrParent) {
+            return res.status(403).json({
+                error: reportData.financialStatus.withholdReason || 'Report card withheld due to overdue balance.',
+                isWithheld: true,
+                financialStatus: reportData.financialStatus
+            });
+        }
+        return res.json({ success: true, report: reportData });
+    }
+    catch (error) {
+        console.error('Error generating enriched report card:', error);
+        return res.status(500).json({ error: 'Failed to generate enriched report card: ' + error.message });
+    }
+});
 /**
  * @route   GET /api/reports/classes
  * @desc    [TEACHER/ADMIN] Get list of classes for the school
