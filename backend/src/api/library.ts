@@ -2208,24 +2208,8 @@ router.post('/digital-resources/:id/track', requireAuth, requireModuleAccess('li
 });
 
 // ----------------------------------------------------
-// 8. LOANS LIST & MY BOOKS
+// 8. MY BOOKS
 // ----------------------------------------------------
-router.get('/loans', requireAuth, requireModuleAccess('library', 'request_only'), async (req: AuthRequest, res: Response) => {
-  try {
-    const loans = await prisma.bookLoan.findMany({
-      where: { schoolId: req.user!.schoolId! },
-      include: {
-        book: true,
-        student: { include: { user: { select: { name: true } } } },
-        user: { select: { name: true } }
-      },
-      orderBy: { borrowedAt: 'desc' }
-    });
-    res.json(loans);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch loan records' });
-  }
-});
 
 router.get('/my-books', requireAuth, requireModuleAccess('library', 'request_only'), async (req: AuthRequest, res: Response) => {
   try {

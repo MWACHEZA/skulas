@@ -7,8 +7,14 @@ export type PharmacyTab = 'stock' | 'dispense-log' | 'low-stock' | 'expiry';
 
 export default function ClinicPharmacyPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const currentTab = (searchParams.get('tab') as PharmacyTab) || 'stock';
-  const [activeTab, setActiveTab] = useState<PharmacyTab>(currentTab);
+  const getSubTab = (): PharmacyTab => {
+    const sub = searchParams.get('subtab') as PharmacyTab;
+    if (sub && ['stock', 'dispense-log', 'low-stock', 'expiry'].includes(sub)) return sub;
+    const tabParam = searchParams.get('tab') as PharmacyTab;
+    if (tabParam && ['stock', 'dispense-log', 'low-stock', 'expiry'].includes(tabParam)) return tabParam;
+    return 'stock';
+  };
+  const [activeTab, setActiveTab] = useState<PharmacyTab>(getSubTab());
 
   const [loading, setLoading] = useState(true);
   const [catalog, setCatalog] = useState<any[]>([]);
@@ -32,15 +38,21 @@ export default function ClinicPharmacyPage() {
   const [processing, setProcessing] = useState(false);
 
   useEffect(() => {
-    const tabParam = searchParams.get('tab') as PharmacyTab;
-    if (tabParam && ['stock', 'dispense-log', 'low-stock', 'expiry'].includes(tabParam)) {
-      setActiveTab(tabParam);
-    }
+    setActiveTab(getSubTab());
   }, [searchParams]);
 
   const handleTabChange = (tab: PharmacyTab) => {
     setActiveTab(tab);
-    setSearchParams({ tab });
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      const parentTab = next.get('tab');
+      if (parentTab === 'inventory') {
+        next.set('subtab', tab);
+      } else {
+        next.set('tab', tab);
+      }
+      return next;
+    });
   };
 
   const loadData = async () => {

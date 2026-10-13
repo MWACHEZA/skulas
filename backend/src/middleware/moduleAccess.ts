@@ -16,10 +16,10 @@ const MODULE_ACCESS_MAP: Record<string, {
   secondaryRequestRoles: string[];
 }> = {
   library: {
-    fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN'],
-    secondaryFullRoles: ['librarian', 'LIBRARY_HEAD', 'LIBRARY_MANAGER'],
+    fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN', 'LIBRARIAN'],
+    secondaryFullRoles: ['librarian', 'LIBRARY_HEAD', 'LIBRARY_MANAGER', 'LIBRARIAN', 'student librarian', 'STUDENT_LIBRARIAN', 'library_assistant', 'LIBRARY_ASSISTANT'],
     secondaryScopedRoles: [],
-    secondaryRequestRoles: [] // teachers get request-only by DEFAULT (handled in route)
+    secondaryRequestRoles: ['teacher', 'TEACHER', 'student', 'STUDENT', 'parent', 'PARENT', 'bursar', 'BURSAR', 'ancillary', 'ANCILLARY']
   },
   farm: {
     fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN', 'TEACHER'],
@@ -51,35 +51,43 @@ export function getModuleAccess(user: any, module: string): ModuleAccessResult {
   const map = MODULE_ACCESS_MAP[module];
   if (!map || !user) return { level: 'none' };
 
-  const primaryRole = user.role || '';
-  const secondaryRoles: string[] = user.secondaryRoles || [];
+  const primaryRole = (user.role || '').toUpperCase();
+  const secondaryRoles: string[] = Array.isArray(user.secondaryRoles) ? user.secondaryRoles : [];
 
   // Full access via primary role
-  if (map.fullRoles.includes(primaryRole)) {
+  if (map.fullRoles.some(r => r.toUpperCase() === primaryRole)) {
     return { level: 'full' };
   }
 
-  // Full access via secondary role
-  const fullSecondary = secondaryRoles.find((r: string) => map.secondaryFullRoles.includes(r));
+  // Full access via secondary role (case-insensitive)
+  const fullSecondary = secondaryRoles.find((r: string) => 
+    map.secondaryFullRoles.some(s => s.toLowerCase() === (r || '').toLowerCase())
+  );
   if (fullSecondary) {
     return { level: 'full', actingAs: fullSecondary };
   }
 
   // Scoped access via secondary role
-  const scopedSecondary = secondaryRoles.find((r: string) => map.secondaryScopedRoles.includes(r));
+  const scopedSecondary = secondaryRoles.find((r: string) => 
+    map.secondaryScopedRoles.some(s => s.toLowerCase() === (r || '').toLowerCase())
+  );
   if (scopedSecondary) {
     return { level: 'scoped', actingAs: scopedSecondary };
   }
 
   // Request-only access via secondary role
-  const requestSecondary = secondaryRoles.find((r: string) => map.secondaryRequestRoles.includes(r));
+  const requestSecondary = secondaryRoles.find((r: string) => 
+    map.secondaryRequestRoles.some(s => s.toLowerCase() === (r || '').toLowerCase())
+  );
   if (requestSecondary) {
     return { level: 'request_only', actingAs: requestSecondary };
   }
 
-  // Teachers get request-only by DEFAULT for library
-  if (module === 'library' && primaryRole === 'TEACHER') {
-    return { level: 'request_only', actingAs: 'TEACHER' };
+  // Default library access: Teachers, Students, Parents, Bursar, Ancillary get request_only
+  if (module === 'library') {
+    if (['TEACHER', 'STUDENT', 'PARENT', 'BURSAR', 'ANCILLARY'].includes(primaryRole)) {
+      return { level: 'request_only', actingAs: primaryRole };
+    }
   }
 
   return { level: 'none' };

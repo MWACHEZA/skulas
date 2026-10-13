@@ -9,7 +9,7 @@ const auth_1 = require("../middleware/auth");
 const audit_1 = require("../utils/audit");
 const router = (0, express_1.Router)();
 router.use(auth_1.requireAuth);
-router.use((0, auth_1.requireRole)('SCHOOL_ADMIN'));
+router.use((0, auth_1.requireRole)('SCHOOL_ADMIN', 'SUPER_ADMIN'));
 /**
  * @route GET /api/admin/leadership/assignments
  * @desc List all leadership assignments for current school

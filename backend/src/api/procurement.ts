@@ -20,21 +20,24 @@ const router = Router();
 router.get('/requisitions', requireAuth, async (req: AuthRequest, res: Response) => {
   const user = req.user!;
   try {
-    let whereClause: any = { schoolId: user.schoolId! };
+    let whereClause: any = {};
+    if (user.schoolId) {
+      whereClause.schoolId = user.schoolId;
+    }
 
     const isProcurementOrBuyer = user.secondaryRoles?.some(r => 
-      r.toLowerCase() === 'procurement officer' || 
-      r.toLowerCase() === 'buyer'
+      r?.toLowerCase() === 'procurement officer' || 
+      r?.toLowerCase() === 'buyer'
     );
 
     // Role-based visibility logic
-    if (user.role === 'SCHOOL_ADMIN' || user.role === 'BURSAR' || isProcurementOrBuyer) {
+    if (user.role === 'SCHOOL_ADMIN' || user.role === 'SUPER_ADMIN' || user.role === 'BURSAR' || isProcurementOrBuyer) {
       // Sees everything in the school
-    } else if (user.secondaryRoles.includes('HOD')) {
+    } else if (Array.isArray(user.secondaryRoles) && user.secondaryRoles.includes('HOD')) {
       // Find HOD's department
       const teacher = await prisma.teacher.findFirst({ where: { userId: user.id } });
       whereClause = {
-        schoolId: user.schoolId!,
+        ...(user.schoolId ? { schoolId: user.schoolId } : {}),
         OR: [
           { department: teacher?.department },
           { requesterId: user.id }
@@ -43,13 +46,13 @@ router.get('/requisitions', requireAuth, async (req: AuthRequest, res: Response)
     } else if (user.role === 'ANCILLARY') {
       // Matron / Boarding staff: see requests for hostels they warden, or where they are assigned HOD, or their own
       const hostelsManaged = await prisma.hostel.findMany({
-        where: { schoolId: user.schoolId!, wardenUserId: user.id },
+        where: { ...(user.schoolId ? { schoolId: user.schoolId } : {}), wardenUserId: user.id },
         select: { id: true }
       });
       const hostelIds = hostelsManaged.map(h => h.id);
 
       whereClause = {
-        schoolId: user.schoolId!,
+        ...(user.schoolId ? { schoolId: user.schoolId } : {}),
         OR: [
           { requesterId: user.id },
           { hodId: user.id },
@@ -60,19 +63,19 @@ router.get('/requisitions', requireAuth, async (req: AuthRequest, res: Response)
     } else if (user.role === 'STUDENT') {
       // STUDENT LEADER: Find student record and enforce active leadership
       const student = await prisma.student.findFirst({
-        where: { userId: user.id, schoolId: user.schoolId! }
+        where: { userId: user.id, ...(user.schoolId ? { schoolId: user.schoolId } : {}) }
       });
       if (!student) {
         return res.status(403).json({ error: 'Student record not found' });
       }
       const activeAssignment = await prisma.leadershipAssignment.findFirst({
-        where: { studentId: student.id, schoolId: user.schoolId!, isActive: true }
+        where: { studentId: student.id, ...(user.schoolId ? { schoolId: user.schoolId } : {}), isActive: true }
       });
       if (!activeAssignment) {
         return res.status(403).json({ error: 'Access denied: Active student leadership assignment required' });
       }
       whereClause = {
-        schoolId: user.schoolId!,
+        ...(user.schoolId ? { schoolId: user.schoolId } : {}),
         requestedByStudentId: student.id
       };
     } else {
@@ -91,20 +94,24 @@ router.get('/requisitions', requireAuth, async (req: AuthRequest, res: Response)
       whereClause.hostelReqId = String(req.query.hostelId);
     }
 
+    const includeClause: any = {
+      requester: { select: { id: true, name: true, role: true } },
+      requestedByStudent: { select: { id: true, name: true, studentId: true } },
+      hostelReq: { select: { id: true, name: true } },
+      hod: { select: { id: true, name: true } },
+      department: { select: { id: true, name: true } },
+      bursar: { select: { name: true } },
+      admin: { select: { name: true } },
+      matronApprovedBy: { select: { id: true, name: true } },
+      issuedBy: { select: { id: true, name: true } }
+    };
+    if (user.role !== 'STUDENT') {
+      includeClause.purchaseOrder = true;
+    }
+
     const requisitions = await prisma.requisition.findMany({
       where: whereClause,
-      include: {
-        requester: { select: { id: true, name: true, role: true } },
-        requestedByStudent: { select: { id: true, name: true, studentId: true } },
-        hostelReq: { select: { id: true, name: true } },
-        hod: { select: { id: true, name: true } },
-        department: { select: { id: true, name: true } },
-        bursar: { select: { name: true } },
-        admin: { select: { name: true } },
-        matronApprovedBy: { select: { id: true, name: true } },
-        issuedBy: { select: { id: true, name: true } },
-        purchaseOrder: user.role !== 'STUDENT'
-      },
+      include: includeClause,
       orderBy: { createdAt: 'desc' }
     });
 
@@ -129,6 +136,7 @@ router.get('/requisitions', requireAuth, async (req: AuthRequest, res: Response)
 
     res.json(requisitions);
   } catch (err) {
+    console.error('Fetch requisitions error:', err);
     res.status(500).json({ error: 'Failed to fetch requisitions' });
   }
 });

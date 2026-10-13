@@ -211,6 +211,7 @@ app.use('/api/wallets', walletRoutes);
 app.use('/api/icd10', icd10Routes);
 app.use('/api/setup', setupRoutes);
 app.use('/api/student-requests', studentRequestsRoutes);
+app.use('/api/admin/leadership', adminLeadershipRoutes);
 import bursarDashboardRoutes from './api/bursar-dashboard';
 app.use('/api/bursar-dashboard', bursarDashboardRoutes);
 import bursarRoutes from './api/bursar';

@@ -5,7 +5,7 @@ import { logAction } from '../utils/audit';
 
 const router = Router();
 router.use(requireAuth);
-router.use(requireRole('SCHOOL_ADMIN'));
+router.use(requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN'));
 
 /**
  * @route GET /api/admin/leadership/assignments

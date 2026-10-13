@@ -50,8 +50,14 @@ export interface ClinicAnalyticsData {
 
 export default function ClinicReportsUnifiedPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const currentTab = (searchParams.get('tab') as ReportsTab) || 'patients';
-  const [activeTab, setActiveTab] = useState<ReportsTab>(currentTab);
+  const getSubTab = (): ReportsTab => {
+    const sub = searchParams.get('subtab') as ReportsTab;
+    if (sub && ['patients', 'analytics', 'billing'].includes(sub)) return sub;
+    const tabParam = searchParams.get('tab') as ReportsTab;
+    if (tabParam && ['patients', 'analytics', 'billing'].includes(tabParam)) return tabParam;
+    return 'patients';
+  };
+  const [activeTab, setActiveTab] = useState<ReportsTab>(getSubTab());
 
   // Tab 1: Patients & Medical Files
   const [patientQuery, setPatientQuery] = useState('');
@@ -65,15 +71,21 @@ export default function ClinicReportsUnifiedPage() {
   const [loadingAnalytics, setLoadingAnalytics] = useState(false);
 
   useEffect(() => {
-    const tabParam = searchParams.get('tab') as ReportsTab;
-    if (tabParam && ['patients', 'analytics', 'billing'].includes(tabParam)) {
-      setActiveTab(tabParam);
-    }
+    setActiveTab(getSubTab());
   }, [searchParams]);
 
   const handleTabChange = (tab: ReportsTab) => {
     setActiveTab(tab);
-    setSearchParams({ tab });
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      const parentTab = next.get('tab');
+      if (parentTab === 'reports') {
+        next.set('subtab', tab);
+      } else {
+        next.set('tab', tab);
+      }
+      return next;
+    });
   };
 
   useEffect(() => {

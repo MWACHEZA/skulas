@@ -9,10 +9,16 @@ type ClinicTab = 'visits' | 'inventory' | 'reports';
 
 export default function AdminClinic() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const activeTab: ClinicTab = (searchParams.get('tab') as ClinicTab) || 'visits';
+  const rawTab = searchParams.get('tab');
+  const activeTab: ClinicTab = (rawTab === 'inventory' || rawTab === 'reports') ? rawTab : 'visits';
 
   const handleTabChange = (tab: ClinicTab) => {
-    setSearchParams({ tab });
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('tab', tab);
+      next.delete('subtab');
+      return next;
+    });
   };
 
   return (

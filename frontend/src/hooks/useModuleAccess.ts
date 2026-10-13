@@ -9,10 +9,10 @@ const MODULE_ACCESS_MAP: Record<string, {
   secondaryRequestRoles: string[];
 }> = {
   library: {
-    fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN'],
-    secondaryFullRoles: ['librarian', 'LIBRARY_HEAD', 'LIBRARY_MANAGER'],
+    fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN', 'LIBRARIAN'],
+    secondaryFullRoles: ['librarian', 'LIBRARY_HEAD', 'LIBRARY_MANAGER', 'LIBRARIAN', 'student librarian', 'STUDENT_LIBRARIAN', 'library_assistant', 'LIBRARY_ASSISTANT'],
     secondaryScopedRoles: [],
-    secondaryRequestRoles: []
+    secondaryRequestRoles: ['teacher', 'TEACHER', 'student', 'STUDENT', 'parent', 'PARENT', 'bursar', 'BURSAR', 'ancillary', 'ANCILLARY']
   },
   farm: {
     fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN'],
@@ -40,20 +40,31 @@ export function useModuleAccess(module: string) {
   const map = MODULE_ACCESS_MAP[module];
   if (!map || !user) return { level: 'none' as ModuleAccessLevel, actingAs: undefined };
 
-  const primaryRole = (user as any).role || '';
-  const secondaryRoles: string[] = (user as any).secondaryRoles || [];
+  const primaryRole = ((user as any).role || '').toUpperCase();
+  const secondaryRoles: string[] = Array.isArray((user as any).secondaryRoles) ? (user as any).secondaryRoles : [];
 
-  if (map.fullRoles.includes(primaryRole)) return { level: 'full' as ModuleAccessLevel, actingAs: undefined };
+  if (map.fullRoles.some(r => r.toUpperCase() === primaryRole)) return { level: 'full' as ModuleAccessLevel, actingAs: undefined };
   
-  const fullSecondary = secondaryRoles.find(r => map.secondaryFullRoles.includes(r));
+  const fullSecondary = secondaryRoles.find(r => 
+    map.secondaryFullRoles.some(s => s.toLowerCase() === (r || '').toLowerCase())
+  );
   if (fullSecondary) return { level: 'full' as ModuleAccessLevel, actingAs: fullSecondary };
   
-  const scopedSecondary = secondaryRoles.find(r => map.secondaryScopedRoles.includes(r));
+  const scopedSecondary = secondaryRoles.find(r => 
+    map.secondaryScopedRoles.some(s => s.toLowerCase() === (r || '').toLowerCase())
+  );
   if (scopedSecondary) return { level: 'scoped' as ModuleAccessLevel, actingAs: scopedSecondary };
 
-  // Teachers get request-only by DEFAULT for library and sports
-  if (module === 'library' && primaryRole === 'TEACHER') {
-    return { level: 'request_only' as ModuleAccessLevel, actingAs: 'TEACHER' };
+  const requestSecondary = secondaryRoles.find(r => 
+    map.secondaryRequestRoles.some(s => s.toLowerCase() === (r || '').toLowerCase())
+  );
+  if (requestSecondary) return { level: 'request_only' as ModuleAccessLevel, actingAs: requestSecondary };
+
+  // Defaults by primary role:
+  if (module === 'library') {
+    if (['TEACHER', 'STUDENT', 'PARENT', 'BURSAR', 'ANCILLARY'].includes(primaryRole)) {
+      return { level: 'request_only' as ModuleAccessLevel, actingAs: primaryRole };
+    }
   }
   if (module === 'sports' && primaryRole === 'TEACHER') {
     return { level: 'request_only' as ModuleAccessLevel, actingAs: 'pe_teacher' };

@@ -2055,25 +2055,8 @@ router.post('/digital-resources/:id/track', auth_1.requireAuth, (0, moduleAccess
     }
 });
 // ----------------------------------------------------
-// 8. LOANS LIST & MY BOOKS
+// 8. MY BOOKS
 // ----------------------------------------------------
-router.get('/loans', auth_1.requireAuth, (0, moduleAccess_1.requireModuleAccess)('library', 'request_only'), async (req, res) => {
-    try {
-        const loans = await prisma_1.default.bookLoan.findMany({
-            where: { schoolId: req.user.schoolId },
-            include: {
-                book: true,
-                student: { include: { user: { select: { name: true } } } },
-                user: { select: { name: true } }
-            },
-            orderBy: { borrowedAt: 'desc' }
-        });
-        res.json(loans);
-    }
-    catch (error) {
-        res.status(500).json({ error: 'Failed to fetch loan records' });
-    }
-});
 router.get('/my-books', auth_1.requireAuth, (0, moduleAccess_1.requireModuleAccess)('library', 'request_only'), async (req, res) => {
     try {
         const student = await prisma_1.default.student.findFirst({
