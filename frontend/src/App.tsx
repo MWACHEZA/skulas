@@ -727,7 +727,7 @@ export default function App() {
               <Route path="finance/student-ledgers" element={<Navigate to="/admin/finance?tab=billing" replace />} />
               <Route path="finance/groceries" element={<Navigate to="/admin/finance?tab=wallets" replace />} />
               <Route path="fees" element={<Navigate to="/admin/finance?tab=overview" replace />} />
-              <Route path="fee-groups" element={<Navigate to="/admin/finance?tab=overview" replace />} />
+              <Route path="fee-groups" element={<FeeGroupsPage />} />
               <Route path="payment-methods" element={<Navigate to="/admin/finance?tab=overview" replace />} />
               <Route path="revenue-allocation" element={<Navigate to="/admin/finance?tab=overview" replace />} />
               <Route path="payment-plans" element={<Navigate to="/admin/finance?tab=payment-plans" replace />} />

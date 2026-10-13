@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import FeesBillingPage from '../../shared/pages/FeesBillingPage';
 import ManageInvoicesPage from '../../shared/pages/ManageInvoicesPage';
 import StudentLedgersPage from '../../shared/pages/StudentLedgersPage';
@@ -577,6 +577,28 @@ export default function BursarFeesUnified() {
           <i className="fas fa-user-clock" />
           Debtors Aging & Defaulters ({defaulters.length})
         </button>
+
+        <Link
+          to="/bursar/fee-groups"
+          style={{
+            marginLeft: 'auto',
+            padding: '8px 16px',
+            background: '#f8fafc',
+            border: '1px solid #cbd5e1',
+            borderRadius: '8px',
+            color: '#0f172a',
+            fontWeight: 700,
+            fontSize: '0.88rem',
+            textDecoration: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            whiteSpace: 'nowrap'
+          }}
+        >
+          <i className="fas fa-layer-group" style={{ color: '#0284c7' }} />
+          Fee Groups & Structures
+        </Link>
       </div>
 
       {/* Tab 1: Daily Rapid Collection UI */}

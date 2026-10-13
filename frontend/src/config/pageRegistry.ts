@@ -516,6 +516,16 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     searchKeywords: ['fees', 'billing', 'invoices', 'receipts', 'student ledgers', 'reminders']
   },
   {
+    id: 'bursar-fee-groups',
+    label: 'Fee Groups & Structure',
+    route: '/bursar/fee-groups',
+    group: 'FINANCE_BILLING',
+    icon: 'fas fa-layer-group',
+    permissionKey: PERMISSIONS.FINANCE_FEES_BILLING,
+    portalVisibility: ['bursar', 'admin'],
+    searchKeywords: ['fee groups', 'fee structure', 'tuition', 'levy', 'class fees', 'term billing', 'amounts']
+  },
+  {
     id: 'bursar-tuckshop',
     label: 'Wallets & Tuckshop',
     route: '/bursar/tuckshop',

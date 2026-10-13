@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
@@ -265,6 +266,13 @@ export default function FeesBillingPage() {
         >
           <i className="fas fa-user-edit mr-2"></i>Custom Ad-Hoc Billing
         </button>
+        <Link
+          to="/bursar/fee-groups"
+          className="portal-btn-ghost"
+          style={{ minWidth: '220px', borderRadius: '12px', fontWeight: 900, padding: '14px', fontSize: '0.95rem', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', color: '#0f172a' }}
+        >
+          <i className="fas fa-layer-group mr-2" style={{ color: '#0284c7' }}></i>Configure Fee Groups
+        </Link>
       </div>
 
       {isModalOpen && (

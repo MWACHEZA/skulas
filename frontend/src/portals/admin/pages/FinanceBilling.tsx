@@ -227,6 +227,9 @@ export default function FinanceBilling() {
           </p>
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
+          <Link to="/admin/fee-groups" className="portal-btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', background: '#f8fafc', border: '1px solid #cbd5e1', color: '#0f172a', fontWeight: 700, padding: '8px 16px', borderRadius: '8px' }}>
+            <i className="fas fa-layer-group" style={{ color: '#2563eb' }}></i>Manage Fee Groups
+          </Link>
           <button className="portal-btn-primary" onClick={openEmitModal}>
             <i className="fas fa-file-invoice-dollar mr-2"></i>Emit Fee Invoice
           </button>
