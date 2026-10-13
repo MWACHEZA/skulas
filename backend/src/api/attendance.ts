@@ -958,39 +958,74 @@ router.get('/absentee-report', requireAuth, async (req: AuthRequest, res) => {
       }
     });
 
-    const report = [];
-    for (const s of students) {
-      // 1. Fetch roll call session records for this student
-      const sessionRecords = await prisma.attendanceSessionRecord.findMany({
-        where: {
-          studentId: s.id,
-          session: {
-            schoolId,
-            type: 'daily',
-            date: { gte: fromDate, lte: toDate }
-          }
-        },
-        include: { session: true }
-      });
+    const studentIds = students.map(s => s.id);
 
-      // 2. Fetch direct attendance / gate records for this student
-      const directAttendanceRecords = await prisma.attendance.findMany({
-        where: {
-          studentId: s.id,
+    // 1. Batch fetch all roll call session records in date range
+    const allSessionRecords = await prisma.attendanceSessionRecord.findMany({
+      where: {
+        studentId: { in: studentIds },
+        session: {
           schoolId,
+          type: 'daily',
           date: { gte: fromDate, lte: toDate }
         }
-      });
+      },
+      include: { session: true }
+    });
 
-      // 3. Consolidate attendance by date key (YYYY-MM-DD)
+    // 2. Batch fetch all direct attendance / gate records in date range
+    const allDirectAttendance = await prisma.attendance.findMany({
+      where: {
+        studentId: { in: studentIds },
+        schoolId,
+        date: { gte: fromDate, lte: toDate }
+      }
+    });
+
+    // 3. Batch fetch all truancy discipline records
+    const allDiscipline = await prisma.disciplineRecord.findMany({
+      where: {
+        schoolId,
+        studentId: { in: studentIds },
+        offenceType: { contains: 'TRUANCY' }
+      },
+      orderBy: { date: 'desc' }
+    });
+
+    // Group by studentId in memory for O(1) lookups
+    const sessionRecordsByStudent = new Map<string, typeof allSessionRecords>();
+    for (const r of allSessionRecords) {
+      if (!sessionRecordsByStudent.has(r.studentId)) sessionRecordsByStudent.set(r.studentId, []);
+      sessionRecordsByStudent.get(r.studentId)!.push(r);
+    }
+
+    const directAttendanceByStudent = new Map<string, typeof allDirectAttendance>();
+    for (const a of allDirectAttendance) {
+      if (!directAttendanceByStudent.has(a.studentId)) directAttendanceByStudent.set(a.studentId, []);
+      directAttendanceByStudent.get(a.studentId)!.push(a);
+    }
+
+    const disciplineByStudent = new Map<string, typeof allDiscipline>();
+    for (const d of allDiscipline) {
+      if (!disciplineByStudent.has(d.studentId)) disciplineByStudent.set(d.studentId, []);
+      disciplineByStudent.get(d.studentId)!.push(d);
+    }
+
+    const report = [];
+    for (const s of students) {
+      const sessionRecords = sessionRecordsByStudent.get(s.id) || [];
+      const directRecords = directAttendanceByStudent.get(s.id) || [];
+      const disciplineRecords = disciplineByStudent.get(s.id) || [];
+
+      // Consolidate attendance by date key (YYYY-MM-DD)
       const dateMap = new Map<string, string>();
       for (const r of sessionRecords) {
-        const dKey = r.session.date.toISOString().slice(0, 10);
-        dateMap.set(dKey, r.status.toLowerCase());
+        const dKey = r.session.date ? r.session.date.toISOString().slice(0, 10) : '';
+        if (dKey) dateMap.set(dKey, (r.status || 'present').toLowerCase());
       }
-      for (const a of directAttendanceRecords) {
-        const dKey = a.date.toISOString().slice(0, 10);
-        if (!dateMap.has(dKey)) {
+      for (const a of directRecords) {
+        const dKey = a.date ? a.date.toISOString().slice(0, 10) : '';
+        if (dKey && !dateMap.has(dKey)) {
           dateMap.set(dKey, (a.status || 'present').toLowerCase());
         }
       }
@@ -1008,15 +1043,6 @@ router.get('/absentee-report', requireAuth, async (req: AuthRequest, res) => {
 
       const rate = totalSessions > 0 ? parseFloat(((presentCount / totalSessions) * 100).toFixed(1)) : 100.0;
       const isChronic = rate < thresholdNum || absentCount >= 3;
-
-      const disciplineRecords = await prisma.disciplineRecord.findMany({
-        where: {
-          schoolId,
-          studentId: s.id,
-          offenceType: 'TRUANCY / CHRONIC ABSENCE'
-        },
-        orderBy: { date: 'desc' }
-      });
 
       report.push({
         studentId: s.studentId,

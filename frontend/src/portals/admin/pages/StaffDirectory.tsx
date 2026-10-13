@@ -292,22 +292,20 @@ export default function StaffDirectory() {
   }, [selectedUser]);
 
   return (
-    <div className="portal-page-container">
+    <div className="portal-container" style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
       {/* Header */}
-      <div className="portal-page-header">
-        <div className="portal-page-header-content">
-          <div className="portal-header-icon-badge">
-            <i className="fas fa-id-badge text-primary"></i>
-          </div>
-          <div>
-            <h1>Staff Directory</h1>
-            <p className="portal-page-subtitle">
-              Unified institutional personnel register: academic faculty, administrative bursars, librarians, health staff, and support teams.
-            </p>
-          </div>
+      <div className="portal-page-header" style={{ marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+        <div>
+          <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 10, margin: 0 }}>
+            <i className="fas fa-id-badge" style={{ color: 'var(--school-primary, #0284c7)' }}></i>
+            Staff Directory
+          </h1>
+          <p style={{ color: '#64748b', fontSize: '0.92rem', marginTop: 4, margin: 0 }}>
+            Unified institutional personnel register: academic faculty, administrative bursars, librarians, health staff, and support teams.
+          </p>
         </div>
 
-        <div className="portal-header-actions" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <ExportButton
             data={filteredUsers}
             columns={exportColumns}
@@ -317,97 +315,152 @@ export default function StaffDirectory() {
           <button 
             className="portal-btn-secondary"
             onClick={() => setIsImportModalOpen(true)}
-            style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, borderRadius: 8, fontWeight: 700, padding: '0 16px' }}
+            style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, borderRadius: 8, fontWeight: 700, padding: '0 16px', border: '1px solid #cbd5e1', background: '#fff', color: '#0f172a', cursor: 'pointer' }}
           >
-            <i className="fas fa-file-import"></i> Bulk Import Staff
+            <i className="fas fa-file-import" style={{ color: '#0284c7' }}></i> Bulk Import Staff
           </button>
           <button 
             className="portal-btn-primary"
             onClick={() => setIsCreateModalOpen(true)}
-            style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, borderRadius: 8, fontWeight: 800, padding: '0 20px' }}
+            style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, borderRadius: 8, fontWeight: 800, padding: '0 20px', background: '#0284c7', color: '#fff', border: 'none', cursor: 'pointer' }}
           >
             <i className="fas fa-user-plus"></i> Add Staff Member
           </button>
         </div>
       </div>
 
-      {/* KPI Stats */}
-      <div className="portal-metrics-grid mb-6">
-        <div className="metric-card">
-          <div className="metric-icon-wrap bg-blue-50 text-blue-600">
+      {/* KPI Stats Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 24 }}>
+        <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 16, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ width: 48, height: 48, borderRadius: 12, background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
             <i className="fas fa-users"></i>
           </div>
           <div>
-            <div className="metric-value">{stats.total}</div>
-            <div className="metric-label">Total Staff</div>
+            <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>{stats.total}</div>
+            <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#64748b', marginTop: 4 }}>Total Staff</div>
           </div>
         </div>
-        <div className="metric-card">
-          <div className="metric-icon-wrap bg-emerald-50 text-emerald-600">
+
+        <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 16, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ width: 48, height: 48, borderRadius: 12, background: '#ecfdf5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
             <i className="fas fa-chalkboard-teacher"></i>
           </div>
           <div>
-            <div className="metric-value">{stats.teachers}</div>
-            <div className="metric-label">Teaching Faculty</div>
+            <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>{stats.teachers}</div>
+            <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#64748b', marginTop: 4 }}>Teaching Faculty</div>
           </div>
         </div>
-        <div className="metric-card">
-          <div className="metric-icon-wrap bg-amber-50 text-amber-600">
+
+        <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 16, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ width: 48, height: 48, borderRadius: 12, background: '#fffbeb', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
             <i className="fas fa-calculator"></i>
           </div>
           <div>
-            <div className="metric-value">{stats.bursar}</div>
-            <div className="metric-label">Bursary & Finance</div>
+            <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>{stats.bursar}</div>
+            <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#64748b', marginTop: 4 }}>Bursary & Finance</div>
           </div>
         </div>
-        <div className="metric-card">
-          <div className="metric-icon-wrap bg-purple-50 text-purple-600">
+
+        <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', padding: '18px 20px', display: 'flex', alignItems: 'center', gap: 16, boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
+          <div style={{ width: 48, height: 48, borderRadius: 12, background: '#f5f3ff', color: '#7c3aed', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0 }}>
             <i className="fas fa-tools"></i>
           </div>
           <div>
-            <div className="metric-value">{stats.support}</div>
-            <div className="metric-label">Support & Health</div>
+            <div style={{ fontSize: '1.65rem', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>{stats.support}</div>
+            <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#64748b', marginTop: 4 }}>Support & Health</div>
           </div>
         </div>
       </div>
 
       {/* Role Navigation Tabs */}
-      <div className="portal-tabs-wrapper mb-6">
-        <div className="portal-tabs-nav">
-          {ROLE_TABS.map(tab => (
+      <div
+        style={{
+          display: 'flex',
+          gap: 6,
+          borderBottom: '2px solid #e2e8f0',
+          marginBottom: 20,
+          background: '#fff',
+          padding: '8px 12px 0 12px',
+          borderRadius: '12px 12px 0 0',
+          overflowX: 'auto',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+        }}
+      >
+        {ROLE_TABS.map(tab => {
+          const count = tab.id === 'ALL' 
+            ? users.length 
+            : users.filter(u => u.role === tab.id).length;
+          const isActive = activeTab === tab.id;
+          return (
             <button
               key={tab.id}
-              className={`portal-tab-btn ${activeTab === tab.id ? 'active' : ''}`}
+              type="button"
               onClick={() => handleTabChange(tab.id)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '10px 16px',
+                border: 'none',
+                background: 'none',
+                cursor: 'pointer',
+                fontWeight: isActive ? 700 : 500,
+                color: isActive ? '#0284c7' : '#64748b',
+                borderBottom: isActive ? '3px solid #0284c7' : '3px solid transparent',
+                marginBottom: '-2px',
+                fontSize: '0.92rem',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.15s ease'
+              }}
             >
-              <i className={`${tab.icon} mr-2`}></i>
-              {tab.label}
-              <span className="portal-tab-count">
-                {tab.id === 'ALL' 
-                  ? users.length 
-                  : users.filter(u => u.role === tab.id).length}
+              <i className={tab.icon} style={{ fontSize: '0.95rem' }}></i>
+              <span>{tab.label}</span>
+              <span
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  padding: '2px 8px',
+                  borderRadius: 10,
+                  background: isActive ? '#e0f2fe' : '#f1f5f9',
+                  color: isActive ? '#0369a1' : '#64748b',
+                  marginLeft: 2
+                }}
+              >
+                {count}
               </span>
             </button>
-          ))}
-        </div>
+          );
+        })}
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="portal-card mb-6">
-        <div className="portal-filter-bar">
-          <div className="flex-1 min-w-[280px]">
+      <div
+        className="portal-card"
+        style={{
+          background: '#fff',
+          borderRadius: 12,
+          border: '1px solid #e2e8f0',
+          padding: '16px 20px',
+          marginBottom: 20,
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+        }}
+      >
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ flex: '1 1 300px', maxWidth: 460 }}>
             <SearchInput
               value={searchTerm}
               onChange={setSearchTerm}
+              loading={loading}
               placeholder="Search by name, email, staff ID, department..."
             />
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-slate-600">Department:</label>
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#475569', whiteSpace: 'nowrap' }}>Department:</label>
               <select
-                className="portal-select text-sm py-1.5"
+                className="portal-input"
+                style={{ minWidth: 160, padding: '7px 12px', fontSize: '0.85rem', borderRadius: 8, border: '1px solid #cbd5e1', background: '#fff' }}
                 value={departmentFilter}
                 onChange={(e) => {
                   setDepartmentFilter(e.target.value);
@@ -421,10 +474,11 @@ export default function StaffDirectory() {
               </select>
             </div>
 
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-slate-600">Status:</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#475569', whiteSpace: 'nowrap' }}>Status:</label>
               <select
-                className="portal-select text-sm py-1.5"
+                className="portal-input"
+                style={{ minWidth: 130, padding: '7px 12px', fontSize: '0.85rem', borderRadius: 8, border: '1px solid #cbd5e1', background: '#fff' }}
                 value={statusFilter}
                 onChange={(e) => {
                   setStatusFilter(e.target.value);
@@ -436,36 +490,61 @@ export default function StaffDirectory() {
                 <option value="LOCKED">Locked Accounts</option>
               </select>
             </div>
+
+            {(searchTerm || departmentFilter !== 'ALL' || statusFilter !== 'ALL') && (
+              <button
+                type="button"
+                className="portal-btn-ghost"
+                style={{ padding: '7px 14px', fontSize: '0.82rem', fontWeight: 600, borderRadius: 8, border: '1px solid #e2e8f0', cursor: 'pointer' }}
+                onClick={() => {
+                  setSearchTerm('');
+                  setDepartmentFilter('ALL');
+                  setStatusFilter('ALL');
+                  setCurrentPage(1);
+                }}
+              >
+                <i className="fas fa-times mr-1" /> Reset
+              </button>
+            )}
           </div>
         </div>
       </div>
 
       {/* Staff Register Table */}
-      <div className="portal-card">
+      <div
+        className="portal-card"
+        style={{
+          background: '#fff',
+          borderRadius: 12,
+          border: '1px solid #e2e8f0',
+          overflow: 'hidden',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+        }}
+      >
         {loading ? (
-          <div className="p-12 text-center text-slate-500">
-            <i className="fas fa-circle-notch fa-spin text-3xl mb-3 text-primary"></i>
-            <p>Loading staff directory...</p>
+          <div style={{ padding: 60, textAlign: 'center', color: '#64748b' }}>
+            <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7', marginBottom: 12 }}></i>
+            <p style={{ margin: 0, fontWeight: 600 }}>Loading staff directory...</p>
           </div>
         ) : filteredUsers.length === 0 ? (
-          <div className="p-12 text-center text-slate-400">
-            <i className="fas fa-user-slash text-4xl mb-3"></i>
-            <h3 className="text-lg font-semibold text-slate-700">No staff members found</h3>
-            <p className="text-sm mt-1">Try adjusting your role tab, department filter, or search query.</p>
+          <div style={{ padding: 60, textAlign: 'center', color: '#94a3b8' }}>
+            <i className="fas fa-user-slash" style={{ fontSize: '2.5rem', marginBottom: 12, color: '#cbd5e1' }}></i>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#334155', margin: '0 0 6px 0' }}>No staff members found</h3>
+            <p style={{ fontSize: '0.88rem', margin: 0 }}>Try adjusting your role tab, department filter, or search query.</p>
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto">
-              <table className="portal-table w-full">
+            <div style={{ overflowX: 'auto' }}>
+              <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
-                  <tr>
-                    <th>Staff Member</th>
-                    <th>Staff ID</th>
-                    <th>Role & Duties</th>
-                    <th>Department</th>
-                    <th>Specialty / Allocations</th>
-                    <th>Status</th>
-                    <th className="text-right">Actions</th>
+                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Staff Member</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Staff ID</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Role & Duties</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Department</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Specialty / Allocations</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Status</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'right', fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -475,36 +554,43 @@ export default function StaffDirectory() {
                     const teacher = member.teacher;
                     const subjectCount = teacher?.subjects?.length || 0;
                     const classCount = teacher?.classes?.length || 0;
+                    const avatarUrl = getAvatarUrl(member.avatar);
 
                     return (
-                      <tr key={member.id} className="hover:bg-slate-50/70 transition-colors">
-                        <td>
-                          <div className="flex items-center gap-3">
-                            <img
-                              src={getAvatarUrl(member.avatar) || ''}
-                              alt={member.name}
-                              className="w-10 h-10 rounded-full object-cover border border-slate-200"
-                              onError={(e) => {
-                                (e.target as HTMLElement).style.display = 'none';
-                              }}
-                            />
+                      <tr key={member.id} style={{ borderBottom: '1px solid #f1f5f9', transition: 'background-color 0.15s ease' }}>
+                        <td style={{ padding: '14px 16px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                            {avatarUrl ? (
+                              <img
+                                src={avatarUrl}
+                                alt={member.name}
+                                style={{ width: 40, height: 40, borderRadius: '50%', objectFit: 'cover', border: '1px solid #e2e8f0', flexShrink: 0 }}
+                                onError={(e) => {
+                                  (e.target as HTMLElement).style.display = 'none';
+                                }}
+                              />
+                            ) : (
+                              <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.95rem', flexShrink: 0 }}>
+                                {member.name ? member.name.charAt(0).toUpperCase() : 'U'}
+                              </div>
+                            )}
                             <div>
-                              <div className="font-semibold text-slate-800">{member.name}</div>
-                              <div className="text-xs text-slate-500">{member.email}</div>
+                              <div style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.92rem' }}>{member.name}</div>
+                              <div style={{ fontSize: '0.78rem', color: '#64748b' }}>{member.email}</div>
                               {member.phone && (
-                                <div className="text-xs text-slate-400">{member.phone}</div>
+                                <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{member.phone}</div>
                               )}
                             </div>
                           </div>
                         </td>
 
-                        <td>
-                          <span className="font-mono text-xs px-2 py-1 bg-slate-100 rounded text-slate-700 border border-slate-200">
+                        <td style={{ padding: '14px 16px' }}>
+                          <span style={{ fontFamily: 'monospace', fontSize: '0.8rem', padding: '3px 8px', background: '#f1f5f9', borderRadius: 4, color: '#334155', border: '1px solid #e2e8f0', fontWeight: 600 }}>
                             {member.staffId || '—'}
                           </span>
                         </td>
 
-                        <td>
+                        <td style={{ padding: '14px 16px' }}>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-start' }}>
                             <span style={{ backgroundColor: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '3px 8px', borderRadius: 6, fontSize: '0.75rem', fontWeight: 700 }}>
                               {member.role.replace('_', ' ')}
@@ -521,13 +607,13 @@ export default function StaffDirectory() {
                           </div>
                         </td>
 
-                        <td>
+                        <td style={{ padding: '14px 16px' }}>
                           <span style={{ fontSize: '0.85rem', color: '#334155', fontWeight: 600 }}>
                             {deptName}
                           </span>
                         </td>
 
-                        <td>
+                        <td style={{ padding: '14px 16px' }}>
                           {member.role === 'TEACHER' ? (
                             <div style={{ fontSize: '0.8rem', color: '#475569' }}>
                               {subjectCount > 0 ? (
@@ -551,7 +637,7 @@ export default function StaffDirectory() {
                           )}
                         </td>
 
-                        <td>
+                        <td style={{ padding: '14px 16px' }}>
                           {member.isLocked ? (
                             <span style={{ backgroundColor: '#fef2f2', color: '#b91c1c', border: '1px solid #fecaca', padding: '3px 8px', borderRadius: 6, fontSize: '0.75rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                               <i className="fas fa-lock"></i> Locked
@@ -563,32 +649,32 @@ export default function StaffDirectory() {
                           )}
                         </td>
 
-                        <td className="text-right whitespace-nowrap">
-                          <div className="flex items-center justify-end gap-1.5">
+                        <td style={{ padding: '14px 16px', textAlign: 'right' }}>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                             <button
                               onClick={() => openDetail(member)}
-                              className="btn btn-sm btn-ghost text-slate-600 hover:text-slate-900"
+                              style={{ width: 32, height: 32, borderRadius: 6, border: '1px solid #e2e8f0', background: '#fff', color: '#475569', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
                               title="View Full Profile"
                             >
                               <i className="fas fa-eye"></i>
                             </button>
                             <button
                               onClick={() => openEdit(member)}
-                              className="btn btn-sm btn-ghost text-primary hover:bg-primary/10"
+                              style={{ width: 32, height: 32, borderRadius: 6, border: '1px solid #bfdbfe', background: '#eff6ff', color: '#2563eb', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
                               title="Edit Staff Member"
                             >
                               <i className="fas fa-edit"></i>
                             </button>
                             <button
                               onClick={() => handleResetPassword(member)}
-                              className="btn btn-sm btn-ghost text-amber-600 hover:bg-amber-50"
+                              style={{ width: 32, height: 32, borderRadius: 6, border: '1px solid #fef3c7', background: '#fffbeb', color: '#d97706', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
                               title="Reset Password"
                             >
                               <i className="fas fa-key"></i>
                             </button>
                             <button
                               onClick={() => handleLockToggle(member)}
-                              className={`btn btn-sm btn-ghost ${member.isLocked ? 'text-emerald-600 hover:bg-emerald-50' : 'text-rose-600 hover:bg-rose-50'}`}
+                              style={{ width: 32, height: 32, borderRadius: 6, border: member.isLocked ? '1px solid #bbf7d0' : '1px solid #fecaca', background: member.isLocked ? '#f0fdf4' : '#fef2f2', color: member.isLocked ? '#16a34a' : '#dc2626', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
                               title={member.isLocked ? 'Unlock Account' : 'Lock Account'}
                             >
                               <i className={`fas ${member.isLocked ? 'fa-unlock' : 'fa-lock'}`}></i>
@@ -602,24 +688,24 @@ export default function StaffDirectory() {
               </table>
             </div>
 
-            {/* Pagination footer */}
-            <div className="portal-pagination-footer flex items-center justify-between p-4 border-t border-slate-200">
-              <span className="text-sm text-slate-500">
+            {/* Pagination Footer */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderTop: '1px solid #e2e8f0', background: '#f8fafc', flexWrap: 'wrap', gap: 12 }}>
+              <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>
                 Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredUsers.length)} of {filteredUsers.length} staff members
               </span>
-              <div className="flex gap-2">
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <button
-                  className="btn btn-sm btn-outline"
+                  style={{ padding: '6px 14px', borderRadius: 6, border: '1px solid #cbd5e1', background: '#fff', fontSize: '0.85rem', fontWeight: 600, color: currentPage <= 1 ? '#94a3b8' : '#334155', cursor: currentPage <= 1 ? 'not-allowed' : 'pointer' }}
                   disabled={currentPage <= 1}
                   onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 >
                   Previous
                 </button>
-                <div className="flex items-center px-2 text-sm text-slate-600 font-medium">
+                <span style={{ fontSize: '0.85rem', color: '#475569', fontWeight: 600, padding: '0 8px' }}>
                   Page {currentPage} of {totalPages}
-                </div>
+                </span>
                 <button
-                  className="btn btn-sm btn-outline"
+                  style={{ padding: '6px 14px', borderRadius: 6, border: '1px solid #cbd5e1', background: '#fff', fontSize: '0.85rem', fontWeight: 600, color: currentPage >= totalPages ? '#94a3b8' : '#334155', cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer' }}
                   disabled={currentPage >= totalPages}
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 >
