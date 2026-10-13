@@ -152,38 +152,113 @@ export default function TeacherDashboard() {
         </div>
       </div>
 
-      {/* Quick Actions Bar */}
-      <div style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: '#ffffff',
-        borderTop: '1px solid #e2e8f0',
-        boxShadow: '0 -4px 12px rgba(0, 0, 0, 0.08)',
-        padding: '10px 16px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: '12px',
-        zIndex: 900,
-        flexWrap: 'wrap',
-      }}>
-        <button className="portal-btn-secondary" onClick={() => navigate('/teacher/classes')} style={{flex: '1 1 auto', minWidth: '120px', maxWidth: '180px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, padding: '8px 12px', fontSize: '0.875rem'}}>
-          <i className="fas fa-chalkboard-teacher"></i> My Classes
-        </button>
-        <button className="portal-btn-secondary" onClick={() => navigate('/teacher/attendance')} style={{flex: '1 1 auto', minWidth: '120px', maxWidth: '180px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, padding: '8px 12px', fontSize: '0.875rem'}}>
-          <i className="fas fa-clipboard-check"></i> Attendance
-        </button>
-        <button className="portal-btn-secondary" onClick={() => navigate('/teacher/grades')} style={{flex: '1 1 auto', minWidth: '120px', maxWidth: '180px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, padding: '8px 12px', fontSize: '0.875rem'}}>
-          <i className="fas fa-edit"></i> Marks Entry
-        </button>
-        <button className="portal-btn-secondary" onClick={() => navigate('/teacher/curriculum')} style={{flex: '1 1 auto', minWidth: '120px', maxWidth: '180px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, padding: '8px 12px', fontSize: '0.875rem'}}>
-          <i className="fas fa-book-open"></i> Curriculum
-        </button>
-        <button className="portal-btn-secondary" onClick={() => navigate('/teacher/clinic?tab=refer')} style={{flex: '1 1 auto', minWidth: '120px', maxWidth: '180px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8, padding: '8px 12px', fontSize: '0.875rem', color: '#c53030', borderColor: '#feb2b2'}}>
-          <i className="fas fa-first-aid"></i> Sick Bay
-        </button>
+      {/* Quick Actions Area */}
+      <style>{`
+        .teacher-quick-actions-container {
+          background: #ffffff;
+          border-radius: 12px;
+          border: 1px solid #e2e8f0;
+          padding: 20px 24px;
+          margin-bottom: 28px;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .teacher-quick-actions-grid {
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          gap: 12px;
+        }
+        .teacher-qa-btn {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justifyContent: center;
+          gap: 8px;
+          padding: 14px 10px;
+          border-radius: 10px;
+          border: 1px solid #e2e8f0;
+          background: #f8fafc;
+          color: #1e293b;
+          font-weight: 600;
+          font-size: 0.85rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          text-decoration: none;
+        }
+        .teacher-qa-btn:hover {
+          background: #f1f5f9;
+          border-color: #cbd5e1;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+        .teacher-qa-btn i {
+          font-size: 1.25rem;
+          color: #0284c7;
+        }
+        .teacher-qa-btn.sick-bay i {
+          color: #dc2626;
+        }
+        @media (max-width: 768px) {
+          .teacher-quick-actions-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin-bottom: 0;
+            border-radius: 16px 16px 0 0;
+            border-bottom: none;
+            box-shadow: 0 -4px 16px rgba(0,0,0,0.12);
+            padding: 10px 12px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(8px);
+          }
+          .teacher-quick-actions-container h3 {
+            display: none;
+          }
+          .teacher-quick-actions-grid {
+            display: flex;
+            justify-content: space-around;
+            gap: 6px;
+          }
+          .teacher-qa-btn {
+            flex: 1;
+            padding: 8px 4px;
+            font-size: 0.72rem;
+            border: none;
+            background: transparent;
+          }
+          .teacher-qa-btn i {
+            font-size: 1.1rem;
+          }
+        }
+      `}</style>
+
+      <div className="teacher-quick-actions-container">
+        <h3 style={{ margin: '0 0 14px 0', fontSize: '0.95rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          Daily Quick Actions
+        </h3>
+        <div className="teacher-quick-actions-grid">
+          <button className="teacher-qa-btn" onClick={() => navigate('/teacher/classes')}>
+            <i className="fas fa-chalkboard-teacher"></i>
+            <span>My Classes</span>
+          </button>
+          <button className="teacher-qa-btn" onClick={() => navigate('/teacher/attendance')}>
+            <i className="fas fa-clipboard-check"></i>
+            <span>Attendance</span>
+          </button>
+          <button className="teacher-qa-btn" onClick={() => navigate('/teacher/grades')}>
+            <i className="fas fa-edit"></i>
+            <span>Marks Entry</span>
+          </button>
+          <button className="teacher-qa-btn" onClick={() => navigate('/teacher/curriculum')}>
+            <i className="fas fa-book-open"></i>
+            <span>Curriculum</span>
+          </button>
+          <button className="teacher-qa-btn sick-bay" onClick={() => navigate('/teacher/clinic?tab=refer')}>
+            <i className="fas fa-first-aid"></i>
+            <span>Sick Bay</span>
+          </button>
+        </div>
       </div>
 
       <MaintenanceRequestModal 

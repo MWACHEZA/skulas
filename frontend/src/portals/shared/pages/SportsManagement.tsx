@@ -3,7 +3,7 @@ import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useAuth } from '../../../contexts/AuthContext';
-import { SearchableCombobox, type ComboboxOption } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface SportsEvent {
@@ -133,6 +133,37 @@ export default function SportsManagement() {
     condition: 'GOOD',
     custodianId: ''
   });
+
+  // Search Query
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredSports = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return sports;
+    return sports.filter((s: any) =>
+      (s.name || '').toLowerCase().includes(q) ||
+      (s.category || '').toLowerCase().includes(q) ||
+      (s.sportMaster?.user?.name || s.sportMaster?.name || '').toLowerCase().includes(q)
+    );
+  }, [sports, searchQuery]);
+
+  const filteredHouses = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return houses;
+    return houses.filter((h: any) =>
+      (h.name || '').toLowerCase().includes(q) ||
+      (h.houseMaster?.user?.name || h.houseMaster?.name || '').toLowerCase().includes(q)
+    );
+  }, [houses, searchQuery]);
+
+  const filteredEquipments = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return equipments;
+    return equipments.filter((e: any) =>
+      (e.name || '').toLowerCase().includes(q) ||
+      (e.condition || '').toLowerCase().includes(q)
+    );
+  }, [equipments, searchQuery]);
 
   // Load All initial data
   useEffect(() => {
@@ -550,37 +581,211 @@ export default function SportsManagement() {
   };
 
   return (
-    <div className="portal-content">
-      <div className="portal-header">
-        <div className="header-title">
-          <h1><i className="fas fa-running mr-2"></i> Sports &amp; Athletics Hub</h1>
-          <p>Coordinate school teams, assign masters, manage captains, and register sports.</p>
+    <div className="portal-container" style={{ padding: '24px', maxWidth: '1440px', margin: '0 auto' }}>
+      {/* Header Banner */}
+      <div style={{
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+        borderRadius: '20px',
+        padding: '28px',
+        color: '#ffffff',
+        marginBottom: '24px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '20px'
+      }}>
+        <div>
+          <span style={{
+            background: 'rgba(255,255,255,0.15)',
+            borderRadius: '8px',
+            padding: '4px 10px',
+            fontSize: '0.78rem',
+            fontWeight: 800,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em'
+          }}>
+            Physical Education & Athletics
+          </span>
+          <h1 style={{ margin: '8px 0 0', fontSize: '1.8rem', fontWeight: 900, color: '#ffffff' }}>
+            <i className="fas fa-running mr-3" style={{ color: '#38bdf8' }}></i>
+            Sports & Athletics Hub
+          </h1>
+          <p style={{ margin: '6px 0 0', opacity: 0.85, fontSize: '0.95rem' }}>
+            Coordinate school teams, assign masters, manage captains, and maintain equipment assets.
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <ExportButton
+            data={activeTab === 'teams' ? filteredSports.map((s: any) => ({
+              'Sport': s.name,
+              'Category': s.category,
+              'Sport Master': s.sportMaster?.user?.name || s.sportMaster?.name || 'Unassigned',
+              'Age Groups': Array.isArray(s.ageGroups) ? s.ageGroups.join(', ') : 'All',
+              'Captains': Array.isArray(s.captains) ? s.captains.map((c: any) => c.name || c.user?.name).join(', ') : 'None'
+            })) : activeTab === 'houses' ? filteredHouses.map((h: any) => ({
+              'House': h.name,
+              'House Master': h.houseMaster?.user?.name || h.houseMaster?.name || 'Unassigned',
+              'Captain': h.houseCaptain?.name || 'Unassigned',
+              'Points': h.points || 0
+            })) : filteredEquipments.map((e: any) => ({
+              'Equipment': e.name,
+              'Sport': e.sport?.name || 'General PE',
+              'Quantity': e.quantity,
+              'Condition': e.condition
+            }))}
+            filename={`sports_${activeTab}_report`}
+            title={`Sports ${activeTab.toUpperCase()} Directory`}
+            headers={activeTab === 'teams' ? ['Sport', 'Category', 'Sport Master', 'Age Groups', 'Captains'] : activeTab === 'houses' ? ['House', 'House Master', 'Captain', 'Points'] : ['Equipment', 'Sport', 'Quantity', 'Condition']}
+          />
+          {isAdmin && (
+            <button
+              className="portal-btn-primary"
+              onClick={() => {
+                if (activeTab === 'teams') handleOpenAddSportModal();
+                else if (activeTab === 'houses') handleOpenAddHouseModal();
+                else handleOpenAddEquipmentModal();
+              }}
+              style={{ padding: '0 24px', fontWeight: 900, height: '46px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}
+            >
+              <i className="fas fa-plus"></i>
+              {activeTab === 'teams' ? 'Register Sport' : activeTab === 'houses' ? 'Add House' : 'Add Equipment'}
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Tabs Menu */}
-      <div style={{ display: 'flex', gap: '12px', marginTop: '2rem', marginBottom: '32px', overflowX: 'auto', paddingBottom: '8px' }} className="custom-scrollbar">
-        <button
-          className={activeTab === 'teams' ? 'portal-btn-primary' : 'portal-btn-ghost'}
-          onClick={() => setActiveTab('teams')}
-          style={{ minWidth: '160px' }}
-        >
-          <i className="fas fa-users mr-2"></i> Sports Teams
-        </button>
-        <button
-          className={activeTab === 'houses' ? 'portal-btn-primary' : 'portal-btn-ghost'}
-          onClick={() => setActiveTab('houses')}
-          style={{ minWidth: '160px' }}
-        >
-          <i className="fas fa-home mr-2"></i> Houses
-        </button>
-        <button
-          className={activeTab === 'inventory' ? 'portal-btn-primary' : 'portal-btn-ghost'}
-          onClick={() => setActiveTab('inventory')}
-          style={{ minWidth: '160px' }}
-        >
-          <i className="fas fa-boxes mr-2"></i> Equipment
-        </button>
+      {/* KPI Summary Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+        <div style={{ background: '#fff', borderRadius: '14px', padding: '18px 20px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Sports Teams</div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0f172a', marginTop: 4 }}>{sports.length}</div>
+            <div style={{ fontSize: '0.75rem', color: '#0284c7', fontWeight: 700, marginTop: 2 }}>Registered disciplines</div>
+          </div>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#f0f9ff', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
+            <i className="fas fa-futbol"></i>
+          </div>
+        </div>
+
+        <div style={{ background: '#fff', borderRadius: '14px', padding: '18px 20px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>School Houses</div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0f172a', marginTop: 4 }}>{houses.length}</div>
+            <div style={{ fontSize: '0.75rem', color: '#8b5cf6', fontWeight: 700, marginTop: 2 }}>Active houses</div>
+          </div>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#f5f3ff', color: '#8b5cf6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
+            <i className="fas fa-shield-alt"></i>
+          </div>
+        </div>
+
+        <div style={{ background: '#fff', borderRadius: '14px', padding: '18px 20px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Equipment Units</div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0f172a', marginTop: 4 }}>
+              {equipments.reduce((sum, e) => sum + (Number(e.quantity) || 0), 0)}
+            </div>
+            <div style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 700, marginTop: 2 }}>Items in inventory</div>
+          </div>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#f0fdf4', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
+            <i className="fas fa-boxes"></i>
+          </div>
+        </div>
+
+        <div style={{ background: '#fff', borderRadius: '14px', padding: '18px 20px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Sports Masters</div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0f172a', marginTop: 4 }}>
+              {sports.filter(s => !!s.sportMasterId).length}
+            </div>
+            <div style={{ fontSize: '0.75rem', color: '#d97706', fontWeight: 700, marginTop: 2 }}>Assigned faculty</div>
+          </div>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#fffbeb', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
+            <i className="fas fa-user-check"></i>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs and Search Toolbar */}
+      <div style={{
+        background: '#fff',
+        borderRadius: '16px',
+        padding: '14px 18px',
+        border: '1px solid #e2e8f0',
+        marginBottom: '24px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '16px'
+      }}>
+        <div style={{ display: 'flex', gap: '8px', background: '#f1f5f9', padding: '4px', borderRadius: '12px' }}>
+          <button
+            onClick={() => setActiveTab('teams')}
+            style={{
+              padding: '8px 18px',
+              borderRadius: '9px',
+              border: 'none',
+              fontWeight: 800,
+              fontSize: '0.88rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: activeTab === 'teams' ? '#ffffff' : 'transparent',
+              color: activeTab === 'teams' ? '#0f172a' : '#64748b',
+              boxShadow: activeTab === 'teams' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+            }}
+          >
+            <i className="fas fa-users mr-1"></i> Sports Teams
+          </button>
+          <button
+            onClick={() => setActiveTab('houses')}
+            style={{
+              padding: '8px 18px',
+              borderRadius: '9px',
+              border: 'none',
+              fontWeight: 800,
+              fontSize: '0.88rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: activeTab === 'houses' ? '#ffffff' : 'transparent',
+              color: activeTab === 'houses' ? '#0f172a' : '#64748b',
+              boxShadow: activeTab === 'houses' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+            }}
+          >
+            <i className="fas fa-home mr-1"></i> Houses
+          </button>
+          <button
+            onClick={() => setActiveTab('inventory')}
+            style={{
+              padding: '8px 18px',
+              borderRadius: '9px',
+              border: 'none',
+              fontWeight: 800,
+              fontSize: '0.88rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: activeTab === 'inventory' ? '#ffffff' : 'transparent',
+              color: activeTab === 'inventory' ? '#0f172a' : '#64748b',
+              boxShadow: activeTab === 'inventory' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'
+            }}
+          >
+            <i className="fas fa-boxes mr-1"></i> Equipment
+          </button>
+        </div>
+
+        <div style={{ flex: 1, minWidth: '280px', maxWidth: '420px' }}>
+          <SearchInput
+            placeholder={`Search ${activeTab === 'teams' ? 'sports' : activeTab === 'houses' ? 'houses' : 'equipment'}...`}
+            value={searchQuery}
+            onChange={setSearchQuery}
+          />
+        </div>
       </div>
 
       {/* ── TAB 1: SPORTS TEAMS ── */}
@@ -608,13 +813,13 @@ export default function SportsManagement() {
                 <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
                   <i className="fas fa-spinner fa-spin mr-2"></i> Loading school sports...
                 </div>
-              ) : sports.length === 0 ? (
+              ) : filteredSports.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
-                  No sports registered yet. {isAdmin && "Click 'Register Sport' to add one."}
+                  No sports matching "{searchQuery}" found. {isAdmin && "Click 'Register Sport' to add one."}
                 </div>
               ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
-                  {sports.map(sport => {
+                  {filteredSports.map(sport => {
                     const logoUrl = sport.icon ? `${api.defaults.baseURL}/api/storage/media/${user?.schoolCode}/${sport.icon}` : null;
                     return (
                       <div key={sport.id} style={{ border: '1px solid #e2e8f0', borderRadius: '16px', overflow: 'hidden', background: '#ffffff', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.05)' }}>
@@ -716,13 +921,13 @@ export default function SportsManagement() {
                 <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
                   <i className="fas fa-spinner fa-spin mr-2"></i> Loading houses...
                 </div>
-              ) : houses.length === 0 ? (
+              ) : filteredHouses.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
-                  No school houses registered yet.
+                  No school houses matching "{searchQuery}" found.
                 </div>
               ) : (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
-                  {houses.map(house => {
+                  {filteredHouses.map(house => {
                     const logoUrl = house.logo ? `${api.defaults.baseURL}/api/storage/media/${user?.schoolCode}/${house.logo}` : null;
                     return (
                       <div key={house.id} style={{ border: '1px solid #e2e8f0', borderRadius: '16px', overflow: 'hidden', background: '#ffffff', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.05)' }}>
@@ -814,10 +1019,10 @@ export default function SportsManagement() {
                   <tbody>
                     {loadingEquipments ? (
                       <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}><i className="fas fa-spinner fa-spin mr-2"></i>Loading inventory...</td></tr>
-                    ) : equipments.length === 0 ? (
-                      <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}>No equipment registered yet.</td></tr>
+                    ) : filteredEquipments.length === 0 ? (
+                      <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}>No equipment matching "{searchQuery}" found.</td></tr>
                     ) : (
-                      equipments.map(item => (
+                      filteredEquipments.map(item => (
                         <tr key={item.id}>
                           <td><div style={{ fontWeight: 800, color: '#1e293b' }}>{item.name}</div></td>
                           <td><span style={{ fontWeight: 700, color: '#64748b' }}>{item.sport ? item.sport.name : 'General'}</span></td>

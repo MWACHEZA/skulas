@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
+import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type UniformTab = 'stock' | 'kits' | 'issue' | 'alerts' | 'reports';
@@ -108,10 +109,36 @@ export default function AdminUniformsInventory() {
   });
 
   // Issuance Form State
-  const [studentSearch, setStudentSearch] = useState('');
+  const [studentOptions, setStudentOptions] = useState<ComboboxOption[]>([]);
+  const [isSearchingStudents, setIsSearchingStudents] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [selectedKitId, setSelectedKitId] = useState('');
   const [issueCart, setIssueCart] = useState<Array<{ productId: string; productName: string; size: string; qty: number; unitPrice: number }>>([]);
+
+  const searchStudents = async (query: string = '') => {
+    setIsSearchingStudents(true);
+    try {
+      const res = await api.get(`/api/students?search=${encodeURIComponent(query)}`);
+      const list = Array.isArray(res.data) ? res.data : res.data?.students || [];
+      setStudentOptions(list.map((s: any) => ({
+        value: s.id,
+        label: s.name,
+        subLabel: `${s.studentId || s.admissionNumber || ''} • ${s.currentClass || s.grade || 'Enrolled'}`.trim(),
+        badge: s.status || 'Active',
+        extra: s
+      })));
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSearchingStudents(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'issue' && studentOptions.length === 0) {
+      searchStudents('');
+    }
+  }, [activeTab]);
 
   // Restock / GRN Form State
   const [grnForm, setGrnForm] = useState({
@@ -449,27 +476,42 @@ export default function AdminUniformsInventory() {
       {/* TAB 1: Stock Dashboard */}
       {activeTab === 'stock' && (
         <div>
-          <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', background: '#fff', padding: '14px', borderRadius: '8px' }}>
-            <div style={{ flex: 1, position: 'relative' }}>
-              <i className="fas fa-search" style={{ position: 'absolute', left: 12, top: 12, color: '#94a3b8' }}></i>
-              <input
-                type="text"
+          <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', background: '#fff', padding: '14px', borderRadius: '12px', border: '1px solid #e2e8f0', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: '280px', maxWidth: '480px' }}>
+              <SearchInput
                 placeholder="Search uniform product name or barcode..."
                 value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                style={{ width: '100%', padding: '9px 12px 9px 36px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                onChange={setSearchTerm}
               />
             </div>
-            <select
-              value={genderFilter}
-              onChange={e => setGenderFilter(e.target.value)}
-              style={{ padding: '9px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#fff' }}
-            >
-              <option value="ALL">All Genders</option>
-              <option value="BOYS">Boys</option>
-              <option value="GIRLS">Girls</option>
-              <option value="UNISEX">Unisex</option>
-            </select>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <select
+                value={genderFilter}
+                onChange={e => setGenderFilter(e.target.value)}
+                style={{ padding: '9px 12px', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#fff', fontWeight: 600, color: '#334155' }}
+              >
+                <option value="ALL">All Genders</option>
+                <option value="BOYS">Boys</option>
+                <option value="GIRLS">Girls</option>
+                <option value="UNISEX">Unisex</option>
+              </select>
+              <ExportButton
+                data={filteredProducts.map(p => ({
+                  'Item Name': p.name,
+                  'Gender': p.gender,
+                  'Age Range': p.ageRange || '—',
+                  'Size': p.size,
+                  'Barcode': p.barcode || '—',
+                  'Cost Price': p.costPrice,
+                  'Selling Price': p.sellingPrice,
+                  'Stock Qty': p.stockQty,
+                  'Alert Buffer': p.minStockAlert
+                }))}
+                filename="uniform_inventory_stock"
+                title="Uniforms Stock Inventory"
+                headers={['Item Name', 'Gender', 'Age Range', 'Size', 'Barcode', 'Cost Price', 'Selling Price', 'Stock Qty', 'Alert Buffer']}
+              />
+            </div>
           </div>
 
           <div style={{ background: '#fff', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
@@ -565,28 +607,24 @@ export default function AdminUniformsInventory() {
 
             {/* Student Search */}
             <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
-                Search Student (Name or ID)
+              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>
+                Select Student (Name or ID) *
               </label>
-              <input
-                type="text"
-                placeholder="Type name e.g. Tanaka..."
-                value={studentSearch}
-                onChange={async e => {
-                  setStudentSearch(e.target.value);
-                  if (e.target.value.length > 2) {
-                    try {
-                      const res = await api.get(`/api/students?search=${encodeURIComponent(e.target.value)}`);
-                      const list = Array.isArray(res.data) ? res.data : res.data?.students || [];
-                      if (list.length > 0) setSelectedStudent(list[0]);
-                    } catch {}
-                  }
+              <SearchableCombobox
+                options={studentOptions}
+                value={selectedStudent?.id}
+                onChange={(val, opt) => {
+                  const chosen = Array.isArray(opt) ? opt[0] : opt;
+                  setSelectedStudent(chosen?.extra || null);
                 }}
-                style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                placeholder="Type to search students..."
+                loading={isSearchingStudents}
+                style={{ width: '100%' }}
               />
               {selectedStudent && (
-                <div style={{ marginTop: '8px', padding: '8px 12px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '6px', fontSize: '0.85rem', color: '#166534' }}>
-                  ✓ Selected: <strong>{selectedStudent.name}</strong> ({selectedStudent.studentId || selectedStudent.id.slice(-6)})
+                <div style={{ marginTop: '8px', padding: '10px 14px', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', fontSize: '0.85rem', color: '#166534', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>✓ Selected: <strong>{selectedStudent.name}</strong> ({selectedStudent.studentId || selectedStudent.admissionNumber || selectedStudent.id.slice(-6)})</span>
+                  <button type="button" onClick={() => setSelectedStudent(null)} style={{ background: 'none', border: 'none', color: '#166534', cursor: 'pointer', fontWeight: 800 }}>&times;</button>
                 </div>
               )}
             </div>
@@ -746,13 +784,28 @@ export default function AdminUniformsInventory() {
                 {lowStockAlerts.length} uniform items have fallen below their safety reorder buffer.
               </p>
             </div>
-            <button
-              onClick={handleCreateRequisition}
-              disabled={submitting || lowStockAlerts.length === 0}
-              style={{ padding: '9px 16px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
-            >
-              Generate Bulk Requisition to Bursar
-            </button>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <ExportButton
+                data={lowStockAlerts.map(p => ({
+                  'Item Name': p.name,
+                  'Size': p.size,
+                  'Current Stock': p.stockQty,
+                  'Min Alert Buffer': p.minStockAlert,
+                  'Unit Cost': p.costPrice,
+                  'Suggested Reorder': Math.max(10, p.minStockAlert * 2)
+                }))}
+                filename="uniform_low_stock_alerts"
+                title="Uniforms Low Stock Alerts"
+                headers={['Item Name', 'Size', 'Current Stock', 'Min Alert Buffer', 'Unit Cost', 'Suggested Reorder']}
+              />
+              <button
+                onClick={handleCreateRequisition}
+                disabled={submitting || lowStockAlerts.length === 0}
+                style={{ padding: '9px 16px', background: '#dc2626', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer' }}
+              >
+                Generate Bulk Requisition to Bursar
+              </button>
+            </div>
           </div>
 
           <div style={{ background: '#fff', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
@@ -787,13 +840,29 @@ export default function AdminUniformsInventory() {
       {/* TAB 5: Sales & Stock Ledger */}
       {activeTab === 'reports' && (
         <div style={{ background: '#fff', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0' }}>
-            <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#1e293b' }}>
-              Uniform Stock Movement & Reversals Ledger
-            </h3>
-            <p style={{ margin: '4px 0 0 0', color: '#64748b', fontSize: '0.85rem' }}>
-              Double-entry stock intake, issuance deductions, and credit note restock transactions.
-            </p>
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+            <div>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#1e293b' }}>
+                Uniform Stock Movement & Reversals Ledger
+              </h3>
+              <p style={{ margin: '4px 0 0 0', color: '#64748b', fontSize: '0.85rem' }}>
+                Double-entry stock intake, issuance deductions, and credit note restock transactions.
+              </p>
+            </div>
+            <ExportButton
+              data={ledgerEntries.map(entry => ({
+                'Timestamp': new Date(entry.createdAt).toLocaleString(),
+                'Product': entry.product ? `${entry.product.name} (${entry.product.size})` : 'Product',
+                'Type': entry.type.toUpperCase(),
+                'Qty Change': entry.qtyChange,
+                'Balance After': entry.balanceAfter,
+                'Reference': entry.referenceId || '—',
+                'Notes': entry.notes || '—'
+              }))}
+              filename="uniform_stock_ledger"
+              title="Uniform Stock Ledger Report"
+              headers={['Timestamp', 'Product', 'Type', 'Qty Change', 'Balance After', 'Reference', 'Notes']}
+            />
           </div>
 
           <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>

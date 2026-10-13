@@ -5,9 +5,12 @@ import ManageInvoicesPage from '../../shared/pages/ManageInvoicesPage';
 import StudentLedgersPage from '../../shared/pages/StudentLedgersPage';
 import BulkInvoicesPage from '../../shared/pages/BulkInvoicesPage';
 import { useToast } from '../../../context/ToastContext';
+import { useAuth } from '../../../contexts/AuthContext';
 import api from '../../../lib/api';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import SearchInput from '../../../components/shared/SearchInput';
+import ExportButton from '../../../components/shared/ExportButton';
 
 export type BursarFeesTab = 'billing' | 'collection' | 'invoices' | 'ledgers' | 'bulk-invoices' | 'defaulters';
 
@@ -31,6 +34,7 @@ export default function BursarFeesUnified() {
   const currentTab = (searchParams.get('tab') as BursarFeesTab) || 'billing';
   const [activeTab, setActiveTab] = useState<BursarFeesTab>(currentTab);
   const { showToast } = useToast();
+  const { user } = useAuth();
 
   // -------------------------------------------------------------
   // TAB: Daily Rapid Collection State
@@ -248,9 +252,9 @@ export default function BursarFeesUnified() {
     setBroadcastingSms(true);
     try {
       const res = await api.post('/api/fees/defaulters/broadcast-sms', {
-        defaulterIds: targets.map(t => t.studentId),
+        defaulterIds: targets.flatMap(t => [t.id, t.studentId].filter(Boolean)),
         defaulters: targets.map(t => ({
-          studentId: t.studentId,
+          studentId: t.studentId || t.id,
           name: t.name,
           balance: t.balance,
           guardianPhone: t.guardianPhone
@@ -282,6 +286,7 @@ export default function BursarFeesUnified() {
 
       const currentDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
       const deadlineDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
+      const institutionName = (user?.school as any)?.name || 'MWACHEZA ACADEMY & HIGH SCHOOL';
 
       records.forEach((student, index) => {
         if (index > 0) doc.addPage();
@@ -293,7 +298,7 @@ export default function BursarFeesUnified() {
         doc.setTextColor(255, 255, 255);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(15);
-        doc.text('MWACHEZA ACADEMY & HIGH SCHOOL', 105, 11, { align: 'center' });
+        doc.text(institutionName.toUpperCase(), 105, 11, { align: 'center' });
 
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8.5);
@@ -880,19 +885,13 @@ export default function BursarFeesUnified() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
               {/* Search and Filters */}
               <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap', flex: 1 }}>
-                <div style={{ minWidth: 240, flex: 1 }}>
+                <div style={{ minWidth: 260, flex: 1 }}>
                   <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748b', display: 'block', marginBottom: 4 }}>Search Defaulters</label>
-                  <div style={{ position: 'relative' }}>
-                    <i className="fas fa-search" style={{ position: 'absolute', left: 12, top: 11, color: '#94a3b8', fontSize: '0.85rem' }} />
-                    <input
-                      type="text"
-                      className="portal-input"
-                      placeholder="Student name, ID, phone..."
-                      value={defaulterSearchQuery}
-                      onChange={e => setDefaulterSearchQuery(e.target.value)}
-                      style={{ paddingLeft: 34, width: '100%', height: 38 }}
-                    />
-                  </div>
+                  <SearchInput
+                    value={defaulterSearchQuery}
+                    onChange={setDefaulterSearchQuery}
+                    placeholder="Search student name, ID, phone..."
+                  />
                 </div>
 
                 <div>
@@ -943,7 +942,22 @@ export default function BursarFeesUnified() {
               </div>
 
               {/* Action Buttons */}
-              <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end' }}>
+              <div style={{ display: 'flex', gap: 10, alignItems: 'flex-end', flexWrap: 'wrap' }}>
+                <ExportButton
+                  data={filteredDefaulters}
+                  filename="Debtors_Aging_Register"
+                  columns={[
+                    { header: 'Student ID', key: 'studentId' },
+                    { header: 'Student Name', key: 'name' },
+                    { header: 'Class / Form', key: 'form' },
+                    { header: 'Boarding', key: 'boarding' },
+                    { header: 'Arrears Balance ($)', key: 'balance', formatter: (v: number) => `$${v.toFixed(2)}` },
+                    { header: 'Aging Status', key: 'status' },
+                    { header: 'Guardian Phone', key: 'guardianPhone' }
+                  ]}
+                  title="Debtors Aging & Defaulters Register"
+                />
+
                 <button
                   type="button"
                   className="portal-btn-secondary"

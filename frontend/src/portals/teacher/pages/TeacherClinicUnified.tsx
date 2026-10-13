@@ -426,39 +426,24 @@ export default function TeacherClinicUnified() {
                           <button
                             type="button"
                             onClick={() => {
-                              const found = students.find(s =>
-                                (r.studentId && (s.id === r.studentId || s.studentId === r.studentId)) ||
-                                (r.studentName && s.name?.toLowerCase() === r.studentName?.toLowerCase())
-                              );
-                              if (found) {
-                                setSelectedSickBayStudent(found);
-                              } else {
-                                setSelectedSickBayStudent({
-                                  id: r.studentId || r.userId || r.id,
-                                  name: r.studentName || 'Student',
-                                  class: r.className || null
-                                });
-                              }
-                              setSickBayUrgency('URGENT');
-                              setSickBaySymptoms(r.symptoms ? `Escalated to Sick Bay: ${r.symptoms}` : '');
-                              setShowSickBayModal(true);
+                              showToast(`${r.studentName || r.title || 'Student'}: ${r.symptoms || r.details || 'Referred for care'}`, 'info');
                             }}
-                            title="Send or escalate student to Sick Bay"
+                            title="View referral details"
                             style={{
-                              background: '#fee2e2',
-                              color: '#b91c1c',
-                              border: '1px solid #fecaca',
+                              background: '#f8fafc',
+                              color: '#334155',
+                              border: '1px solid #cbd5e1',
                               borderRadius: 6,
                               padding: '5px 10px',
                               fontSize: '0.78rem',
-                              fontWeight: 700,
+                              fontWeight: 600,
                               cursor: 'pointer',
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: 5
                             }}
                           >
-                            <i className="fas fa-bed-pulse" /> Send to Sick Bay
+                            <i className="fas fa-file-medical" /> View Details
                           </button>
                         </td>
                       </tr>

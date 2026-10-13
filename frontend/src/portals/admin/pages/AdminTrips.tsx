@@ -70,6 +70,7 @@ export default function AdminTrips({ defaultTab }: { defaultTab?: 'all-trips' | 
   const [staffList, setStaffList] = useState<any[]>([]);
 
   // Filters for All Trips tab
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [typeFilter, setTypeFilter] = useState('ALL');
@@ -315,6 +316,7 @@ export default function AdminTrips({ defaultTab }: { defaultTab?: 'all-trips' | 
         }
 
         fetchTrips();
+        setShowCreateModal(false);
         setTab('details', createdTrip.id);
       }
     } catch (err: any) {
@@ -355,7 +357,7 @@ export default function AdminTrips({ defaultTab }: { defaultTab?: 'all-trips' | 
 
           <div style={{ display: 'flex', gap: 10 }}>
             <button
-              onClick={() => setTab('create')}
+              onClick={() => setShowCreateModal(true)}
               className="btn btn-primary"
               style={{
                 background: '#4f46e5',
@@ -454,24 +456,6 @@ export default function AdminTrips({ defaultTab }: { defaultTab?: 'all-trips' | 
             <i className="fas fa-clipboard-check" style={{ marginRight: 8 }}></i>
             Trip Roster & Gate Manifest
             {selectedTrip && <span style={{ marginLeft: 6, fontWeight: 500, color: '#64748b' }}>({selectedTrip.title})</span>}
-          </button>
-
-          <button
-            onClick={() => setTab('create')}
-            style={{
-              padding: '10px 18px',
-              border: 'none',
-              background: 'none',
-              fontWeight: 700,
-              fontSize: '0.92rem',
-              color: tab === 'create' ? '#4f46e5' : '#64748b',
-              borderBottom: tab === 'create' ? '3px solid #4f46e5' : '3px solid transparent',
-              cursor: 'pointer',
-              marginBottom: -2
-            }}
-          >
-            <i className="fas fa-plus-circle" style={{ marginRight: 8 }}></i>
-            Create Excursion
           </button>
         </div>
 
@@ -1142,26 +1126,49 @@ export default function AdminTrips({ defaultTab }: { defaultTab?: 'all-trips' | 
         )}
 
         {/* ══════════════════════════════════════════════════════════════════════
-            TAB 3: CREATE EXCURSION
+            MODAL: PLAN NEW TRIP / EXCURSION
             ══════════════════════════════════════════════════════════════════════ */}
-        {tab === 'create' && (
-          <div className="portal-card" style={{
-            background: '#ffffff',
-            borderRadius: 16,
-            border: '1px solid #e2e8f0',
-            padding: '28px',
-            maxWidth: 920,
-            margin: '0 auto',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.03)'
+        {showCreateModal && (
+          <div style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.65)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1050,
+            padding: 20
           }}>
-            <h2 style={{ margin: '0 0 4px', fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>
-              Plan New Trip or Excursion
-            </h2>
-            <p style={{ margin: '0 0 24px', color: '#64748b', fontSize: '0.9rem' }}>
-              Create an educational field trip, athletic tournament, or club tour with automated parent consent and risk clearance.
-            </p>
+            <div className="portal-card" style={{
+              background: '#ffffff',
+              borderRadius: 16,
+              border: '1px solid #e2e8f0',
+              padding: '28px',
+              maxWidth: 920,
+              width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <div>
+                  <h2 style={{ margin: '0 0 4px', fontSize: '1.4rem', fontWeight: 800, color: '#0f172a' }}>
+                    Plan New Trip or Excursion
+                  </h2>
+                  <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem' }}>
+                    Create an educational field trip, athletic tournament, or club tour with automated parent consent and risk clearance.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#64748b', padding: '4px 8px' }}
+                >
+                  &times;
+                </button>
+              </div>
 
-            <form onSubmit={e => handleCreateTrip(e, false)}>
+              <form onSubmit={e => handleCreateTrip(e, false)}>
               {/* Row 1: Title & Type */}
               <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16, marginBottom: 16 }}>
                 <div>
@@ -1464,10 +1471,24 @@ export default function AdminTrips({ defaultTab }: { defaultTab?: 'all-trips' | 
                   <i className="fas fa-paper-plane" style={{ marginRight: 6 }}></i>
                   Publish & Notify Parents
                 </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
+                  className="btn btn-secondary"
+                  style={{
+                    padding: '10px 18px',
+                    borderRadius: 8,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Cancel
+                </button>
               </div>
             </form>
           </div>
-        )}
+        </div>
+      )}
 
         {/* ══════════════════════════════════════════════════════════════════════
             MODAL: GATE MANIFEST & QR CHECK-IN

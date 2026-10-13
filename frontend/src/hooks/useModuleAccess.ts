@@ -31,6 +31,18 @@ const MODULE_ACCESS_MAP: Record<string, {
     secondaryFullRoles: ['sports_master', 'SPORTS_MASTER', 'SPORTS'],
     secondaryScopedRoles: ['pe_teacher', 'PE_TEACHER', 'house_master', 'HOUSE_MASTER', 'HOUSE', 'hod_sports', 'HOD_SPORTS', 'sports_tech', 'SPORTS_TECH'],
     secondaryRequestRoles: []
+  },
+  leave: {
+    fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN', 'HR', 'BURSAR', 'FINANCE', 'HEADMASTER', 'DEPUTY_HEAD'],
+    secondaryFullRoles: ['hr', 'HR', 'hr_manager', 'HR_MANAGER', 'headmaster', 'HEADMASTER', 'deputy_head', 'DEPUTY_HEAD'],
+    secondaryScopedRoles: ['hod', 'HOD', 'hod_sports', 'HOD_SPORTS'],
+    secondaryRequestRoles: ['teacher', 'TEACHER', 'librarian', 'LIBRARIAN', 'ancillary', 'ANCILLARY', 'driver', 'DRIVER', 'bursar', 'BURSAR', 'student', 'STUDENT']
+  },
+  awards: {
+    fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN', 'HEADMASTER', 'DEPUTY_HEAD', 'HR'],
+    secondaryFullRoles: ['sports_master', 'SPORTS_MASTER', 'club_patron', 'CLUB_PATRON', 'house_master', 'HOUSE_MASTER', 'hod', 'HOD'],
+    secondaryScopedRoles: ['teacher', 'TEACHER', 'prefect', 'PREFECT', 'student_leader', 'STUDENT_LEADER'],
+    secondaryRequestRoles: ['student', 'STUDENT', 'parent', 'PARENT', 'ancillary', 'ANCILLARY', 'librarian', 'LIBRARIAN']
   }
 };
 
@@ -68,6 +80,19 @@ export function useModuleAccess(module: string) {
   }
   if (module === 'sports' && primaryRole === 'TEACHER') {
     return { level: 'request_only' as ModuleAccessLevel, actingAs: 'pe_teacher' };
+  }
+  if (module === 'leave') {
+    if (['TEACHER', 'LIBRARIAN', 'ANCILLARY', 'STUDENT', 'PARENT', 'BURSAR'].includes(primaryRole)) {
+      return { level: 'request_only' as ModuleAccessLevel, actingAs: primaryRole };
+    }
+  }
+  if (module === 'awards') {
+    if (['TEACHER', 'BURSAR', 'LIBRARIAN'].includes(primaryRole)) {
+      return { level: 'scoped' as ModuleAccessLevel, actingAs: primaryRole };
+    }
+    if (['STUDENT', 'PARENT', 'ANCILLARY'].includes(primaryRole)) {
+      return { level: 'request_only' as ModuleAccessLevel, actingAs: primaryRole };
+    }
   }
 
   return { level: 'none' as ModuleAccessLevel, actingAs: undefined };

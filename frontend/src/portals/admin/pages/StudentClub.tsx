@@ -3,7 +3,7 @@ import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useAuth } from '../../../contexts/AuthContext';
-import { SearchInput, SearchableCombobox, type ComboboxOption } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 export default function StudentClub() {
@@ -181,30 +181,119 @@ export default function StudentClub() {
   };
 
   return (
-    <div className="portal-content">
-      <div className="portal-header">
-        <div className="header-title">
-          <h1><i className="fas fa-users mr-2"></i> {t('club')} Management</h1>
-          <p>Organize and manage extra-curricular student groups and activities.</p>
+    <div className="portal-container" style={{ padding: '24px', maxWidth: '1440px', margin: '0 auto' }}>
+      {/* Header Banner */}
+      <div style={{
+        background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
+        borderRadius: '20px',
+        padding: '28px',
+        color: '#ffffff',
+        marginBottom: '24px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '20px'
+      }}>
+        <div>
+          <span style={{
+            background: 'rgba(255,255,255,0.15)',
+            borderRadius: '8px',
+            padding: '4px 10px',
+            fontSize: '0.78rem',
+            fontWeight: 800,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em'
+          }}>
+            Extra-Curricular Activities
+          </span>
+          <h1 style={{ margin: '8px 0 0', fontSize: '1.8rem', fontWeight: 900, color: '#ffffff' }}>
+            <i className="fas fa-users mr-3" style={{ color: '#38bdf8' }}></i>
+            {t('club')} & Societies Hub
+          </h1>
+          <p style={{ margin: '6px 0 0', opacity: 0.85, fontSize: '0.95rem' }}>
+            Register student societies, assign academic patrons, and track student leadership.
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <ExportButton
+            data={filteredClubs.map(c => ({
+              'Club Name': c.name,
+              'Category': c.category || 'General',
+              'Patron': c.patron || 'Unassigned',
+              'Chairperson': c.chairperson || 'Unassigned',
+              'Founded Date': c.date ? new Date(c.date).toLocaleDateString() : '—'
+            }))}
+            filename="clubs_and_societies_roster"
+            title={`${t('club')} & Societies Directory`}
+            headers={['Club Name', 'Category', 'Patron', 'Chairperson', 'Founded Date']}
+          />
+          <button 
+            className="portal-btn-primary" 
+            onClick={handleOpenAddModal}
+            style={{ padding: '0 24px', fontWeight: 900, height: '46px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}
+          >
+            <i className="fas fa-plus"></i> Register {t('club')}
+          </button>
         </div>
       </div>
 
-      <div style={{ marginTop: '2rem' }}>
-        <div className="portal-card animate-in">
-          <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3><i className="fas fa-list mr-2"></i> Institutional {t('clubs')}</h3>
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-              <div className="portal-badge" style={{ background: 'var(--portal-primary)', color: 'white' }}>{clubs.length} Total</div>
-              <button 
-                className="portal-btn-primary" 
-                onClick={handleOpenAddModal}
-                style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}
-              >
-                <i className="fas fa-plus"></i> Register {t('club')}
-              </button>
-            </div>
+      {/* KPI Summary Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px' }}>
+        <div style={{ background: '#fff', borderRadius: '14px', padding: '18px 20px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Total Registered</div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0f172a', marginTop: 4 }}>{clubs.length}</div>
+            <div style={{ fontSize: '0.75rem', color: '#0284c7', fontWeight: 700, marginTop: 2 }}>Active societies</div>
           </div>
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid #f1f5f9' }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#f0f9ff', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
+            <i className="fas fa-sitemap"></i>
+          </div>
+        </div>
+
+        <div style={{ background: '#fff', borderRadius: '14px', padding: '18px 20px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Academic & Tech</div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0f172a', marginTop: 4 }}>
+              {clubs.filter(c => ['Academic', 'Technology'].includes(c.category)).length}
+            </div>
+            <div style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 700, marginTop: 2 }}>Curricular extensions</div>
+          </div>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#f0fdf4', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
+            <i className="fas fa-laptop-code"></i>
+          </div>
+        </div>
+
+        <div style={{ background: '#fff', borderRadius: '14px', padding: '18px 20px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Arts & Culture</div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0f172a', marginTop: 4 }}>
+              {clubs.filter(c => ['Arts & Culture', 'Religious', 'Community Service'].includes(c.category)).length}
+            </div>
+            <div style={{ fontSize: '0.75rem', color: '#8b5cf6', fontWeight: 700, marginTop: 2 }}>Creative & social</div>
+          </div>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#f5f3ff', color: '#8b5cf6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
+            <i className="fas fa-palette"></i>
+          </div>
+        </div>
+
+        <div style={{ background: '#fff', borderRadius: '14px', padding: '18px 20px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Staff Patrons</div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0f172a', marginTop: 4 }}>
+              {clubs.filter(c => !!c.patron).length}
+            </div>
+            <div style={{ fontSize: '0.75rem', color: '#d97706', fontWeight: 700, marginTop: 2 }}>Faculty mentors</div>
+          </div>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: '#fffbeb', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
+            <i className="fas fa-user-tie"></i>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: '1rem' }}>
+        <div className="portal-card animate-in" style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid #f1f5f9', background: '#f8fafc' }}>
             <SearchInput
               value={searchQuery}
               onChange={setSearchQuery}

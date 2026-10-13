@@ -16,16 +16,6 @@ export default function SportsModule() {
   const [houses, setHouses] = useState<any[]>([]);
   const [equipment, setEquipment] = useState<any[]>([]);
 
-  // Requisition Modal State (for PE Teachers / Sports Masters)
-  const [showReqModal, setShowReqModal] = useState(false);
-  const [submittingReq, setSubmittingReq] = useState(false);
-  const [reqForm, setReqForm] = useState({
-    title: '',
-    description: '',
-    estimatedAmount: '',
-    priority: 'Medium'
-  });
-
   useEffect(() => {
     if (access && access.level !== 'none') {
       fetchTeams();
@@ -37,34 +27,6 @@ export default function SportsModule() {
   const fetchTeams = () => api.get('/api/sports-extended/teams').then(res => setTeams(res.data)).catch(console.error);
   const fetchHouses = () => api.get('/api/sports-extended/houses').then(res => setHouses(res.data)).catch(console.error);
   const fetchEquipment = () => api.get('/api/sports-extended/equipment').then(res => setEquipment(res.data)).catch(console.error);
-
-  const handleRaiseRequisition = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!reqForm.title.trim() || !reqForm.description.trim()) {
-      showToast('Please fill all required requisition details', 'warning');
-      return;
-    }
-
-    setSubmittingReq(true);
-    try {
-      await api.post('/api/procurement/requisitions', {
-        title: reqForm.title.trim(),
-        description: reqForm.description.trim(),
-        estimatedAmount: parseFloat(reqForm.estimatedAmount || '0'),
-        priority: reqForm.priority,
-        requisitionType: 'Sports Equipment',
-        department: 'Sports & Physical Education'
-      });
-
-      showToast('Equipment requisition submitted to Sports Administration for review', 'success');
-      setShowReqModal(false);
-      setReqForm({ title: '', description: '', estimatedAmount: '', priority: 'Medium' });
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Failed to submit requisition', 'error');
-    } finally {
-      setSubmittingReq(false);
-    }
-  };
 
   if (!access) return <div>Loading...</div>;
 
@@ -144,20 +106,12 @@ export default function SportsModule() {
 
   const EquipmentTab = () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      {/* Action Header: PE Teacher Raise Requisition */}
+      {/* Action Header: PE Teacher Equipment Assets */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', padding: '16px 20px', borderRadius: 10, border: '1px solid #e2e8f0' }}>
         <div>
           <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#1e293b' }}>PE Equipment & Supplies</h3>
-          <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.85rem' }}>View sporting assets and submit new equipment requisitions to administration.</p>
+          <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.85rem' }}>View sporting assets and equipment allocations.</p>
         </div>
-        <button
-          type="button"
-          onClick={() => setShowReqModal(true)}
-          className="portal-btn portal-btn-primary"
-          style={{ padding: '10px 20px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}
-        >
-          <i className="fas fa-plus" /> Raise Equipment Requisition
-        </button>
       </div>
 
       <div style={{ background: '#fff', borderRadius: 10, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
@@ -197,138 +151,6 @@ export default function SportsModule() {
           </tbody>
         </table>
       </div>
-
-      {/* ── MODAL: Raise Requisition for Equipment ── */}
-      {showReqModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(15, 23, 42, 0.65)',
-            backdropFilter: 'blur(3px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 9999,
-            padding: 16
-          }}
-        >
-          <div
-            style={{
-              background: '#fff',
-              borderRadius: 12,
-              width: '100%',
-              maxWidth: 520,
-              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-              overflow: 'hidden'
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '18px 24px',
-                borderBottom: '1px solid #f1f5f9',
-                background: '#f8fafc'
-              }}
-            >
-              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: '#1e293b' }}>
-                <i className="fas fa-boxes mr-2" style={{ color: '#2563eb' }} />
-                Raise Equipment Requisition
-              </h3>
-              <button
-                type="button"
-                onClick={() => setShowReqModal(false)}
-                style={{ background: 'none', border: 'none', fontSize: '1.2rem', color: '#94a3b8', cursor: 'pointer' }}
-              >
-                &times;
-              </button>
-            </div>
-
-            <form onSubmit={handleRaiseRequisition} style={{ padding: 24 }}>
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: 6 }}>
-                  Requisition Title *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Footballs, Cones & Whistles for Term 2 PE"
-                  value={reqForm.title}
-                  onChange={e => setReqForm({ ...reqForm, title: e.target.value })}
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
-                />
-              </div>
-
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: 6 }}>
-                  Items Required & Description *
-                </label>
-                <textarea
-                  required
-                  rows={3}
-                  placeholder="e.g. 10x Size 5 match balls, 20x training cones, 4x stainless steel referee whistles for inter-house tournament."
-                  value={reqForm.description}
-                  onChange={e => setReqForm({ ...reqForm, description: e.target.value })}
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
-                />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: 6 }}>
-                    Estimated Budget ($)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder="e.g. 150.00"
-                    value={reqForm.estimatedAmount}
-                    onChange={e => setReqForm({ ...reqForm, estimatedAmount: e.target.value })}
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: 6 }}>
-                    Priority
-                  </label>
-                  <select
-                    value={reqForm.priority}
-                    onChange={e => setReqForm({ ...reqForm, priority: e.target.value })}
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
-                  >
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="High">High</option>
-                    <option value="Urgent">Urgent</option>
-                  </select>
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
-                <button
-                  type="button"
-                  onClick={() => setShowReqModal(false)}
-                  className="portal-btn portal-btn-secondary"
-                  style={{ padding: '10px 18px', fontWeight: 600 }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={submittingReq}
-                  className="portal-btn portal-btn-primary"
-                  style={{ padding: '10px 22px', fontWeight: 700 }}
-                >
-                  {submittingReq ? 'Submitting...' : 'Submit Requisition'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 
@@ -407,7 +229,7 @@ export default function SportsModule() {
     <div className="portal-container" style={{ padding: 24, maxWidth: 1200, margin: '0 auto' }}>
       <TabbedPage
         title="Sports & Physical Education"
-        subtitle="Manage sports teams, house standings, equipment requests, and match fixtures."
+        subtitle="Manage sports teams, house standings, equipment assets, and match fixtures."
         headerAction={access.actingAs ? <ViewingAsToggle actingAs={access.actingAs} /> : undefined}
         tabs={tabs}
         defaultTab="teams"
