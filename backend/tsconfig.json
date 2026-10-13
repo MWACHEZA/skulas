@@ -12,6 +12,7 @@
     "ignoreDeprecations": "6.0",
     "declaration": true,
     "sourceMap": true,
+    "rootDir": "./",
     "types": ["node"]
   },
   "include": ["src/**/*", "prisma/**/*", "scratch/**/*", "scripts/**/*"],

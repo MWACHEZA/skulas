@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../../../lib/api';
-import { SearchInput } from '../../../../components/shared';
+import api from '../../../lib/api';
+import { SearchInput } from '../../../components/shared';
 
 interface StudentCard {
   id: string;
