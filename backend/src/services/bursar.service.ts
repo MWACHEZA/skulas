@@ -361,7 +361,7 @@ export class BursarService {
       };
     };
 
-    return externalTx ? run(externalTx) : prisma.$transaction(run);
+    return externalTx ? run(externalTx) : prisma.$transaction(run, { timeout: 15000, maxWait: 10000 });
   }
 
   /**
@@ -725,7 +725,7 @@ export class BursarService {
       };
     };
 
-    return externalTx ? run(externalTx) : prisma.$transaction(run);
+    return externalTx ? run(externalTx) : prisma.$transaction(run, { timeout: 15000, maxWait: 10000 });
   }
 
   /**

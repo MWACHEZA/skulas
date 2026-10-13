@@ -46,7 +46,9 @@ const prisma = basePrisma.$extends({
                     'SchoolTrip', 'TripConsent', 'Exeat', 'MedicalConsent',
                     'SchemeOfWork', 'SchemeItem', 'LessonPlanResource', 'AssessmentType', 'Assessment',
                     'AssessmentQuestion', 'QuestionBank', 'ExamTimetable', 'StudentAssessment',
-                    'DisciplineRecord', 'GoodsReceivedNote', 'AssetDepreciation', 'BookLoanFine'
+                    'DisciplineRecord', 'GoodsReceivedNote', 'AssetDepreciation', 'BookLoanFine',
+                    'PharmacyStock', 'PharmacyBatch', 'PharmacyDispense', 'ClinicBed', 'ClinicAdmission',
+                    'ClinicMonitoringLog', 'ClinicVital', 'ClinicDiagnosis', 'ClinicPrescription', 'ClinicSetting'
                 ];
                 if (context?.schoolId && tenantScopedModels.includes(model)) {
                     // Wrap operations that use 'where'
