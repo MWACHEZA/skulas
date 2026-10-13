@@ -51,7 +51,7 @@ router.get('/events/stream', auth_1.requireAuth, (req, res) => {
  * @route   GET /api/accounts/coa
  * @desc    Get full Chart of Accounts (hierarchical tree)
  */
-router.get('/coa', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.get('/coa', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
         // Auto-seed if school doesn't have a CoA yet
@@ -796,7 +796,7 @@ router.post('/bank-reconciliation/unmatch', auth_1.requireAuth, (0, auth_1.requi
 // ═══════════════════════════════════════════════════════════════
 // FILTERABLE GENERAL LEDGER
 // ═══════════════════════════════════════════════════════════════
-router.get('/gl', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN'), async (req, res) => {
+router.get('/gl', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
         const { accountId, coaCode, from, to, sourceType, search, minAmount, maxAmount } = req.query;

@@ -564,25 +564,51 @@ router.post('/raw-punches', requireAuth, async (req: AuthRequest, res) => {
   }
 });
 
-// GET Raw Device Logs
+// GET Raw Device Logs / Photo Clock-In Records
 router.get('/raw-logs', requireAuth, async (req: AuthRequest, res) => {
   try {
-    const schoolId = req.user!.schoolId!;
+    const schoolId = req.user!.schoolId || (req.query.schoolId as string) || (await prisma.school.findFirst())?.id;
+    if (!schoolId) return res.status(400).json({ error: 'School ID required' });
     const { date, deviceId, staffId } = req.query;
 
-    const where: any = { schoolId };
-    if (date) {
-      const qDate = new Date(date as string);
-      where.punchTime = {
-        gte: startOfDay(qDate),
-        lte: endOfDay(qDate)
-      };
-    }
-    if (deviceId) where.deviceId = deviceId as string;
-    if (staffId) where.staffId = staffId as string;
+    const queryDate = date ? new Date(date as string) : new Date();
 
-    const logs = await prisma.biometricRawLog.findMany({
-      where,
+    // 1. Fetch real photo-based staff attendance clock-in / clock-out records
+    const staffAttendanceRecords = await prisma.staffAttendance.findMany({
+      where: {
+        schoolId,
+        date: {
+          gte: startOfDay(queryDate),
+          lte: endOfDay(queryDate)
+        },
+        ...(staffId ? { staffId: staffId as string } : {})
+      },
+      include: {
+        staff: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            staffId: true,
+            avatar: true
+          }
+        }
+      },
+      orderBy: { timeIn: 'desc' }
+    });
+
+    // 2. Fetch biometric raw logs if any exist (hardware fallback)
+    const biometricLogs = await prisma.biometricRawLog.findMany({
+      where: {
+        schoolId,
+        punchTime: {
+          gte: startOfDay(queryDate),
+          lte: endOfDay(queryDate)
+        },
+        ...(deviceId ? { deviceId: deviceId as string } : {}),
+        ...(staffId ? { staffId: staffId as string } : {})
+      },
       include: {
         staff: {
           select: {
@@ -594,11 +620,50 @@ router.get('/raw-logs', requireAuth, async (req: AuthRequest, res) => {
           }
         }
       },
-      orderBy: { punchTime: 'desc' },
-      take: 200
+      orderBy: { punchTime: 'desc' }
     });
 
-    res.json(logs);
+    // 3. Transform staff attendance into unified photo clock-in & clock-out events
+    const photoLogs: any[] = [];
+    for (const att of staffAttendanceRecords) {
+      if (att.timeIn) {
+        photoLogs.push({
+          id: `${att.id}_IN`,
+          attendanceId: att.id,
+          punchTime: att.timeIn,
+          punchType: 'CLOCK_IN (PHOTO)',
+          deviceId: 'Kiosk Photo Capture / Mobile Web',
+          source: 'PHOTO_VERIFIED',
+          photoUrl: att.clockInImage,
+          staffId: att.staffId,
+          staff: att.staff,
+          processed: true,
+          status: att.status
+        });
+      }
+      if (att.timeOut) {
+        photoLogs.push({
+          id: `${att.id}_OUT`,
+          attendanceId: att.id,
+          punchTime: att.timeOut,
+          punchType: 'CLOCK_OUT (PHOTO)',
+          deviceId: 'Kiosk Photo Capture / Mobile Web',
+          source: 'PHOTO_VERIFIED',
+          photoUrl: att.clockOutImage,
+          staffId: att.staffId,
+          staff: att.staff,
+          processed: true,
+          status: att.status
+        });
+      }
+    }
+
+    // Combine and sort by punchTime descending
+    const combined = [...photoLogs, ...biometricLogs].sort(
+      (a, b) => new Date(b.punchTime).getTime() - new Date(a.punchTime).getTime()
+    );
+
+    res.json(combined);
   } catch (error) {
     console.error('Error fetching raw device logs:', error);
     res.status(500).json({ error: 'Failed to fetch raw device logs' });

@@ -22,7 +22,7 @@ const router = (0, express_1.Router)();
  * @route   GET /api/students/template
  * @desc    Download the Excel template for student imports
  */
-router.get('/template', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
+router.get('/template', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
         const buffer = await (0, xlsx_utils_1.generateStudentTemplateBuffer)();
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -37,12 +37,14 @@ router.get('/template', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMI
  * @route   POST /api/students/import
  * @desc    Bulk import students from an Excel file
  */
-router.post('/import', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), upload.single('file'), async (req, res) => {
+router.post('/import', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'SUPER_ADMIN'), upload.single('file'), async (req, res) => {
     if (!req.file)
         return res.status(400).json({ error: 'No file uploaded' });
     try {
         const data = await (0, xlsx_utils_1.parseExcelBuffer)(req.file.buffer);
-        const schoolId = req.user.schoolId;
+        const schoolId = req.user.schoolId || req.query.schoolId || (await prisma_1.default.school.findFirst())?.id;
+        if (!schoolId)
+            return res.status(400).json({ error: 'School ID required for student import' });
         const results = {
             created: 0,
             skipped: 0,

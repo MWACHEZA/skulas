@@ -10,16 +10,146 @@ const prisma_1 = __importDefault(require("../lib/prisma"));
 const auth_1 = require("../middleware/auth");
 const id_generator_1 = require("../lib/id-generator");
 const upload_1 = require("../middleware/upload");
+const multer_1 = __importDefault(require("multer"));
+const xlsx_utils_1 = require("../lib/xlsx-utils");
 const validation_1 = require("../middleware/validation");
 const auth_schema_1 = require("../schemas/auth.schema");
 const rate_limit_1 = require("../middleware/rate-limit");
 const router = (0, express_1.Router)();
+const memoryUpload = (0, multer_1.default)({ storage: multer_1.default.memoryStorage() });
 // Define staff roles for EmployeeProfile creation
 const STAFF_ROLES = ['TEACHER', 'BURSAR', 'LIBRARIAN', 'ANCILLARY', 'SCHOOL_ADMIN'];
 // Roles that a SCHOOL_ADMIN is allowed to assign (cannot self-escalate to SUPER_ADMIN)
 const SCHOOL_ADMIN_ASSIGNABLE_ROLES = [
     'TEACHER', 'STUDENT', 'BURSAR', 'LIBRARIAN', 'ANCILLARY', 'PARENT', 'SUPPLIER', 'ALUMNI', 'APPLICANT', 'CLINIC'
 ];
+/**
+ * @route   GET /api/users/template
+ * @desc    Download the Excel template for staff accounts import
+ */
+router.get('/template', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+    try {
+        const buffer = await (0, xlsx_utils_1.generateStaffTemplateBuffer)();
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.setHeader('Content-Disposition', 'attachment; filename=staff_import_template.xlsx');
+        res.send(buffer);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to generate staff template' });
+    }
+});
+/**
+ * @route   POST /api/users/import
+ * @desc    Bulk import staff / user accounts from an Excel file
+ */
+router.post('/import', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'SUPER_ADMIN'), memoryUpload.single('file'), async (req, res) => {
+    if (!req.file)
+        return res.status(400).json({ error: 'No file uploaded' });
+    try {
+        const data = await (0, xlsx_utils_1.parseExcelBuffer)(req.file.buffer);
+        const schoolId = req.user.schoolId || req.query.schoolId || (await prisma_1.default.school.findFirst())?.id;
+        if (!schoolId)
+            return res.status(400).json({ error: 'School ID required for staff import' });
+        const results = {
+            created: 0,
+            skipped: 0,
+            errors: []
+        };
+        const defaultHashedPassword = await bcryptjs_1.default.hash('Password123!', 10);
+        for (const [index, row] of data.entries()) {
+            const rowNum = index + 2;
+            const name = (row['Name'] || '').toString().trim();
+            const email = (row['Email'] || '').toString().trim().toLowerCase();
+            let role = (row['Role'] || 'TEACHER').toString().trim().toUpperCase();
+            const staffIdRaw = (row['Staff ID'] || '').toString().trim();
+            const phone = (row['Phone'] || '').toString().trim();
+            const department = (row['Department'] || '').toString().trim();
+            const designation = (row['Designation'] || '').toString().trim();
+            const qualification = (row['Qualification'] || '').toString().trim();
+            if (!name) {
+                results.errors.push(`Row ${rowNum}: Missing name`);
+                continue;
+            }
+            if (!email) {
+                results.errors.push(`Row ${rowNum}: Missing email`);
+                continue;
+            }
+            if (!SCHOOL_ADMIN_ASSIGNABLE_ROLES.includes(role)) {
+                role = 'TEACHER';
+            }
+            // Check if user already exists
+            const existingUser = await prisma_1.default.user.findFirst({
+                where: {
+                    OR: [
+                        { email },
+                        ...(staffIdRaw ? [{ staffId: staffIdRaw }] : [])
+                    ]
+                }
+            });
+            if (existingUser) {
+                results.errors.push(`Row ${rowNum}: User with email "${email}" or Staff ID "${staffIdRaw}" already exists`);
+                results.skipped++;
+                continue;
+            }
+            try {
+                await prisma_1.default.$transaction(async (tx) => {
+                    const generatedId = staffIdRaw || await (0, id_generator_1.generateSequentialId)(schoolId, role, tx);
+                    await tx.user.create({
+                        data: {
+                            email,
+                            password: defaultHashedPassword,
+                            name,
+                            role,
+                            phone: phone || null,
+                            staffId: generatedId,
+                            schoolId,
+                            mustChangePassword: true,
+                            metadata: {
+                                department,
+                                designation,
+                                qualification,
+                                importedAt: new Date().toISOString()
+                            },
+                            ...(role === 'TEACHER' && {
+                                teacher: {
+                                    create: {
+                                        staffId: generatedId,
+                                        department: department || null,
+                                        qualification: qualification || null,
+                                        schoolId
+                                    }
+                                }
+                            }),
+                            ...(STAFF_ROLES.includes(role) && {
+                                employeeProfile: {
+                                    create: {
+                                        schoolId,
+                                        jobTitle: designation || role,
+                                        department: department || null,
+                                        qualification: qualification || null
+                                    }
+                                }
+                            })
+                        }
+                    });
+                    results.created++;
+                });
+            }
+            catch (err) {
+                results.errors.push(`Row ${rowNum}: ${err.message}`);
+            }
+        }
+        res.json({
+            success: true,
+            summary: `Successfully imported ${results.created} staff members (${results.skipped} skipped).`,
+            details: results
+        });
+    }
+    catch (error) {
+        console.error('Staff import error:', error);
+        res.status(500).json({ error: error.message || 'Failed to process Excel file' });
+    }
+});
 /**
  * @route   GET /api/users/search
  * @desc    Search registered users (students and staff) in the school by name or ID

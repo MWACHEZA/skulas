@@ -4,7 +4,7 @@ import api from '../../../lib/api';
 import ManagementDetailPanel from '../../../components/shared/ManagementDetailPanel';
 import UserEditModal from '../../../components/shared/UserEditModal';
 import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModal';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, DataImportModal } from '../../../components/shared';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl } from '../../../utils/formatters';
@@ -69,6 +69,7 @@ export default function StaffDirectory() {
   const [selectedUser, setSelectedUser] = useState<StaffUser | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   const { user: currentUser } = useAuth();
   const { showToast, toastConfirm } = useToast();
@@ -306,18 +307,26 @@ export default function StaffDirectory() {
           </div>
         </div>
 
-        <div className="portal-header-actions">
+        <div className="portal-header-actions" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <ExportButton
             data={filteredUsers}
             columns={exportColumns}
             filename={`Staff_Directory_${activeTab}_${new Date().toISOString().split('T')[0]}`}
-            className="btn btn-outline"
+            className="portal-btn-secondary"
           />
           <button 
-            className="btn btn-primary"
-            onClick={() => setIsCreateModalOpen(true)}
+            className="portal-btn-secondary"
+            onClick={() => setIsImportModalOpen(true)}
+            style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, borderRadius: 8, fontWeight: 700, padding: '0 16px' }}
           >
-            <i className="fas fa-user-plus mr-2"></i> Add Staff Member
+            <i className="fas fa-file-import"></i> Bulk Import Staff
+          </button>
+          <button 
+            className="portal-btn-primary"
+            onClick={() => setIsCreateModalOpen(true)}
+            style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, borderRadius: 8, fontWeight: 800, padding: '0 20px' }}
+          >
+            <i className="fas fa-user-plus"></i> Add Staff Member
           </button>
         </div>
       </div>
@@ -496,14 +505,14 @@ export default function StaffDirectory() {
                         </td>
 
                         <td>
-                          <div className="flex flex-col gap-1 items-start">
-                            <span className="badge badge-primary text-xs font-semibold">
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-start' }}>
+                            <span style={{ backgroundColor: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '3px 8px', borderRadius: 6, fontSize: '0.75rem', fontWeight: 700 }}>
                               {member.role.replace('_', ' ')}
                             </span>
                             {hasSecRoles && (
-                              <div className="flex flex-wrap gap-1">
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                                 {member.secondaryRoles!.map(sr => (
-                                  <span key={sr} className="text-[10px] bg-amber-50 text-amber-700 border border-amber-200 rounded px-1.5 py-0.5 font-medium">
+                                  <span key={sr} style={{ backgroundColor: '#fffbeb', color: '#b45309', border: '1px solid #fde68a', borderRadius: 4, padding: '2px 6px', fontSize: '0.65rem', fontWeight: 600 }}>
                                     {sr}
                                   </span>
                                 ))}
@@ -513,30 +522,30 @@ export default function StaffDirectory() {
                         </td>
 
                         <td>
-                          <span className="text-sm text-slate-700 font-medium">
+                          <span style={{ fontSize: '0.85rem', color: '#334155', fontWeight: 600 }}>
                             {deptName}
                           </span>
                         </td>
 
                         <td>
                           {member.role === 'TEACHER' ? (
-                            <div className="text-xs text-slate-600">
+                            <div style={{ fontSize: '0.8rem', color: '#475569' }}>
                               {subjectCount > 0 ? (
                                 <div>
-                                  <span className="font-medium text-slate-800">{subjectCount} Subjects</span>
-                                  {classCount > 0 && <span className="text-slate-400"> • {classCount} Classes</span>}
+                                  <span style={{ fontWeight: 700, color: '#0f172a' }}>{subjectCount} Subjects</span>
+                                  {classCount > 0 && <span style={{ color: '#94a3b8' }}> • {classCount} Classes</span>}
                                 </div>
                               ) : (
-                                <span className="text-slate-400 italic">No allocations</span>
+                                <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>No allocations</span>
                               )}
                               {teacher?.qualification && (
-                                <div className="text-[11px] text-slate-500 truncate max-w-[180px]">
+                                <div style={{ fontSize: '0.75rem', color: '#64748b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 180 }}>
                                   {teacher.qualification}
                                 </div>
                               )}
                             </div>
                           ) : (
-                            <span className="text-xs text-slate-500">
+                            <span style={{ fontSize: '0.8rem', color: '#64748b' }}>
                               {(member.employeeProfile as any)?.jobTitle || (member.metadata as any)?.jobTitle || 'Standard Staff'}
                             </span>
                           )}
@@ -544,12 +553,12 @@ export default function StaffDirectory() {
 
                         <td>
                           {member.isLocked ? (
-                            <span className="badge badge-danger text-xs font-semibold">
-                              <i className="fas fa-lock mr-1"></i> Locked
+                            <span style={{ backgroundColor: '#fef2f2', color: '#b91c1c', border: '1px solid #fecaca', padding: '3px 8px', borderRadius: 6, fontSize: '0.75rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                              <i className="fas fa-lock"></i> Locked
                             </span>
                           ) : (
-                            <span className="badge badge-success text-xs font-semibold">
-                              <i className="fas fa-check-circle mr-1"></i> Active
+                            <span style={{ backgroundColor: '#f0fdf4', color: '#15803d', border: '1px solid #bbf7d0', padding: '3px 8px', borderRadius: 6, fontSize: '0.75rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                              <i className="fas fa-check-circle"></i> Active
                             </span>
                           )}
                         </td>
@@ -670,6 +679,22 @@ export default function StaffDirectory() {
           fetchStaff();
           setIsCreateModalOpen(false);
         }}
+      />
+
+      {/* Bulk Import Staff Modal */}
+      <DataImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onSuccess={() => {
+          fetchStaff();
+          setIsImportModalOpen(false);
+        }}
+        title="Bulk Import Staff Accounts"
+        templateUrl="/api/users/template"
+        importUrl="/api/users/import"
+        templateFilename="staff_import_template.xlsx"
+        entityName="staff members"
+        description="Upload an Excel (.xlsx/.xls) or CSV file to bulk import teaching faculty, bursars, librarians, and support staff. Accounts are initialized with secure credentials."
       />
     </div>
   );

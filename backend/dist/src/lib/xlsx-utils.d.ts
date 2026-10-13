@@ -14,3 +14,7 @@ export declare function generateClassTemplateBuffer(): Promise<Buffer<ArrayBuffe
  * Generates an Excel template for Student Import
  */
 export declare function generateStudentTemplateBuffer(): Promise<Buffer<ArrayBufferLike>>;
+/**
+ * Generates an Excel template for Staff Bulk Import
+ */
+export declare function generateStaffTemplateBuffer(): Promise<Buffer<ArrayBufferLike>>;

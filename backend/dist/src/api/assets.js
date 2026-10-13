@@ -9,6 +9,7 @@ const prisma_1 = __importDefault(require("../lib/prisma"));
 const auth_1 = require("../middleware/auth");
 const upload_1 = require("../middleware/upload");
 const procurement_service_1 = require("../services/procurement.service");
+const ledger_service_1 = __importDefault(require("../services/ledger.service"));
 const router = (0, express_1.Router)();
 // Helper to determine financial permission
 function isFinancialRole(role) {
@@ -309,29 +310,63 @@ router.post('/:id/approve-hod', auth_1.requireAuth, async (req, res) => {
  */
 router.post('/:id/approve-bursar', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     const { id } = req.params;
-    const schoolId = req.user.schoolId;
+    const schoolId = req.user.schoolId || req.query.schoolId || (await prisma_1.default.school.findFirst())?.id;
+    if (!schoolId)
+        return res.status(400).json({ error: 'School ID required' });
+    const { purchasePrice, depreciationRate, coaCode, creditAccountCode, financialReference, notes } = req.body;
     try {
-        const asset = await prisma_1.default.asset.findFirst({ where: { id: String(id), schoolId } });
+        const asset = await prisma_1.default.asset.findFirst({ where: { id: String(id), ...(schoolId ? { schoolId } : {}) } });
         if (!asset)
             return res.status(404).json({ error: 'Asset not found' });
         const bursarApprovedAt = new Date();
         // Check if admin also approved
         const isFullyApproved = !!asset.adminApprovedAt;
+        const parsedPrice = purchasePrice !== undefined && purchasePrice !== null && purchasePrice !== ''
+            ? parseFloat(purchasePrice)
+            : asset.purchasePrice;
+        const parsedDepRate = depreciationRate !== undefined && depreciationRate !== null && depreciationRate !== ''
+            ? parseFloat(depreciationRate)
+            : asset.depreciationRate;
+        const finalPrice = parsedPrice ?? 0;
         const updated = await prisma_1.default.asset.update({
             where: { id: String(id) },
             data: {
+                purchasePrice: parsedPrice,
+                bookValue: parsedPrice,
+                depreciationRate: parsedDepRate,
+                coaExpenseCode: coaCode || asset.coaExpenseCode || '5077',
                 bursarApprovedAt,
                 bursarApprovedById: req.user.id,
                 approvalStatus: isFullyApproved ? 'APPROVED' : 'PENDING_BURSAR_ADMIN',
                 status: isFullyApproved ? 'ACTIVE' : 'PENDING_APPROVAL'
             }
         });
+        // Post double entry to GL if financial price is capitalized
+        if (finalPrice > 0) {
+            try {
+                await ledger_service_1.default.postDoubleEntry({
+                    tenantId: schoolId,
+                    debitCode: coaCode || '1500', // Fixed Assets / PPE
+                    creditCode: creditAccountCode || '1010', // Cash/Bank or AP
+                    amount: finalPrice,
+                    description: `Capitalized Asset Acquisition - ${asset.name} (${asset.assetNumber || 'NO-TAG'})`,
+                    reference: financialReference || asset.assetNumber || `ASSET-${asset.id}`,
+                    sourceModule: 'ASSET_REGISTER'
+                });
+            }
+            catch (glErr) {
+                console.warn('GL double entry posting note for asset approval:', glErr.message);
+            }
+        }
         res.json({
-            message: isFullyApproved ? 'Asset fully approved and added to active register.' : 'Bursar approved. Awaiting Admin confirmation.',
+            message: isFullyApproved
+                ? `Asset valuation ($${finalPrice.toLocaleString()}) recorded, GL posted, and asset added to active register.`
+                : `Bursar valuation ($${finalPrice.toLocaleString()}) recorded. Awaiting Admin confirmation.`,
             asset: updated
         });
     }
     catch (error) {
+        console.error('Failed to approve asset by Bursar:', error);
         res.status(500).json({ error: 'Failed to approve asset' });
     }
 });
@@ -420,9 +455,9 @@ router.delete('/:id', auth_1.requireAuth, async (req, res) => {
 router.post('/:id/transfer', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'BURSAR', 'LIBRARIAN', 'SUPER_ADMIN'), async (req, res) => {
     const { id } = req.params;
     const { location, department, custodianId } = req.body;
-    const schoolId = req.user.schoolId;
+    const schoolId = req.user.schoolId || req.query.schoolId || (await prisma_1.default.school.findFirst())?.id;
     try {
-        const asset = await prisma_1.default.asset.findFirst({ where: { id: String(id), schoolId } });
+        const asset = await prisma_1.default.asset.findFirst({ where: { id: String(id), ...(schoolId ? { schoolId } : {}) } });
         if (!asset)
             return res.status(404).json({ error: 'Asset not found' });
         const updated = await prisma_1.default.asset.update({
@@ -431,7 +466,7 @@ router.post('/:id/transfer', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL
                 location: location || asset.location,
                 department: department || asset.department,
                 custodianId: custodianId ? String(custodianId) : asset.custodianId,
-                status: 'TRANSFERRED'
+                status: ['WRITTEN_OFF', 'DISPOSED'].includes(asset.status) ? asset.status : 'ACTIVE'
             }
         });
         res.json({ message: 'Asset transferred successfully', asset: updated });

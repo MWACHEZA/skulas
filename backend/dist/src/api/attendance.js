@@ -110,13 +110,35 @@ router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_
         res.status(500).json({ error: "We couldn't save today's attendance because the connection to the server was lost. Please check your internet and try clicking save again." });
     }
 });
-// Helper to run a gate check on a student
-async function runGateCheck(studentId, schoolId) {
+// Helper to run a gate check on a student (supporting ID card QR, studentId, or CUID)
+async function runGateCheck(rawScan, schoolId) {
+    let cleaned = String(rawScan || '').trim();
+    let lookupId = cleaned;
+    let lookupStudentId = cleaned;
+    // Handle JSON encoded data from ID cards / mobile badges
+    if (cleaned.startsWith('{') && cleaned.endsWith('}')) {
+        try {
+            const parsed = JSON.parse(cleaned);
+            if (parsed.id)
+                lookupId = String(parsed.id).trim();
+            if (parsed.studentId)
+                lookupStudentId = String(parsed.studentId).trim();
+        }
+        catch { }
+    }
     const student = await prisma_1.default.student.findFirst({
-        where: { id: studentId },
-        include: { class: true }
+        where: {
+            ...(schoolId ? { schoolId } : {}),
+            OR: [
+                { id: lookupId },
+                { studentId: lookupStudentId },
+                { studentId: lookupId },
+                { id: lookupStudentId }
+            ]
+        },
+        include: { class: true, user: true }
     });
-    if (!student || student.schoolId !== schoolId) {
+    if (!student || (schoolId && student.schoolId !== schoolId)) {
         return { allowed: false, reason: 'Student not found or unauthorized' };
     }
     // Calculate fee balance
@@ -518,8 +540,10 @@ router.post('/qr/scan', auth_1.requireAuth, async (req, res) => {
 // 1. Get or initialize an attendance session (Daily / Period / Boarding)
 router.get('/sessions', auth_1.requireAuth, async (req, res) => {
     try {
-        const schoolId = req.user.schoolId;
-        const { date, classId, period = 'Homeroom', type = 'daily' } = req.query;
+        const schoolId = req.user.schoolId || req.query.schoolId || (await prisma_1.default.school.findFirst())?.id;
+        if (!schoolId)
+            return res.status(400).json({ error: 'School ID required' });
+        const { date, classId, period = 'Homeroom', type = 'daily', hostelId } = req.query;
         if (!date) {
             return res.status(400).json({ error: 'date is required' });
         }
@@ -529,7 +553,7 @@ router.get('/sessions', auth_1.requireAuth, async (req, res) => {
             where: {
                 schoolId,
                 date: queryDate,
-                classId: classId || null,
+                ...(type === 'daily' || type === 'period' ? { classId: classId || null } : {}),
                 period: period,
                 type: type
             },
@@ -552,13 +576,28 @@ router.get('/sessions', auth_1.requireAuth, async (req, res) => {
         if (existingSession) {
             return res.json({ session: existingSession, isNew: false });
         }
-        // If no session exists yet, return student roster with default 'present'
+        // Build student query condition
+        const studentWhere = {
+            schoolId,
+            status: { in: ['ACTIVE', 'active', 'Enrolled', 'enrolled', 'NORMAL', 'normal'] }
+        };
+        if (type === 'boarding') {
+            if (hostelId) {
+                studentWhere.OR = [
+                    { hostelId: hostelId },
+                    { hostelBedAllocations: { some: { hostelId: hostelId, status: 'ACTIVE' } } }
+                ];
+            }
+            else {
+                studentWhere.boardingStatus = 'Boarder';
+            }
+        }
+        else if (classId) {
+            studentWhere.classId = classId;
+        }
+        // Return student roster with default 'present'
         const students = await prisma_1.default.student.findMany({
-            where: {
-                schoolId,
-                status: 'ACTIVE',
-                ...(classId ? { classId: classId } : {})
-            },
+            where: studentWhere,
             orderBy: { name: 'asc' },
             select: {
                 id: true,
@@ -659,7 +698,11 @@ router.post('/sessions/save', auth_1.requireAuth, async (req, res) => {
                 if (student) {
                     const parentPhone = student.parents?.[0]?.parent?.phone ||
                         student.parents?.[0]?.parent?.user?.phone ||
-                        student.user?.phone;
+                        student.guardianPhone ||
+                        (student.user?.metadata?.guardianPhone) ||
+                        (student.user?.metadata?.parentPhone) ||
+                        (student.user?.metadata?.nokPhone) ||
+                        null;
                     if (parentPhone) {
                         try {
                             await notifications_1.NotificationService.enqueue({
@@ -828,7 +871,9 @@ router.post('/sessions/save', auth_1.requireAuth, async (req, res) => {
 // 3. Absentee Report with chronic absentee detection
 router.get('/absentee-report', auth_1.requireAuth, async (req, res) => {
     try {
-        const schoolId = req.user.schoolId;
+        const schoolId = req.user.schoolId || req.query.schoolId || (await prisma_1.default.school.findFirst())?.id;
+        if (!schoolId)
+            return res.status(400).json({ error: 'School ID required' });
         const { startDate, endDate, classId, threshold = '80' } = req.query;
         const thresholdNum = parseFloat(threshold) || 80.0;
         const fromDate = startDate ? new Date(startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -836,7 +881,7 @@ router.get('/absentee-report', auth_1.requireAuth, async (req, res) => {
         const students = await prisma_1.default.student.findMany({
             where: {
                 schoolId,
-                status: 'ACTIVE',
+                status: { in: ['ACTIVE', 'active', 'Enrolled', 'enrolled', 'NORMAL', 'normal'] },
                 ...(classId ? { classId: classId } : {})
             },
             include: {
@@ -845,7 +890,8 @@ router.get('/absentee-report', auth_1.requireAuth, async (req, res) => {
         });
         const report = [];
         for (const s of students) {
-            const records = await prisma_1.default.attendanceSessionRecord.findMany({
+            // 1. Fetch roll call session records for this student
+            const sessionRecords = await prisma_1.default.attendanceSessionRecord.findMany({
                 where: {
                     studentId: s.id,
                     session: {
@@ -853,8 +899,43 @@ router.get('/absentee-report', auth_1.requireAuth, async (req, res) => {
                         type: 'daily',
                         date: { gte: fromDate, lte: toDate }
                     }
+                },
+                include: { session: true }
+            });
+            // 2. Fetch direct attendance / gate records for this student
+            const directAttendanceRecords = await prisma_1.default.attendance.findMany({
+                where: {
+                    studentId: s.id,
+                    schoolId,
+                    date: { gte: fromDate, lte: toDate }
                 }
             });
+            // 3. Consolidate attendance by date key (YYYY-MM-DD)
+            const dateMap = new Map();
+            for (const r of sessionRecords) {
+                const dKey = r.session.date.toISOString().slice(0, 10);
+                dateMap.set(dKey, r.status.toLowerCase());
+            }
+            for (const a of directAttendanceRecords) {
+                const dKey = a.date.toISOString().slice(0, 10);
+                if (!dateMap.has(dKey)) {
+                    dateMap.set(dKey, (a.status || 'present').toLowerCase());
+                }
+            }
+            const totalSessions = dateMap.size;
+            let absentCount = 0;
+            let lateCount = 0;
+            let presentCount = 0;
+            for (const status of dateMap.values()) {
+                if (status === 'absent')
+                    absentCount++;
+                else if (status === 'late')
+                    lateCount++;
+                else
+                    presentCount++;
+            }
+            const rate = totalSessions > 0 ? parseFloat(((presentCount / totalSessions) * 100).toFixed(1)) : 100.0;
+            const isChronic = rate < thresholdNum || absentCount >= 3;
             const disciplineRecords = await prisma_1.default.disciplineRecord.findMany({
                 where: {
                     schoolId,
@@ -863,12 +944,6 @@ router.get('/absentee-report', auth_1.requireAuth, async (req, res) => {
                 },
                 orderBy: { date: 'desc' }
             });
-            const totalSessions = records.length;
-            const absentCount = records.filter(r => r.status.toLowerCase() === 'absent').length;
-            const lateCount = records.filter(r => r.status.toLowerCase() === 'late').length;
-            const presentCount = records.filter(r => r.status.toLowerCase() === 'present').length;
-            const rate = totalSessions > 0 ? parseFloat(((presentCount / totalSessions) * 100).toFixed(1)) : 100.0;
-            const isChronic = rate < thresholdNum || absentCount >= 3;
             report.push({
                 studentId: s.studentId,
                 id: s.id,

@@ -29,6 +29,7 @@ export default function AdminStaffAttendance() {
   const [rawLogs, setRawLogs] = useState<any[]>([]);
   const [loadingRaw, setLoadingRaw] = useState(false);
   const [filterDeviceId, setFilterDeviceId] = useState<string>('');
+  const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
 
   // Punch Simulator Form
   const [simStaffId, setSimStaffId] = useState<string>('');
@@ -607,9 +608,10 @@ export default function AdminStaffAttendance() {
                 <thead>
                   <tr style={{ backgroundColor: '#f1f5f9', borderBottom: '2px solid #cbd5e1' }}>
                     <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 800 }}>Punch Time</th>
-                    <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 800 }}>Terminal</th>
+                    <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 800 }}>Terminal / Capture Source</th>
                     <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 800 }}>Staff Name</th>
                     <th style={{ padding: '10px 14px', textAlign: 'center', fontWeight: 800 }}>Type</th>
+                    <th style={{ padding: '10px 14px', textAlign: 'center', fontWeight: 800 }}>Photo Verification</th>
                     <th style={{ padding: '10px 14px', textAlign: 'center', fontWeight: 800 }}>Status</th>
                   </tr>
                 </thead>
@@ -624,11 +626,30 @@ export default function AdminStaffAttendance() {
                       </td>
                       <td style={{ padding: '10px 14px', fontWeight: 700 }}>
                         {log.staff?.name || 'Staff User'}
+                        {log.staff?.staffId && <span style={{ fontSize: '0.75rem', color: '#64748b', marginLeft: 6 }}>({log.staff.staffId})</span>}
                       </td>
                       <td style={{ padding: '10px 14px', textAlign: 'center' }}>
                         <span style={{ backgroundColor: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '2px 8px', borderRadius: 4, fontSize: '0.75rem', fontWeight: 700 }}>
                           {log.punchType}
                         </span>
+                      </td>
+                      <td style={{ padding: '10px 14px', textAlign: 'center' }}>
+                        {log.photoUrl ? (
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                            <img
+                              src={log.photoUrl}
+                              alt="Clock-in capture"
+                              style={{ width: 34, height: 34, borderRadius: 6, objectFit: 'cover', border: '1px solid #cbd5e1', cursor: 'pointer', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}
+                              onClick={() => setPreviewPhoto(log.photoUrl)}
+                              title="Click to view photo capture"
+                            />
+                            <span style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 700 }}>
+                              <i className="fas fa-camera"></i> Verified
+                            </span>
+                          </div>
+                        ) : (
+                          <span style={{ color: '#94a3b8', fontSize: '0.75rem' }}>No photo</span>
+                        )}
                       </td>
                       <td style={{ padding: '10px 14px', textAlign: 'center' }}>
                         {log.processed ? (
@@ -742,6 +763,42 @@ export default function AdminStaffAttendance() {
                 </tbody>
               </table>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Photo Preview Modal */}
+      {previewPhoto && (
+        <div 
+          className="portal-modal-overlay" 
+          onClick={() => setPreviewPhoto(null)}
+          style={{ zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.75)' }}
+        >
+          <div 
+            className="portal-modal-content" 
+            onClick={e => e.stopPropagation()} 
+            style={{ maxWidth: 480, padding: 20, textAlign: 'center', borderRadius: 16 }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <h3 style={{ margin: 0, fontWeight: 800, fontSize: '1.1rem', color: '#0f172a' }}>
+                <i className="fas fa-camera text-primary" style={{ marginRight: 8 }}></i>
+                Clock-In Photo Verification
+              </h3>
+              <button 
+                onClick={() => setPreviewPhoto(null)} 
+                style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#64748b' }}
+              >
+                &times;
+              </button>
+            </div>
+            <img 
+              src={previewPhoto} 
+              alt="Clock-in biometric verification capture" 
+              style={{ width: '100%', maxHeight: 380, objectFit: 'contain', borderRadius: 12, border: '1px solid #cbd5e1' }}
+            />
+            <p style={{ margin: '12px 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+              Facial verification snapshot captured at time of clock-in/out.
+            </p>
           </div>
         </div>
       )}

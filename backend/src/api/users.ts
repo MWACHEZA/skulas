@@ -5,11 +5,14 @@ import prisma from '../lib/prisma';
 import { requireAuth, requireRole, AuthRequest } from '../middleware/auth';
 import { generateSequentialId } from '../lib/id-generator';
 import { upload, submissionUpload, staffDocumentUpload } from '../middleware/upload';
+import multer from 'multer';
+import { parseExcelBuffer, generateStaffTemplateBuffer } from '../lib/xlsx-utils';
 import { validate } from '../middleware/validation';
 import { UpdateProfileSchema } from '../schemas/auth.schema';
 import { uploadLimiter } from '../middleware/rate-limit';
 
 const router = Router();
+const memoryUpload = multer({ storage: multer.memoryStorage() });
 
 // Define staff roles for EmployeeProfile creation
 const STAFF_ROLES = ['TEACHER', 'BURSAR', 'LIBRARIAN', 'ANCILLARY', 'SCHOOL_ADMIN'];
@@ -18,6 +21,140 @@ const STAFF_ROLES = ['TEACHER', 'BURSAR', 'LIBRARIAN', 'ANCILLARY', 'SCHOOL_ADMI
 const SCHOOL_ADMIN_ASSIGNABLE_ROLES = [
   'TEACHER', 'STUDENT', 'BURSAR', 'LIBRARIAN', 'ANCILLARY', 'PARENT', 'SUPPLIER', 'ALUMNI', 'APPLICANT', 'CLINIC'
 ];
+
+/**
+ * @route   GET /api/users/template
+ * @desc    Download the Excel template for staff accounts import
+ */
+router.get('/template', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+  try {
+    const buffer = await generateStaffTemplateBuffer();
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=staff_import_template.xlsx');
+    res.send(buffer);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to generate staff template' });
+  }
+});
+
+/**
+ * @route   POST /api/users/import
+ * @desc    Bulk import staff / user accounts from an Excel file
+ */
+router.post('/import', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN'), memoryUpload.single('file'), async (req: AuthRequest, res: Response) => {
+  if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+
+  try {
+    const data = await parseExcelBuffer(req.file.buffer);
+    const schoolId = req.user!.schoolId || (req.query.schoolId as string) || (await prisma.school.findFirst())?.id;
+    if (!schoolId) return res.status(400).json({ error: 'School ID required for staff import' });
+
+    const results = {
+      created: 0,
+      skipped: 0,
+      errors: [] as string[]
+    };
+
+    const defaultHashedPassword = await bcrypt.hash('Password123!', 10);
+
+    for (const [index, row] of (data as any[]).entries()) {
+      const rowNum = index + 2;
+      const name = (row['Name'] || '').toString().trim();
+      const email = (row['Email'] || '').toString().trim().toLowerCase();
+      let role = (row['Role'] || 'TEACHER').toString().trim().toUpperCase();
+      const staffIdRaw = (row['Staff ID'] || '').toString().trim();
+      const phone = (row['Phone'] || '').toString().trim();
+      const department = (row['Department'] || '').toString().trim();
+      const designation = (row['Designation'] || '').toString().trim();
+      const qualification = (row['Qualification'] || '').toString().trim();
+
+      if (!name) {
+        results.errors.push(`Row ${rowNum}: Missing name`);
+        continue;
+      }
+      if (!email) {
+        results.errors.push(`Row ${rowNum}: Missing email`);
+        continue;
+      }
+
+      if (!SCHOOL_ADMIN_ASSIGNABLE_ROLES.includes(role)) {
+        role = 'TEACHER';
+      }
+
+      // Check if user already exists
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          OR: [
+            { email },
+            ...(staffIdRaw ? [{ staffId: staffIdRaw }] : [])
+          ]
+        }
+      });
+
+      if (existingUser) {
+        results.errors.push(`Row ${rowNum}: User with email "${email}" or Staff ID "${staffIdRaw}" already exists`);
+        results.skipped++;
+        continue;
+      }
+
+      try {
+        await prisma.$transaction(async (tx) => {
+          const generatedId = staffIdRaw || await generateSequentialId(schoolId, role, tx);
+          await tx.user.create({
+            data: {
+              email,
+              password: defaultHashedPassword,
+              name,
+              role,
+              phone: phone || null,
+              staffId: generatedId,
+              schoolId,
+              mustChangePassword: true,
+              metadata: {
+                department,
+                designation,
+                qualification,
+                importedAt: new Date().toISOString()
+              },
+              ...(role === 'TEACHER' && {
+                teacher: {
+                  create: {
+                    staffId: generatedId,
+                    department: department || null,
+                    qualification: qualification || null,
+                    schoolId
+                  }
+                }
+              }),
+              ...(STAFF_ROLES.includes(role) && {
+                employeeProfile: {
+                  create: {
+                    schoolId,
+                    jobTitle: designation || role,
+                    department: department || null,
+                    qualification: qualification || null
+                  }
+                }
+              })
+            }
+          });
+          results.created++;
+        });
+      } catch (err: any) {
+        results.errors.push(`Row ${rowNum}: ${err.message}`);
+      }
+    }
+
+    res.json({
+      success: true,
+      summary: `Successfully imported ${results.created} staff members (${results.skipped} skipped).`,
+      details: results
+    });
+  } catch (error: any) {
+    console.error('Staff import error:', error);
+    res.status(500).json({ error: error.message || 'Failed to process Excel file' });
+  }
+});
 
 /**
  * @route   GET /api/users/search

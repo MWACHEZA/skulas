@@ -111,7 +111,7 @@ export default function AdminAttendance() {
 
   const fetchHostels = async () => {
     try {
-      const res = await api.get('/api/hostels');
+      const res = await api.get('/api/ancillary/hostels');
       const list = res.data || [];
       setHostels(list);
       if (list.length > 0 && !selectedHostel) {
@@ -152,7 +152,9 @@ export default function AdminAttendance() {
   const fetchBoardingSession = async () => {
     setLoadingRoster(true);
     try {
-      const res = await api.get(`/api/attendance/sessions?type=boarding&date=${selectedDate}&period=Boarding_${boardingTimeSlot.replace(':', '_')}`);
+      const hostelParam = selectedHostel ? `&hostelId=${selectedHostel}` : '';
+      const periodParam = `Boarding_${boardingTimeSlot.replace(':', '_')}${selectedHostel ? `_${selectedHostel}` : ''}`;
+      const res = await api.get(`/api/attendance/sessions?type=boarding&date=${selectedDate}&period=${periodParam}${hostelParam}`);
       const sessionData = res.data?.session;
       if (sessionData) {
         setSessionSubmitted(sessionData.submitted || false);
@@ -217,7 +219,7 @@ export default function AdminAttendance() {
       const type = currentTab === 'boarding' ? 'boarding' : currentTab === 'period' ? 'period' : 'daily';
       const period =
         type === 'boarding'
-          ? `Boarding_${boardingTimeSlot.replace(':', '_')}`
+          ? `Boarding_${boardingTimeSlot.replace(':', '_')}${selectedHostel ? `_${selectedHostel}` : ''}`
           : type === 'period'
           ? selectedPeriod
           : 'Homeroom';

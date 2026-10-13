@@ -48,10 +48,15 @@ export const ANCILLARY_ROLES = [
   'Student Librarian',
   'Farm Manager',
   'Farm Assistant',
-  'Agriculture Teacher'
+  'Agriculture Teacher',
+  'Head of Department (HOD)',
+  'HOD',
+  'Subject Coordinator',
+  'Senior Teacher'
 ];
 
 export const ROLE_GROUPS = {
+  ACADEMIC_LEADERSHIP: ['Head of Department (HOD)', 'HOD', 'Subject Coordinator', 'Senior Teacher'],
   TUCKSHOP: ['Tuckshop Manager', 'Cashier', 'Tuckshop Assistant'],
   BOARDING: ['Boarding Master', 'Hostel Matron', 'Hostel Supervisor'],
   SECURITY: ['Security Guard', 'Security Supervisor', 'Night Watchman', 'Gate Officer'],

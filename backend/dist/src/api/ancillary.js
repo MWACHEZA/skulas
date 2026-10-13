@@ -126,7 +126,7 @@ router.delete('/hostels/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOO
     }
 });
 // ═══════════ HOSTEL ROOMS MANAGEMENT ═══════════
-router.get('/hostels/:id/rooms', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER'), async (req, res) => {
+router.get('/hostels/:id/rooms', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER', 'SUPER_ADMIN'), async (req, res) => {
     try {
         const rooms = await prisma_1.default.room.findMany({
             where: { hostelId: req.params.id },
@@ -141,16 +141,40 @@ router.get('/hostels/:id/rooms', auth_1.requireAuth, (0, auth_1.requireRole)('SC
         res.status(500).json({ error: 'Failed to fetch rooms' });
     }
 });
-router.post('/hostels/:id/rooms', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.get('/rooms/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER', 'SUPER_ADMIN'), async (req, res) => {
+    try {
+        const room = await prisma_1.default.room.findUnique({
+            where: { id: req.params.id },
+            include: {
+                hostel: true,
+                bedAllocations: { where: { status: 'ACTIVE' }, include: { student: true } },
+                _count: { select: { bedAllocations: true, students: true } }
+            }
+        });
+        if (!room)
+            return res.status(404).json({ error: 'Room not found' });
+        res.json(room);
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to fetch room' });
+    }
+});
+router.post('/hostels/:id/rooms', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'SUPER_ADMIN'), async (req, res) => {
     try {
         const { name, roomNumber, capacity = 4, bedCount = 4, conditionStatus = 'GOOD' } = req.body;
+        const parsedCapacity = parseInt(capacity) || 4;
+        const parsedBedCount = parseInt(bedCount) || parsedCapacity;
+        // Server-side validation: bed counts cannot exceed capacity limit
+        if (parsedBedCount > parsedCapacity) {
+            return res.status(400).json({ error: `Bed count (${parsedBedCount}) cannot exceed room capacity limit (${parsedCapacity}).` });
+        }
         const room = await prisma_1.default.room.create({
             data: {
                 hostelId: req.params.id,
                 name: name || roomNumber || 'Room',
                 roomNumber: roomNumber || name,
-                capacity: parseInt(capacity) || 4,
-                bedCount: parseInt(bedCount) || 4,
+                capacity: parsedCapacity,
+                bedCount: parsedBedCount,
                 conditionStatus: conditionStatus || 'GOOD'
             }
         });
@@ -160,16 +184,33 @@ router.post('/hostels/:id/rooms', auth_1.requireAuth, (0, auth_1.requireRole)('S
         res.status(500).json({ error: 'Failed to create room' });
     }
 });
-router.patch('/rooms/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.patch('/rooms/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'SUPER_ADMIN'), async (req, res) => {
     try {
         const { name, roomNumber, capacity, bedCount, conditionStatus } = req.body;
+        const existing = await prisma_1.default.room.findUnique({
+            where: { id: req.params.id },
+            include: { _count: { select: { bedAllocations: { where: { status: 'ACTIVE' } } } } }
+        });
+        if (!existing)
+            return res.status(404).json({ error: 'Room not found' });
+        const newCapacity = capacity !== undefined ? parseInt(capacity) : existing.capacity;
+        const newBedCount = bedCount !== undefined ? parseInt(bedCount) : existing.bedCount;
+        // Server-side validation: bed count cannot exceed room capacity
+        if (newBedCount > newCapacity) {
+            return res.status(400).json({ error: `Bed count (${newBedCount}) cannot exceed room capacity (${newCapacity}).` });
+        }
+        // Server-side validation: capacity cannot be lowered below active resident allocations
+        const activeAllocations = existing._count.bedAllocations;
+        if (newCapacity < activeAllocations) {
+            return res.status(400).json({ error: `Cannot reduce room capacity to ${newCapacity}: room currently has ${activeAllocations} active resident bed allocation(s).` });
+        }
         const room = await prisma_1.default.room.update({
             where: { id: req.params.id },
             data: {
                 ...(name ? { name } : {}),
                 ...(roomNumber ? { roomNumber } : {}),
-                ...(capacity !== undefined ? { capacity: parseInt(capacity) } : {}),
-                ...(bedCount !== undefined ? { bedCount: parseInt(bedCount) } : {}),
+                ...(capacity !== undefined ? { capacity: newCapacity } : {}),
+                ...(bedCount !== undefined ? { bedCount: newBedCount } : {}),
                 ...(conditionStatus ? { conditionStatus } : {})
             }
         });
@@ -179,8 +220,14 @@ router.patch('/rooms/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_A
         res.status(500).json({ error: 'Failed to update room' });
     }
 });
-router.delete('/rooms/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+router.delete('/rooms/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'SUPER_ADMIN'), async (req, res) => {
     try {
+        const activeCount = await prisma_1.default.hostelBedAllocation.count({
+            where: { roomId: req.params.id, status: 'ACTIVE' }
+        });
+        if (activeCount > 0) {
+            return res.status(400).json({ error: `Cannot delete room: ${activeCount} active student resident(s) currently allocated. Please vacate them first.` });
+        }
         await prisma_1.default.room.delete({ where: { id: req.params.id } });
         res.json({ success: true });
     }
@@ -290,9 +337,11 @@ router.get('/boarding/allocations', auth_1.requireAuth, (0, auth_1.requireRole)(
  * Idempotency Key: board_{allocation_id}
  * Revenue Account: 4020 (Boarding & Hostel Accommodation)
  */
-router.post('/boarding/assign', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'BURSAR'), async (req, res) => {
+router.post('/boarding/assign', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'BURSAR', 'SUPER_ADMIN'), async (req, res) => {
     try {
-        const schoolId = req.user.schoolId;
+        const schoolId = req.user.schoolId || req.query.schoolId || (await prisma_1.default.school.findFirst())?.id;
+        if (!schoolId)
+            return res.status(400).json({ error: 'School ID required' });
         const { studentId, hostelId, roomId, termId, term, feeAmount } = req.body;
         if (!studentId || !hostelId) {
             return res.status(400).json({ error: 'studentId and hostelId are required' });
@@ -308,6 +357,21 @@ router.post('/boarding/assign', auth_1.requireAuth, (0, auth_1.requireRole)('SCH
             return res.status(404).json({ error: 'Student not found in this school' });
         if (!hostel)
             return res.status(404).json({ error: 'Hostel not found in this school' });
+        // Enforce server-side room capacity limit
+        if (roomId) {
+            const room = await prisma_1.default.room.findFirst({
+                where: { id: roomId, hostelId },
+                include: { _count: { select: { bedAllocations: { where: { status: 'ACTIVE' } } } } }
+            });
+            if (!room) {
+                return res.status(404).json({ error: 'Room not found in this hostel' });
+            }
+            if (room._count.bedAllocations >= room.capacity) {
+                return res.status(400).json({
+                    error: `Room capacity limit exceeded: Room "${room.name}" has reached its maximum configured limit of ${room.capacity} beds (${room._count.bedAllocations} active residents).`
+                });
+            }
+        }
         // Determine boarding fee from roomType cost, request body, or default
         let resolvedFee = 0;
         if (feeAmount !== undefined && feeAmount !== null && parseFloat(feeAmount) >= 0) {

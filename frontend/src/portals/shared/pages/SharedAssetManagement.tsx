@@ -8,6 +8,9 @@ import '../../../styles/portal.css';
 interface Asset {
   id: string;
   assetNumber?: string;
+  assetTag?: string;
+  coaCode?: string;
+  coaExpenseCode?: string;
   name: string;
   category: string;
   serialNumber?: string;
@@ -273,13 +276,42 @@ export default function SharedAssetManagement() {
     }
   };
 
-  const handleApproveBursar = async (id: string) => {
+  const [bursarModalAsset, setBursarModalAsset] = useState<Asset | null>(null);
+  const [bursarPrice, setBursarPrice] = useState<string>('');
+  const [bursarDepRate, setBursarDepRate] = useState<string>('10');
+  const [bursarCoaCode, setBursarCoaCode] = useState<string>('1500');
+  const [bursarCreditCode, setBursarCreditCode] = useState<string>('1010');
+  const [bursarRef, setBursarRef] = useState<string>('');
+  const [isSubmittingBursarApproval, setIsSubmittingBursarApproval] = useState(false);
+
+  const openBursarApproval = (asset: Asset) => {
+    setBursarModalAsset(asset);
+    setBursarPrice(asset.purchasePrice ? String(asset.purchasePrice) : '');
+    setBursarDepRate(asset.depreciationRate ? String(asset.depreciationRate) : '10');
+    setBursarCoaCode(asset.coaCode || '1500');
+    setBursarCreditCode('1010');
+    setBursarRef(asset.assetTag || '');
+  };
+
+  const handleConfirmBursarApproval = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bursarModalAsset) return;
+    setIsSubmittingBursarApproval(true);
     try {
-      const res = await api.post(`/api/assets/${id}/approve-bursar`);
+      const res = await api.post(`/api/assets/${bursarModalAsset.id}/approve-bursar`, {
+        purchasePrice: bursarPrice,
+        depreciationRate: bursarDepRate,
+        coaCode: bursarCoaCode,
+        creditAccountCode: bursarCreditCode,
+        financialReference: bursarRef
+      });
       showToast(res.data.message, 'success');
+      setBursarModalAsset(null);
       fetchAssets();
     } catch (err: any) {
-      showToast(err.response?.data?.error || 'Bursar Approval failed', 'error');
+      showToast(err.response?.data?.error || 'Bursar approval failed', 'error');
+    } finally {
+      setIsSubmittingBursarApproval(false);
     }
   };
 
@@ -768,9 +800,9 @@ export default function SharedAssetManagement() {
                               {/* Bursar approval */}
                               {(isBursar || isAdmin) && asset.approvalStatus === 'PENDING_BURSAR_ADMIN' && !asset.bursarApprovedAt && (
                                 <button
-                                  onClick={() => handleApproveBursar(asset.id)}
+                                  onClick={() => openBursarApproval(asset)}
                                   style={{ background: '#dbeafe', color: '#1e40af', border: '1px solid #93c5fd', padding: '3px 8px', borderRadius: 4, fontWeight: 800, fontSize: '0.75rem', cursor: 'pointer' }}
-                                  title="Approve as Bursar"
+                                  title="Approve as Bursar with valuation capture & GL posting"
                                 >
                                   Bursar Approve
                                 </button>
@@ -1496,6 +1528,122 @@ export default function SharedAssetManagement() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bursar Asset Valuation & GL Approval Modal */}
+      {bursarModalAsset && (
+        <div className="portal-modal-overlay" style={{ zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.6)' }}>
+          <div className="portal-modal-content" style={{ width: '100%', maxWidth: 540, borderRadius: 16, overflow: 'hidden', padding: 0, boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)', background: '#ffffff' }}>
+            <div className="portal-modal-header" style={{ padding: '18px 24px', background: '#eff6ff', borderBottom: '1px solid #bfdbfe', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontWeight: 900, color: '#1e40af', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: 10 }}>
+                <i className="fas fa-file-invoice-dollar"></i>
+                Bursar Asset Valuation & GL Approval
+              </h3>
+              <button onClick={() => setBursarModalAsset(null)} style={{ background: 'none', border: 'none', fontSize: '1.4rem', color: '#64748b', cursor: 'pointer' }}>&times;</button>
+            </div>
+            <form onSubmit={handleConfirmBursarApproval} style={{ padding: 24 }}>
+              <div style={{ background: '#f8fafc', padding: 14, borderRadius: 10, border: '1px solid #e2e8f0', marginBottom: 20 }}>
+                <div style={{ fontWeight: 800, color: '#0f172a', fontSize: '0.95rem' }}>{bursarModalAsset.name}</div>
+                <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: 4 }}>
+                  Tag: <code>{bursarModalAsset.assetTag || 'None'}</code> | Dept: {bursarModalAsset.department} | Category: {bursarModalAsset.category}
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: 6 }}>
+                    Capitalized Valuation ($) *
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    required
+                    value={bursarPrice}
+                    onChange={e => setBursarPrice(e.target.value)}
+                    placeholder="e.g. 1500.00"
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid #cbd5e1', fontSize: '0.9rem', fontWeight: 700 }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: 6 }}>
+                    Depreciation Rate (% p.a.)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="100"
+                    value={bursarDepRate}
+                    onChange={e => setBursarDepRate(e.target.value)}
+                    placeholder="e.g. 10"
+                    style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid #cbd5e1', fontSize: '0.9rem' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: 6 }}>
+                  Debit GL Account (Fixed Assets Code)
+                </label>
+                <select
+                  value={bursarCoaCode}
+                  onChange={e => setBursarCoaCode(e.target.value)}
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid #cbd5e1', fontSize: '0.85rem' }}
+                >
+                  <option value="1500">1500 - Property, Plant & Equipment (General PPE)</option>
+                  <option value="1520">1520 - Computer & IT Infrastructure</option>
+                  <option value="1530">1530 - Furniture, Fixtures & Classroom Fittings</option>
+                  <option value="1540">1540 - Motor Vehicles & Fleet</option>
+                  <option value="1550">1550 - Laboratory & Scientific Apparatus</option>
+                  <option value="1560">1560 - Agricultural & School Farm Equipment</option>
+                </select>
+              </div>
+
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: 6 }}>
+                  Credit GL Account (Acquisition Source)
+                </label>
+                <select
+                  value={bursarCreditCode}
+                  onChange={e => setBursarCreditCode(e.target.value)}
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid #cbd5e1', fontSize: '0.85rem' }}
+                >
+                  <option value="1010">1010 - Cash / Bank Operating Account</option>
+                  <option value="2010">2010 - Trade Creditors / Accounts Payable</option>
+                </select>
+              </div>
+
+              <div style={{ marginBottom: 20 }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: 6 }}>
+                  Invoice / Acquisition Reference
+                </label>
+                <input
+                  type="text"
+                  value={bursarRef}
+                  onChange={e => setBursarRef(e.target.value)}
+                  placeholder="e.g. INV-2026-9482 or PO Tag"
+                  style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid #cbd5e1', fontSize: '0.85rem' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+                <button type="button" onClick={() => setBursarModalAsset(null)} className="portal-btn-ghost" style={{ padding: '0 16px', height: 40, borderRadius: 8 }}>
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={isSubmittingBursarApproval}
+                  className="portal-btn-primary" 
+                  style={{ padding: '0 22px', height: 40, borderRadius: 8, fontWeight: 800, display: 'flex', alignItems: 'center', gap: 8 }}
+                >
+                  {isSubmittingBursarApproval ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-check-double"></i>}
+                  Approve & Post to GL
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

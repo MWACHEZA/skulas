@@ -7,7 +7,7 @@ import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModa
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl, formatCurrency } from '../../../utils/formatters';
-import { SearchInput, FilterBar, ExportButton } from '../../../components/shared';
+import { SearchInput, FilterBar, ExportButton, DataImportModal } from '../../../components/shared';
 import type { ExportColumn } from '../../../utils/exportService';
 import '../../../styles/portal.css';
 
@@ -19,6 +19,7 @@ export default function AdminStudents() {
 
   const [students, setStudents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   // Search & Debounce
   const [searchInput, setSearchInput] = useState('');
@@ -358,6 +359,14 @@ export default function AdminStudents() {
               data={filteredStudents}
               orientation="landscape"
             />
+
+            <button 
+              className="portal-btn-secondary" 
+              onClick={() => setIsImportModalOpen(true)} 
+              style={{ padding: '0 16px', fontWeight: 700, height: '40px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}
+            >
+              <i className="fas fa-file-import"></i> Bulk Import
+            </button>
 
             <button 
               className="portal-btn-primary" 
@@ -786,6 +795,18 @@ export default function AdminStudents() {
         onClose={() => setIsCreateModalOpen(false)}
         onSuccess={fetchStudents}
         defaultRole="STUDENT"
+      />
+
+      {/* Bulk Import Modal */}
+      <DataImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onSuccess={fetchStudents}
+        title="Bulk Import Students"
+        templateUrl="/api/students/template"
+        importUrl="/api/students/import"
+        templateFilename="student_import_template.xlsx"
+        entityName="students"
       />
     </>
   );

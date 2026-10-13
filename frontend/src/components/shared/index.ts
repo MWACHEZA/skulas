@@ -10,3 +10,4 @@ export type { FilterBarProps, FilterOption, FilterFieldConfig } from './FilterBa
 export { ExportButton } from './ExportButton';
 export type { ExportButtonProps } from './ExportButton';
 
+export { default as DataImportModal } from './DataImportModal';

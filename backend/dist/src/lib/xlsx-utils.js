@@ -37,6 +37,7 @@ exports.parseExcelBuffer = parseExcelBuffer;
 exports.generateFeeTemplateBuffer = generateFeeTemplateBuffer;
 exports.generateClassTemplateBuffer = generateClassTemplateBuffer;
 exports.generateStudentTemplateBuffer = generateStudentTemplateBuffer;
+exports.generateStaffTemplateBuffer = generateStaffTemplateBuffer;
 const ExcelJS = __importStar(require("exceljs"));
 /**
  * Parses an Excel buffer into a JSON array
@@ -143,6 +144,44 @@ async function generateStudentTemplateBuffer() {
         'DOB (YYYY-MM-DD)': '2010-05-15',
         'Address': '123 Main St, Harare',
         'Guardian Name': 'Jane Doe'
+    });
+    return workbook.xlsx.writeBuffer();
+}
+/**
+ * Generates an Excel template for Staff Bulk Import
+ */
+async function generateStaffTemplateBuffer() {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Staff Import Template');
+    worksheet.columns = [
+        { header: 'Staff ID', key: 'Staff ID', width: 16 },
+        { header: 'Name', key: 'Name', width: 24 },
+        { header: 'Email', key: 'Email', width: 28 },
+        { header: 'Role', key: 'Role', width: 16 },
+        { header: 'Phone', key: 'Phone', width: 18 },
+        { header: 'Department', key: 'Department', width: 20 },
+        { header: 'Designation', key: 'Designation', width: 22 },
+        { header: 'Qualification', key: 'Qualification', width: 22 }
+    ];
+    worksheet.addRow({
+        'Staff ID': 'STF-1001',
+        'Name': 'Alice Smith',
+        'Email': 'alice.smith@school.ac.zw',
+        'Role': 'TEACHER',
+        'Phone': '+263771987654',
+        'Department': 'Science',
+        'Designation': 'Senior Physics Teacher',
+        'Qualification': 'BSc Ed Physics'
+    });
+    worksheet.addRow({
+        'Staff ID': 'STF-1002',
+        'Name': 'Brian Moyo',
+        'Email': 'brian.moyo@school.ac.zw',
+        'Role': 'BURSAR',
+        'Phone': '+263772123456',
+        'Department': 'Finance',
+        'Designation': 'Accounts Officer',
+        'Qualification': 'BAcc, ACCA'
     });
     return workbook.xlsx.writeBuffer();
 }
