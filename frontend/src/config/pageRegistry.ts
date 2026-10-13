@@ -545,11 +545,26 @@ export const PAGE_REGISTRY: PageDefinition[] = [
   {
     id: 'admin-gl',
     label: 'General Ledger (GL)',
+    route: '/admin/accounts/gl',
+    group: 'FINANCE_BILLING',
+    icon: 'fas fa-book-open',
+    permissionKey: PERMISSIONS.FINANCE_REPORTS_VIEW,
+    portalVisibility: ['admin'],
+    tabs: [
+      { id: 'coa', label: 'Chart of Accounts' },
+      { id: 'journal', label: 'Journal Entries' },
+      { id: 'audit', label: 'Audit Trail' }
+    ],
+    searchKeywords: ['gl', 'general ledger', 'journal entries', 'audit trail', 'double-entry', 'audit view']
+  },
+  {
+    id: 'bursar-gl',
+    label: 'General Ledger (GL)',
     route: '/bursar/accounts/gl',
     group: 'FINANCE_BILLING',
     icon: 'fas fa-book-open',
     permissionKey: PERMISSIONS.FINANCE_REPORTS_VIEW,
-    portalVisibility: ['bursar', 'admin'],
+    portalVisibility: ['bursar'],
     tabs: [
       { id: 'coa', label: 'Chart of Accounts' },
       { id: 'journal', label: 'Journal Entries' },

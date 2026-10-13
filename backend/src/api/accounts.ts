@@ -54,7 +54,7 @@ router.get('/events/stream', requireAuth, (req: AuthRequest, res: Response) => {
  * @route   GET /api/accounts/coa
  * @desc    Get full Chart of Accounts (hierarchical tree)
  */
-router.get('/coa', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+router.get('/coa', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
 
@@ -871,7 +871,7 @@ router.post('/bank-reconciliation/unmatch', requireAuth, requireRole('BURSAR', '
 // FILTERABLE GENERAL LEDGER
 // ═══════════════════════════════════════════════════════════════
 
-router.get('/gl', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+router.get('/gl', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
     const { accountId, coaCode, from, to, sourceType, search, minAmount, maxAmount } = req.query;

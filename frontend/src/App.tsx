@@ -791,7 +791,7 @@ export default function App() {
               <Route path="staff-admins" element={<Navigate to="/admin/staff?role=SCHOOL_ADMIN" replace />} />
               <Route path="parents" element={<Navigate to="/admin/system?role=PARENT" replace />} />
               <Route path="alumni" element={<Navigate to="/admin/system?role=ALUMNI" replace />} />
-              <Route path="accounts/gl" element={<Navigate to="/bursar/accounts/gl" replace />} />
+              <Route path="accounts/gl" element={<GeneralLedgerPage readOnly={true} />} />
               <Route path="accounts/financial-reports" element={<Navigate to="/bursar/accounts/financial-reports" replace />} />
               <Route path="accounts/coa" element={<Navigate to="/bursar/accounts/coa" replace />} />
               <Route path="budgets" element={<Navigate to="/bursar/budgets" replace />} />

@@ -17,7 +17,11 @@ import { toast } from '../../../context/ToastContext';
 import { SearchInput, ExportButton } from '../../../components/shared';
 import type { ExportColumn } from '../../../utils/exportService';
 
-export default function GeneralLedgerPage() {
+interface GeneralLedgerPageProps {
+  readOnly?: boolean;
+}
+
+export default function GeneralLedgerPage({ readOnly = false }: GeneralLedgerPageProps) {
   const [entries, setEntries] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [accounts, setAccounts] = useState<any[]>([]);
@@ -172,11 +176,18 @@ export default function GeneralLedgerPage() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0, color: '#1e293b' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: 0, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '10px' }}>
             General Ledger (GL)
+            {readOnly && (
+              <span style={{ fontSize: '12px', fontWeight: 600, color: '#475569', background: '#f1f5f9', border: '1px solid #cbd5e1', padding: '2px 8px', borderRadius: 6 }}>
+                Read-Only Audit View
+              </span>
+            )}
           </h1>
           <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '14px' }}>
-            Complete immutable transaction audit trail across all Chart of Accounts
+            {readOnly 
+              ? 'Institutional General Ledger transaction audit viewer for Administrative governance' 
+              : 'Complete immutable transaction audit trail across all Chart of Accounts'}
           </p>
         </div>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -335,7 +346,7 @@ export default function GeneralLedgerPage() {
                 <th style={{ padding: '12px 14px' }}>Module</th>
                 <th style={{ padding: '12px 14px', textAlign: 'right' }}>Debit (DR)</th>
                 <th style={{ padding: '12px 14px', textAlign: 'right' }}>Credit (CR)</th>
-                <th style={{ padding: '12px 14px', textAlign: 'center' }}>Action</th>
+                {!readOnly && <th style={{ padding: '12px 14px', textAlign: 'center' }}>Action</th>}
               </tr>
             </thead>
             <tbody>
@@ -362,26 +373,28 @@ export default function GeneralLedgerPage() {
                   <td style={{ padding: '10px 14px', textAlign: 'right', fontFamily: 'monospace', fontWeight: e.credit > 0 ? 600 : 400 }}>
                     {e.credit > 0 ? `$${Number(e.credit).toFixed(2)}` : '—'}
                   </td>
-                  <td style={{ padding: '10px 14px', textAlign: 'center' }}>
-                    <button
-                      onClick={() => setReversingEntry(e)}
-                      title="Post Reversal Entry"
-                      style={{
-                        padding: '4px 8px',
-                        borderRadius: '4px',
-                        border: '1px solid #e2e8f0',
-                        backgroundColor: '#fff',
-                        cursor: 'pointer',
-                        color: '#b91c1c',
-                        fontSize: '11px',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px'
-                      }}
-                    >
-                      <RotateCcw size={12} /> Reverse
-                    </button>
-                  </td>
+                  {!readOnly && (
+                    <td style={{ padding: '10px 14px', textAlign: 'center' }}>
+                      <button
+                        onClick={() => setReversingEntry(e)}
+                        title="Post Reversal Entry"
+                        style={{
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                          border: '1px solid #e2e8f0',
+                          backgroundColor: '#fff',
+                          cursor: 'pointer',
+                          color: '#b91c1c',
+                          fontSize: '11px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '4px'
+                        }}
+                      >
+                        <RotateCcw size={12} /> Reverse
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
