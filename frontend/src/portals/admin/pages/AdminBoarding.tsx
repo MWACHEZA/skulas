@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SearchableCombobox, type ComboboxOption } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type BoardingTab = 'hostels-rooms' | 'allocations' | 'roll-call' | 'exeats';
@@ -156,6 +157,15 @@ export default function AdminBoarding() {
 
   // Student Search filter for assign modal
   const [studentSearchTerm, setStudentSearchTerm] = useState('');
+
+  const boarderStudentOptions = useMemo<ComboboxOption[]>(() => {
+    return students.map((s: any) => ({
+      value: s.id,
+      label: s.name,
+      subLabel: `${s.studentId || ''}${s.class?.name ? ` • ${s.class.name}` : ''}`,
+      badge: s.boardingStatus || 'Boarder'
+    }));
+  }, [students]);
 
   useEffect(() => {
     loadInitialData();
@@ -1640,18 +1650,15 @@ export default function AdminBoarding() {
             <h3 style={{ margin: '0 0 16px 0', color: '#1e293b' }}>Request Exeat Pass</h3>
             <form onSubmit={handleCreateExeat}>
               <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Student</label>
-                <select
+                <SearchableCombobox
+                  label="Student (Boarder)"
                   required
+                  placeholder="Select boarder student..."
+                  searchPlaceholder="Search student name or ID..."
+                  options={boarderStudentOptions}
                   value={exeatForm.studentId}
-                  onChange={e => setExeatForm(prev => ({ ...prev, studentId: e.target.value }))}
-                  style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                >
-                  <option value="">-- Select Boarder --</option>
-                  {students.map(s => (
-                    <option key={s.id} value={s.id}>{s.name} ({s.studentId})</option>
-                  ))}
-                </select>
+                  onChange={(val: string) => setExeatForm(prev => ({ ...prev, studentId: val }))}
+                />
               </div>
 
               <div style={{ marginBottom: '14px' }}>

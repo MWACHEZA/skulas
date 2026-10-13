@@ -49,10 +49,10 @@ router.get('/', requireAuth, async (req: AuthRequest, res: Response) => {
   }
 });
 
-// Get all users in the same school as potential recipients
+// Get all users in the same school as potential recipients (including staff, students, parents, suppliers)
 router.get('/users', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
-    const users = await prisma.user.findMany({
+    const users: Array<{ id: string; name: string; role: string; email: string }> = await prisma.user.findMany({
       where: {
         schoolId: req.user!.schoolId!,
         id: { not: req.user!.id }
@@ -60,6 +60,30 @@ router.get('/users', requireAuth, async (req: AuthRequest, res: Response) => {
       select: { id: true, name: true, role: true, email: true },
       orderBy: { name: 'asc' }
     });
+
+    // Also include registered school suppliers with associated user accounts
+    try {
+      const schoolSuppliers = await prisma.schoolSupplier.findMany({
+        where: { schoolId: req.user!.schoolId! },
+        include: { supplier: { include: { user: true } } }
+      });
+
+      for (const ss of schoolSuppliers) {
+        if (ss.supplier?.user && ss.supplier.user.id !== req.user!.id) {
+          if (!users.some(u => u.id === ss.supplier.user!.id)) {
+            users.push({
+              id: ss.supplier.user.id,
+              name: `${ss.supplier.companyName} (${ss.supplier.contactName})`,
+              role: 'SUPPLIER',
+              email: ss.supplier.email || ss.supplier.user.email
+            });
+          }
+        }
+      }
+    } catch (suppErr) {
+      console.warn('Note: Could not query extra school suppliers for messages:', suppErr);
+    }
+
     res.json(users);
   } catch (error) {
     console.error('Error fetching message recipients:', error);
@@ -67,10 +91,53 @@ router.get('/users', requireAuth, async (req: AuthRequest, res: Response) => {
   }
 });
 
-// Send a new message
+// Send a new message (single or multi-recipient)
 router.post('/', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
-    const { recipientId, recipientEmail, subject, body } = req.body;
+    const { recipientId, recipientIds, recipientEmail, subject, body } = req.body;
+
+    if (!subject || !body) {
+      return res.status(400).json({ error: 'Subject and message body are required' });
+    }
+
+    // Support multiple recipients
+    if (Array.isArray(recipientIds) && recipientIds.length > 0) {
+      const validUsers = await prisma.user.findMany({
+        where: {
+          id: { in: recipientIds },
+          OR: [
+            { schoolId: req.user!.schoolId! },
+            { supplier: { schools: { some: { schoolId: req.user!.schoolId! } } } }
+          ]
+        },
+        select: { id: true }
+      });
+
+      if (validUsers.length === 0) {
+        return res.status(400).json({ error: 'No valid recipients selected within your institution' });
+      }
+
+      const createdMessages = await prisma.$transaction(
+        validUsers.map(u =>
+          prisma.message.create({
+            data: {
+              senderId: req.user!.id,
+              recipientId: u.id,
+              subject,
+              body,
+              schoolId: req.user!.schoolId!
+            }
+          })
+        )
+      );
+
+      return res.status(201).json({
+        success: true,
+        count: createdMessages.length,
+        messages: createdMessages,
+        ...(createdMessages[0] || {})
+      });
+    }
 
     let targetRecipientId = recipientId;
     if (!targetRecipientId && recipientEmail) {
@@ -87,8 +154,8 @@ router.post('/', requireAuth, async (req: AuthRequest, res: Response) => {
       }
     }
 
-    if (!targetRecipientId || !subject || !body) {
-      return res.status(400).json({ error: 'Recipient, subject, and message body are required' });
+    if (!targetRecipientId) {
+      return res.status(400).json({ error: 'Recipient is required' });
     }
 
     const recipient = await prisma.user.findFirst({

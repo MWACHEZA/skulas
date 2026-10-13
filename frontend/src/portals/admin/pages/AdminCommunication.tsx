@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type CommunicationTab = 'messages' | 'announcements' | 'approvals';
@@ -68,11 +68,24 @@ export default function AdminCommunication() {
   const [submitting, setSubmitting] = useState(false);
 
   // Forms
-  const [composeForm, setComposeForm] = useState({
-    recipientId: '',
+  const [composeForm, setComposeForm] = useState<{
+    recipientIds: string[];
+    subject: string;
+    body: string;
+  }>({
+    recipientIds: [],
     subject: '',
     body: ''
   });
+
+  const recipientOptions = useMemo<ComboboxOption[]>(() => {
+    return recipients.map(r => ({
+      value: r.id,
+      label: r.name,
+      subLabel: r.email,
+      badge: r.role || 'Member'
+    }));
+  }, [recipients]);
 
   const [announcementForm, setAnnouncementForm] = useState({
     title: '',
@@ -89,13 +102,14 @@ export default function AdminCommunication() {
   const fetchData = async () => {
     setLoading(true);
     try {
+      // Always keep message recipients updated for instant compose access
+      api.get('/api/messages/users')
+        .then(rRes => setRecipients(Array.isArray(rRes.data) ? rRes.data : []))
+        .catch(err => console.error('Failed to load message recipients', err));
+
       if (activeTab === 'messages') {
-        const [mRes, rRes] = await Promise.all([
-          api.get('/api/messages'),
-          api.get('/api/messages/users')
-        ]);
+        const mRes = await api.get('/api/messages');
         setMessages(Array.isArray(mRes.data?.data) ? mRes.data.data : Array.isArray(mRes.data) ? mRes.data : []);
-        setRecipients(Array.isArray(rRes.data) ? rRes.data : []);
       } else if (activeTab === 'announcements') {
         const res = await api.get('/api/content/announcements?all=true');
         setAnnouncements(Array.isArray(res.data) ? res.data : []);
@@ -169,13 +183,24 @@ export default function AdminCommunication() {
   // Send message
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (composeForm.recipientIds.length === 0) {
+      showToast('Please select at least one recipient', 'error');
+      return;
+    }
     setSubmitting(true);
     try {
-      const res = await api.post('/api/messages', composeForm);
+      const res = await api.post('/api/messages', {
+        recipientIds: composeForm.recipientIds,
+        subject: composeForm.subject,
+        body: composeForm.body
+      });
       showToast('Message sent successfully', 'success');
       setShowComposeModal(false);
-      setComposeForm({ recipientId: '', subject: '', body: '' });
-      setMessages(prev => [res.data, ...prev]);
+      setComposeForm({ recipientIds: [], subject: '', body: '' });
+      const newItems = res.data?.messages || (res.data ? [res.data] : []);
+      if (newItems.length > 0) {
+        setMessages(prev => [...newItems, ...prev]);
+      }
     } catch (err) {
       showToast('Failed to deliver message', 'error');
     } finally {
@@ -720,18 +745,18 @@ export default function AdminCommunication() {
             </div>
             <form onSubmit={handleSendMessage}>
               <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>Recipient *</label>
-                <select
+                <SearchableCombobox
+                  isMulti
+                  label="Recipients"
                   required
-                  value={composeForm.recipientId}
-                  onChange={e => setComposeForm({ ...composeForm, recipientId: e.target.value })}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                >
-                  <option value="">-- Choose Recipient --</option>
-                  {recipients.map(r => (
-                    <option key={r.id} value={r.id}>{r.name} ({r.role})</option>
-                  ))}
-                </select>
+                  placeholder="Select recipients (student, staff, parent, supplier)..."
+                  searchPlaceholder="Type to search..."
+                  options={recipientOptions}
+                  value={composeForm.recipientIds}
+                  onChange={(selectedIds: string[]) =>
+                    setComposeForm(prev => ({ ...prev, recipientIds: selectedIds }))
+                  }
+                />
               </div>
 
               <div style={{ marginBottom: '14px' }}>

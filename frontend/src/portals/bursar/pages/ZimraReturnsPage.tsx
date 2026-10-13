@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SearchInput } from '../../../components/shared';
 
 export default function ZimraReturnsPage() {
   const { showToast } = useToast();
@@ -316,17 +317,17 @@ export default function ZimraReturnsPage() {
       {!loading && activeTab === 'clearance' && (
         <div style={{ background: '#fff', borderRadius: 10, border: '1px solid #e2e8f0', padding: 24 }}>
           <h3 style={{ margin: '0 0 16px 0', fontWeight: 800 }}>Student Transfer & Leaving Clearance Checklist</h3>
-          <form onSubmit={handleCheckClearance} style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
-            <input
-              type="text"
-              placeholder="Enter Student ID or Registration #"
-              value={studentSearchId}
-              onChange={e => setStudentSearchId(e.target.value)}
-              style={{ flex: 1, padding: '10px 14px', borderRadius: 8, border: '1px solid #cbd5e1' }}
-            />
+          <form onSubmit={handleCheckClearance} style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 20 }}>
+            <div style={{ flex: 1 }}>
+              <SearchInput
+                value={studentSearchId}
+                onChange={setStudentSearchId}
+                placeholder="Search Student ID or Registration #..."
+              />
+            </div>
             <button
               type="submit"
-              style={{ background: '#0284c7', color: '#fff', border: 'none', borderRadius: 8, padding: '10px 20px', fontWeight: 600 }}
+              style={{ background: '#0284c7', color: '#fff', border: 'none', borderRadius: 8, padding: '0 20px', height: '40px', fontWeight: 600, cursor: 'pointer' }}
             >
               Verify Clearance
             </button>

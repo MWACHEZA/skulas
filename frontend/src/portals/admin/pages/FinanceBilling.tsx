@@ -3,7 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption } from '../../../components/shared';
 import type { ExportColumn } from '../../../utils/exportService';
 import '../../../styles/portal.css';
 
@@ -37,6 +37,15 @@ export default function FinanceBilling() {
   const [discount, setDiscount] = useState('0');
   const [description, setDescription] = useState('');
   const [submittingInvoice, setSubmittingInvoice] = useState(false);
+
+  const studentOptions = useMemo<ComboboxOption[]>(() => {
+    return students.map(s => ({
+      value: s.id,
+      label: s.name,
+      subLabel: `${s.studentId}${s.class?.name ? ` • ${s.class.name}` : ''}`,
+      badge: 'Student'
+    }));
+  }, [students]);
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState(initialSearch);
@@ -559,22 +568,15 @@ export default function FinanceBilling() {
               </div>
 
               <div style={{ marginBottom: 14 }}>
-                <label style={{ display: 'block', fontWeight: 600, fontSize: '0.85rem', marginBottom: 6, color: '#334155' }}>
-                  Target Student *
-                </label>
-                <select
-                  className="portal-input"
-                  style={{ width: '100%' }}
-                  value={selectedStudentId}
-                  onChange={e => setSelectedStudentId(e.target.value)}
+                <SearchableCombobox
+                  label="Target Student"
                   required
-                >
-                  {students.map(s => (
-                    <option key={s.id} value={s.id}>
-                      {s.name} ({s.studentId}) {s.class?.name ? `- ${s.class.name}` : ''}
-                    </option>
-                  ))}
-                </select>
+                  placeholder="Select target student..."
+                  searchPlaceholder="Search student by name or ID..."
+                  options={studentOptions}
+                  value={selectedStudentId}
+                  onChange={(val: string) => setSelectedStudentId(val)}
+                />
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>

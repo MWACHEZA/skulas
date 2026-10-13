@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useAuth } from '../../../contexts/AuthContext';
+import { SearchInput, SearchableCombobox, type ComboboxOption } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 export default function StudentClub() {
@@ -27,6 +28,38 @@ export default function StudentClub() {
   });
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const patronOptions = useMemo<ComboboxOption[]>(() => {
+    return users
+      .filter((u: any) => ['SCHOOL_ADMIN', 'TEACHER', 'BURSAR', 'LIBRARIAN', 'ANCILLARY', 'CLINIC'].includes(u.role))
+      .map((u: any) => ({
+        value: u.name,
+        label: u.name,
+        badge: u.role ? u.role.replace('_', ' ') : 'Staff'
+      }));
+  }, [users]);
+
+  const chairpersonOptions = useMemo<ComboboxOption[]>(() => {
+    return users
+      .filter((u: any) => u.role === 'STUDENT')
+      .map((u: any) => ({
+        value: u.name,
+        label: u.name,
+        badge: 'Student'
+      }));
+  }, [users]);
+
+  const filteredClubs = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    if (!q) return clubs;
+    return clubs.filter((c: any) =>
+      (c.name || '').toLowerCase().includes(q) ||
+      (c.category || '').toLowerCase().includes(q) ||
+      (c.patron || '').toLowerCase().includes(q) ||
+      (c.chairperson || '').toLowerCase().includes(q)
+    );
+  }, [clubs, searchQuery]);
 
   useEffect(() => {
     fetchClubs();
@@ -171,6 +204,13 @@ export default function StudentClub() {
               </button>
             </div>
           </div>
+          <div style={{ padding: '16px 20px', borderBottom: '1px solid #f1f5f9' }}>
+            <SearchInput
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Search clubs by name, category, patron, or chairperson..."
+            />
+          </div>
           <div style={{ padding: '20px' }}>
             <table className="portal-table">
               <thead>
@@ -187,9 +227,9 @@ export default function StudentClub() {
               <tbody>
                 {loading ? (
                   <tr><td colSpan={7} style={{ textAlign: 'center', padding: '40px' }}>Loading {t('clubs').toLowerCase()}...</td></tr>
-                ) : clubs.length === 0 ? (
-                  <tr><td colSpan={7} style={{ textAlign: 'center', padding: '40px' }}>No {t('clubs').toLowerCase()} found.</td></tr>
-                ) : clubs.map(club => {
+                ) : filteredClubs.length === 0 ? (
+                  <tr><td colSpan={7} style={{ textAlign: 'center', padding: '40px' }}>No matching {t('clubs').toLowerCase()} found.</td></tr>
+                ) : filteredClubs.map(club => {
                   const logoUrl = club.icon ? `${api.defaults.baseURL}/api/storage/media/${user?.schoolCode}/${club.icon}` : null;
                   return (
                     <tr key={club.id}>
@@ -305,38 +345,26 @@ export default function StudentClub() {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                   <div className="portal-form-group">
-                    <label className="portal-label">Patron (Staff Member)</label>
-                    <select
-                      className="portal-input"
+                    <SearchableCombobox
+                      label="Patron (Staff Member)"
+                      placeholder="Select staff patron..."
+                      searchPlaceholder="Search staff member..."
+                      options={patronOptions}
                       value={formData.patron}
-                      onChange={e => setFormData({...formData, patron: e.target.value})}
-                    >
-                      <option value="">Select Patron</option>
-                      {users
-                        .filter((u: any) => ['SCHOOL_ADMIN', 'TEACHER', 'BURSAR', 'LIBRARIAN', 'ANCILLARY', 'CLINIC'].includes(u.role))
-                        .map((u: any) => (
-                          <option key={u.id} value={u.name}>
-                            {u.name} ({u.role.replace('_', ' ')})
-                          </option>
-                        ))}
-                    </select>
+                      onChange={(val: string) => setFormData({ ...formData, patron: val })}
+                      allowCustom={true}
+                    />
                   </div>
                   <div className="portal-form-group">
-                    <label className="portal-label">Chairperson</label>
-                    <select
-                      className="portal-input"
+                    <SearchableCombobox
+                      label="Chairperson"
+                      placeholder="Select student chairperson..."
+                      searchPlaceholder="Search student..."
+                      options={chairpersonOptions}
                       value={formData.chairperson}
-                      onChange={e => setFormData({...formData, chairperson: e.target.value})}
-                    >
-                      <option value="">Select Chairperson</option>
-                      {users
-                        .filter((u: any) => u.role === 'STUDENT')
-                        .map((u: any) => (
-                          <option key={u.id} value={u.name}>
-                            {u.name}
-                          </option>
-                        ))}
-                    </select>
+                      onChange={(val: string) => setFormData({ ...formData, chairperson: val })}
+                      allowCustom={true}
+                    />
                   </div>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px' }}>

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type DisciplineTab = 'conduct' | 'awards' | 'committee' | 'approvals' | 'houses';
@@ -73,6 +73,47 @@ export default function AdminDiscipline() {
   const [showConductModal, setShowConductModal] = useState(false);
   const [showAwardModal, setShowAwardModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  // Student options for search-as-you-type in Conduct Incident & Committee Hearing
+  const studentNameOptions = useMemo<ComboboxOption[]>(() => {
+    return students.map((s: any) => {
+      const fullName = s.firstName ? `${s.firstName} ${s.lastName}` : s.name;
+      const className = s.class?.name || s.classRoom?.name || s.className || '';
+      return {
+        value: fullName,
+        label: fullName,
+        subLabel: `${s.studentId || ''}${className ? ` • ${className}` : ''}`,
+        badge: className || 'Student',
+        extra: {
+          id: s.id,
+          userId: s.userId || s.id,
+          studentId: s.studentId,
+          name: fullName,
+          className: className || 'General',
+        }
+      };
+    });
+  }, [students]);
+
+  // Recipient options for Present Award modal (with recommendations)
+  const awardRecipientOptions = useMemo<ComboboxOption[]>(() => {
+    return students.map((s: any) => {
+      const fullName = s.firstName ? `${s.firstName} ${s.lastName}` : s.name;
+      const className = s.class?.name || s.classRoom?.name || s.className || '';
+      const isExemplary = !s.demeritCount || s.demeritCount === 0;
+      return {
+        value: s.userId || s.id,
+        label: fullName,
+        subLabel: `${s.studentId || ''}${className ? ` • ${className}` : ''} ${isExemplary ? '★ Clean Conduct' : ''}`,
+        badge: isExemplary ? 'Recommended' : 'Student',
+        badgeColor: isExemplary ? '#059669' : undefined,
+        extra: {
+          studentId: s.studentId,
+          className
+        }
+      };
+    });
+  }, [students]);
 
   // New Conduct Report Form
   const [conductForm, setConductForm] = useState({
@@ -205,6 +246,11 @@ export default function AdminDiscipline() {
   const fetchData = async () => {
     setLoading(true);
     try {
+      // Always keep students loaded for instant modal autocomplete
+      api.get('/api/students')
+        .then(sRes => setStudents(Array.isArray(sRes.data?.students) ? sRes.data.students : (Array.isArray(sRes.data) ? sRes.data : [])))
+        .catch(err => console.error('Failed to load students for discipline modals', err));
+
       if (activeTab === 'conduct') {
         const res = await api.get('/api/prefects/reports');
         setConductReports(Array.isArray(res.data) ? res.data : []);
@@ -215,12 +261,8 @@ export default function AdminDiscipline() {
         const res = await api.get('/api/discipline/houses');
         setHouseLeaderboard(Array.isArray(res.data) ? res.data : []);
       } else if (activeTab === 'awards') {
-        const [aRes, sRes] = await Promise.all([
-          api.get('/api/awards'),
-          api.get('/api/students')
-        ]);
+        const aRes = await api.get('/api/awards');
         setAwards(Array.isArray(aRes.data) ? aRes.data : []);
-        setStudents(Array.isArray(sRes.data?.students) ? sRes.data.students : (Array.isArray(sRes.data) ? sRes.data : []));
       }
     } catch (err) {
       console.error('Failed to load discipline data', err);
@@ -1148,14 +1190,15 @@ export default function AdminDiscipline() {
             </div>
             <form onSubmit={handleSubmitConduct}>
               <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>Student Name *</label>
-                <input
-                  type="text"
+                <SearchableCombobox
+                  label="Student Name"
                   required
-                  placeholder="e.g. Takudzwa Moyo"
+                  placeholder="Search registered student..."
+                  searchPlaceholder="Type student name or ID..."
+                  options={studentNameOptions}
                   value={conductForm.studentName}
-                  onChange={e => setConductForm({ ...conductForm, studentName: e.target.value })}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                  onChange={(val: string) => setConductForm({ ...conductForm, studentName: val })}
+                  allowCustom={true}
                 />
               </div>
               <div style={{ marginBottom: '14px' }}>
@@ -1250,20 +1293,15 @@ export default function AdminDiscipline() {
             </div>
             <form onSubmit={handleSubmitAward}>
               <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>Select Recipient *</label>
-                <select
+                <SearchableCombobox
+                  label="Select Recipient (with Recommendations)"
                   required
+                  placeholder="Select student recipient..."
+                  searchPlaceholder="Search student name, ID or class..."
+                  options={awardRecipientOptions}
                   value={awardForm.userId}
-                  onChange={e => setAwardForm({ ...awardForm, userId: e.target.value })}
-                  style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                >
-                  <option value="">-- Choose Student --</option>
-                  {students.map(s => (
-                    <option key={s.id} value={s.userId || s.id}>
-                      {s.firstName ? `${s.firstName} ${s.lastName}` : s.name} ({s.class?.name || s.studentId || 'Student'})
-                    </option>
-                  ))}
-                </select>
+                  onChange={(val: string) => setAwardForm({ ...awardForm, userId: val })}
+                />
               </div>
               <div style={{ marginBottom: '14px' }}>
                 <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>Award Title *</label>
@@ -1344,20 +1382,29 @@ export default function AdminDiscipline() {
             <form onSubmit={handleCreateHearing}>
               <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12, marginBottom: 14 }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Student Name *</label>
-                  <input
-                    type="text"
+                  <SearchableCombobox
+                    label="Student Name"
                     required
-                    placeholder="e.g. Farai Moyo"
+                    placeholder="Search registered student..."
+                    searchPlaceholder="Type student name or ID..."
+                    options={studentNameOptions}
                     value={hearingForm.studentName}
-                    onChange={e => setHearingForm({ ...hearingForm, studentName: e.target.value })}
-                    style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                    onChange={(val: string, opt: any) => {
+                      const selectedOpt = opt as ComboboxOption;
+                      setHearingForm(prev => ({
+                        ...prev,
+                        studentName: selectedOpt?.label || val,
+                        studentClass: selectedOpt?.extra?.className || prev.studentClass
+                      }));
+                    }}
+                    allowCustom={true}
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Class Form</label>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Class / Form (Auto-filled)</label>
                   <input
                     type="text"
+                    placeholder="e.g. Form 4B"
                     value={hearingForm.studentClass}
                     onChange={e => setHearingForm({ ...hearingForm, studentClass: e.target.value })}
                     style={{ width: '100%', padding: '9px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}

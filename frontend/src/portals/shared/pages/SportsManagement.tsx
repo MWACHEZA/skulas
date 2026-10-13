@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useAuth } from '../../../contexts/AuthContext';
-import ProcurementUI from '../../../components/portals/shared/ProcurementUI';
+import { SearchableCombobox, type ComboboxOption } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface SportsEvent {
@@ -38,12 +38,47 @@ export default function SportsManagement() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'SCHOOL_ADMIN';
 
-  const [activeTab, setActiveTab] = useState<'teams' | 'inventory' | 'requisitions' | 'houses'>('teams');
+  const [activeTab, setActiveTab] = useState<'teams' | 'inventory' | 'houses'>('teams');
 
   // --- Roster States ---
   const [teachers, setTeachers] = useState<any[]>([]);
   const [students, setStudents] = useState<any[]>([]);
   const [loadingRoster, setLoadingRoster] = useState(false);
+
+  // Combobox Options
+  const staffOptions = useMemo<ComboboxOption[]>(() => {
+    return teachers.map((t: any) => ({
+      value: t.userId || t.id,
+      label: `${t.title || 'Mr/Mrs.'} ${t.user?.name || t.name || 'Staff'}`,
+      badge: 'Staff'
+    }));
+  }, [teachers]);
+
+  const studentOptions = useMemo<ComboboxOption[]>(() => {
+    return students.map((s: any) => ({
+      value: s.userId || s.id,
+      label: s.name,
+      subLabel: s.studentId || '',
+      badge: 'Student'
+    }));
+  }, [students]);
+
+  const houseMasterOptions = useMemo<ComboboxOption[]>(() => {
+    return teachers.map((t: any) => ({
+      value: t.id,
+      label: `${t.title || 'Mr/Mrs.'} ${t.user?.name || t.name || 'Staff'}`,
+      badge: 'Staff'
+    }));
+  }, [teachers]);
+
+  const houseCaptainOptions = useMemo<ComboboxOption[]>(() => {
+    return students.map((s: any) => ({
+      value: s.id,
+      label: s.name,
+      subLabel: s.studentId || '',
+      badge: 'Student'
+    }));
+  }, [students]);
 
   // --- Sports States ---
   const [sports, setSports] = useState<any[]>([]);
@@ -546,13 +581,6 @@ export default function SportsManagement() {
         >
           <i className="fas fa-boxes mr-2"></i> Equipment
         </button>
-        <button
-          className={activeTab === 'requisitions' ? 'portal-btn-primary' : 'portal-btn-ghost'}
-          onClick={() => setActiveTab('requisitions')}
-          style={{ minWidth: '160px' }}
-        >
-          <i className="fas fa-file-invoice mr-2"></i> Requisitions
-        </button>
       </div>
 
       {/* ── TAB 1: SPORTS TEAMS ── */}
@@ -837,13 +865,6 @@ export default function SportsManagement() {
         </div>
       )}
 
-      {/* ── TAB 4: REQUISITIONS (Core Procurements UI - Review & Approval) ── */}
-      {activeTab === 'requisitions' && (
-        <div className="animate-in">
-          <ProcurementUI mode="MANAGE" />
-        </div>
-      )}
-
       {/* ── MODALS ── */}
 
       {/* Sport Modal */}
@@ -921,40 +942,27 @@ export default function SportsManagement() {
 
                 {/* Sport Master Selection */}
                 <div className="portal-form-group">
-                  <label className="portal-label">Sport Master</label>
-                  <select
-                    className="portal-input"
+                  <SearchableCombobox
+                    label="Sport Master (Staff Member Only)"
+                    placeholder="Search and select Sport Master..."
+                    searchPlaceholder="Search staff member..."
+                    options={staffOptions}
                     value={sportForm.sportMasterId}
-                    onChange={e => setSportForm({ ...sportForm, sportMasterId: e.target.value })}
-                    style={{ fontWeight: 700 }}
-                  >
-                    <option value="">-- Select Registered Master --</option>
-                    {teachers.map(t => (
-                      <option key={t.id} value={t.userId || t.id}>
-                        {t.title || 'Mr/Mrs.'} {t.user?.name}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(val: string) => setSportForm({ ...sportForm, sportMasterId: val })}
+                  />
                 </div>
 
                 {/* Multiple Captains Selection */}
                 <div className="portal-form-group">
-                  <label className="portal-label">Captains (Select Multiple Students)</label>
-                  <div style={{
-                    maxHeight: '120px', overflowY: 'auto', border: '1px solid #cbd5e1',
-                    borderRadius: '8px', padding: '10px', display: 'flex', flexDirection: 'column', gap: '8px', background: '#f8fafc'
-                  }}>
-                    {students.map(s => (
-                      <label key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', cursor: 'pointer' }}>
-                        <input
-                          type="checkbox"
-                          checked={selectedCaptains.includes(s.userId || s.id)}
-                          onChange={() => handleCaptainToggle(s.userId || s.id)}
-                        />
-                        {s.name} ({s.studentId})
-                      </label>
-                    ))}
-                  </div>
+                  <SearchableCombobox
+                    isMulti
+                    label="Captains (Select Multiple Students)"
+                    placeholder="Search and select student captains..."
+                    searchPlaceholder="Search students..."
+                    options={studentOptions}
+                    value={selectedCaptains}
+                    onChange={(vals: string[]) => setSelectedCaptains(vals)}
+                  />
                 </div>
 
                 {/* Multiple Coaches and Age Group assignment */}
@@ -969,19 +977,13 @@ export default function SportsManagement() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {sportCoaches.map((coach, index) => (
                       <div key={index} style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr auto', gap: '10px', alignItems: 'center', padding: '10px', background: '#f1f5f9', borderRadius: '8px' }}>
-                        <select
-                          className="portal-input"
+                        <SearchableCombobox
+                          placeholder="Select coach..."
+                          searchPlaceholder="Search staff..."
+                          options={staffOptions}
                           value={coach.userId}
-                          onChange={e => handleCoachRowChange(index, 'userId', e.target.value)}
-                          required
-                        >
-                          <option value="">-- Select Coach --</option>
-                          {teachers.map(t => (
-                            <option key={t.id} value={t.userId || t.id}>
-                              {t.title || 'Mr/Mrs.'} {t.user?.name}
-                            </option>
-                          ))}
-                        </select>
+                          onChange={(val: string) => handleCoachRowChange(index, 'userId', val)}
+                        />
                         <input
                           type="text"
                           className="portal-input"
@@ -1083,36 +1085,24 @@ export default function SportsManagement() {
 
                 <div className="portal-grid-2" style={{ gap: '15px' }}>
                   <div className="portal-form-group">
-                    <label className="portal-label">House Master / Patron</label>
-                    <select
-                      className="portal-input"
+                    <SearchableCombobox
+                      label="House Master / Patron"
+                      placeholder="Select instructor / staff..."
+                      searchPlaceholder="Search staff member..."
+                      options={houseMasterOptions}
                       value={houseForm.houseMasterId}
-                      onChange={e => setHouseForm({ ...houseForm, houseMasterId: e.target.value })}
-                      style={{ fontWeight: 700 }}
-                    >
-                      <option value="">-- Select Instructor --</option>
-                      {teachers.map(t => (
-                        <option key={t.id} value={t.id}>
-                          {t.title || 'Mr/Mrs.'} {t.user?.name}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(val: string) => setHouseForm({ ...houseForm, houseMasterId: val })}
+                    />
                   </div>
                   <div className="portal-form-group">
-                    <label className="portal-label">House Captain</label>
-                    <select
-                      className="portal-input"
+                    <SearchableCombobox
+                      label="House Captain"
+                      placeholder="Select student captain..."
+                      searchPlaceholder="Search student..."
+                      options={houseCaptainOptions}
                       value={houseForm.houseCaptainId}
-                      onChange={e => setHouseForm({ ...houseForm, houseCaptainId: e.target.value })}
-                      style={{ fontWeight: 700 }}
-                    >
-                      <option value="">-- Select Student --</option>
-                      {students.map(s => (
-                        <option key={s.id} value={s.id}>
-                          {s.name} ({s.studentId})
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(val: string) => setHouseForm({ ...houseForm, houseCaptainId: val })}
+                    />
                   </div>
                 </div>
 

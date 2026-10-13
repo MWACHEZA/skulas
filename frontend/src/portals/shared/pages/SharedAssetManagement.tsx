@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface Asset {
@@ -99,6 +99,30 @@ export default function SharedAssetManagement() {
 
   // Submitting
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Supplier Autocomplete Suggestions
+  const [registeredSuppliers, setRegisteredSuppliers] = useState<string[]>([]);
+
+  useEffect(() => {
+    api.get('/api/uniforms/suppliers')
+      .then(res => {
+        if (Array.isArray(res.data)) {
+          const names = res.data.map((s: any) => s.companyName || s.name).filter(Boolean);
+          setRegisteredSuppliers(names);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const supplierOptions = useMemo<ComboboxOption[]>(() => {
+    const existing = assets.map(a => a.supplierName).filter(Boolean) as string[];
+    const unique = Array.from(new Set([...registeredSuppliers, ...existing]));
+    return unique.map(s => ({
+      value: s,
+      label: s,
+      badge: 'Vendor'
+    }));
+  }, [registeredSuppliers, assets]);
 
   useEffect(() => {
     fetchAssets();
@@ -1027,15 +1051,14 @@ export default function SharedAssetManagement() {
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14 }}>
                     <div>
-                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 800, color: '#334155', marginBottom: 4 }}>
-                        Supplier / Vendor Name
-                      </label>
-                      <input
-                        type="text"
+                      <SearchableCombobox
+                        label="Supplier / Vendor Name"
                         placeholder="e.g. Alpha Office Supplies, MedEquip Ltd"
+                        searchPlaceholder="Type or search vendor..."
+                        allowCustom={true}
+                        options={supplierOptions}
                         value={registerForm.supplierName}
-                        onChange={(e) => setRegisterForm({ ...registerForm, supplierName: e.target.value })}
-                        style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                        onChange={(val: string) => setRegisterForm({ ...registerForm, supplierName: val })}
                       />
                     </div>
 

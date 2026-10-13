@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useAuth } from '../../../contexts/AuthContext';
+import { SearchableCombobox, type ComboboxOption } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 export interface StudentHouseItem {
@@ -65,6 +66,23 @@ export default function StudentHouse() {
   });
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+
+  const houseMasterOptions = useMemo<ComboboxOption[]>(() => {
+    return teachers.map(teacher => ({
+      value: teacher.id,
+      label: `${teacher.title || 'Mr/Mrs.'} ${teacher.user?.name || 'Instructor'}`,
+      badge: 'Staff'
+    }));
+  }, [teachers]);
+
+  const houseCaptainOptions = useMemo<ComboboxOption[]>(() => {
+    return students.map(s => ({
+      value: s.id,
+      label: s.name,
+      subLabel: s.studentId,
+      badge: 'Student'
+    }));
+  }, [students]);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -380,36 +398,24 @@ export default function StudentHouse() {
 
                 <div className="portal-grid-2">
                   <div className="portal-form-group">
-                    <label className="portal-label">House Master / Patron</label>
-                    <select 
-                      className="portal-input"
+                    <SearchableCombobox
+                      label="House Master / Patron"
+                      placeholder="Select instructor / staff..."
+                      searchPlaceholder="Search staff member..."
+                      options={houseMasterOptions}
                       value={formData.houseMasterId}
-                      onChange={e => setFormData({...formData, houseMasterId: e.target.value})}
-                      style={{ fontWeight: 700 }}
-                    >
-                      <option value="">-- Select Instructor --</option>
-                      {teachers.map(teacher => (
-                        <option key={teacher.id} value={teacher.id}>
-                          {teacher.title || ''} {teacher.user?.name}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(val: string) => setFormData({ ...formData, houseMasterId: val })}
+                    />
                   </div>
                   <div className="portal-form-group">
-                    <label className="portal-label">House Captain</label>
-                    <select 
-                      className="portal-input"
+                    <SearchableCombobox
+                      label="House Captain"
+                      placeholder="Select student captain..."
+                      searchPlaceholder="Search student..."
+                      options={houseCaptainOptions}
                       value={formData.houseCaptainId}
-                      onChange={e => setFormData({...formData, houseCaptainId: e.target.value})}
-                      style={{ fontWeight: 700 }}
-                    >
-                      <option value="">-- Select Student --</option>
-                      {students.map(s => (
-                        <option key={s.id} value={s.id}>
-                          {s.name} ({s.studentId})
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(val: string) => setFormData({ ...formData, houseCaptainId: val })}
+                    />
                   </div>
                 </div>
 

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import TabbedPage, { type TabItem } from '../../../components/portals/shared/TabbedPage';
+import { SearchableCombobox, type ComboboxOption } from '../../../components/shared';
 
 export default function BoardingManagement() {
   const [hostels, setHostels] = useState<any[]>([]);
@@ -9,6 +10,15 @@ export default function BoardingManagement() {
   const [loading, setLoading] = useState(true);
   const [isSignOutModalOpen, setIsSignOutModalOpen] = useState(false);
   const [signOutData, setSignOutData] = useState({ studentId: '', type: 'SIGN_OUT', reason: '' });
+
+  const boarderStudentOptions = useMemo<ComboboxOption[]>(() => {
+    return students.map((s: any) => ({
+      value: s.id,
+      label: s.name,
+      subLabel: s.studentId,
+      badge: 'Student'
+    }));
+  }, [students]);
 
   // Requisitions & Approvals state
   const [approvalsTab, setApprovalsTab] = useState<'STAFF' | 'STUDENT_LEADER'>('STUDENT_LEADER');
@@ -920,18 +930,15 @@ export default function BoardingManagement() {
             </div>
             <form onSubmit={handleSignOut} style={{ padding: 20 }}>
               <div className="form-group" style={{ marginBottom: 15 }}>
-                <label>Select Student</label>
-                <select 
-                  className="form-control portal-input"
-                  value={signOutData.studentId}
-                  onChange={e => setSignOutData({...signOutData, studentId: e.target.value})}
+                <SearchableCombobox
+                  label="Select Student"
                   required
-                >
-                  <option value="">-- Choose Student --</option>
-                  {students.map(s => (
-                    <option key={s.id} value={s.id}>{s.name} ({s.studentId})</option>
-                  ))}
-                </select>
+                  placeholder="Select or search boarder student..."
+                  searchPlaceholder="Type student name or ID..."
+                  options={boarderStudentOptions}
+                  value={signOutData.studentId}
+                  onChange={(val: string) => setSignOutData({ ...signOutData, studentId: val })}
+                />
               </div>
               <div className="form-group" style={{ marginBottom: 15 }}>
                 <label>Movement Type</label>
