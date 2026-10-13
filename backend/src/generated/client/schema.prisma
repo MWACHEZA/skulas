@@ -255,6 +255,9 @@ model School {
   questionBanks          QuestionBank[]
   examTimetables         ExamTimetable[]
   studentAssessments     StudentAssessment[]
+  studentQrCodes         StudentQrCode[]
+  staffQrCodes           StaffQrCode[]
+  gateLogs               GateLog[]
 
   @@index([code])
 }
@@ -538,6 +541,10 @@ model User {
   auditLogs              AuditLog[]
   diningHallReports      DiningHallReport[]
   prefectReports         PrefectReport[]
+  gatePin                String?
+  staffQrCodes           StaffQrCode[]
+  scannedGateLogs        GateLog[]          @relation("GateLogGuard")
+  gateLogs               GateLog[]          @relation("GateLogStaff")
 
   assignedAssets             Asset[]                 @relation("AssetCustodian")
   registeredAssets           Asset[]                 @relation("AssetRegisteredBy")
@@ -788,6 +795,8 @@ model Student {
   uniformIssuances         UniformIssuance[]
   attendanceSessionRecords AttendanceSessionRecord[]
   disciplineRecords        DisciplineRecord[]
+  qrCodes                  StudentQrCode[]
+  gateLogs                 GateLog[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1665,9 +1674,11 @@ model SchoolSetting {
   reportCommentSignature          String?
   showSubjectPosition             Boolean   @default(false)
 
-  gateMinPaidAmount  Float  @default(0)
-  gateMinPaidPercent Float  @default(0)
-  gateRequiredType   String @default("none") // none, amount, percent
+  gateMinPaidAmount  Float   @default(0)
+  gateMinPaidPercent Float   @default(0)
+  gateRequiredType   String  @default("none") // none, amount, percent
+  gateGraceDays      Int     @default(3) // Grace days for breached payment plan at gate
+  gateCutoffTime     String? @default("08:00") // Late arrival cutoff time (HH:mm)
 
   idCardTemplateFront String? // Path to front face of ID card template image
   idCardTemplateBack  String? // Path to back face of ID card template image
@@ -1694,9 +1705,11 @@ model PaymentPlan {
   planType          String // weekly, monthly, custom
   installmentsCount Int
   status            String                   @default("ACTIVE") // ACTIVE, COMPLETED, DEFAULTED
+  allowGateEntry    Boolean                  @default(false) // Humanitarian override for breached plan at gate
   createdAt         DateTime                 @default(now())
   updatedAt         DateTime                 @updatedAt
   installments      PaymentPlanInstallment[]
+  gateLogs          GateLog[]
 
   @@index([schoolId])
   @@index([studentId])
@@ -5913,4 +5926,73 @@ model HrTardinessLog {
   @@index([schoolId])
   @@index([staffId])
   @@map("hr_tardiness_logs")
+}
+
+model StudentQrCode {
+  id            String    @id @default(cuid())
+  schoolId      String
+  school        School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId     String
+  student       Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  qrToken       String    @unique
+  isActive      Boolean   @default(true)
+  printedAt     DateTime?
+  deactivatedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([schoolId])
+  @@index([studentId])
+  @@index([qrToken])
+  @@map("student_qr_codes")
+}
+
+model StaffQrCode {
+  id            String    @id @default(cuid())
+  schoolId      String
+  school        School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  staffId       String
+  staff         User      @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  qrToken       String    @unique
+  isActive      Boolean   @default(true)
+  printedAt     DateTime?
+  deactivatedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([schoolId])
+  @@index([staffId])
+  @@index([qrToken])
+  @@map("staff_qr_codes")
+}
+
+model GateLog {
+  id                 String       @id @default(cuid())
+  schoolId           String
+  school             School       @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  studentId          String?
+  student            Student?     @relation(fields: [studentId], references: [id], onDelete: SetNull)
+  staffId            String?
+  staff              User?        @relation("GateLogStaff", fields: [staffId], references: [id], onDelete: SetNull)
+  scannedAt          DateTime     @default(now())
+  scannedByGuardId   String?
+  scannedByGuard     User?        @relation("GateLogGuard", fields: [scannedByGuardId], references: [id], onDelete: SetNull)
+  deviceId           String?
+  direction          String       @default("IN") // IN, OUT
+  entryStatus        String // 'allowed', 'denied', 'override'
+  feeStatusSnapshot  String? // 'PAID', 'ON_PLAN', 'GRACE_PLAN_BREACHED', 'DENIED', 'EXEMPT'
+  balanceAtScan      Float?
+  paymentPlanId      String?
+  paymentPlan        PaymentPlan? @relation(fields: [paymentPlanId], references: [id], onDelete: SetNull)
+  denialReason       String?
+  attendanceRecordId String?
+  overrideByStaffId  String?
+  overrideReason     String?
+  createdAt          DateTime     @default(now())
+
+  @@index([schoolId])
+  @@index([studentId])
+  @@index([scannedAt])
+  @@index([schoolId, scannedAt])
+  @@map("gate_logs")
 }

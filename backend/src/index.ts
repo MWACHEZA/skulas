@@ -229,6 +229,8 @@ import tripsRoutes from './api/trips';
 app.use('/api/trips', tripsRoutes);
 import parentApprovalsRoutes from './api/parent-approvals';
 app.use('/api/parent/approvals', parentApprovalsRoutes);
+import gateRoutes from './api/gate';
+app.use('/api/gate', gateRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

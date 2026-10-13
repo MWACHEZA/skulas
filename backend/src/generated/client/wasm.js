@@ -340,6 +340,7 @@ exports.Prisma.UserScalarFieldEnum = {
   staffId: 'staffId',
   schoolId: 'schoolId',
   departmentId: 'departmentId',
+  gatePin: 'gatePin',
   metadata: 'metadata',
   isLocked: 'isLocked',
   mustChangePassword: 'mustChangePassword',
@@ -1008,6 +1009,8 @@ exports.Prisma.SchoolSettingScalarFieldEnum = {
   gateMinPaidAmount: 'gateMinPaidAmount',
   gateMinPaidPercent: 'gateMinPaidPercent',
   gateRequiredType: 'gateRequiredType',
+  gateGraceDays: 'gateGraceDays',
+  gateCutoffTime: 'gateCutoffTime',
   idCardTemplateFront: 'idCardTemplateFront',
   idCardTemplateBack: 'idCardTemplateBack',
   setupStatus: 'setupStatus',
@@ -1027,6 +1030,7 @@ exports.Prisma.PaymentPlanScalarFieldEnum = {
   planType: 'planType',
   installmentsCount: 'installmentsCount',
   status: 'status',
+  allowGateEntry: 'allowGateEntry',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -3873,6 +3877,50 @@ exports.Prisma.HrTardinessLogScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.StudentQrCodeScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  studentId: 'studentId',
+  qrToken: 'qrToken',
+  isActive: 'isActive',
+  printedAt: 'printedAt',
+  deactivatedAt: 'deactivatedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.StaffQrCodeScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  staffId: 'staffId',
+  qrToken: 'qrToken',
+  isActive: 'isActive',
+  printedAt: 'printedAt',
+  deactivatedAt: 'deactivatedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.GateLogScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  studentId: 'studentId',
+  staffId: 'staffId',
+  scannedAt: 'scannedAt',
+  scannedByGuardId: 'scannedByGuardId',
+  deviceId: 'deviceId',
+  direction: 'direction',
+  entryStatus: 'entryStatus',
+  feeStatusSnapshot: 'feeStatusSnapshot',
+  balanceAtScan: 'balanceAtScan',
+  paymentPlanId: 'paymentPlanId',
+  denialReason: 'denialReason',
+  attendanceRecordId: 'attendanceRecordId',
+  overrideByStaffId: 'overrideByStaffId',
+  overrideReason: 'overrideReason',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -4174,7 +4222,10 @@ exports.Prisma.ModelName = {
   AttendanceSessionRecord: 'AttendanceSessionRecord',
   StaffAttendanceDaily: 'StaffAttendanceDaily',
   BiometricRawLog: 'BiometricRawLog',
-  HrTardinessLog: 'HrTardinessLog'
+  HrTardinessLog: 'HrTardinessLog',
+  StudentQrCode: 'StudentQrCode',
+  StaffQrCode: 'StaffQrCode',
+  GateLog: 'GateLog'
 };
 
 /**

@@ -11,6 +11,7 @@ interface PaymentPlan {
   dueDate: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'PAID' | 'OVERDUE';
   notes: string;
+  allowGateEntry?: boolean;
   createdAt: string;
   student: {
     name: string;
@@ -158,6 +159,20 @@ export default function ManagePaymentPlans() {
     
     } finally {
       setUpdatingId(null);
+    }
+  };
+
+  const toggleGateEntry = async (planId: string, currentVal: boolean) => {
+    try {
+      const res = await api.post(`/api/gate/payment-plan/${planId}/toggle-gate-entry`, {
+        allowGateEntry: !currentVal
+      });
+      if (res.data.success) {
+        setPlans(prev => prev.map(p => p.id === planId ? { ...p, allowGateEntry: !currentVal } : p));
+        showToast(!currentVal ? 'Gate Entry Grace granted (Humanitarian Exception)' : 'Gate Entry Grace revoked', 'success');
+      }
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to update gate entry flag', 'error');
     }
   };
 
@@ -411,6 +426,7 @@ export default function ManagePaymentPlans() {
                       <th>Promised Date</th>
                       <th>Applied</th>
                       <th>Status</th>
+                      <th>Gate Entry (Grace)</th>
                       <th className="no-print">Actions</th>
                     </tr>
                   </thead>
@@ -448,6 +464,25 @@ export default function ManagePaymentPlans() {
                             }}>
                               {statusStyle.label}
                             </span>
+                          </td>
+                          <td>
+                            <button
+                              type="button"
+                              onClick={() => toggleGateEntry(plan.id, !!plan.allowGateEntry)}
+                              style={{
+                                padding: '5px 10px',
+                                borderRadius: '6px',
+                                border: 'none',
+                                fontSize: '0.75rem',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                backgroundColor: plan.allowGateEntry ? '#dcfce7' : '#f1f5f9',
+                                color: plan.allowGateEntry ? '#15803d' : '#64748b'
+                              }}
+                              title="Humanitarian Exception: Permits student entry at gate even if plan has arrears"
+                            >
+                              {plan.allowGateEntry ? '🛡️ Grace Active' : '⛔ Strict Gating'}
+                            </button>
                           </td>
                           <td className="no-print">
                             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>

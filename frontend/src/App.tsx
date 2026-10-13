@@ -80,6 +80,9 @@ import AdminFinance from './portals/admin/pages/AdminFinance';
 import BursarFeesUnified from './portals/bursar/pages/BursarFeesUnified';
 import BursarTuckshopUnified from './portals/bursar/pages/BursarTuckshopUnified';
 import FastPOSTerminal from './portals/shared/pages/FastPOSTerminal';
+import GateScannerApp from './portals/gate/GateScannerApp';
+import AdminGateDashboard from './portals/admin/pages/AdminGateDashboard';
+import AdminQrCards from './portals/admin/pages/AdminQrCards';
 
 //  Clinic Portal pages 
 import ClinicLayout from './portals/clinic/ClinicLayout';
@@ -418,6 +421,10 @@ export default function App() {
             <Route path="/pos" element={<FastPOSTerminal />} />
             <Route path="/tuckshop/pos" element={<FastPOSTerminal />} />
 
+            {/* Standalone Fast Gate Security Scanner PWA */}
+            <Route path="/gate" element={<GateScannerApp />} />
+            <Route path="/guard" element={<GateScannerApp />} />
+
             {/*
               Short school URL: localhost/AX-SEMINARY  → /school/AX-SEMINARY
               Also catches sub-paths: localhost/AX-SEMINARY/gallery → /school/AX-SEMINARY/gallery
@@ -651,6 +658,8 @@ export default function App() {
               {/* 4. Attendance Module */}
               <Route path="attendance" element={<AdminAttendance />} />
               <Route path="attendance/staff" element={<AdminStaffAttendance />} />
+              <Route path="gate-dashboard" element={<AdminGateDashboard />} />
+              <Route path="qr-cards" element={<AdminQrCards />} />
 
               {/* 5. Welfare & Student Life Module */}
               <Route path="clinic" element={<AdminClinic />} />
