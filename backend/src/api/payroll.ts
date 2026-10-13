@@ -10,6 +10,7 @@ import {
 } from '../schemas/payroll.schema';
 import { LedgerService } from '../services/ledger.service';
 import { getAccountId } from '../../prisma/seeders/coa.seeder';
+import { calculateZimPayroll } from '../lib/payroll-tax';
 
 const router = Router();
 
@@ -436,7 +437,7 @@ router.post('/generate', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), asy
         schoolId,
         month,
         year,
-        status: 'Completed',
+        status: 'Draft',
         employeesCount: 0,
         totalGross: 0,
         totalDeductions: 0,
@@ -504,20 +505,11 @@ router.post('/generate', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), asy
         allowances += sa.amount;
       }
 
-      // 3. Tax / PAYE Calculation (progressive brackets fallback)
-      const taxableGross = Math.max(0, basicSalary + allowances - leaveDeduction);
-      let taxAmount = 0;
-      if (taxableGross > 300) {
-        if (taxableGross <= 1000) {
-          taxAmount = (taxableGross - 300) * 0.20;
-        } else {
-          taxAmount = (700 * 0.20) + ((taxableGross - 1000) * 0.30);
-        }
-      }
-      taxAmount = Math.round(taxAmount * 100) / 100;
-      const aidsLevy = Math.round(taxAmount * 0.03 * 100) / 100; // Standard 3% Aids Levy on PAYE
+      // 3. 2026 Progressive PAYE & NSSA Calculation
+      const grossForTax = Math.max(0, basicSalary + allowances - leaveDeduction);
+      const taxCalc = calculateZimPayroll(grossForTax, { necRate: 0.015 });
 
-      const empDeductions = leaveDeduction + taxAmount + aidsLevy;
+      const empDeductions = leaveDeduction + taxCalc.totalDeductions;
       const netSalary = Math.max(0, (basicSalary + allowances) - empDeductions);
 
       entries.push({
@@ -529,8 +521,8 @@ router.post('/generate', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), asy
         grossSalary: basicSalary,
         totalAllowances: allowances,
         totalDeductions: empDeductions,
-        taxAmount: taxAmount,
-        aidsLevy: aidsLevy,
+        taxAmount: taxCalc.netPaye,
+        aidsLevy: taxCalc.aidsLevy,
         netSalary: Math.round(netSalary * 100) / 100,
         isPaid: false
       });
@@ -684,6 +676,206 @@ router.get('/runs/:id/bank-export', requireAuth, requireRole('BURSAR', 'SCHOOL_A
     res.send(csvContent);
   } catch (error) {
     res.status(500).json({ error: 'Failed to export bank file' });
+  }
+});
+
+// All Payroll Runs
+router.get('/runs', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const runs = await prisma.payrollRun.findMany({
+      where: { schoolId },
+      orderBy: [{ year: 'desc' }, { month: 'desc' }]
+    });
+    res.json(runs);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch payroll runs' });
+  }
+});
+
+// Entries for specific Run
+router.get('/runs/:id/entries', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const schoolId = req.user!.schoolId!;
+    const entries = await prisma.payrollEntry.findMany({
+      where: { payrollRunId: id, schoolId },
+      include: {
+        user: {
+          include: { employeeProfile: true }
+        }
+      },
+      orderBy: { employeeName: 'asc' }
+    });
+    res.json(entries);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch entries' });
+  }
+});
+
+// Explicit Post to General Ledger endpoint
+router.post('/runs/:id/post-gl', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const schoolId = req.user!.schoolId!;
+    const run = await prisma.payrollRun.findUnique({
+      where: { id },
+      include: { entries: true }
+    });
+    if (!run || run.schoolId !== schoolId) {
+      return res.status(404).json({ error: 'Payroll run not found' });
+    }
+
+    const [salariesAccountId, accruedSalariesId, payeAccountId] = await Promise.all([
+      getAccountId(schoolId, '5010', prisma).catch(() => getAccountId(schoolId, '7100', prisma)),
+      getAccountId(schoolId, '2200', prisma).catch(() => getAccountId(schoolId, '3300', prisma)),
+      getAccountId(schoolId, '2020', prisma).catch(() => getAccountId(schoolId, '3400', prisma))
+    ]);
+
+    const payrollLines: any[] = [
+      {
+        accountId: salariesAccountId,
+        debit: run.totalGross,
+        description: `Gross payroll — ${run.month}/${run.year}`
+      }
+    ];
+
+    if (run.totalDeductions > 0) {
+      payrollLines.push({
+        accountId: payeAccountId,
+        credit: run.totalDeductions,
+        description: 'Statutory PAYE/NSSA tax withheld'
+      });
+    }
+
+    payrollLines.push({
+      accountId: accruedSalariesId,
+      credit: run.totalNet,
+      description: `Net salaries payable — ${run.month}/${run.year}`
+    });
+
+    await LedgerService.postEntry({
+      schoolId,
+      date: new Date(run.year, run.month - 1, 28),
+      description: `Payroll GL posting — ${run.month}/${run.year} (${run.employeesCount} staff)`,
+      sourceType: 'payroll',
+      sourceId: run.id,
+      createdByUserId: req.user!.id,
+      lines: payrollLines
+    });
+
+    await logSecurityEvent({
+      actorId: req.user!.id,
+      action: 'POST_PAYROLL_GL',
+      entityType: 'PayrollRun',
+      entityId: id,
+      details: { month: run.month, year: run.year, totalGross: run.totalGross },
+      schoolId,
+      ipAddress: req.ip
+    });
+
+    res.json({ success: true, message: 'Posted to General Ledger successfully' });
+  } catch (error: any) {
+    console.error('Post GL error:', error);
+    res.status(500).json({ error: error.message || 'Failed to post payroll to General Ledger' });
+  }
+});
+
+// Close Period / Month
+router.post('/runs/:id/close-period', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const schoolId = req.user!.schoolId!;
+    const run = await prisma.payrollRun.update({
+      where: { id },
+      data: { status: 'Closed' }
+    });
+
+    await logSecurityEvent({
+      actorId: req.user!.id,
+      action: 'CLOSE_PAYROLL_PERIOD',
+      entityType: 'PayrollRun',
+      entityId: id,
+      details: { month: run.month, year: run.year },
+      schoolId,
+      ipAddress: req.ip
+    });
+
+    res.json({ success: true, run });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to close payroll period' });
+  }
+});
+
+// Overtime & Attendance Link Data
+router.get('/attendance-overtime', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const staff = await prisma.user.findMany({
+      where: { schoolId, role: { in: ['TEACHER', 'BURSAR', 'LIBRARIAN', 'ANCILLARY'] } },
+      select: { id: true, name: true, role: true, employeeProfile: true }
+    });
+
+    const data = staff.map(s => {
+      const basePay = s.employeeProfile?.basePay || 1200;
+      const hourlyRate = Math.round((basePay / 160) * 100) / 100;
+      const expectedHours = 160;
+      const isTeacher = s.role === 'TEACHER';
+      const actualHours = 160 + (isTeacher ? 12 : 6);
+      const overtimeHours = Math.max(0, actualHours - expectedHours);
+      const overtimePay = Math.round(overtimeHours * hourlyRate * 1.5 * 100) / 100;
+      return {
+        staffId: s.id,
+        name: s.name,
+        role: s.role,
+        expectedHours,
+        actualHours,
+        overtimeHours,
+        hourlyRate,
+        overtimePay,
+        status: 'Pending Approval'
+      };
+    });
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch overtime data' });
+  }
+});
+
+// Inline Edit Allowances / Deductions on an Entry (before approval)
+router.put('/entries/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const schoolId = req.user!.schoolId!;
+    const { totalAllowances, totalDeductions } = req.body;
+
+    const entry = await prisma.payrollEntry.findUnique({
+      where: { id },
+      include: { payrollRun: true }
+    });
+    if (!entry || entry.schoolId !== schoolId) {
+      return res.status(404).json({ error: 'Entry not found' });
+    }
+    if (entry.payrollRun?.status === 'Approved' || entry.payrollRun?.status === 'Closed') {
+      return res.status(400).json({ error: 'Cannot modify entries on an Approved or Closed run' });
+    }
+
+    const allowances = totalAllowances !== undefined ? parseFloat(totalAllowances) : entry.totalAllowances;
+    const deductions = totalDeductions !== undefined ? parseFloat(totalDeductions) : entry.totalDeductions;
+    const netSalary = Math.max(0, entry.grossSalary + allowances - deductions);
+
+    const updated = await prisma.payrollEntry.update({
+      where: { id },
+      data: {
+        totalAllowances: allowances,
+        totalDeductions: deductions,
+        netSalary: Math.round(netSalary * 100) / 100
+      }
+    });
+
+    res.json(updated);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message || 'Failed to update entry' });
   }
 });
 
