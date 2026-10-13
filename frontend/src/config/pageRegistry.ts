@@ -117,6 +117,16 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     searchKeywords: ['staff', 'teachers', 'employees', 'faculty', 'roster', 'directory', 'personnel']
   },
   {
+    id: 'admin-qr-cards',
+    label: 'Student & Staff ID Cards',
+    route: '/admin/qr-cards',
+    group: 'PEOPLE_ENROLLMENT',
+    icon: 'fas fa-id-card',
+    permissionKey: PERMISSIONS.PEOPLE_STUDENTS_MANAGE,
+    portalVisibility: ['admin'],
+    searchKeywords: ['qr cards', 'id badges', 'printable cards', 'barcodes', 'student id', 'staff id', 'photo cards', 'qr']
+  },
+  {
     id: 'admin-finance-overview',
     label: 'Finance Overview',
     route: '/admin/finance/overview',
@@ -233,9 +243,34 @@ export const PAGE_REGISTRY: PageDefinition[] = [
       { id: 'period', label: 'Period Attendance' },
       { id: 'boarding', label: 'Boarding Roll Call', module: 'boarding' },
       { id: 'absentee-report', label: 'Absentee Report' },
-      { id: 'sms-log', label: 'SMS Log' }
+      { id: 'sms-log', label: 'SMS Log' },
+      { id: 'qr-scanner', label: 'QR Code Attendance' }
     ],
-    searchKeywords: ['presence', 'roll call', 'student attendance', 'absentee report', 'sms log']
+    searchKeywords: ['presence', 'roll call', 'student attendance', 'absentee report', 'sms log', 'qr attendance']
+  },
+  {
+    id: 'admin-gate-dashboard',
+    label: 'Gate & Campus Security',
+    route: '/admin/gate-dashboard',
+    group: 'STUDENT_LIFE',
+    icon: 'fas fa-shield-alt',
+    permissionKey: PERMISSIONS.STUDENT_LIFE_CLOCK_LOGS,
+    portalVisibility: ['admin', 'ancillary'],
+    tabs: [
+      { id: 'overview', label: 'Campus Occupancy' },
+      { id: 'traffic', label: 'Real-Time Traffic Feed' }
+    ],
+    searchKeywords: ['gate security', 'campus security', 'qr check in', 'guard scanner', 'lockdown', 'gate logs', 'traffic']
+  },
+  {
+    id: 'admin-gate-terminal',
+    label: 'Gate Scanner Terminal',
+    route: '/gate',
+    group: 'STUDENT_LIFE',
+    icon: 'fas fa-qrcode',
+    permissionKey: PERMISSIONS.STUDENT_LIFE_CLOCK_LOGS,
+    portalVisibility: ['admin', 'ancillary'],
+    searchKeywords: ['qr scanner', 'gate terminal', 'camera scanner', 'guard scanner', 'clock in', 'gate entry']
   },
   {
     id: 'admin-staff-attendance',

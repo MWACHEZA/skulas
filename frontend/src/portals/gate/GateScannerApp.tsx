@@ -655,6 +655,26 @@ export default function GateScannerApp() {
           )}
 
           <button
+            onClick={() => window.location.href = '/admin/dashboard'}
+            style={{
+              padding: '6px 12px',
+              backgroundColor: '#0284c7',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '12px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <span>Admin Portal</span>
+            <span style={{ fontSize: '14px' }}>→</span>
+          </button>
+
+          <button
             onClick={handleLogout}
             style={{
               padding: '6px 12px',

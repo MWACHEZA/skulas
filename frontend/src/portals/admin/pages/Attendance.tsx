@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
@@ -7,7 +7,7 @@ import { useTerminology } from '../../../hooks/useTerminology';
 import { ExportButton } from '../../../components/shared';
 import '../../../styles/portal.css';
 
-type AttendanceTab = 'daily-roll-call' | 'period' | 'boarding' | 'absentee-report' | 'sms-log';
+type AttendanceTab = 'daily-roll-call' | 'period' | 'boarding' | 'absentee-report' | 'sms-log' | 'qr-scanner';
 
 interface StudentRosterItem {
   studentId: string;
@@ -355,6 +355,15 @@ export default function AdminAttendance() {
         >
           <i className="fas fa-sms"></i>
           SMS Notification Log
+        </button>
+
+        <button
+          onClick={() => handleTabChange('qr-scanner')}
+          className={currentTab === 'qr-scanner' ? 'portal-btn-primary' : 'portal-btn-ghost'}
+          style={{ padding: '10px 20px', borderRadius: 8, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}
+        >
+          <i className="fas fa-qrcode"></i>
+          QR Code Attendance & Gate
         </button>
       </div>
 
@@ -907,6 +916,88 @@ export default function AdminAttendance() {
               </tbody>
             </table>
           )}
+        </div>
+      )}
+
+      {/* ──────────────────────────────────────────────────────────────────────────
+          TAB 5: QR Code Attendance & Gate Security Hub
+          ────────────────────────────────────────────────────────────────────────── */}
+      {currentTab === 'qr-scanner' && (
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20, marginBottom: 28 }}>
+            {/* Quick Action Card 1: Standalone Gate Scanner */}
+            <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ width: 44, height: 44, borderRadius: 10, background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', marginBottom: 14 }}>
+                  <i className="fas fa-qrcode" />
+                </div>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: '0 0 6px 0' }}>
+                  Live Gate Scanner Terminal
+                </h3>
+                <p style={{ fontSize: '0.88rem', color: '#64748b', margin: 0, lineHeight: 1.5 }}>
+                  Launch the guard PWA scanner designed for perimeter gates. Supports live camera scanning, USB barcode readers, automated fee compliance checking, and offline cache.
+                </p>
+              </div>
+              <div style={{ marginTop: 20 }}>
+                <Link
+                  to="/gate"
+                  target="_blank"
+                  className="portal-btn-primary"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', padding: '10px 18px', borderRadius: 8, fontWeight: 700, fontSize: '0.9rem' }}
+                >
+                  <i className="fas fa-external-link-alt" /> Open Gate Scanner Terminal
+                </Link>
+              </div>
+            </div>
+
+            {/* Quick Action Card 2: Gate Security Dashboard */}
+            <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ width: 44, height: 44, borderRadius: 10, background: '#ecfdf5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', marginBottom: 14 }}>
+                  <i className="fas fa-shield-alt" />
+                </div>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: '0 0 6px 0' }}>
+                  Gate & Campus Security Dashboard
+                </h3>
+                <p style={{ fontSize: '0.88rem', color: '#64748b', margin: 0, lineHeight: 1.5 }}>
+                  Real-time campus occupancy monitor, live gate traffic logs, late arrival surveillance, and emergency perimeter lockdown controls.
+                </p>
+              </div>
+              <div style={{ marginTop: 20 }}>
+                <Link
+                  to="/admin/gate-dashboard"
+                  className="portal-btn-secondary"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', padding: '10px 18px', borderRadius: 8, fontWeight: 700, fontSize: '0.9rem', border: '1px solid #cbd5e1' }}
+                >
+                  <i className="fas fa-tachometer-alt" /> View Gate Security Dashboard
+                </Link>
+              </div>
+            </div>
+
+            {/* Quick Action Card 3: Printable ID Badges */}
+            <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ width: 44, height: 44, borderRadius: 10, background: '#f5f3ff', color: '#7c3aed', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.3rem', marginBottom: 14 }}>
+                  <i className="fas fa-id-card" />
+                </div>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: '0 0 6px 0' }}>
+                  Student & Staff ID QR Cards
+                </h3>
+                <p style={{ fontSize: '0.88rem', color: '#64748b', margin: 0, lineHeight: 1.5 }}>
+                  Generate, print, and reissue institutional ID cards with tamper-resistant HMAC cryptographic QR codes. Filter by class or department.
+                </p>
+              </div>
+              <div style={{ marginTop: 20 }}>
+                <Link
+                  to="/admin/qr-cards"
+                  className="portal-btn-secondary"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none', padding: '10px 18px', borderRadius: 8, fontWeight: 700, fontSize: '0.9rem', border: '1px solid #cbd5e1' }}
+                >
+                  <i className="fas fa-print" /> Print & Manage ID Cards
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

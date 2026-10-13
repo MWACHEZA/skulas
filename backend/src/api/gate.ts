@@ -265,6 +265,7 @@ router.get('/qr-cards', requireAuth, async (req: AuthRequest, res: Response) => 
       },
       include: {
         class: true,
+        user: { select: { avatar: true } },
         qrCodes: {
           where: { isActive: true },
           take: 1
@@ -274,8 +275,7 @@ router.get('/qr-cards', requireAuth, async (req: AuthRequest, res: Response) => 
     });
 
     const school = await prisma.school.findUnique({
-      where: { id: schoolId },
-      include: { settings: true }
+      where: { id: schoolId }
     });
 
     // Ensure all students have an active QR token

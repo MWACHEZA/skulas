@@ -682,7 +682,8 @@ router.get('/sessions', requireAuth, async (req: AuthRequest, res) => {
 // 2. Save Attendance Session with Auto-SMS and 3-Consecutive-Absence Welfare Check
 router.post('/sessions/save', requireAuth, async (req: AuthRequest, res) => {
   try {
-    const schoolId = req.user!.schoolId!;
+    const schoolId = req.user?.schoolId || (req.body.schoolId as string) || (await prisma.school.findFirst())?.id;
+    if (!schoolId) return res.status(400).json({ error: 'School ID required' });
     const userId = req.user!.id;
     const { date, classId, period = 'Homeroom', type = 'daily', records } = req.body;
 
