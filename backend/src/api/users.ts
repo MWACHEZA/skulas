@@ -213,30 +213,57 @@ router.get('/me', requireAuth, async (req: AuthRequest, res: Response) => {
           avatar: true,
           staffId: true,
           schoolId: true,
+          createdAt: true,
           updatedAt: true,
           religion: true,
           departmentId: true,
           dept: { select: { id: true, name: true } },
+          headedDepartments: { select: { id: true, name: true } },
           metadata: true,
           school: { include: { plan: true } },
           teacher: {
             include: {
+              dept: { select: { id: true, name: true } },
+              classes: { select: { id: true, name: true, level: true } },
               subjects: {
                 include: {
-                  subject: true
+                  subject: { select: { id: true, name: true, code: true } }
                 }
-              }
+              },
+              subjectClasses: {
+                include: {
+                  class: { select: { id: true, name: true, level: true } },
+                  subject: { select: { id: true, name: true, code: true } }
+                }
+              },
+              houseMastered: { select: { id: true, name: true } }
             }
           },
           employeeProfile: true, // Include HR details
+          awards: {
+            orderBy: { createdAt: 'desc' },
+            take: 10
+          },
+          assignedAssets: {
+            select: { id: true, name: true, assetNumber: true, category: true, status: true, location: true },
+            take: 10
+          },
+          staffQrCodes: {
+            select: { id: true, qrToken: true, isActive: true, createdAt: true },
+            take: 1
+          },
+          gateLogs: {
+            take: 5,
+            orderBy: { scannedAt: 'desc' },
+            select: { id: true, scannedAt: true, direction: true, entryStatus: true }
+          },
           student: {
             include: { 
               class: true,
+              house: true,
               parents: { include: { parent: { include: { user: { select: { id: true, name: true, email: true, role: true, avatar: true } } } } } }
             }
           },
-          // Include HEXCO fields explicitly if they are in the models
-          // They are already in Student/School models, but need to be selectable
           supplier: {
             include: { schools: { include: { school: true } } }
           },
@@ -787,22 +814,34 @@ router.post('/', requireAuth, staffDocumentUpload.fields([
  * @desc    Update current user's profile
  */
 router.put('/me', requireAuth, uploadLimiter, upload.single('avatar'), validate(UpdateProfileSchema), async (req: AuthRequest, res: Response) => {
-  const { name, email, phone, dob, gender, address, metadata, prevSchool, reasonForTransfer, lastGradeAchieved, admissionsNotes, parents, religion } = req.body;
+  const { 
+    name, email, phone, dob, gender, address, metadata, prevSchool, 
+    reasonForTransfer, lastGradeAchieved, admissionsNotes, parents, religion,
+    bloodGroup, designation, jobTitle, qualification, bio, specialization,
+    contractType, nationalId, emergencyName, emergencyPhone, emergencyRelation,
+    accountNumber, accountHolderName, bankName, bankBranch, branchCode, accountType,
+    accountNumberZig, accountHolderNameZig, bankNameZig, bankBranchZig, branchCodeZig, accountTypeZig,
+    facebookLink, linkedinLink, twitterLink
+  } = req.body;
   const avatar = req.file ? `${(req as any).uploadCategoryPath}/${req.file.filename}` : req.body.avatar;
 
   try {
     // 1. Process Metadata
-    let parsedMetadata = {};
+    let parsedMetadata: any = {};
     if (typeof metadata === 'string') {
       try { parsedMetadata = JSON.parse(metadata); } catch(e) {}
-    } else if (typeof metadata === 'object') {
+    } else if (typeof metadata === 'object' && metadata !== null) {
       parsedMetadata = metadata;
     }
 
     const existingUser = await prisma.user.findFirst({ 
         where: { id: req.user!.id },
-        include: { student: true, parent: true, teacher: true }
+        include: { student: true, parent: true, teacher: true, employeeProfile: true }
     });
+
+    if (!existingUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
     const updatedUser = await prisma.$transaction(async (tx) => {
       // 2. Update Student record if exists
@@ -814,11 +853,74 @@ router.put('/me', requireAuth, uploadLimiter, upload.single('avatar'), validate(
              gender,
              address,
              hexcoId: req.body.hexcoId,
-             nationalId: req.body.nationalId !== undefined ? req.body.nationalId : undefined,
+             nationalId: nationalId !== undefined ? nationalId : undefined,
              prevSchool: prevSchool !== undefined ? prevSchool : undefined,
              reasonForTransfer: reasonForTransfer !== undefined ? reasonForTransfer : undefined,
              lastGradeAchieved: lastGradeAchieved !== undefined ? lastGradeAchieved : undefined,
              admissionsNotes: admissionsNotes !== undefined ? admissionsNotes : undefined
+          }
+        });
+      }
+
+      // 2.2. Update Teacher record if exists
+      if (existingUser?.teacher && (qualification !== undefined || req.body.title !== undefined)) {
+        await tx.teacher.update({
+          where: { id: existingUser.teacher.id },
+          data: {
+            qualification: qualification !== undefined ? qualification : undefined,
+            title: req.body.title !== undefined ? req.body.title : undefined
+          }
+        });
+      }
+
+      // 2.3. Update/Upsert EmployeeProfile for Staff Roles
+      const isStaffRole = STAFF_ROLES.includes(existingUser.role) || ['SUPER_ADMIN', 'CLINIC', 'NURSE'].includes(existingUser.role);
+      if (isStaffRole && existingUser.schoolId) {
+        await tx.employeeProfile.upsert({
+          where: { userId: req.user!.id },
+          create: {
+            userId: req.user!.id,
+            schoolId: existingUser.schoolId,
+            jobTitle: jobTitle || designation || existingUser.role,
+            designation: designation || jobTitle || existingUser.role,
+            contractType: contractType || 'Permanent',
+            bloodGroup,
+            bankName,
+            bankBranch,
+            branchCode,
+            accountNumber,
+            accountHolderName,
+            accountType,
+            bankNameZig,
+            bankBranchZig,
+            branchCodeZig,
+            accountNumberZig,
+            accountHolderNameZig,
+            accountTypeZig,
+            facebookLink,
+            linkedinLink,
+            twitterLink
+          },
+          update: {
+            jobTitle: jobTitle !== undefined ? jobTitle : undefined,
+            designation: designation !== undefined ? designation : undefined,
+            contractType: contractType !== undefined ? contractType : undefined,
+            bloodGroup: bloodGroup !== undefined ? bloodGroup : undefined,
+            bankName: bankName !== undefined ? bankName : undefined,
+            bankBranch: bankBranch !== undefined ? bankBranch : undefined,
+            branchCode: branchCode !== undefined ? branchCode : undefined,
+            accountNumber: accountNumber !== undefined ? accountNumber : undefined,
+            accountHolderName: accountHolderName !== undefined ? accountHolderName : undefined,
+            accountType: accountType !== undefined ? accountType : undefined,
+            bankNameZig: bankNameZig !== undefined ? bankNameZig : undefined,
+            bankBranchZig: bankBranchZig !== undefined ? bankBranchZig : undefined,
+            branchCodeZig: branchCodeZig !== undefined ? branchCodeZig : undefined,
+            accountNumberZig: accountNumberZig !== undefined ? accountNumberZig : undefined,
+            accountHolderNameZig: accountHolderNameZig !== undefined ? accountHolderNameZig : undefined,
+            accountTypeZig: accountTypeZig !== undefined ? accountTypeZig : undefined,
+            facebookLink: facebookLink !== undefined ? facebookLink : undefined,
+            linkedinLink: linkedinLink !== undefined ? linkedinLink : undefined,
+            twitterLink: twitterLink !== undefined ? twitterLink : undefined
           }
         });
       }
@@ -849,6 +951,25 @@ router.put('/me', requireAuth, uploadLimiter, upload.single('avatar'), validate(
       }
 
       // 3. Update User base
+      const mergedMetadata = {
+        ...(existingUser?.metadata as any || {}),
+        ...parsedMetadata,
+        ...(existingUser?.role !== 'STUDENT' ? { 
+            dob: dob || undefined, 
+            gender: gender || undefined, 
+            address: address || undefined,
+            bio: bio || undefined,
+            qualification: qualification || undefined,
+            specialization: specialization || undefined,
+            nationalId: nationalId || undefined,
+        } : {}),
+        emergencyName: emergencyName !== undefined ? emergencyName : (existingUser?.metadata as any)?.emergencyName,
+        emergencyPhone: emergencyPhone !== undefined ? emergencyPhone : (existingUser?.metadata as any)?.emergencyPhone,
+        emergencyRelation: emergencyRelation !== undefined ? emergencyRelation : (existingUser?.metadata as any)?.emergencyRelation,
+        avatar: avatar || undefined,
+        updatedAt: new Date().toISOString()
+      };
+
       return await tx.user.update({
         where: { id: req.user!.id },
         data: { 
@@ -857,17 +978,7 @@ router.put('/me', requireAuth, uploadLimiter, upload.single('avatar'), validate(
           phone, 
           avatar: avatar || undefined,
           religion: religion !== undefined ? religion : undefined,
-          metadata: {
-              ...(existingUser?.metadata as any || {}),
-              ...parsedMetadata,
-              ...(existingUser?.role !== 'STUDENT' ? { 
-                  dob: dob || undefined, 
-                  gender: gender || undefined, 
-                  address: address || undefined 
-              } : {}),
-              avatar: avatar || undefined,
-              updatedAt: new Date().toISOString()
-          } as any
+          metadata: mergedMetadata as any
         },
         select: { id: true, name: true, email: true, role: true, phone: true, avatar: true, metadata: true, religion: true, updatedAt: true },
       });

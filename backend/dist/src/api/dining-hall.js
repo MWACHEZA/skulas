@@ -204,6 +204,26 @@ router.get('/reports', async (req, res) => {
     }
 });
 /**
+ * @route   GET /api/dining-hall/my-reports
+ * @desc    Fetch reports submitted by the logged-in student/user
+ */
+router.get('/my-reports', auth_1.requireAuth, async (req, res) => {
+    const schoolId = req.user.schoolId;
+    const userId = req.user.id;
+    try {
+        const reports = await prisma_1.default.diningHallReport.findMany({
+            where: { schoolId, reportedById: userId },
+            orderBy: { createdAt: 'desc' },
+            take: 20
+        });
+        res.json(reports);
+    }
+    catch (error) {
+        console.error('Fetch my reports error:', error);
+        res.json([]);
+    }
+});
+/**
  * @route   POST /api/dining-hall/reports
  * @desc    Submit a new dining hall service report
  */

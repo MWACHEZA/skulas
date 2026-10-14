@@ -1,38 +1,72 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import api, { BASE_URL } from '../../../lib/api';
 import { getAvatarUrl } from '../../../utils/formatters';
 import ActiveSessions from '../../../components/shared/ActiveSessions';
-import EmptyState from '../../../components/shared/EmptyState';
 import '../../../styles/portal.css';
 
 export default function ProfilePage() {
   const { user, refreshUser, updateUser, activeEntity } = useAuth();
   const { showToast } = useToast();
+
   const [loading, setLoading] = useState(false);
   const [fetchingProfile, setFetchingProfile] = useState(true);
   const [profileData, setProfileData] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<'overview' | 'assignments' | 'payroll' | 'idcard' | 'history' | 'security'>('overview');
+
+  // Avatar Upload
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [editingSection, setEditingSection] = useState<string | null>(null);
+
+  // Edit Modals
+  const [editingSection, setEditingSection] = useState<'personal' | 'contact' | 'emergency' | 'payroll' | 'security' | null>(null);
+
+  // Password Form
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+
+  // Banking & HR Form
+  const [hrForm, setHrForm] = useState({
+    designation: '',
+    jobTitle: '',
+    contractType: 'Permanent',
+    bloodGroup: '',
+    bankName: '',
+    bankBranch: '',
+    branchCode: '',
+    accountNumber: '',
+    accountHolderName: '',
+    accountType: 'Checking',
+    bankNameZig: '',
+    bankBranchZig: '',
+    branchCodeZig: '',
+    accountNumberZig: '',
+    accountHolderNameZig: '',
+    accountTypeZig: 'Checking',
+    facebookLink: '',
+    linkedinLink: '',
+    twitterLink: ''
+  });
 
   const isParent = user?.role === 'PARENT';
+  const isStudent = user?.role === 'STUDENT';
+  const isTeacher = user?.role === 'TEACHER';
+  const isStaff = !isStudent && !isParent;
+
   const childLink = profileData?.parent?.students?.find(
     (ps: any) => ps.studentId === activeEntity?.id || ps.student?.id === activeEntity?.id
   ) || profileData?.parent?.students?.[0];
+
   const targetStudent = isParent ? (childLink?.student || (activeEntity ? {
     name: activeEntity.name,
     studentId: (activeEntity as any).studentId || (activeEntity as any).code || 'N/A',
     class: { name: (activeEntity as any).className || (activeEntity as any).class || 'Enrolled' },
     school: { name: activeEntity.schoolName }
   } : null)) : profileData?.student;
-  
-  const [passwordForm, setPasswordForm] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
 
   useEffect(() => {
     fetchProfile();
@@ -43,8 +77,33 @@ export default function ProfilePage() {
       setFetchingProfile(true);
       const { data } = await api.get('/api/users/me');
       setProfileData(data);
+
+      if (data?.employeeProfile) {
+        setHrForm({
+          designation: data.employeeProfile.designation || '',
+          jobTitle: data.employeeProfile.jobTitle || '',
+          contractType: data.employeeProfile.contractType || 'Permanent',
+          bloodGroup: data.employeeProfile.bloodGroup || '',
+          bankName: data.employeeProfile.bankName || '',
+          bankBranch: data.employeeProfile.bankBranch || '',
+          branchCode: data.employeeProfile.branchCode || '',
+          accountNumber: data.employeeProfile.accountNumber || '',
+          accountHolderName: data.employeeProfile.accountHolderName || '',
+          accountType: data.employeeProfile.accountType || 'Checking',
+          bankNameZig: data.employeeProfile.bankNameZig || '',
+          bankBranchZig: data.employeeProfile.bankBranchZig || '',
+          branchCodeZig: data.employeeProfile.branchCodeZig || '',
+          accountNumberZig: data.employeeProfile.accountNumberZig || '',
+          accountHolderNameZig: data.employeeProfile.accountHolderNameZig || '',
+          accountTypeZig: data.employeeProfile.accountTypeZig || 'Checking',
+          facebookLink: data.employeeProfile.facebookLink || '',
+          linkedinLink: data.employeeProfile.linkedinLink || '',
+          twitterLink: data.employeeProfile.twitterLink || ''
+        });
+      }
     } catch (err) {
       console.error('Failed to fetch profile:', err);
+      showToast('Failed to load profile from database', 'error');
     } finally {
       setFetchingProfile(false);
     }
@@ -53,23 +112,7 @@ export default function ProfilePage() {
   const formatDate = (val: any) => {
     if (!val) return '—';
     const d = new Date(val);
-    return isNaN(d.getTime()) ? '—' : d.toLocaleDateString();
-  };
-
-  const getStaffDocumentsEntries = (rawDocs: any): [string, any][] => {
-    if (!rawDocs) return [];
-    let docs = rawDocs;
-    if (typeof docs === 'string') {
-      try {
-        docs = JSON.parse(docs);
-      } catch {
-        return [];
-      }
-    }
-    if (docs && typeof docs === 'object' && !Array.isArray(docs)) {
-      return Object.entries(docs);
-    }
-    return [];
+    return isNaN(d.getTime()) ? '—' : d.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,7 +158,7 @@ export default function ProfilePage() {
     setLoading(true);
     try {
       await api.put('/api/users/me', sectionData);
-      showToast('Profile updated successfully', 'success');
+      showToast('Profile updated successfully in database', 'success');
       await refreshUser();
       setAvatarPreview(null);
       setEditingSection(null);
@@ -132,7 +175,10 @@ export default function ProfilePage() {
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
       return showToast('Passwords do not match', 'error');
     }
-    
+    if (passwordForm.newPassword.length < 8) {
+      return showToast('Password must be at least 8 characters long', 'warning');
+    }
+
     setLoading(true);
     try {
       await api.post('/api/auth/change-password', {
@@ -149,686 +195,1368 @@ export default function ProfilePage() {
     }
   };
 
-  const getInitials = (name: string) => {
-    return name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || '??';
+  const handlePrintIDCard = () => {
+    window.print();
   };
 
-  const InfoRow = ({ label, value, icon }: { label: string, value: any, icon?: string }) => {
+  const getRoleBadgeColor = (role: string) => {
+    switch (role?.toUpperCase()) {
+      case 'SUPER_ADMIN':
+      case 'SCHOOL_ADMIN':
+      case 'ADMIN':
+        return { bg: '#ede9fe', color: '#7c3aed', border: '#c4b5fd' };
+      case 'TEACHER':
+        return { bg: '#dbeafe', color: '#1d4ed8', border: '#bfdbfe' };
+      case 'BURSAR':
+        return { bg: '#ecfdf5', color: '#047857', border: '#a7f3d0' };
+      case 'LIBRARIAN':
+        return { bg: '#fef3c7', color: '#b45309', border: '#fde68a' };
+      case 'ANCILLARY':
+        return { bg: '#e0e7ff', color: '#4338ca', border: '#c7d2fe' };
+      case 'NURSE':
+      case 'CLINIC':
+        return { bg: '#fce7f3', color: '#be185d', border: '#fbcfe8' };
+      case 'STUDENT':
+        return { bg: '#eff6ff', color: '#2563eb', border: '#bfdbfe' };
+      default:
+        return { bg: '#f1f5f9', color: '#475569', border: '#e2e8f0' };
+    }
+  };
+
+  const roleStyle = getRoleBadgeColor(profileData?.role || user?.role || '');
+
+  // Sub-component for an information row with clean styling
+  const InfoCardItem = ({ label, value, icon, subtext }: { label: string; value: any; icon?: string; subtext?: string }) => {
     let displayVal = '—';
     if (value !== null && value !== undefined && value !== '') {
       if (typeof value === 'object') {
-        displayVal = value.name || value.title || value.address || '—';
+        displayVal = value.name || value.title || value.code || '—';
       } else {
         displayVal = String(value);
       }
     }
     return (
-      <div style={{ display: 'flex', borderBottom: '1px solid #f1f5f9', padding: '16px 0' }}>
-        <div style={{ width: 160, color: '#64748b', display: 'flex', alignItems: 'center', fontSize: '0.85rem', fontWeight: 700 }}>
-          {icon && <i className={icon} style={{ marginRight: 10, width: 16, color: '#94a3b8' }}></i>}
+      <div 
+        style={{
+          padding: '16px 20px',
+          background: '#f8fafc',
+          borderRadius: '14px',
+          border: '1px solid #e2e8f0',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          minHeight: '84px'
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#64748b', fontSize: '0.78rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+          {icon && <i className={icon} style={{ color: '#0284c7' }}></i>}
           {label}
         </div>
-        <div style={{ flex: 1, fontWeight: 800, color: '#1e293b', fontSize: '0.95rem' }}>{displayVal}</div>
+        <div style={{ fontSize: '1.05rem', fontWeight: 800, color: '#0f172a', wordBreak: 'break-word', marginTop: '4px' }}>
+          {displayVal}
+        </div>
+        {subtext && <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '2px' }}>{subtext}</div>}
       </div>
     );
   };
 
   if (fetchingProfile && !profileData) {
     return (
-      <div className="portal-container" style={{ padding: 60, textAlign: 'center', color: '#64748b' }}>
-        <i className="fas fa-spinner fa-spin" style={{ fontSize: '2rem', color: '#2563eb', marginBottom: 16 }}></i>
-        <p style={{ fontWeight: 600 }}>Loading profile information...</p>
+      <div className="portal-container" style={{ padding: '80px 20px', textAlign: 'center', color: '#64748b' }}>
+        <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7', marginBottom: '16px' }}></i>
+        <h3 style={{ margin: 0, fontWeight: 800, color: '#0f172a' }}>Loading Staff Profile...</h3>
+        <p style={{ marginTop: '8px', color: '#64748b' }}>Synchronizing credentials and operational assignments from database.</p>
       </div>
     );
   }
 
-  return (
-    <div className="portal-container">
-      <div className="portal-page-header">
-        <div className="header-content">
-          <h1>{isParent ? `${activeEntity?.name || targetStudent?.name || 'Child'}'s Profile` : 'My Profile'}</h1>
-          <p>{isParent ? `Review academic enrollment, class records, and biographical details for ${activeEntity?.name || targetStudent?.name || 'your child'}.` : 'Manage your identity, security settings, and institutional credentials.'}</p>
-        </div>
-      </div>
+  const pData = profileData || user;
+  const staffId = pData?.staffId || (pData?.employeeProfile?.staffId) || targetStudent?.studentId || 'N/A';
+  const departmentName = pData?.dept?.name || pData?.teacher?.department || (pData?.employeeProfile?.department) || 'Institutional Services';
+  const jobTitle = pData?.employeeProfile?.jobTitle || pData?.employeeProfile?.designation || pData?.role;
 
-      <div className="portal-grid-1-2">
-        {/* Left Column: Avatar & Basic */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-          <div className="portal-card" style={{ textAlign: 'center', padding: '48px 24px' }}>
-             <div style={{ position: 'relative', width: '160px', height: '160px', margin: '0 auto 24px' }}>
-                <div style={{ 
-                    width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden', 
-                    background: '#2563eb', color: 'white', display: 'flex', 
-                    alignItems: 'center', justifyContent: 'center', fontSize: '4rem', fontWeight: 800,
-                    border: '6px solid #fff', boxShadow: '0 8px 20px rgba(0,0,0,0.1)'
-                }}>
-                    {avatarPreview ? (
-                        <img src={avatarPreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (profileData?.avatar || user?.avatar) ? (
-                        <img src={getAvatarUrl(profileData?.avatar || user?.avatar, user?.schoolCode, profileData?.updatedAt || (user as any)?.updatedAt || Date.now()) || ''} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                        getInitials(isParent ? (activeEntity?.name || targetStudent?.name || user?.name || '') : (user?.name || ''))
-                    )}
-                </div>
-                {!isParent && (
-                  <label htmlFor="avatar-upload" className="portal-btn-icon" style={{ 
-                      position: 'absolute', bottom: '8px', right: '8px', background: '#fff', 
-                      boxShadow: '0 4px 10px rgba(0,0,0,0.2)', width: '44px', height: '44px',
-                      cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      borderRadius: '50%', color: '#2563eb', border: '1px solid #f1f5f9'
-                  }}>
-                      <i className="fas fa-camera"></i>
-                      <input id="avatar-upload" type="file" hidden accept="image/*" onChange={handleAvatarChange} />
-                  </label>
+  return (
+    <div className="portal-container" style={{ paddingBottom: '60px' }}>
+      {/* Print target style */}
+      <style>{`
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          #printable-digital-pass, #printable-digital-pass * {
+            visibility: visible;
+          }
+          #printable-digital-pass {
+            position: absolute;
+            left: 50%;
+            top: 20%;
+            transform: translate(-50%, -20%);
+            box-shadow: none !important;
+            border: 2px solid #000 !important;
+          }
+        }
+      `}</style>
+
+      {/* Hero Profile Banner */}
+      <div 
+        style={{
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)',
+          borderRadius: '24px',
+          padding: '32px 36px',
+          color: '#ffffff',
+          marginBottom: '28px',
+          position: 'relative',
+          overflow: 'hidden',
+          boxShadow: '0 12px 30px rgba(0,0,0,0.12)'
+        }}
+      >
+        <div style={{ position: 'relative', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
+            {/* Avatar with Camera Trigger */}
+            <div style={{ position: 'relative', width: '100px', height: '100px', flexShrink: 0 }}>
+              <div 
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  background: '#2563eb',
+                  border: '4px solid #ffffff',
+                  boxShadow: '0 6px 18px rgba(0,0,0,0.25)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '2.5rem',
+                  fontWeight: 900,
+                  color: '#ffffff'
+                }}
+              >
+                {avatarPreview ? (
+                  <img src={avatarPreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (pData?.avatar || user?.avatar) ? (
+                  <img 
+                    src={getAvatarUrl(pData?.avatar || user?.avatar, user?.schoolCode, pData?.updatedAt || Date.now()) || ''} 
+                    alt="Avatar" 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                  />
+                ) : (
+                  (pData?.name || 'User').substring(0, 2).toUpperCase()
                 )}
-             </div>
-             <h2 style={{ margin: '0 0 8px', fontSize: '1.5rem', fontWeight: 900, color: '#1e293b' }}>
-               {isParent ? (activeEntity?.name || targetStudent?.name || user?.name) : user?.name}
-             </h2>
-             <p style={{ color: '#64748b', margin: '0 0 24px', fontWeight: 600 }}>
-               {isParent ? (targetStudent?.email || `${(targetStudent?.studentId || 'Enrolled Student')}`) : user?.email}
-             </p>
-             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                <span className="status-badge status-active" style={{ padding: '8px 20px', fontWeight: 900 }}>
-                  {isParent ? 'Enrolled Student' : user?.role}
+              </div>
+
+              {!isParent && (
+                <label 
+                  htmlFor="profile-avatar-upload" 
+                  style={{
+                    position: 'absolute',
+                    bottom: '0',
+                    right: '0',
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    background: '#ffffff',
+                    color: '#0284c7',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem',
+                    border: '2px solid #ffffff'
+                  }}
+                  title="Upload New Photo"
+                >
+                  <i className="fas fa-camera"></i>
+                  <input id="profile-avatar-upload" type="file" hidden accept="image/*" onChange={handleAvatarChange} />
+                </label>
+              )}
+            </div>
+
+            {/* Identity Info */}
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                <span 
+                  style={{
+                    background: roleStyle.bg,
+                    color: roleStyle.color,
+                    border: `1px solid ${roleStyle.border}`,
+                    padding: '4px 12px',
+                    borderRadius: '20px',
+                    fontSize: '0.8rem',
+                    fontWeight: 800,
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  {isParent ? 'Parent / Guardian' : pData?.role}
                 </span>
-                {(isParent ? (targetStudent?.class?.name || (targetStudent as any)?.className) : user?.staffId) && (
-                  <span className="status-badge" style={{ padding: '8px 20px', fontWeight: 900, background: '#eff6ff', color: '#1d4ed8' }}>
-                    {isParent ? (targetStudent?.class?.name || (targetStudent as any)?.className) : user?.staffId}
+
+                {staffId !== 'N/A' && (
+                  <span style={{ background: 'rgba(255,255,255,0.15)', padding: '4px 12px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 800, color: '#e2e8f0', fontFamily: 'monospace' }}>
+                    ID: {staffId}
                   </span>
                 )}
-             </div>
-             {avatarPreview && (
-               <button className="portal-btn-primary" style={{ marginTop: 20 }} onClick={handleSavePhoto} disabled={loading}>
-                 {loading ? 'Saving Photo...' : 'Save Photo'}
-               </button>
-             )}
-          </div>
 
-          <div className="portal-card">
-            <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}><i className="fas fa-shield-alt mr-3" style={{ color: '#059669' }}></i>Security</h3>
-                <button className="portal-btn-ghost" onClick={() => setEditingSection('security')} style={{ fontSize: '0.85rem', fontWeight: 800 }}>Update Security</button>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <InfoRow label="Member Since" value={user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : '—'} icon="fas fa-calendar-check" />
-                <InfoRow label="School" value={user?.schoolName || '—'} icon="fas fa-school" />
-                <InfoRow label="Plan" value="Professional Edition" icon="fas fa-crown" />
-            </div>
-          </div>
-          
-          <div className="portal-card" style={{ padding: '24px' }}>
-             <ActiveSessions />
-          </div>
-        </div>
-
-        {/* Right Column: Detailed Sections */}
-        <div style={{ 
-          display: user?.role === 'STUDENT' ? 'grid' : 'flex', 
-          gridTemplateColumns: user?.role === 'STUDENT' ? 'repeat(2, 1fr)' : undefined,
-          flexDirection: user?.role === 'STUDENT' ? undefined : 'column',
-          gap: '32px' 
-        }}>
-          {/* Section 1: Personal Information */}
-          <div className="portal-card">
-            <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
-                  <i className="fas fa-user-circle mr-3" style={{ color: '#2563eb' }}></i>
-                  {isParent ? 'Child Personal Information' : 'Personal Information'}
-                </h3>
-                {!isParent && (
-                  <button className="portal-btn-ghost" onClick={() => setEditingSection('personal')} style={{ fontSize: '0.85rem', fontWeight: 800 }}>
-                    <i className="fas fa-edit mr-2"></i>Edit
-                  </button>
+                {pData?.employeeProfile?.contractType && (
+                  <span style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#6ee7b7', padding: '4px 10px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: 700 }}>
+                    <i className="fas fa-check-circle mr-1"></i>{pData.employeeProfile.contractType}
+                  </span>
                 )}
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 48px' }}>
-                <InfoRow label="Legal Name" value={isParent ? (targetStudent?.name || activeEntity?.name) : profileData?.name} />
-                {(targetStudent?.class || profileData?.student?.class) && (
-                    <InfoRow 
-                      label="Class / Form" 
-                      value={`${(targetStudent || profileData?.student)?.class?.name || (typeof (targetStudent || profileData?.student)?.class === 'string' ? (targetStudent || profileData?.student)?.class : '—')}${(targetStudent || profileData?.student)?.class?.level ? ` (${(targetStudent || profileData?.student)?.class?.level})` : ''}`} 
-                      icon="fas fa-chalkboard" 
-                    />
-                )}
-                <InfoRow label="Gender" value={targetStudent?.gender || profileData?.student?.gender || profileData?.metadata?.gender} />
-                <InfoRow label="Date of Birth" value={formatDate(targetStudent?.dob || profileData?.student?.dob || profileData?.metadata?.dob)} />
-                <InfoRow label="Religion" value={profileData?.metadata?.religion} />
-                {(targetStudent || profileData?.student) && <InfoRow label="Student ID" value={(targetStudent || profileData?.student)?.studentId} />}
-                {(targetStudent?.nationalId || profileData?.student?.nationalId) && <InfoRow label="National ID / Birth Cert" value={(targetStudent || profileData?.student)?.nationalId} icon="fas fa-id-card" />}
-                {!isParent && profileData?.staffId && <InfoRow label="Staff ID" value={profileData.staffId} />}
-            </div>
-          </div>
+              </div>
 
-          {/* Section 2: Contact Information */}
-          <div className="portal-card">
-            <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
-                  <i className="fas fa-address-book mr-3" style={{ color: '#059669' }}></i>
-                  {isParent ? 'Parent & Guardian Contact' : 'Contact Information'}
-                </h3>
-                <button className="portal-btn-ghost" onClick={() => setEditingSection('contact')} style={{ fontSize: '0.85rem', fontWeight: 800 }}>
-                  <i className="fas fa-edit mr-2"></i>Edit
+              <h1 style={{ margin: '0 0 4px 0', fontSize: '2rem', fontWeight: 900, color: '#ffffff', letterSpacing: '-0.02em' }}>
+                {isParent ? (activeEntity?.name || targetStudent?.name || pData?.name) : pData?.name}
+              </h1>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', color: '#94a3b8', fontSize: '0.9rem' }}>
+                <span><i className="fas fa-envelope mr-2"></i>{pData?.email}</span>
+                {pData?.phone && <span><i className="fas fa-phone mr-2"></i>{pData?.phone}</span>}
+                <span><i className="fas fa-building mr-2"></i>{departmentName}</span>
+                <span><i className="fas fa-school mr-2"></i>{user?.schoolName || 'Main Campus'}</span>
+              </div>
+
+              {avatarPreview && (
+                <button
+                  onClick={handleSavePhoto}
+                  disabled={loading}
+                  style={{
+                    marginTop: '12px',
+                    background: '#10b981',
+                    color: '#fff',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    fontWeight: 800,
+                    fontSize: '0.82rem',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {loading ? 'Saving Photo...' : 'Confirm & Save New Photo'}
                 </button>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                {isParent && <InfoRow label="Guardian Name" value={profileData?.name} />}
-                <InfoRow label="Email Address" value={profileData?.email} />
-                <InfoRow label="Phone Number" value={profileData?.phone} />
-                <InfoRow label="Physical Address" value={(targetStudent || profileData?.student)?.address || profileData?.metadata?.address} />
-            </div>
-          </div>
-
-          {/* Section 2.5: Academic Background */}
-          {(targetStudent || profileData?.student) && (
-            <div className="portal-card">
-              <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-                  <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
-                    <i className="fas fa-graduation-cap mr-3" style={{ color: '#2563eb' }}></i>
-                    Academic Background & History
-                  </h3>
-                  {!isParent && (
-                    <button className="portal-btn-ghost" onClick={() => setEditingSection('academic')} style={{ fontSize: '0.85rem', fontWeight: 800 }}>
-                      <i className="fas fa-edit mr-2"></i>Edit
-                    </button>
-                  )}
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 48px' }}>
-                  <InfoRow label="Previous School" value={(targetStudent || profileData?.student)?.prevSchool} />
-                  <InfoRow label="Last Grade" value={(targetStudent || profileData?.student)?.lastGradeAchieved} />
-                  <InfoRow label="Transfer Reason" value={(targetStudent || profileData?.student)?.reasonForTransfer} />
-                  <InfoRow label="Admissions Note" value={(targetStudent || profileData?.student)?.admissionsNotes} />
-              </div>
-              {(targetStudent || profileData?.student)?.academicHistory && (
-                <div style={{ marginTop: '24px', padding: '24px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #f1f5f9' }}>
-                    <h4 style={{ margin: '0 0 16px', fontSize: '0.85rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase' }}>Academic History / Results</h4>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '20px' }}>
-                        {(() => {
-                          const rawHist = (targetStudent || profileData?.student)?.academicHistory;
-                          let histObj = rawHist;
-                          if (typeof rawHist === 'string') {
-                            try { histObj = JSON.parse(rawHist); } catch { histObj = null; }
-                          }
-                          if (histObj && typeof histObj === 'object' && !Array.isArray(histObj)) {
-                            return Object.entries(histObj).map(([key, val]: [string, any]) => (
-                              <div key={key} style={{ fontSize: '0.95rem', background: '#fff', padding: '12px', borderRadius: '12px', border: '1px solid #f1f5f9' }}>
-                                  <span style={{ color: '#64748b', fontWeight: 700, textTransform: 'capitalize' }}>{key}:</span> 
-                                  <span style={{ fontWeight: 800, marginLeft: '8px', color: '#1e293b' }}>{String(val)}</span>
-                              </div>
-                            ));
-                          }
-                          return null;
-                        })()}
-                    </div>
-                </div>
-              )}
-              {((targetStudent || profileData?.student)?.birthCertificateUrl || (targetStudent || profileData?.student)?.transferCertificateUrl) && (
-                <div style={{ marginTop: '24px', padding: '20px', background: '#f8fafc', borderRadius: '12px' }}>
-                  <h5 style={{ fontSize: '0.8rem', fontWeight: 900, color: '#475569', marginBottom: '12px', textTransform: 'uppercase' }}>Uploaded Documents</h5>
-                  <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-                    {(targetStudent || profileData?.student)?.birthCertificateUrl && (
-                      <a href={`${BASE_URL}/api/storage/file/${(targetStudent || profileData?.student)?.birthCertificateUrl}?token=${localStorage.getItem('acadex_token')}`} target="_blank" rel="noopener noreferrer" 
-                         className="portal-btn-ghost" style={{ fontSize: '0.75rem', background: '#fff', border: '1px solid #e2e8f0', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
-                        <i className="fas fa-file-alt mr-2" style={{ color: '#2563eb' }}></i>
-                        Birth Certificate
-                      </a>
-                    )}
-                    {(targetStudent || profileData?.student)?.transferCertificateUrl && (
-                      <a href={`${BASE_URL}/api/storage/file/${(targetStudent || profileData?.student)?.transferCertificateUrl}?token=${localStorage.getItem('acadex_token')}`} target="_blank" rel="noopener noreferrer" 
-                         className="portal-btn-ghost" style={{ fontSize: '0.75rem', background: '#fff', border: '1px solid #e2e8f0', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
-                        <i className="fas fa-file-alt mr-2" style={{ color: '#2563eb' }}></i>
-                        Transfer Certificate
-                      </a>
-                    )}
-                  </div>
-                </div>
               )}
             </div>
-          )}
-
-          {/* Section 3: Parent/Guardian / Next of Kin */}
-          {profileData?.role === 'STUDENT' && (
-            <div className="portal-card" style={{ gridColumn: 'span 2' }}>
-                <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-                    <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
-                      <i className="fas fa-user-friends mr-3" style={{ color: '#dc2626' }}></i>
-                      Parent / Guardian Information
-                    </h3>
-                    {Array.isArray(profileData?.student?.parents) && profileData.student.parents.length > 0 && (
-                      <button className="portal-btn-ghost" onClick={() => setEditingSection('parents')} style={{ fontSize: '0.85rem', fontWeight: 800 }}>
-                        <i className="fas fa-edit mr-2"></i>Edit
-                      </button>
-                    )}
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                    {Array.isArray(profileData?.student?.parents) && profileData?.student?.parents.length > 0 ? (
-                        (profileData?.student?.parents || []).map((p: any, idx: number) => (
-                            <div key={idx} style={{ padding: '24px', background: '#f8fafc', borderRadius: '20px', border: '1px solid #f1f5f9' }}>
-                                <h4 style={{ margin: '0 0 16px', fontSize: '1rem', fontWeight: 800, color: '#334155' }}>{p.relation} Contact</h4>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 48px' }}>
-                                    <InfoRow label="Name" value={p.parent?.user?.name} />
-                                    <InfoRow label="Phone" value={p.parent?.user?.phone} />
-                                    <InfoRow label="Email" value={p.parent?.user?.email} />
-                                </div>
-                            </div>
-                        ))
-                    ) : (
-                        <div style={{ padding: '24px' }}>
-                          <EmptyState 
-                            icon="fas fa-users-slash"
-                            title="No Linked Guardians"
-                            description="No guardians are linked to this student yet. Ask an admin to connect a parent's contact record."
-                          />
-                        </div>
-                    )}
-                </div>
-            </div>
-          )}
-
-          {/* Section 4: Emergency Contact */}
-          <div className="portal-card">
-            <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
-                  <i className="fas fa-ambulance mr-3" style={{ color: '#db2777' }}></i>
-                  Emergency Contact
-                </h3>
-                <button className="portal-btn-ghost" onClick={() => setEditingSection('emergency')} style={{ fontSize: '0.85rem', fontWeight: 800 }}>
-                  <i className="fas fa-edit mr-2"></i>Edit
-                </button>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 48px' }}>
-                <InfoRow label="Contact Name" value={profileData?.metadata?.emergencyName} />
-                <InfoRow label="Relationship" value={profileData?.metadata?.emergencyRelation} />
-                <InfoRow label="Phone" value={profileData?.metadata?.emergencyPhone} />
-            </div>
           </div>
 
-          {/* Section 5: HR & Professional Details (For Staff) */}
-          {['TEACHER', 'BURSAR', 'LIBRARIAN', 'ANCILLARY', 'SCHOOL_ADMIN'].includes(profileData?.role) && profileData?.employeeProfile && (
-            <div className="portal-card">
-              <div className="portal-card-header" style={{ marginBottom: '32px' }}>
-                  <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
-                    <i className="fas fa-id-badge mr-3" style={{ color: '#7c3aed' }}></i>
-                    HR & Professional Details
-                  </h3>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 48px' }}>
-                  <InfoRow label="Designation" value={profileData.employeeProfile.designation} />
-                  <InfoRow label="Blood Group" value={profileData.employeeProfile.bloodGroup} />
-                  <InfoRow label="Date Assumed Post" value={formatDate(profileData.employeeProfile.dateAssumedPost)} />
-                  <InfoRow label="Date of Leaving" value={formatDate(profileData.employeeProfile.dateOfLeaving)} />
-              </div>
-              
-              <div className="section-divider" style={{ margin: '24px 0', height: '1px', background: '#f1f5f9' }}></div>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#64748b', marginBottom: '16px' }}>BANKING INFORMATION</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
-                <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.8rem', color: '#3b82f6', marginBottom: '10px', textTransform: 'uppercase' }}><i className="fas fa-dollar-sign mr-1"></i> USD Account</div>
-                  <InfoRow label="Bank Name" value={profileData.employeeProfile.bankName} />
-                  <InfoRow label="Bank Branch" value={profileData.employeeProfile.bankBranch} />
-                  <InfoRow label="Account Number" value={profileData.employeeProfile.accountNumber} />
-                  <InfoRow label="Account Holder" value={profileData.employeeProfile.accountHolderName} />
-                </div>
-                <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ fontWeight: 800, fontSize: '0.8rem', color: '#d97706', marginBottom: '10px', textTransform: 'uppercase' }}><i className="fas fa-coins mr-1"></i> ZiG Account</div>
-                  <InfoRow label="Bank Name" value={profileData.employeeProfile.bankNameZig} />
-                  <InfoRow label="Bank Branch" value={profileData.employeeProfile.bankBranchZig} />
-                  <InfoRow label="Account Number" value={profileData.employeeProfile.accountNumberZig} />
-                  <InfoRow label="Account Holder" value={profileData.employeeProfile.accountHolderNameZig} />
-                </div>
-              </div>
+          {/* Quick Actions */}
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button
+              onClick={() => setEditingSection('personal')}
+              style={{
+                background: 'rgba(255,255,255,0.14)',
+                border: '1px solid rgba(255,255,255,0.25)',
+                color: '#fff',
+                padding: '10px 18px',
+                borderRadius: '12px',
+                fontWeight: 700,
+                fontSize: '0.88rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                cursor: 'pointer'
+              }}
+            >
+              <i className="fas fa-user-edit"></i>
+              Edit Profile
+            </button>
 
-              <div className="section-divider" style={{ margin: '24px 0', height: '1px', background: '#f1f5f9' }}></div>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 800, color: '#64748b', marginBottom: '16px' }}>SOCIAL & DOCUMENTS</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 48px' }}>
-                  <InfoRow label="Facebook" value={profileData.employeeProfile.facebookLink} icon="fab fa-facebook" />
-                  <InfoRow label="LinkedIn" value={profileData.employeeProfile.linkedinLink} icon="fab fa-linkedin" />
-                  <InfoRow label="Twitter" value={profileData.employeeProfile.twitterLink} icon="fab fa-twitter" />
-              </div>
-
-              {(() => {
-                const staffDocEntries = getStaffDocumentsEntries(profileData?.employeeProfile?.staffDocuments);
-                if (staffDocEntries.length === 0) return null;
-                return (
-                  <div style={{ marginTop: '24px', padding: '20px', background: '#f8fafc', borderRadius: '12px' }}>
-                    <h5 style={{ fontSize: '0.8rem', fontWeight: 900, color: '#475569', marginBottom: '12px', textTransform: 'uppercase' }}>Verified Documents</h5>
-                    <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-                      {staffDocEntries.flatMap(([key, val]: [string, any]) => {
-                        const paths = Array.isArray(val) ? val : (typeof val === 'string' ? [val] : []);
-                        return paths.map((docPath: string, i: number) => {
-                          const filename = typeof docPath === 'string' ? (docPath.split('/').pop() || docPath) : `doc_${i}`;
-                          return (
-                            <a key={`${key}-${i}`} href={`${BASE_URL}/api/storage/media/${user?.schoolCode}/staff/${user?.id}/documents/${filename}`} target="_blank" rel="noopener noreferrer" 
-                               className="portal-btn-ghost" style={{ fontSize: '0.75rem', background: '#fff', border: '1px solid #e2e8f0', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
-                              <i className="fas fa-file-alt mr-2" style={{ color: '#2563eb' }}></i>
-                              {key.toUpperCase().replace('DOC', '')} {paths.length > 1 ? `#${i + 1}` : ''}
-                            </a>
-                          );
-                        });
-                      })}
-                    </div>
-                  </div>
-                );
-              })()}
-            </div>
-          )}
+            <button
+              onClick={() => setActiveTab('idcard')}
+              style={{
+                background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                border: 'none',
+                color: '#fff',
+                padding: '10px 18px',
+                borderRadius: '12px',
+                fontWeight: 800,
+                fontSize: '0.88rem',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(2, 132, 199, 0.35)'
+              }}
+            >
+              <i className="fas fa-id-card"></i>
+              Digital ID Pass
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Edit Personal Modal */}
+      {/* Profile Navigation Tabs */}
+      <div 
+        style={{
+          display: 'flex',
+          gap: '8px',
+          borderBottom: '2px solid #e2e8f0',
+          marginBottom: '24px',
+          overflowX: 'auto',
+          paddingBottom: '2px'
+        }}
+      >
+        <button
+          onClick={() => setActiveTab('overview')}
+          style={{
+            padding: '12px 18px',
+            background: 'none',
+            border: 'none',
+            borderBottom: activeTab === 'overview' ? '3px solid #0284c7' : '3px solid transparent',
+            color: activeTab === 'overview' ? '#0284c7' : '#64748b',
+            fontWeight: activeTab === 'overview' ? 800 : 600,
+            fontSize: '0.92rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            marginBottom: '-2px'
+          }}
+        >
+          <i className="fas fa-user-check"></i>
+          Overview & Bio
+        </button>
+
+        {isStaff && (
+          <button
+            onClick={() => setActiveTab('assignments')}
+            style={{
+              padding: '12px 18px',
+              background: 'none',
+              border: 'none',
+              borderBottom: activeTab === 'assignments' ? '3px solid #0284c7' : '3px solid transparent',
+              color: activeTab === 'assignments' ? '#0284c7' : '#64748b',
+              fontWeight: activeTab === 'assignments' ? 800 : 600,
+              fontSize: '0.92rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginBottom: '-2px'
+            }}
+          >
+            <i className="fas fa-briefcase"></i>
+            {isTeacher ? 'Teaching Classes & Subjects' : 'Institutional Assignments'}
+          </button>
+        )}
+
+        {isStaff && (
+          <button
+            onClick={() => setActiveTab('payroll')}
+            style={{
+              padding: '12px 18px',
+              background: 'none',
+              border: 'none',
+              borderBottom: activeTab === 'payroll' ? '3px solid #0284c7' : '3px solid transparent',
+              color: activeTab === 'payroll' ? '#0284c7' : '#64748b',
+              fontWeight: activeTab === 'payroll' ? 800 : 600,
+              fontSize: '0.92rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginBottom: '-2px'
+            }}
+          >
+            <i className="fas fa-money-check-alt"></i>
+            HR & Dual Banking (USD & ZiG)
+          </button>
+        )}
+
+        <button
+          onClick={() => setActiveTab('idcard')}
+          style={{
+            padding: '12px 18px',
+            background: 'none',
+            border: 'none',
+            borderBottom: activeTab === 'idcard' ? '3px solid #0284c7' : '3px solid transparent',
+            color: activeTab === 'idcard' ? '#0284c7' : '#64748b',
+            fontWeight: activeTab === 'idcard' ? 800 : 600,
+            fontSize: '0.92rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            marginBottom: '-2px'
+          }}
+        >
+          <i className="fas fa-id-badge"></i>
+          Digital Security ID Pass
+        </button>
+
+        <button
+          onClick={() => setActiveTab('history')}
+          style={{
+            padding: '12px 18px',
+            background: 'none',
+            border: 'none',
+            borderBottom: activeTab === 'history' ? '3px solid #0284c7' : '3px solid transparent',
+            color: activeTab === 'history' ? '#0284c7' : '#64748b',
+            fontWeight: activeTab === 'history' ? 800 : 600,
+            fontSize: '0.92rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            marginBottom: '-2px'
+          }}
+        >
+          <i className="fas fa-award"></i>
+          Awards & Gate Access
+        </button>
+
+        <button
+          onClick={() => setActiveTab('security')}
+          style={{
+            padding: '12px 18px',
+            background: 'none',
+            border: 'none',
+            borderBottom: activeTab === 'security' ? '3px solid #0284c7' : '3px solid transparent',
+            color: activeTab === 'security' ? '#0284c7' : '#64748b',
+            fontWeight: activeTab === 'security' ? 800 : 600,
+            fontSize: '0.92rem',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            marginBottom: '-2px'
+          }}
+        >
+          <i className="fas fa-shield-alt"></i>
+          Security & Password
+        </button>
+      </div>
+
+      {/* TAB 1: OVERVIEW & BIO */}
+      {activeTab === 'overview' && (
+        <div style={{ display: 'grid', gap: '24px' }}>
+          {/* Personal Information Card */}
+          <div className="portal-card" style={{ padding: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <i className="fas fa-user-circle" style={{ color: '#0284c7' }}></i>
+                Personal & Biographical Record
+              </h3>
+              <button 
+                onClick={() => setEditingSection('personal')} 
+                className="portal-btn-ghost"
+                style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0284c7' }}
+              >
+                <i className="fas fa-edit mr-1"></i> Edit Info
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+              <InfoCardItem label="Legal Name" value={pData?.name} icon="fas fa-user" />
+              <InfoCardItem label="Staff ID / Admission #" value={staffId} icon="fas fa-id-badge" />
+              <InfoCardItem label="Gender" value={pData?.student?.gender || pData?.metadata?.gender || 'Not Specified'} icon="fas fa-venus-mars" />
+              <InfoCardItem label="Date of Birth" value={formatDate(pData?.student?.dob || pData?.metadata?.dob)} icon="fas fa-birthday-cake" />
+              <InfoCardItem label="National ID / Birth Cert" value={pData?.metadata?.nationalId || pData?.student?.nationalId} icon="fas fa-fingerprint" />
+              <InfoCardItem label="Religion" value={pData?.religion || pData?.metadata?.religion} icon="fas fa-praying-hands" />
+              <InfoCardItem label="Blood Group" value={pData?.employeeProfile?.bloodGroup || pData?.metadata?.bloodGroup} icon="fas fa-tint" />
+              <InfoCardItem label="Member Since" value={formatDate(pData?.createdAt)} icon="fas fa-calendar-check" />
+            </div>
+
+            {pData?.metadata?.bio && (
+              <div style={{ marginTop: '20px', padding: '16px 20px', background: '#f8fafc', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
+                <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: '6px' }}>
+                  Professional Bio / Summary
+                </div>
+                <p style={{ margin: 0, fontSize: '0.92rem', color: '#334155', lineHeight: 1.6 }}>
+                  {pData.metadata.bio}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Contact Details Card */}
+          <div className="portal-card" style={{ padding: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <i className="fas fa-address-book" style={{ color: '#059669' }}></i>
+                Official Contact & Location
+              </h3>
+              <button 
+                onClick={() => setEditingSection('contact')} 
+                className="portal-btn-ghost"
+                style={{ fontSize: '0.85rem', fontWeight: 800, color: '#059669' }}
+              >
+                <i className="fas fa-edit mr-1"></i> Edit Contact
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+              <InfoCardItem label="Official Email" value={pData?.email} icon="fas fa-envelope" />
+              <InfoCardItem label="Mobile Phone" value={pData?.phone} icon="fas fa-phone-alt" />
+              <InfoCardItem label="Physical Residential Address" value={pData?.metadata?.address || pData?.student?.address} icon="fas fa-map-marker-alt" />
+              <InfoCardItem label="Assigned Department" value={departmentName} icon="fas fa-building" />
+            </div>
+          </div>
+
+          {/* Emergency Contact Card */}
+          <div className="portal-card" style={{ padding: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <i className="fas fa-ambulance" style={{ color: '#dc2626' }}></i>
+                Emergency Contact & Next of Kin
+              </h3>
+              <button 
+                onClick={() => setEditingSection('emergency')} 
+                className="portal-btn-ghost"
+                style={{ fontSize: '0.85rem', fontWeight: 800, color: '#dc2626' }}
+              >
+                <i className="fas fa-edit mr-1"></i> Update Emergency
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+              <InfoCardItem label="Emergency Contact Name" value={pData?.metadata?.emergencyName} icon="fas fa-user-shield" />
+              <InfoCardItem label="Relationship" value={pData?.metadata?.emergencyRelation} icon="fas fa-heart" />
+              <InfoCardItem label="Emergency Phone" value={pData?.metadata?.emergencyPhone} icon="fas fa-phone-square" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 2: INSTITUTIONAL ASSIGNMENTS (TEACHER / STAFF) */}
+      {activeTab === 'assignments' && (
+        <div style={{ display: 'grid', gap: '24px' }}>
+          {/* Teacher Specific Subjects & Classes */}
+          {isTeacher && (
+            <>
+              <div className="portal-card" style={{ padding: '24px' }}>
+                <h3 style={{ margin: '0 0 16px 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <i className="fas fa-book-reader" style={{ color: '#2563eb' }}></i>
+                  Assigned Teaching Subjects ({pData?.teacher?.subjects?.length || 0})
+                </h3>
+
+                {pData?.teacher?.subjects?.length > 0 ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
+                    {pData.teacher.subjects.map((s: any, idx: number) => (
+                      <div key={idx} style={{ padding: '16px', background: '#eff6ff', borderRadius: '14px', border: '1px solid #bfdbfe' }}>
+                        <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#1d4ed8' }}>SUBJECT #{idx + 1}</div>
+                        <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#1e3a8a', marginTop: '4px' }}>
+                          {s.subject?.name}
+                        </div>
+                        {s.subject?.code && (
+                          <span style={{ fontSize: '0.75rem', background: '#dbeafe', color: '#1e40af', padding: '2px 8px', borderRadius: '4px', fontWeight: 700, fontFamily: 'monospace' }}>
+                            {s.subject.code}
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p style={{ color: '#64748b', margin: 0 }}>No specific teaching subjects assigned yet.</p>
+                )}
+              </div>
+
+              <div className="portal-card" style={{ padding: '24px' }}>
+                <h3 style={{ margin: '0 0 16px 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <i className="fas fa-chalkboard-teacher" style={{ color: '#059669' }}></i>
+                  Form Classes & Direct Student Supervision
+                </h3>
+
+                {pData?.teacher?.classes?.length > 0 ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
+                    {pData.teacher.classes.map((cls: any, idx: number) => (
+                      <div key={idx} style={{ padding: '16px', background: '#ecfdf5', borderRadius: '14px', border: '1px solid #a7f3d0' }}>
+                        <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#047857' }}>CLASS TEACHER</div>
+                        <div style={{ fontSize: '1.2rem', fontWeight: 900, color: '#064e3b', marginTop: '4px' }}>
+                          {cls.name}
+                        </div>
+                        <div style={{ fontSize: '0.8rem', color: '#059669', marginTop: '2px' }}>
+                          Level: {cls.level}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p style={{ color: '#64748b', margin: 0 }}>You are not currently designated as a primary Form Teacher.</p>
+                )}
+              </div>
+            </>
+          )}
+
+          {/* General Staff / Institutional Role Overview */}
+          <div className="portal-card" style={{ padding: '24px' }}>
+            <h3 style={{ margin: '0 0 18px 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <i className="fas fa-sitemap" style={{ color: '#7c3aed' }}></i>
+              Institutional Scope & Authorities
+            </h3>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+              <InfoCardItem label="Primary Role" value={pData?.role} icon="fas fa-user-tag" />
+              <InfoCardItem label="Job Designation" value={jobTitle} icon="fas fa-briefcase" />
+              <InfoCardItem label="Primary Department" value={departmentName} icon="fas fa-building" />
+              <InfoCardItem label="Secondary Authorities" value={pData?.secondaryRoles?.join(', ') || 'None'} icon="fas fa-shield-alt" />
+              <InfoCardItem label="Contract Tenure" value={pData?.employeeProfile?.contractType || 'Permanent'} icon="fas fa-file-contract" />
+              <InfoCardItem label="Qualifications" value={pData?.metadata?.qualification || pData?.teacher?.qualification || 'Verified on File'} icon="fas fa-graduation-cap" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 3: HR & DUAL PAYROLL BANKING (USD & ZIG) */}
+      {activeTab === 'payroll' && (
+        <div style={{ display: 'grid', gap: '24px' }}>
+          <div className="portal-card" style={{ padding: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div>
+                <h3 style={{ margin: '0 0 4px 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <i className="fas fa-university" style={{ color: '#0284c7' }}></i>
+                  Dual Currency Payroll Accounts (USD & ZiG)
+                </h3>
+                <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748b' }}>
+                  Banking particulars registered with school bursary and payroll processing.
+                </p>
+              </div>
+
+              <button
+                onClick={() => setEditingSection('payroll')}
+                className="portal-btn-primary"
+                style={{
+                  background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                  padding: '10px 18px',
+                  borderRadius: '12px',
+                  fontWeight: 800,
+                  fontSize: '0.85rem'
+                }}
+              >
+                <i className="fas fa-edit mr-2"></i>Update Banking Details
+              </button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+              {/* USD Account Card */}
+              <div style={{ padding: '20px', background: '#f0f9ff', borderRadius: '16px', border: '1px solid #bae6fd' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 900, color: '#0369a1', textTransform: 'uppercase' }}>
+                    <i className="fas fa-dollar-sign mr-1"></i> USD Account
+                  </span>
+                  <span className="portal-badge info">Active</span>
+                </div>
+
+                <div style={{ display: 'grid', gap: '10px', fontSize: '0.9rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#64748b', fontWeight: 600 }}>Bank Name:</span>
+                    <span style={{ fontWeight: 800, color: '#0f172a' }}>{pData?.employeeProfile?.bankName || 'Not Registered'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#64748b', fontWeight: 600 }}>Account Number:</span>
+                    <span style={{ fontWeight: 800, color: '#0f172a', fontFamily: 'monospace' }}>
+                      {pData?.employeeProfile?.accountNumber || '—'}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#64748b', fontWeight: 600 }}>Account Holder:</span>
+                    <span style={{ fontWeight: 800, color: '#0f172a' }}>{pData?.employeeProfile?.accountHolderName || pData?.name}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#64748b', fontWeight: 600 }}>Bank Branch:</span>
+                    <span style={{ fontWeight: 700, color: '#334155' }}>{pData?.employeeProfile?.bankBranch || '—'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#64748b', fontWeight: 600 }}>Branch Code:</span>
+                    <span style={{ fontWeight: 700, color: '#334155', fontFamily: 'monospace' }}>{pData?.employeeProfile?.branchCode || '—'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* ZiG Account Card */}
+              <div style={{ padding: '20px', background: '#fffbeb', borderRadius: '16px', border: '1px solid #fde68a' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 900, color: '#b45309', textTransform: 'uppercase' }}>
+                    <i className="fas fa-coins mr-1"></i> ZiG Local Account
+                  </span>
+                  <span className="portal-badge warning">Active</span>
+                </div>
+
+                <div style={{ display: 'grid', gap: '10px', fontSize: '0.9rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#64748b', fontWeight: 600 }}>Bank Name:</span>
+                    <span style={{ fontWeight: 800, color: '#0f172a' }}>{pData?.employeeProfile?.bankNameZig || 'Not Registered'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#64748b', fontWeight: 600 }}>Account Number:</span>
+                    <span style={{ fontWeight: 800, color: '#0f172a', fontFamily: 'monospace' }}>
+                      {pData?.employeeProfile?.accountNumberZig || '—'}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#64748b', fontWeight: 600 }}>Account Holder:</span>
+                    <span style={{ fontWeight: 800, color: '#0f172a' }}>{pData?.employeeProfile?.accountHolderNameZig || pData?.name}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#64748b', fontWeight: 600 }}>Bank Branch:</span>
+                    <span style={{ fontWeight: 700, color: '#334155' }}>{pData?.employeeProfile?.bankBranchZig || '—'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#64748b', fontWeight: 600 }}>Branch Code:</span>
+                    <span style={{ fontWeight: 700, color: '#334155', fontFamily: 'monospace' }}>{pData?.employeeProfile?.branchCodeZig || '—'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Social Links & Web Profiles */}
+          <div className="portal-card" style={{ padding: '24px' }}>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <i className="fas fa-globe" style={{ color: '#059669' }}></i>
+              Professional Links & Social Media
+            </h3>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+              <InfoCardItem label="LinkedIn" value={pData?.employeeProfile?.linkedinLink} icon="fab fa-linkedin" />
+              <InfoCardItem label="Facebook" value={pData?.employeeProfile?.facebookLink} icon="fab fa-facebook" />
+              <InfoCardItem label="Twitter / X" value={pData?.employeeProfile?.twitterLink} icon="fab fa-twitter" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: DIGITAL ID CARD & SECURITY PASS */}
+      {activeTab === 'idcard' && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
+          <div 
+            id="printable-digital-pass"
+            style={{
+              width: '420px',
+              maxWidth: '100%',
+              background: 'linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)',
+              borderRadius: '24px',
+              border: '2px solid #e2e8f0',
+              boxShadow: '0 16px 36px rgba(0,0,0,0.1)',
+              overflow: 'hidden',
+              position: 'relative'
+            }}
+          >
+            {/* Top Color Banner */}
+            <div 
+              style={{
+                background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+                padding: '24px',
+                textAlign: 'center',
+                color: '#fff',
+                position: 'relative'
+              }}
+            >
+              <div style={{ fontSize: '0.78rem', fontWeight: 900, letterSpacing: '0.12em', color: '#38bdf8', textTransform: 'uppercase', marginBottom: '4px' }}>
+                {user?.schoolName || 'CAMPUS SECURITY PASS'}
+              </div>
+              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: '#fff' }}>
+                OFFICIAL IDENTITY PASS
+              </h2>
+            </div>
+
+            {/* Photo & Details */}
+            <div style={{ padding: '24px', textAlign: 'center' }}>
+              <div 
+                style={{
+                  width: '110px',
+                  height: '110px',
+                  borderRadius: '50%',
+                  margin: '-50px auto 16px auto',
+                  border: '5px solid #ffffff',
+                  boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
+                  overflow: 'hidden',
+                  background: '#2563eb',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '2.5rem',
+                  fontWeight: 900,
+                  color: '#fff',
+                  position: 'relative',
+                  zIndex: 2
+                }}
+              >
+                {(pData?.avatar || user?.avatar) ? (
+                  <img 
+                    src={getAvatarUrl(pData?.avatar || user?.avatar, user?.schoolCode, pData?.updatedAt || Date.now()) || ''} 
+                    alt="Photo" 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                  />
+                ) : (
+                  (pData?.name || 'User').substring(0, 2).toUpperCase()
+                )}
+              </div>
+
+              <h3 style={{ margin: '0 0 4px 0', fontSize: '1.35rem', fontWeight: 900, color: '#0f172a' }}>
+                {pData?.name}
+              </h3>
+              <p style={{ margin: '0 0 16px 0', fontSize: '0.9rem', color: '#64748b', fontWeight: 700 }}>
+                {jobTitle}
+              </p>
+
+              <div style={{ display: 'inline-flex', gap: '8px', marginBottom: '20px' }}>
+                <span 
+                  style={{
+                    background: roleStyle.bg,
+                    color: roleStyle.color,
+                    padding: '4px 14px',
+                    borderRadius: '20px',
+                    fontSize: '0.8rem',
+                    fontWeight: 800
+                  }}
+                >
+                  {pData?.role}
+                </span>
+
+                <span style={{ background: '#f1f5f9', color: '#334155', padding: '4px 14px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 800, fontFamily: 'monospace' }}>
+                  {staffId}
+                </span>
+              </div>
+
+              {/* Barcode Strip */}
+              <div style={{ margin: '16px auto', padding: '12px', background: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'inline-block' }}>
+                <svg width="240" height="40" viewBox="0 0 240 40">
+                  {Array.from({ length: 42 }).map((_, i) => (
+                    <rect 
+                      key={i} 
+                      x={i * 5.6} 
+                      y="0" 
+                      width={(i % 3 === 0 ? 3.5 : i % 2 === 0 ? 2 : 1)} 
+                      height="40" 
+                      fill="#0f172a" 
+                    />
+                  ))}
+                </svg>
+                <div style={{ fontSize: '0.72rem', color: '#64748b', fontFamily: 'monospace', marginTop: '4px', letterSpacing: '0.15em' }}>
+                  *{staffId}*
+                </div>
+              </div>
+
+              <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '8px' }}>
+                Verified Institutional Identity Pass • Non-Transferable
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={handlePrintIDCard}
+            className="portal-btn-primary"
+            style={{
+              padding: '12px 28px',
+              borderRadius: '14px',
+              fontWeight: 800,
+              fontSize: '0.95rem',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '10px'
+            }}
+          >
+            <i className="fas fa-print"></i>
+            Print Physical ID Badge
+          </button>
+        </div>
+      )}
+
+      {/* TAB 5: AWARDS, CUSTODY ASSETS & GATE ACCESS LOGS */}
+      {activeTab === 'history' && (
+        <div style={{ display: 'grid', gap: '24px' }}>
+          {/* Awards & Recognitions */}
+          <div className="portal-card" style={{ padding: '24px' }}>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <i className="fas fa-medal" style={{ color: '#d97706' }}></i>
+              Institutional Awards & Recognitions ({pData?.awards?.length || 0})
+            </h3>
+
+            {pData?.awards?.length > 0 ? (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
+                {pData.awards.map((award: any, idx: number) => (
+                  <div key={idx} style={{ padding: '16px', background: '#fef3c7', borderRadius: '14px', border: '1px solid #fde68a' }}>
+                    <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#b45309' }}>HONOR #{idx + 1}</div>
+                    <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#78350f', marginTop: '4px' }}>
+                      {award.title}
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: '#92400e', marginTop: '2px' }}>
+                      {award.category} • Year {award.year || new Date(award.createdAt).getFullYear()}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p style={{ color: '#64748b', margin: 0 }}>No official awards logged in your institutional file yet.</p>
+            )}
+          </div>
+
+          {/* Assigned Equipment / Custody Assets */}
+          <div className="portal-card" style={{ padding: '24px' }}>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <i className="fas fa-boxes" style={{ color: '#0284c7' }}></i>
+              Equipment in Your Custody ({pData?.assignedAssets?.length || 0})
+            </h3>
+
+            {pData?.assignedAssets?.length > 0 ? (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
+                {pData.assignedAssets.map((asset: any, idx: number) => (
+                  <div key={idx} style={{ padding: '16px', background: '#f0f9ff', borderRadius: '14px', border: '1px solid #bae6fd' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#0369a1', fontFamily: 'monospace' }}>
+                      {asset.assetTag || 'NO TAG'}
+                    </div>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 900, color: '#0c4a6e', marginTop: '4px' }}>
+                      {asset.name}
+                    </div>
+                    <div style={{ fontSize: '0.8rem', color: '#0284c7', marginTop: '2px' }}>
+                      {asset.category} • {asset.location || 'Assigned'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p style={{ color: '#64748b', margin: 0 }}>No institutional assets currently allocated under your personal custody.</p>
+            )}
+          </div>
+
+          {/* Recent Campus Gate Access */}
+          <div className="portal-card" style={{ padding: '24px' }}>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <i className="fas fa-torii-gate" style={{ color: '#059669' }}></i>
+              Recent Campus Turnstile / Gate Scans
+            </h3>
+
+            {pData?.gateLogs?.length > 0 ? (
+              <div style={{ overflowX: 'auto' }}>
+                <table className="portal-table" style={{ width: '100%' }}>
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>Direction</th>
+                      <th>Gate Location</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {pData.gateLogs.map((log: any, idx: number) => (
+                      <tr key={idx}>
+                        <td>{new Date(log.timestamp).toLocaleString()}</td>
+                        <td>
+                          <span className={`portal-badge ${log.direction === 'IN' ? 'success' : 'info'}`}>
+                            {log.direction === 'IN' ? 'CHECK-IN' : 'CHECK-OUT'}
+                          </span>
+                        </td>
+                        <td>{log.gateName || 'Main Campus Gate'}</td>
+                        <td>
+                          <span className="portal-badge success">Approved</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p style={{ color: '#64748b', margin: 0 }}>No recent campus gate scans recorded for your account.</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 6: SECURITY & PASSWORD */}
+      {activeTab === 'security' && (
+        <div style={{ display: 'grid', gap: '24px' }}>
+          <div className="portal-card" style={{ padding: '24px' }}>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <i className="fas fa-key" style={{ color: '#7c3aed' }}></i>
+              Change Account Password
+            </h3>
+
+            <form onSubmit={handleChangePassword} style={{ maxWidth: '480px', display: 'grid', gap: '16px' }}>
+              <div>
+                <label className="portal-label">Current Password *</label>
+                <input
+                  type="password"
+                  className="portal-input"
+                  value={passwordForm.currentPassword}
+                  onChange={e => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="portal-label">New Password (at least 8 chars) *</label>
+                <input
+                  type="password"
+                  className="portal-input"
+                  value={passwordForm.newPassword}
+                  onChange={e => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="portal-label">Confirm New Password *</label>
+                <input
+                  type="password"
+                  className="portal-input"
+                  value={passwordForm.confirmPassword}
+                  onChange={e => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+                  required
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="portal-btn-primary"
+                style={{ padding: '12px 24px', fontWeight: 800 }}
+                disabled={loading}
+              >
+                {loading ? 'Updating Password...' : 'Update Password'}
+              </button>
+            </form>
+          </div>
+
+          <div className="portal-card" style={{ padding: '24px' }}>
+            <h3 style={{ margin: '0 0 16px 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <i className="fas fa-desktop" style={{ color: '#0284c7' }}></i>
+              Active Browser Sessions
+            </h3>
+            <ActiveSessions />
+          </div>
+        </div>
+      )}
+
+      {/* EDIT PERSONAL INFO MODAL */}
       {editingSection === 'personal' && (
         <div className="portal-modal-overlay">
-           <div className="portal-modal-card" style={{ maxWidth: '650px' }}>
-                <div className="portal-modal-header">
-                    <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Edit Personal Details</h2>
-                    <button className="portal-btn-ghost" onClick={() => setEditingSection(null)} style={{ width: '40px', height: '40px', padding: 0 }}>&times;</button>
+          <div className="portal-modal-card" style={{ maxWidth: '640px' }}>
+            <div className="portal-modal-header">
+              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Edit Personal Details</h2>
+              <button className="portal-btn-ghost" onClick={() => setEditingSection(null)}>&times;</button>
+            </div>
+
+            <form onSubmit={(e: any) => {
+              e.preventDefault();
+              const f = new FormData(e.target);
+              handleUpdateProfile({
+                name: f.get('name'),
+                dob: f.get('dob'),
+                gender: f.get('gender'),
+                religion: f.get('religion'),
+                nationalId: f.get('nationalId'),
+                bio: f.get('bio'),
+                qualification: f.get('qualification')
+              });
+            }}>
+              <div className="portal-modal-body" style={{ display: 'grid', gap: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <div>
+                    <label className="portal-label">Full Legal Name *</label>
+                    <input name="name" className="portal-input" defaultValue={pData?.name} required />
+                  </div>
+
+                  <div>
+                    <label className="portal-label">Gender</label>
+                    <select name="gender" className="portal-input" defaultValue={pData?.metadata?.gender || 'Male'}>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
                 </div>
-                <form onSubmit={(e: any) => {
-                    e.preventDefault();
-                    const formData = new FormData(e.target);
-                    handleUpdateProfile({
-                        name: formData.get('name'),
-                        dob: formData.get('dob'),
-                        gender: formData.get('gender'),
-                        nationalId: formData.get('nationalId'),
-                        metadata: { ...(profileData?.metadata || {}), religion: formData.get('religion') }
-                    });
-                }}>
-                    <div className="portal-modal-body" style={{ padding: '32px' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                            <div className="form-group">
-                                <label className="portal-label">Full Name</label>
-                                <input name="name" className="portal-input" defaultValue={profileData?.name} required />
-                            </div>
-                            <div className="form-group">
-                                <label className="portal-label">Gender</label>
-                                <select name="gender" className="portal-input" defaultValue={profileData?.student?.gender || profileData?.metadata?.gender}>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                </select>
-                            </div>
-                            <div className="form-group">
-                                <label className="portal-label">Date of Birth</label>
-                                <input name="dob" type="date" className="portal-input" defaultValue={profileData?.student?.dob?.split('T')[0]} />
-                            </div>
-                            <div className="form-group">
-                                <label className="portal-label">Religion</label>
-                                <input name="religion" className="portal-input" defaultValue={profileData?.metadata?.religion} />
-                            </div>
-                            {profileData?.role === 'STUDENT' && (
-                                <div className="form-group">
-                                    <label className="portal-label">National ID / Birth Cert No.</label>
-                                    <input name="nationalId" className="portal-input" defaultValue={profileData?.student?.nationalId} placeholder="e.g., 63-1234567-X-42 or BC-98765" />
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                    <div className="portal-modal-footer" style={{ background: '#f8fafc', padding: '24px 32px' }}>
-                        <button type="button" className="portal-btn-ghost" onClick={() => setEditingSection(null)}>Cancel</button>
-                        <button type="submit" className="portal-btn-primary" disabled={loading} style={{ minWidth: '140px' }}>
-                          {loading ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-save mr-2"></i>}
-                          Save Changes
-                        </button>
-                    </div>
-                </form>
-           </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <div>
+                    <label className="portal-label">Date of Birth</label>
+                    <input name="dob" type="date" className="portal-input" defaultValue={pData?.student?.dob?.split('T')[0] || pData?.metadata?.dob?.split('T')[0]} />
+                  </div>
+
+                  <div>
+                    <label className="portal-label">Religion</label>
+                    <input name="religion" className="portal-input" defaultValue={pData?.religion || pData?.metadata?.religion} />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="portal-label">National ID / Birth Certificate Number</label>
+                  <input name="nationalId" className="portal-input" defaultValue={pData?.metadata?.nationalId || pData?.student?.nationalId} placeholder="e.g. 63-1234567-X-42" />
+                </div>
+
+                <div>
+                  <label className="portal-label">Academic / Professional Qualifications</label>
+                  <input name="qualification" className="portal-input" defaultValue={pData?.metadata?.qualification || pData?.teacher?.qualification} placeholder="e.g. B.Ed Mathematics, M.Sc Education" />
+                </div>
+
+                <div>
+                  <label className="portal-label">Professional Bio / Summary</label>
+                  <textarea name="bio" className="portal-input" rows={3} defaultValue={pData?.metadata?.bio} placeholder="Brief summary of experience, teaching philosophy, or role..." />
+                </div>
+              </div>
+
+              <div className="portal-modal-footer">
+                <button type="button" className="portal-btn-neutral" onClick={() => setEditingSection(null)}>Cancel</button>
+                <button type="submit" className="portal-btn-primary" disabled={loading}>
+                  {loading ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
-      {/* Edit Contact Modal */}
+      {/* EDIT CONTACT MODAL */}
       {editingSection === 'contact' && (
         <div className="portal-modal-overlay">
-           <div className="portal-modal-card" style={{ maxWidth: '550px' }}>
-                <div className="portal-modal-header">
-                    <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Edit Contact Information</h2>
-                    <button className="portal-btn-ghost" onClick={() => setEditingSection(null)} style={{ width: '40px', height: '40px', padding: 0 }}>&times;</button>
+          <div className="portal-modal-card" style={{ maxWidth: '540px' }}>
+            <div className="portal-modal-header">
+              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Edit Contact Information</h2>
+              <button className="portal-btn-ghost" onClick={() => setEditingSection(null)}>&times;</button>
+            </div>
+
+            <form onSubmit={(e: any) => {
+              e.preventDefault();
+              const f = new FormData(e.target);
+              handleUpdateProfile({
+                email: f.get('email'),
+                phone: f.get('phone'),
+                address: f.get('address')
+              });
+            }}>
+              <div className="portal-modal-body" style={{ display: 'grid', gap: '16px' }}>
+                <div>
+                  <label className="portal-label">Email Address *</label>
+                  <input name="email" type="email" className="portal-input" defaultValue={pData?.email} required />
                 </div>
-                <form onSubmit={(e: any) => {
-                    e.preventDefault();
-                    const formData = new FormData(e.target);
-                    handleUpdateProfile({
-                        email: formData.get('email'),
-                        phone: formData.get('phone'),
-                        address: formData.get('address')
-                    });
-                }}>
-                    <div className="portal-modal-body" style={{ padding: '32px' }}>
-                        <div style={{ display: 'grid', gap: '24px' }}>
-                            <div className="form-group">
-                                <label className="portal-label">Email Address</label>
-                                <input name="email" type="email" className="portal-input" defaultValue={profileData?.email} required />
-                            </div>
-                            <div className="form-group">
-                                <label className="portal-label">Phone Number</label>
-                                <input name="phone" className="portal-input" defaultValue={profileData?.phone} />
-                            </div>
-                            <div className="form-group">
-                                <label className="portal-label">Physical Address</label>
-                                <textarea name="address" className="portal-input" rows={3} defaultValue={profileData?.student?.address || profileData?.metadata?.address} style={{ resize: 'none' }}></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="portal-modal-footer" style={{ background: '#f8fafc', padding: '24px 32px' }}>
-                        <button type="button" className="portal-btn-ghost" onClick={() => setEditingSection(null)}>Cancel</button>
-                        <button type="submit" className="portal-btn-primary" disabled={loading} style={{ minWidth: '140px' }}>
-                          {loading ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-save mr-2"></i>}
-                          Save Changes
-                        </button>
-                    </div>
-                </form>
-           </div>
+
+                <div>
+                  <label className="portal-label">Mobile Phone Number</label>
+                  <input name="phone" type="tel" className="portal-input" defaultValue={pData?.phone} />
+                </div>
+
+                <div>
+                  <label className="portal-label">Physical Residential Address</label>
+                  <textarea name="address" className="portal-input" rows={3} defaultValue={pData?.metadata?.address || pData?.student?.address} />
+                </div>
+              </div>
+
+              <div className="portal-modal-footer">
+                <button type="button" className="portal-btn-neutral" onClick={() => setEditingSection(null)}>Cancel</button>
+                <button type="submit" className="portal-btn-primary" disabled={loading}>
+                  {loading ? 'Saving...' : 'Save Contact'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
-      {/* Edit Emergency Modal */}
+      {/* EDIT EMERGENCY MODAL */}
       {editingSection === 'emergency' && (
         <div className="portal-modal-overlay">
-           <div className="portal-modal-card" style={{ maxWidth: '550px' }}>
-                <div className="portal-modal-header">
-                    <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Edit Emergency Contact</h2>
-                    <button className="portal-btn-ghost" onClick={() => setEditingSection(null)} style={{ width: '40px', height: '40px', padding: 0 }}>&times;</button>
+          <div className="portal-modal-card" style={{ maxWidth: '540px' }}>
+            <div className="portal-modal-header">
+              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Update Emergency Contact</h2>
+              <button className="portal-btn-ghost" onClick={() => setEditingSection(null)}>&times;</button>
+            </div>
+
+            <form onSubmit={(e: any) => {
+              e.preventDefault();
+              const f = new FormData(e.target);
+              handleUpdateProfile({
+                emergencyName: f.get('emergencyName'),
+                emergencyRelation: f.get('emergencyRelation'),
+                emergencyPhone: f.get('emergencyPhone')
+              });
+            }}>
+              <div className="portal-modal-body" style={{ display: 'grid', gap: '16px' }}>
+                <div>
+                  <label className="portal-label">Next of Kin / Contact Name *</label>
+                  <input name="emergencyName" className="portal-input" defaultValue={pData?.metadata?.emergencyName} required />
                 </div>
-                <form onSubmit={(e: any) => {
-                    e.preventDefault();
-                    const formData = new FormData(e.target);
-                    handleUpdateProfile({
-                        metadata: { 
-                            ...(profileData?.metadata || {}), 
-                            emergencyName: formData.get('emergencyName'),
-                            emergencyRelation: formData.get('emergencyRelation'),
-                            emergencyPhone: formData.get('emergencyPhone')
-                        }
-                    });
-                }}>
-                    <div className="portal-modal-body" style={{ padding: '32px' }}>
-                        <div style={{ display: 'grid', gap: '24px' }}>
-                            <div className="form-group">
-                                <label className="portal-label">Contact Name</label>
-                                <input name="emergencyName" className="portal-input" defaultValue={profileData?.metadata?.emergencyName} />
-                            </div>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                                <div className="form-group">
-                                    <label className="portal-label">Relationship</label>
-                                    <input name="emergencyRelation" className="portal-input" defaultValue={profileData?.metadata?.emergencyRelation} />
-                                </div>
-                                <div className="form-group">
-                                    <label className="portal-label">Phone</label>
-                                    <input name="emergencyPhone" className="portal-input" defaultValue={profileData?.metadata?.emergencyPhone} />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="portal-modal-footer" style={{ background: '#f8fafc', padding: '24px 32px' }}>
-                        <button type="button" className="portal-btn-ghost" onClick={() => setEditingSection(null)}>Cancel</button>
-                        <button type="submit" className="portal-btn-primary" disabled={loading} style={{ minWidth: '140px' }}>
-                          {loading ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-save mr-2"></i>}
-                          Save Changes
-                        </button>
-                    </div>
-                </form>
-           </div>
+
+                <div>
+                  <label className="portal-label">Relationship (e.g. Spouse, Parent, Sibling)</label>
+                  <input name="emergencyRelation" className="portal-input" defaultValue={pData?.metadata?.emergencyRelation} />
+                </div>
+
+                <div>
+                  <label className="portal-label">Emergency Phone Number *</label>
+                  <input name="emergencyPhone" type="tel" className="portal-input" defaultValue={pData?.metadata?.emergencyPhone} required />
+                </div>
+              </div>
+
+              <div className="portal-modal-footer">
+                <button type="button" className="portal-btn-neutral" onClick={() => setEditingSection(null)}>Cancel</button>
+                <button type="submit" className="portal-btn-primary" disabled={loading}>
+                  {loading ? 'Saving...' : 'Save Emergency Contact'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
-      {/* Edit Academic Modal */}
-      {editingSection === 'academic' && (
+      {/* EDIT HR & PAYROLL BANKING MODAL */}
+      {editingSection === 'payroll' && (
         <div className="portal-modal-overlay">
-           <div className="portal-modal-card" style={{ maxWidth: '550px' }}>
-                <div className="portal-modal-header">
-                    <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Edit Academic Background</h2>
-                    <button className="portal-btn-ghost" onClick={() => setEditingSection(null)} style={{ width: '40px', height: '40px', padding: 0 }}>&times;</button>
-                </div>
-                <form onSubmit={(e: any) => {
-                    e.preventDefault();
-                    const formData = new FormData(e.target);
-                    handleUpdateProfile({
-                        prevSchool: formData.get('prevSchool'),
-                        lastGradeAchieved: formData.get('lastGradeAchieved'),
-                        reasonForTransfer: formData.get('reasonForTransfer'),
-                        admissionsNotes: formData.get('admissionsNotes')
-                    });
-                }}>
-                    <div className="portal-modal-body" style={{ padding: '32px' }}>
-                        <div style={{ display: 'grid', gap: '24px' }}>
-                            <div className="form-group">
-                                <label className="portal-label">Previous School</label>
-                                <input name="prevSchool" className="portal-input" defaultValue={profileData?.student?.prevSchool} />
-                            </div>
-                            <div className="form-group">
-                                <label className="portal-label">Last Grade / Level Achieved</label>
-                                <input name="lastGradeAchieved" className="portal-input" defaultValue={profileData?.student?.lastGradeAchieved} />
-                            </div>
-                            <div className="form-group">
-                                <label className="portal-label">Reason for Transfer</label>
-                                <input name="reasonForTransfer" className="portal-input" defaultValue={profileData?.student?.reasonForTransfer} />
-                            </div>
-                            <div className="form-group">
-                                <label className="portal-label">Admissions Note</label>
-                                <textarea name="admissionsNotes" className="portal-input" rows={3} defaultValue={profileData?.student?.admissionsNotes} style={{ resize: 'none' }}></textarea>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="portal-modal-footer" style={{ background: '#f8fafc', padding: '24px 32px' }}>
-                        <button type="button" className="portal-btn-ghost" onClick={() => setEditingSection(null)}>Cancel</button>
-                        <button type="submit" className="portal-btn-primary" disabled={loading} style={{ minWidth: '140px' }}>
-                          {loading ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-save mr-2"></i>}
-                          Save Changes
-                        </button>
-                    </div>
-                </form>
-           </div>
-        </div>
-      )}
+          <div className="portal-modal-card" style={{ maxWidth: '680px', maxHeight: '90vh', overflowY: 'auto' }}>
+            <div className="portal-modal-header">
+              <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Update Payroll & Banking Details</h2>
+              <button className="portal-btn-ghost" onClick={() => setEditingSection(null)}>&times;</button>
+            </div>
 
-      {/* Edit Parents Modal */}
-      {editingSection === 'parents' && (
-        <div className="portal-modal-overlay">
-           <div className="portal-modal-card" style={{ maxWidth: '600px' }}>
-                <div className="portal-modal-header">
-                    <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Edit Parent / Guardian Details</h2>
-                    <button className="portal-btn-ghost" onClick={() => setEditingSection(null)} style={{ width: '40px', height: '40px', padding: 0 }}>&times;</button>
+            <form onSubmit={(e: any) => {
+              e.preventDefault();
+              handleUpdateProfile(hrForm);
+            }}>
+              <div className="portal-modal-body" style={{ display: 'grid', gap: '20px' }}>
+                {/* Employment Fields */}
+                <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                  <h4 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', fontWeight: 800, color: '#0f172a' }}>
+                    Employment Status & Blood Group
+                  </h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label className="portal-label">Designation / Title</label>
+                      <input 
+                        className="portal-input" 
+                        value={hrForm.designation} 
+                        onChange={e => setHrForm({ ...hrForm, designation: e.target.value, jobTitle: e.target.value })} 
+                      />
+                    </div>
+                    <div>
+                      <label className="portal-label">Contract Type</label>
+                      <select 
+                        className="portal-input" 
+                        value={hrForm.contractType} 
+                        onChange={e => setHrForm({ ...hrForm, contractType: e.target.value })}
+                      >
+                        <option value="Permanent">Permanent</option>
+                        <option value="Contract">Contract</option>
+                        <option value="Probationary">Probationary</option>
+                        <option value="Part-Time">Part-Time</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="portal-label">Blood Group</label>
+                      <input 
+                        className="portal-input" 
+                        value={hrForm.bloodGroup} 
+                        onChange={e => setHrForm({ ...hrForm, bloodGroup: e.target.value })} 
+                        placeholder="e.g. O+, A+, B-" 
+                      />
+                    </div>
+                  </div>
                 </div>
-                <form onSubmit={(e: any) => {
-                    e.preventDefault();
-                    const parentList = profileData?.student?.parents || [];
-                    const updatedParents = parentList.map((p: any, idx: number) => ({
-                        parentId: p.parentId,
-                        name: e.target[`parent_name_${idx}`].value,
-                        phone: e.target[`parent_phone_${idx}`].value,
-                        email: e.target[`parent_email_${idx}`].value
-                    }));
-                    handleUpdateProfile({
-                        parents: updatedParents
-                    });
-                }}>
-                    <div className="portal-modal-body" style={{ padding: '32px', maxHeight: '400px', overflowY: 'auto' }}>
-                        {(profileData?.student?.parents || []).map((p: any, idx: number, arr: any[]) => (
-                            <div key={idx} style={{ marginBottom: '24px', paddingBottom: '20px', borderBottom: idx < arr.length - 1 ? '1px solid #e2e8f0' : 'none' }}>
-                                <h4 style={{ margin: '0 0 16px', fontSize: '1rem', fontWeight: 800, color: '#334155' }}>{p.relation} Contact</h4>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                                    <div className="form-group">
-                                        <label className="portal-label">Name</label>
-                                        <input name={`parent_name_${idx}`} className="portal-input" defaultValue={p.parent?.user?.name} required />
-                                    </div>
-                                    <div className="form-group">
-                                        <label className="portal-label">Email</label>
-                                        <input name={`parent_email_${idx}`} type="email" className="portal-input" defaultValue={p.parent?.user?.email} required />
-                                    </div>
-                                    <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                                        <label className="portal-label">Phone</label>
-                                        <input name={`parent_phone_${idx}`} className="portal-input" defaultValue={p.parent?.user?.phone} />
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="portal-modal-footer" style={{ background: '#f8fafc', padding: '24px 32px' }}>
-                        <button type="button" className="portal-btn-ghost" onClick={() => setEditingSection(null)}>Cancel</button>
-                        <button type="submit" className="portal-btn-primary" disabled={loading} style={{ minWidth: '140px' }}>
-                          {loading ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-save mr-2"></i>}
-                          Save Changes
-                        </button>
-                    </div>
-                </form>
-           </div>
-        </div>
-      )}
 
-      {/* Security Modal */}
-      {editingSection === 'security' && (
-        <div className="portal-modal-overlay">
-           <div className="portal-modal-card" style={{ maxWidth: '500px' }}>
-                <div className="portal-modal-header">
-                    <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>Security Settings</h2>
-                    <button className="portal-btn-ghost" onClick={() => setEditingSection(null)} style={{ width: '40px', height: '40px', padding: 0 }}>&times;</button>
+                {/* USD Account Fields */}
+                <div style={{ padding: '16px', background: '#f0f9ff', borderRadius: '12px', border: '1px solid #bae6fd' }}>
+                  <h4 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', fontWeight: 900, color: '#0369a1' }}>
+                    USD Banking Account
+                  </h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label className="portal-label">Bank Name</label>
+                      <input 
+                        className="portal-input" 
+                        value={hrForm.bankName} 
+                        onChange={e => setHrForm({ ...hrForm, bankName: e.target.value })} 
+                        placeholder="e.g. Stanbic Bank, CBZ" 
+                      />
+                    </div>
+                    <div>
+                      <label className="portal-label">Account Number</label>
+                      <input 
+                        className="portal-input" 
+                        value={hrForm.accountNumber} 
+                        onChange={e => setHrForm({ ...hrForm, accountNumber: e.target.value })} 
+                      />
+                    </div>
+                    <div>
+                      <label className="portal-label">Account Holder Name</label>
+                      <input 
+                        className="portal-input" 
+                        value={hrForm.accountHolderName} 
+                        onChange={e => setHrForm({ ...hrForm, accountHolderName: e.target.value })} 
+                      />
+                    </div>
+                    <div>
+                      <label className="portal-label">Bank Branch & Code</label>
+                      <input 
+                        className="portal-input" 
+                        value={hrForm.bankBranch} 
+                        onChange={e => setHrForm({ ...hrForm, bankBranch: e.target.value })} 
+                        placeholder="Branch Name" 
+                      />
+                    </div>
+                  </div>
                 </div>
-                <form onSubmit={handleChangePassword}>
-                    <div className="portal-modal-body" style={{ padding: '32px' }}>
-                        <p style={{ fontSize: '0.9rem', color: '#64748b', marginBottom: '24px', fontWeight: 600, lineHeight: 1.6 }}>
-                            To update your institutional account password, please verify your current credentials below.
-                        </p>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            <div className="form-group">
-                                <label className="portal-label">Current Password</label>
-                                <input 
-                                    type="password" 
-                                    className="portal-input" 
-                                    value={passwordForm.currentPassword}
-                                    onChange={e => setPasswordForm({...passwordForm, currentPassword: e.target.value})}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label className="portal-label">New Password</label>
-                                <input 
-                                    type="password" 
-                                    className="portal-input"
-                                    value={passwordForm.newPassword}
-                                    onChange={e => setPasswordForm({...passwordForm, newPassword: e.target.value})}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label className="portal-label">Confirm New Password</label>
-                                <input 
-                                    type="password" 
-                                    className="portal-input"
-                                    value={passwordForm.confirmPassword}
-                                    onChange={e => setPasswordForm({...passwordForm, confirmPassword: e.target.value})}
-                                    required
-                                />
-                            </div>
-                        </div>
+
+                {/* ZiG Account Fields */}
+                <div style={{ padding: '16px', background: '#fffbeb', borderRadius: '12px', border: '1px solid #fde68a' }}>
+                  <h4 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', fontWeight: 900, color: '#b45309' }}>
+                    ZiG Local Banking Account
+                  </h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label className="portal-label">Bank Name (ZiG)</label>
+                      <input 
+                        className="portal-input" 
+                        value={hrForm.bankNameZig} 
+                        onChange={e => setHrForm({ ...hrForm, bankNameZig: e.target.value })} 
+                      />
                     </div>
-                    <div className="portal-modal-footer" style={{ background: '#f8fafc', padding: '24px 32px' }}>
-                        <button type="button" className="portal-btn-ghost" onClick={() => setEditingSection(null)}>Cancel</button>
-                        <button type="submit" className="portal-btn-primary" disabled={loading} style={{ minWidth: '160px', background: '#dc2626' }}>
-                          {loading ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-shield-check mr-2"></i>}
-                          Update Password
-                        </button>
+                    <div>
+                      <label className="portal-label">Account Number (ZiG)</label>
+                      <input 
+                        className="portal-input" 
+                        value={hrForm.accountNumberZig} 
+                        onChange={e => setHrForm({ ...hrForm, accountNumberZig: e.target.value })} 
+                      />
                     </div>
-                </form>
-           </div>
+                    <div>
+                      <label className="portal-label">Account Holder Name (ZiG)</label>
+                      <input 
+                        className="portal-input" 
+                        value={hrForm.accountHolderNameZig} 
+                        onChange={e => setHrForm({ ...hrForm, accountHolderNameZig: e.target.value })} 
+                      />
+                    </div>
+                    <div>
+                      <label className="portal-label">Bank Branch (ZiG)</label>
+                      <input 
+                        className="portal-input" 
+                        value={hrForm.bankBranchZig} 
+                        onChange={e => setHrForm({ ...hrForm, bankBranchZig: e.target.value })} 
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Social Media Links */}
+                <div>
+                  <h4 style={{ margin: '0 0 12px 0', fontSize: '0.9rem', fontWeight: 800, color: '#0f172a' }}>
+                    Social & Professional Profiles
+                  </h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label className="portal-label">LinkedIn Profile URL</label>
+                      <input 
+                        className="portal-input" 
+                        value={hrForm.linkedinLink} 
+                        onChange={e => setHrForm({ ...hrForm, linkedinLink: e.target.value })} 
+                        placeholder="https://linkedin.com/in/..." 
+                      />
+                    </div>
+                    <div>
+                      <label className="portal-label">Facebook Profile URL</label>
+                      <input 
+                        className="portal-input" 
+                        value={hrForm.facebookLink} 
+                        onChange={e => setHrForm({ ...hrForm, facebookLink: e.target.value })} 
+                        placeholder="https://facebook.com/..." 
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="portal-modal-footer">
+                <button type="button" className="portal-btn-neutral" onClick={() => setEditingSection(null)}>Cancel</button>
+                <button type="submit" className="portal-btn-primary" disabled={loading}>
+                  {loading ? 'Saving...' : 'Save Banking & HR Info'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>
