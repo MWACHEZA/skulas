@@ -973,7 +973,7 @@ export default function BursarFeesUnified() {
                     { header: 'Student Name', key: 'name' },
                     { header: 'Class / Form', key: 'form' },
                     { header: 'Boarding', key: 'boarding' },
-                    { header: 'Arrears Balance ($)', key: 'balance', formatter: (v: number) => `$${v.toFixed(2)}` },
+                    { header: 'Arrears Balance ($)', key: 'balance', formatter: (v: any) => `$${Number(v || 0).toFixed(2)}` },
                     { header: 'Aging Status', key: 'status' },
                     { header: 'Guardian Phone', key: 'guardianPhone' }
                   ]}

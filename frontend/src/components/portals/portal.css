@@ -1091,9 +1091,12 @@
   .portal-sidebar {
     transform: translateX(-100%);
     width: var(--portal-sidebar-width) !important;
+    z-index: 1000 !important;
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .portal-sidebar.mobile-open {
     transform: translateX(0);
+    box-shadow: 4px 0 28px rgba(0, 0, 0, 0.4);
   }
   .portal-main {
     margin-left: 0 !important;

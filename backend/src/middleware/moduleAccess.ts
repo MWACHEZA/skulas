@@ -28,10 +28,10 @@ const MODULE_ACCESS_MAP: Record<string, {
     secondaryRequestRoles: []
   },
   prefects: {
-    fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN', 'TEACHER'],
-    secondaryFullRoles: ['prefect_master', 'DISCIPLINE_MASTER', 'head_prefect', 'PREFECT'],
-    secondaryScopedRoles: ['house_master', 'HOUSE_MASTER', 'teacher', 'TEACHER'],
-    secondaryRequestRoles: []
+    fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN', 'TEACHER', 'ADMIN', 'HEADMASTER', 'PRINCIPAL'],
+    secondaryFullRoles: ['prefect_master', 'DISCIPLINE_MASTER', 'head_prefect', 'PREFECT', 'HEAD_BOY', 'HEAD_GIRL', 'SENIOR_PREFECT'],
+    secondaryScopedRoles: ['house_master', 'HOUSE_MASTER', 'teacher', 'TEACHER', 'CLASS_MONITOR'],
+    secondaryRequestRoles: ['student', 'STUDENT']
   },
   dining: {
     fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN'],
@@ -87,6 +87,13 @@ export function getModuleAccess(user: any, module: string): ModuleAccessResult {
   if (module === 'library') {
     if (['TEACHER', 'STUDENT', 'PARENT', 'BURSAR', 'ANCILLARY'].includes(primaryRole)) {
       return { level: 'request_only', actingAs: primaryRole };
+    }
+  }
+
+  // Default prefects access: Teachers, Students, Admins get access
+  if (module === 'prefects') {
+    if (['ADMIN', 'SCHOOL_ADMIN', 'SUPER_ADMIN', 'TEACHER', 'STUDENT'].includes(primaryRole)) {
+      return { level: 'full', actingAs: primaryRole };
     }
   }
 

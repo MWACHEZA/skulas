@@ -129,7 +129,10 @@ router.get('/preview', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), asyn
                 class: true,
                 grades: {
                   where: { term: String(term), year: parseInt(String(year)) },
-                  include: { teacher: { include: { user: { select: { name: true } } } } }
+                  include: {
+                    subject: { select: { id: true, name: true, code: true } },
+                    teacher: { include: { user: { select: { name: true } } } }
+                  }
                 },
                 attendance: {
                   where: { 
@@ -144,7 +147,13 @@ router.get('/preview', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), asyn
           }
         });
         data = students.map(u => {
-          const grades = u.student?.grades || [];
+          const rawGrades = u.student?.grades || [];
+          const grades = rawGrades.map((g: any) => ({
+            ...g,
+            subject: g.subject?.name || g.subjectId,
+            subjectName: g.subject?.name || g.subjectId,
+            subjectCode: g.subject?.code || ''
+          }));
           const avgScore = grades.length > 0 
             ? Math.round(grades.reduce((acc, g) => acc + (g.score || 0), 0) / grades.length) 
             : 0;
@@ -279,7 +288,11 @@ router.post('/snapshot', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER'), as
           include: {
             class: true,
             grades: {
-              where: { term: term as string, year: parseInt(year as string) }
+              where: { term: term as string, year: parseInt(year as string) },
+              include: {
+                subject: { select: { id: true, name: true, code: true } },
+                teacher: { include: { user: { select: { name: true } } } }
+              }
             },
             attendance: {
               where: { 

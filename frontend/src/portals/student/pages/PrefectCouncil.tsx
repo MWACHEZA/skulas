@@ -135,7 +135,12 @@ export default function PrefectCouncil() {
     setLoading(true);
     try {
       if (activeTab === 'roster') {
-        const res = await api.get('/api/prefects/duties');
+        let res: any;
+        try {
+          res = await api.get('/api/prefects/duties');
+        } catch {
+          res = await api.get('/api/prefects/duty');
+        }
         setDuties(Array.isArray(res.data) ? res.data : []);
       } else if (activeTab === 'meetings') {
         const res = await api.get('/api/prefects/meetings');
@@ -144,12 +149,15 @@ export default function PrefectCouncil() {
         const res = await api.get('/api/prefects/reports');
         setReports(Array.isArray(res.data) ? res.data : []);
       }
-    } catch {
-      showToast(`Failed to load ${activeTab} data`, 'error');
+    } catch (err: any) {
+      console.warn(`Could not load ${activeTab} data:`, err);
+      if (activeTab === 'roster') setDuties([]);
+      if (activeTab === 'meetings') setMeetings([]);
+      if (activeTab === 'reports') setReports([]);
     } finally {
       setLoading(false);
     }
-  }, [activeTab, showToast]);
+  }, [activeTab]);
 
   useEffect(() => {
     fetchData();

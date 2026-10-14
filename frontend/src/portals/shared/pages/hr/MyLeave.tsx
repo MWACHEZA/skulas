@@ -156,7 +156,7 @@ export default function MyLeave() {
 
   // Export Columns definition for ExportButton
   const exportColumns = useMemo(() => {
-    const cols = [
+    const cols: any[] = [
       { header: 'Reference ID', key: 'id' },
       { header: 'Start Date', key: 'startDate', formatter: (val: string) => val ? format(new Date(val), 'yyyy-MM-dd') : '' },
       { header: 'End Date', key: 'endDate', formatter: (val: string) => val ? format(new Date(val), 'yyyy-MM-dd') : '' },

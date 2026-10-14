@@ -3,14 +3,20 @@ import type { TutorialStep } from '../../../tutorials/types';
 
 interface TutorialRunnerProps {
   activeStep: TutorialStep | null;
+  stepNumber?: number;
+  totalSteps?: number;
   onCompleteStep: (stepId: string) => void;
   onCloseTooltip: () => void;
+  onSkipStep?: () => void;
 }
 
 export const TutorialRunner: React.FC<TutorialRunnerProps> = ({
   activeStep,
+  stepNumber = 1,
+  totalSteps = 1,
   onCompleteStep,
-  onCloseTooltip
+  onCloseTooltip,
+  onSkipStep
 }) => {
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [isSearching, setIsSearching] = useState(false);
@@ -71,8 +77,9 @@ export const TutorialRunner: React.FC<TutorialRunnerProps> = ({
 
   if (!activeStep || !targetRect) return null;
 
-  // Tooltip positioning: below target by default, or bottom overlay on mobile
   const isMobile = window.innerWidth <= 768;
+  const isLastStep = stepNumber >= totalSteps;
+
   const tooltipStyle: React.CSSProperties = isMobile
     ? {
         position: 'fixed',
@@ -83,9 +90,9 @@ export const TutorialRunner: React.FC<TutorialRunnerProps> = ({
       }
     : {
         position: 'fixed',
-        top: Math.min(window.innerHeight - 200, Math.max(10, targetRect.bottom + 12)),
-        left: Math.max(20, Math.min(window.innerWidth - 340, targetRect.left)),
-        width: 320,
+        top: Math.min(window.innerHeight - 220, Math.max(10, targetRect.bottom + 12)),
+        left: Math.max(20, Math.min(window.innerWidth - 360, targetRect.left)),
+        width: 340,
         zIndex: 99999
       };
 
@@ -113,46 +120,81 @@ export const TutorialRunner: React.FC<TutorialRunnerProps> = ({
         style={{
           ...tooltipStyle,
           background: '#ffffff',
-          borderRadius: 12,
+          borderRadius: 14,
           padding: '18px 20px',
-          boxShadow: '0 20px 35px -5px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05)',
+          boxShadow: '0 20px 35px -5px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05)',
           color: '#1e293b'
         }}
         role="dialog"
         aria-labelledby="tour-tooltip-title"
         aria-describedby="tour-tooltip-desc"
       >
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#2563eb' }} />
-            <h4 id="tour-tooltip-title" style={{ margin: 0, fontSize: '0.95rem', fontWeight: 800, color: '#1e293b' }}>
-              {activeStep.title}
-            </h4>
+            <span style={{ fontSize: '0.72rem', background: '#dbeafe', color: '#1e40af', padding: '3px 8px', borderRadius: 6, fontWeight: 800 }}>
+              Step {stepNumber} of {totalSteps}
+            </span>
           </div>
           <button
             type="button"
             onClick={onCloseTooltip}
-            style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1rem', lineHeight: 1 }}
-            aria-label="Close step tooltip"
+            style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1.2rem', lineHeight: 1 }}
+            aria-label="Close tutorial"
           >
             &times;
           </button>
         </div>
 
+        <h4 id="tour-tooltip-title" style={{ margin: '0 0 6px 0', fontSize: '1rem', fontWeight: 800, color: '#0f172a' }}>
+          {activeStep.title}
+        </h4>
+
         {activeStep.description && (
-          <p id="tour-tooltip-desc" style={{ margin: '0 0 14px', fontSize: '0.85rem', color: '#64748b', lineHeight: 1.45 }}>
+          <p id="tour-tooltip-desc" style={{ margin: '0 0 16px', fontSize: '0.85rem', color: '#64748b', lineHeight: 1.45 }}>
             {activeStep.description}
           </p>
         )}
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: 6, borderTop: '1px solid #f1f5f9' }}>
           <button
             type="button"
-            className="portal-btn-primary"
-            style={{ padding: '6px 14px', fontSize: '0.82rem', fontWeight: 800 }}
-            onClick={() => onCompleteStep(activeStep.id)}
+            onClick={onSkipStep || onCloseTooltip}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#94a3b8',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              padding: '4px 6px'
+            }}
           >
-            <i className="fas fa-check mr-1" /> Mark Step Complete
+            Skip for now
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onCompleteStep(activeStep.id)}
+            style={{
+              padding: '7px 16px',
+              borderRadius: 8,
+              border: 'none',
+              background: isLastStep ? '#16a34a' : 'linear-gradient(135deg, #2563eb, #1d4ed8)',
+              color: '#ffffff',
+              fontSize: '0.82rem',
+              fontWeight: 800,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              boxShadow: isLastStep ? '0 2px 8px rgba(22, 163, 74, 0.3)' : '0 2px 8px rgba(37, 99, 235, 0.3)'
+            }}
+          >
+            {isLastStep ? (
+              <><i className="fas fa-check-circle" /> Complete Tutorial</>
+            ) : (
+              <><i className="fas fa-arrow-right" /> Next Step</>
+            )}
           </button>
         </div>
       </div>

@@ -617,7 +617,7 @@ export default function SportsManagement() {
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           <ExportButton
-            data={activeTab === 'teams' ? filteredSports.map((s: any) => ({
+            data={(activeTab === 'teams' ? filteredSports.map((s: any) => ({
               'Sport': s.name,
               'Category': s.category,
               'Sport Master': s.sportMaster?.user?.name || s.sportMaster?.name || 'Unassigned',
@@ -633,7 +633,7 @@ export default function SportsManagement() {
               'Sport': e.sport?.name || 'General PE',
               'Quantity': e.quantity,
               'Condition': e.condition
-            }))}
+            }))) as any[]}
             filename={`sports_${activeTab}_report`}
             title={`Sports ${activeTab.toUpperCase()} Directory`}
             headers={activeTab === 'teams' ? ['Sport', 'Category', 'Sport Master', 'Age Groups', 'Captains'] : activeTab === 'houses' ? ['House', 'House Master', 'Captain', 'Points'] : ['Equipment', 'Sport', 'Quantity', 'Condition']}

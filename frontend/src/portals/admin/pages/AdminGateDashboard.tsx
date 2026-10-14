@@ -129,7 +129,7 @@ export default function AdminGateDashboard() {
     ]
   };
 
-  const getExportData = () => {
+  const getExportData = (): any[] => {
     if (activeTab === 'on_campus') {
       return filteredOnCampus.map((l: any) => ({
         name: l.student?.name,

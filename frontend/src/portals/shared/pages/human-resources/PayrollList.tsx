@@ -677,11 +677,11 @@ export default function PayrollList() {
                 columns={[
                   { header: 'Employee', key: 'employeeName' },
                   { header: 'Job Title', key: 'jobTitle' },
-                  { header: 'Base Pay ($)', key: 'grossSalary', formatter: (v: number) => `$${v.toFixed(2)}` },
-                  { header: 'Allowances ($)', key: 'totalAllowances', formatter: (v: number) => `$${v.toFixed(2)}` },
-                  { header: 'PAYE Tax ($)', key: 'taxAmount', formatter: (v: number) => `$${v.toFixed(2)}` },
-                  { header: 'Deductions ($)', key: 'totalDeductions', formatter: (v: number) => `$${v.toFixed(2)}` },
-                  { header: 'Net Salary ($)', key: 'netSalary', formatter: (v: number) => `$${v.toFixed(2)}` }
+                  { header: 'Base Pay ($)', key: 'grossSalary', formatter: (v: any) => `$${Number(v || 0).toFixed(2)}` },
+                  { header: 'Allowances ($)', key: 'totalAllowances', formatter: (v: any) => `$${Number(v || 0).toFixed(2)}` },
+                  { header: 'PAYE Tax ($)', key: 'taxAmount', formatter: (v: any) => `$${Number(v || 0).toFixed(2)}` },
+                  { header: 'Deductions ($)', key: 'totalDeductions', formatter: (v: any) => `$${Number(v || 0).toFixed(2)}` },
+                  { header: 'Net Salary ($)', key: 'netSalary', formatter: (v: any) => `$${Number(v || 0).toFixed(2)}` }
                 ]}
                 title={`Payroll Register — ${MONTHS[selectedMonth - 1]} ${selectedYear}`}
               />

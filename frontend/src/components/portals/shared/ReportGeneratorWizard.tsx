@@ -67,23 +67,38 @@ export const EXAM_TYPES = [
 interface Props {
   role: 'ADMIN' | 'TEACHER';
   allowedTypes?: string[];
+  initialReportType?: string;
+  initialClassId?: string;
+  onReportTypeChange?: (type: string) => void;
 }
 
-const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes }) => {
+const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes, initialReportType, initialClassId, onReportTypeChange: _onReportTypeChange }) => {
   const [step, setStep] = useState(1);
   const { t, isMedical, isPoly } = useTerminology();
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [classes, setClasses] = useState<any[]>([]);
   const [subjects, setSubjects] = useState<any[]>([]);
-  const [reportType, setReportType] = useState('TERMLY_REPORTS');
+  const [reportType, setReportType] = useState(initialReportType || 'TERMLY_REPORTS');
   const [filters, setFilters] = useState({ 
-    classId: '', 
+    classId: initialClassId || '', 
     term: '', 
     year: new Date().getFullYear().toString(),
     examType: 'End-of-Term Examination',
     subjectId: ''
   });
+
+  useEffect(() => {
+    if (initialReportType && initialReportType !== reportType) {
+      setReportType(initialReportType);
+    }
+  }, [initialReportType]);
+
+  useEffect(() => {
+    if (initialClassId && initialClassId !== filters.classId) {
+      setFilters(prev => ({ ...prev, classId: initialClassId }));
+    }
+  }, [initialClassId]);
 
   useEffect(() => {
     if (!filters.term) {
@@ -265,7 +280,7 @@ const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes }) =
       setSummary({ count: selectedIds.length, type: 'PDF_BATCH' });
 
       // Auto-publish if enabled
-      if (autoPublish && reportType === 'ACADEMIC') {
+      if (autoPublish && (reportType === 'ACADEMIC' || reportType === 'TERMLY_REPORTS')) {
         await publishSnapshots();
       }
 
@@ -283,7 +298,7 @@ const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes }) =
 
   const publishSnapshots = async () => {
     if (selectedIds.length === 0) return;
-    if (reportType !== 'ACADEMIC') {
+    if (reportType !== 'ACADEMIC' && reportType !== 'TERMLY_REPORTS') {
       showToast('Publication is currently only supported for Academic Reports', 'warning');
       return;
     }
@@ -565,14 +580,14 @@ const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes }) =
                         {selectedIds.length === dataList.length ? 'Deselect All' : 'Select All'}
                       </button>
                       
-                      {reportType === 'ACADEMIC' && (
+                      {(reportType === 'ACADEMIC' || reportType === 'TERMLY_REPORTS') && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '10px', background: '#f8fafc', padding: '0 12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
                            <input type="checkbox" id="autoPublish" checked={autoPublish} onChange={e => setAutoPublish(e.target.checked)} />
                            <label htmlFor="autoPublish" style={{ fontSize: '0.75rem', fontWeight: 600, color: '#4a5568', cursor: 'pointer' }}>Publish to Portal after Export</label>
                         </div>
                       )}
 
-                      {reportType === 'ACADEMIC' && (
+                      {(reportType === 'ACADEMIC' || reportType === 'TERMLY_REPORTS') && (
                         <button 
                           className="portal-btn-primary" 
                           style={{ background: '#38a169' }}
@@ -596,7 +611,7 @@ const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes }) =
                     </div>
                   </div>
 
-                  {reportType === 'ACADEMIC' && (
+                  {(reportType === 'ACADEMIC' || reportType === 'TERMLY_REPORTS') && (
                     <div style={{ marginBottom: '20px', padding: '16px', background: '#fffbeb', borderRadius: '12px', border: '1px solid #fef3c7' }}>
                        <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#92400e', marginBottom: '8px' }}>
                           <i className="fas fa-comment-medical" style={{ marginRight: 8 }}></i>
@@ -612,7 +627,7 @@ const ReportGeneratorWizard: React.FC<Props> = ({ role: _role, allowedTypes }) =
                     </div>
                   )}
 
-                 {reportType === 'ACADEMIC' && (
+                 {(reportType === 'ACADEMIC' || reportType === 'TERMLY_REPORTS') && (
                    <div style={{ display: 'flex', gap: '20px', marginBottom: '15px', padding: '12px', background: '#f0f9ff', borderRadius: '10px', border: '1px solid #bae6fd' }}>
                       <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', cursor: 'pointer' }}>
                          <input type="checkbox" checked={publishConfig.toStudent} onChange={e => setPublishConfig({...publishConfig, toStudent: e.target.checked})} />

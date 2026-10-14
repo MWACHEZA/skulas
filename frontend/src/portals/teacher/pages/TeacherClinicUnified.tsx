@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
@@ -8,29 +7,20 @@ import { SearchInput } from '../../../components/shared/SearchInput';
 export default function TeacherClinicUnified() {
   const { user } = useAuth();
   const { showToast } = useToast();
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const currentTab = (searchParams.get('tab') as 'refer' | 'my-referrals') || 'refer';
-  const [activeTab, setActiveTab] = useState<'refer' | 'my-referrals'>(currentTab);
 
   const [students, setStudents] = useState<any[]>([]);
   const [referrals, setReferrals] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
+  const [searchFilter, setSearchFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'ALL' | 'IN_SICK_BAY' | 'RETURNED' | 'DISCHARGED'>('ALL');
 
-  // Form State (Tab 1)
-  const [selectedStudentId, setSelectedStudentId] = useState('');
-  const [symptoms, setSymptoms] = useState('');
-  const [urgency, setUrgency] = useState('NORMAL');
-  const [notes, setNotes] = useState('');
-
-  // Sick Bay Modal State (Accessible from My Referrals tab)
+  // Sick Bay Modal State
   const [showSickBayModal, setShowSickBayModal] = useState(false);
   const [studentSearch, setStudentSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedSickBayStudent, setSelectedSickBayStudent] = useState<any | null>(null);
   const [sickBaySymptoms, setSickBaySymptoms] = useState('');
-  const [sickBayUrgency, setSickBayUrgency] = useState<'URGENT' | 'CRITICAL'>('URGENT');
+  const [sickBayUrgency, setSickBayUrgency] = useState<'NORMAL' | 'URGENT' | 'CRITICAL'>('URGENT');
   const [sickBayNotes, setSickBayNotes] = useState('');
   const [sendingSickBay, setSendingSickBay] = useState(false);
 
@@ -42,7 +32,7 @@ export default function TeacherClinicUnified() {
     return () => clearTimeout(handler);
   }, [studentSearch]);
 
-  const filteredStudents = useMemo(() => {
+  const filteredModalStudents = useMemo(() => {
     if (!debouncedSearch.trim()) return students.slice(0, 8);
     const q = debouncedSearch.toLowerCase().trim();
     return students.filter(s =>
@@ -63,7 +53,6 @@ export default function TeacherClinicUnified() {
       const res = await api.get('/api/teachers/my-students');
       setStudents(Array.isArray(res.data) ? res.data : []);
     } catch {
-      // Fallback to general students search if teacher endpoint differs
       api.get('/api/students?limit=100').then(r => {
         setStudents(Array.isArray(r.data?.students) ? r.data.students : (Array.isArray(r.data) ? r.data : []));
       }).catch(() => null);
@@ -79,47 +68,6 @@ export default function TeacherClinicUnified() {
       console.error('Failed to load referrals', err);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleTabChange = (tab: 'refer' | 'my-referrals') => {
-    setActiveTab(tab);
-    setSearchParams({ tab });
-  };
-
-  const handleCreateReferral = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedStudentId || !symptoms.trim()) {
-      showToast('Please select a student and describe symptoms', 'warning');
-      return;
-    }
-
-    setSubmitting(true);
-    try {
-      const selected = students.find(s => s.id === selectedStudentId || s.userId === selectedStudentId);
-      await api.post('/clinic/teacher/refer', {
-        studentId: selected?.id || selectedStudentId,
-        symptoms,
-        urgency,
-        notes
-      }).catch(() => api.post('/clinic/complaints', {
-        title: `[Teacher Referral] ${selected?.name || 'Student'} sent from class`,
-        symptoms: `${symptoms}. Urgency: ${urgency}. Note: ${notes}`,
-        targetUserId: selected?.userId || selectedStudentId,
-        date: new Date()
-      }));
-
-      showToast('Student referral submitted to school clinic', 'success');
-      setSelectedStudentId('');
-      setSymptoms('');
-      setNotes('');
-      setUrgency('NORMAL');
-      handleTabChange('my-referrals');
-      fetchMyReferrals();
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Failed to submit referral', 'error');
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -143,16 +91,20 @@ export default function TeacherClinicUnified() {
         isSickBayAdmission: true,
         notes: sickBayNotes ? `[IMMEDIATE SICK BAY ADMISSION] ${sickBayNotes}` : '[IMMEDIATE SICK BAY ADMISSION]',
         note: sickBaySymptoms
-      });
+      }).catch(() => api.post('/clinic/complaints', {
+        title: `[Sick Bay Admission] ${selectedSickBayStudent.name}`,
+        symptoms: `${sickBaySymptoms}. Urgency: ${sickBayUrgency}. Note: ${sickBayNotes}`,
+        targetUserId: selectedSickBayStudent.userId || selectedSickBayStudent.id,
+        date: new Date()
+      }));
 
-      showToast(`${selectedSickBayStudent.name} successfully referred to Sick Bay`, 'success');
+      showToast(`${selectedSickBayStudent.name} successfully sent to Sick Bay`, 'success');
       setShowSickBayModal(false);
       setSelectedSickBayStudent(null);
       setSickBaySymptoms('');
       setSickBayNotes('');
       setStudentSearch('');
       setSickBayUrgency('URGENT');
-      // Immediately refresh without full page reload
       await fetchMyReferrals();
     } catch (err: any) {
       showToast(err.response?.data?.error || 'Failed to send student to Sick Bay', 'error');
@@ -161,164 +113,177 @@ export default function TeacherClinicUnified() {
     }
   };
 
-  return (
-    <div className="portal-container" style={{ padding: 24, maxWidth: 1200, margin: '0 auto' }}>
-      <div className="portal-page-header" style={{ marginBottom: 20 }}>
-        <h1 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <i className="fas fa-stethoscope" style={{ color: 'var(--school-primary, #0284c7)' }} />
-          Student Health Referrals
-        </h1>
-        <p style={{ color: '#64748b', fontSize: '0.95rem', marginTop: 4 }}>
-          Send unwell students to the clinic with symptoms notes, and track the status of your referrals.
-        </p>
-      </div>
+  const displayedReferrals = useMemo(() => {
+    return referrals.filter(r => {
+      const studentName = (r.studentName || r.user?.name || r.title || '').toLowerCase();
+      const sym = (r.symptoms || r.details || '').toLowerCase();
+      const q = searchFilter.toLowerCase().trim();
+      const matchesSearch = !q || studentName.includes(q) || sym.includes(q);
 
-      {/* Tabs */}
-      <div
+      if (!matchesSearch) return false;
+
+      if (statusFilter === 'IN_SICK_BAY') {
+        return (r.status || '').toLowerCase().includes('sick bay');
+      }
+      if (statusFilter === 'RETURNED') {
+        return (r.status || '').toLowerCase().includes('returned');
+      }
+      if (statusFilter === 'DISCHARGED') {
+        return (r.status || '').toLowerCase().includes('discharged');
+      }
+      return true;
+    });
+  }, [referrals, searchFilter, statusFilter]);
+
+  const inSickBayCount = referrals.filter(r => (r.status || '').toLowerCase().includes('sick bay')).length;
+
+  return (
+    <div className="portal-container" style={{ padding: '24px', maxWidth: '1300px', margin: '0 auto' }}>
+      {/* Header Banner */}
+      <div 
         style={{
-          display: 'flex',
-          gap: 8,
-          borderBottom: '2px solid #e2e8f0',
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+          borderRadius: 16,
+          padding: '28px 32px',
+          color: '#ffffff',
           marginBottom: 24,
-          background: '#fff',
-          padding: '8px 12px 0 12px',
-          borderRadius: '8px 8px 0 0'
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 20,
+          boxShadow: '0 4px 16px rgba(0,0,0,0.06)'
         }}
       >
-        <button
-          type="button"
-          onClick={() => handleTabChange('refer')}
-          style={{
-            padding: '10px 18px',
-            border: 'none',
-            background: 'none',
-            cursor: 'pointer',
-            fontWeight: activeTab === 'refer' ? 700 : 500,
-            color: activeTab === 'refer' ? '#0284c7' : '#64748b',
-            borderBottom: activeTab === 'refer' ? '3px solid #0284c7' : '3px solid transparent',
-            marginBottom: -2,
-            fontSize: '0.95rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8
-          }}
-        >
-          <i className="fas fa-paper-plane" />
-          Refer Student to Clinic
-        </button>
+        <div>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 20, background: 'rgba(239, 68, 68, 0.18)', color: '#fca5a5', fontSize: '0.8rem', fontWeight: 700, marginBottom: 10 }}>
+            <i className="fas fa-heart-pulse" /> Student Health & Clinical Referrals
+          </div>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, margin: '0 0 8px 0', letterSpacing: '-0.02em', color: '#fff' }}>
+            Classroom Health Referrals
+          </h1>
+          <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.95rem', maxWidth: 600 }}>
+            Quickly dispatch unwell or injured students directly to the school clinic, notify the duty nurse, and monitor live medical status.
+          </p>
+        </div>
 
         <button
           type="button"
-          onClick={() => handleTabChange('my-referrals')}
+          onClick={() => {
+            setSelectedSickBayStudent(null);
+            setStudentSearch('');
+            setSickBaySymptoms('');
+            setSickBayNotes('');
+            setShowSickBayModal(true);
+          }}
           style={{
-            padding: '10px 18px',
-            border: 'none',
-            background: 'none',
-            cursor: 'pointer',
-            fontWeight: activeTab === 'my-referrals' ? 700 : 500,
-            color: activeTab === 'my-referrals' ? '#0284c7' : '#64748b',
-            borderBottom: activeTab === 'my-referrals' ? '3px solid #0284c7' : '3px solid transparent',
-            marginBottom: -2,
+            background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+            color: '#fff',
+            fontWeight: 800,
             fontSize: '0.95rem',
+            padding: '12px 24px',
+            borderRadius: 10,
             display: 'flex',
             alignItems: 'center',
-            gap: 8
+            gap: 10,
+            boxShadow: '0 4px 12px rgba(220, 38, 38, 0.35)',
+            cursor: 'pointer',
+            border: 'none',
+            transition: 'transform 0.15s ease'
           }}
         >
-          <i className="fas fa-history" />
-          My Referrals ({referrals.length})
+          <i className="fas fa-ambulance" style={{ fontSize: '1.1rem' }} />
+          Send to Sick Bay
         </button>
       </div>
 
-      {/* Tab 1: Refer Form */}
-      {activeTab === 'refer' && (
-        <div style={{ background: '#fff', borderRadius: 10, border: '1px solid #e2e8f0', padding: 28, maxWidth: 650 }}>
-          <h2 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#1e293b', marginBottom: 16 }}>
-            Send Student to School Sick Bay
-          </h2>
-          <form onSubmit={handleCreateReferral}>
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 6 }}>
-                Select Student *
-              </label>
-              <select
-                required
-                value={selectedStudentId}
-                onChange={e => setSelectedStudentId(e.target.value)}
-                style={{ width: '100%', padding: '10px 12px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
-              >
-                <option value="">-- Choose student from class --</option>
-                {students.map(s => (
-                  <option key={s.id} value={s.id}>
-                    {s.name} {s.class ? `(${s.class.name || s.class})` : ''}
-                  </option>
-                ))}
-              </select>
+      {/* KPI Stats */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 24 }}>
+        <div style={{ background: '#ffffff', borderRadius: 12, padding: '18px 20px', border: '1px solid #e2e8f0', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Total Referrals</span>
+            <div style={{ width: 34, height: 34, borderRadius: 8, background: '#e0f2fe', color: '#0369a1', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <i className="fas fa-stethoscope" />
             </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 6 }}>
-                Reported Symptoms *
-              </label>
-              <textarea
-                required
-                rows={3}
-                placeholder="e.g. Headache, severe coughing, stomach cramps, dizziness during lesson..."
-                value={symptoms}
-                onChange={e => setSymptoms(e.target.value)}
-                style={{ width: '100%', padding: '10px 12px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
-              />
-            </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 6 }}>
-                Urgency Level
-              </label>
-              <select
-                value={urgency}
-                onChange={e => setUrgency(e.target.value)}
-                style={{ width: '100%', padding: '10px 12px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
-              >
-                <option value="NORMAL">Standard Checkup (Walking)</option>
-                <option value="URGENT">Urgent (Needs Escort / Immediate Bed)</option>
-                <option value="CRITICAL">Critical Emergency (Immediate Nurse Response)</option>
-              </select>
-            </div>
-
-            <div style={{ marginBottom: 20 }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 6 }}>
-                Classroom Context / Notes
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. Student sent from Period 3 Physics Lab at 10:15 AM with a classmate."
-                value={notes}
-                onChange={e => setNotes(e.target.value)}
-                style={{ width: '100%', padding: '10px 12px', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={submitting}
-              className="portal-btn portal-btn-primary"
-              style={{ padding: '11px 24px', fontWeight: 600 }}
-            >
-              {submitting ? 'Submitting Referral...' : 'Send Referral to Nurse'}
-            </button>
-          </form>
+          </div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#0f172a', marginTop: 8 }}>{referrals.length}</div>
         </div>
-      )}
 
-      {/* Tab 2: My Referrals */}
-      {activeTab === 'my-referrals' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {/* Action Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', padding: '16px 20px', borderRadius: 10, border: '1px solid #e2e8f0' }}>
-            <div>
-              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#1e293b' }}>Classroom Referrals History</h3>
-              <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.85rem' }}>Track all student clinic visits initiated from your classroom.</p>
+        <div style={{ background: '#ffffff', borderRadius: 12, padding: '18px 20px', border: '1px solid #e2e8f0', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Currently in Sick Bay</span>
+            <div style={{ width: 34, height: 34, borderRadius: 8, background: '#fef3c7', color: '#b45309', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <i className="fas fa-bed-pulse" />
             </div>
+          </div>
+          <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#b45309', marginTop: 8 }}>{inSickBayCount}</div>
+        </div>
+
+        <div style={{ background: '#ffffff', borderRadius: 12, padding: '18px 20px', border: '1px solid #e2e8f0', boxShadow: '0 2px 6px rgba(0,0,0,0.02)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#64748b', textTransform: 'uppercase' }}>Duty Nurse Dispatch</span>
+            <div style={{ width: 34, height: 34, borderRadius: 8, background: '#ecfdf5', color: '#059669', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <i className="fas fa-user-nurse" />
+            </div>
+          </div>
+          <div style={{ fontSize: '1rem', fontWeight: 700, color: '#059669', marginTop: 12 }}>
+            <i className="fas fa-circle" style={{ fontSize: '0.6rem', marginRight: 6 }} /> Active On-Call
+          </div>
+        </div>
+      </div>
+
+      {/* Main Table Card */}
+      <div style={{ background: '#ffffff', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
+        {/* Filter Controls Bar */}
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid #edf2f7', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14 }}>
+          <div style={{ flex: 1, minWidth: 260, maxWidth: 420 }}>
+            <SearchInput
+              value={searchFilter}
+              onChange={setSearchFilter}
+              placeholder="Search by student name or symptoms..."
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            {(['ALL', 'IN_SICK_BAY', 'RETURNED'] as const).map(f => (
+              <button
+                key={f}
+                type="button"
+                onClick={() => setStatusFilter(f)}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: 20,
+                  border: statusFilter === f ? '1.5px solid #0284c7' : '1px solid #e2e8f0',
+                  background: statusFilter === f ? '#e0f2fe' : '#ffffff',
+                  color: statusFilter === f ? '#0369a1' : '#64748b',
+                  fontSize: '0.82rem',
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+              >
+                {f === 'ALL' ? 'All Records' : f === 'IN_SICK_BAY' ? 'In Sick Bay' : 'Returned to Class'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Table Content */}
+        {loading ? (
+          <div style={{ padding: 48, textAlign: 'center', color: '#64748b' }}>
+            <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7' }} />
+            <p style={{ marginTop: 10, fontWeight: 600 }}>Loading referrals log...</p>
+          </div>
+        ) : displayedReferrals.length === 0 ? (
+          <div style={{ padding: 56, textAlign: 'center', color: '#64748b' }}>
+            <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#f1f5f9', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: '1.75rem', marginBottom: 14 }}>
+              <i className="fas fa-clipboard-check" />
+            </div>
+            <h3 style={{ fontSize: '1.15rem', color: '#1e293b', fontWeight: 700, margin: '0 0 6px 0' }}>
+              No Referrals Found
+            </h3>
+            <p style={{ fontSize: '0.9rem', color: '#64748b', maxWidth: 420, margin: '0 auto 18px auto' }}>
+              {searchFilter ? 'No referral records matched your search query.' : 'You have not sent any students to the sick bay recently.'}
+            </p>
             <button
               type="button"
               onClick={() => {
@@ -328,133 +293,117 @@ export default function TeacherClinicUnified() {
                 setSickBayNotes('');
                 setShowSickBayModal(true);
               }}
-              className="portal-btn"
               style={{
+                padding: '9px 18px',
+                borderRadius: 8,
                 background: '#dc2626',
                 color: '#fff',
                 fontWeight: 700,
-                fontSize: '0.9rem',
-                padding: '10px 20px',
-                borderRadius: 8,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                boxShadow: '0 2px 6px rgba(220, 38, 38, 0.25)',
-                cursor: 'pointer',
-                border: 'none'
+                fontSize: '0.85rem',
+                border: 'none',
+                cursor: 'pointer'
               }}
             >
-              <i className="fas fa-ambulance" />
-              Send to Sick Bay
+              <i className="fas fa-ambulance mr-1" /> Send Student to Sick Bay
             </button>
           </div>
+        ) : (
+          <div style={{ overflowX: 'auto' }}>
+            <table className="portal-table" style={{ width: '100%' }}>
+              <thead>
+                <tr>
+                  <th style={{ width: '220px' }}>Student</th>
+                  <th>Reason & Symptoms</th>
+                  <th style={{ width: '130px' }}>Urgency</th>
+                  <th style={{ width: '140px' }}>Time Sent</th>
+                  <th style={{ width: '160px' }}>Clinic Status</th>
+                  <th style={{ width: '120px', textAlign: 'right' }}>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {displayedReferrals.map(r => {
+                  const urg = (r.urgency || 'NORMAL').toUpperCase();
+                  const urgBg = urg === 'CRITICAL' ? '#fee2e2' : urg === 'URGENT' ? '#ffedd5' : '#f1f5f9';
+                  const urgColor = urg === 'CRITICAL' ? '#b91c1c' : urg === 'URGENT' ? '#c2410c' : '#475569';
 
-          <div style={{ background: '#fff', borderRadius: 10, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-            {loading ? (
-              <div style={{ padding: 48, textAlign: 'center', color: '#64748b' }}>
-                <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7' }} />
-                <p style={{ marginTop: 8 }}>Loading referrals history...</p>
-              </div>
-            ) : referrals.length === 0 ? (
-              <div style={{ padding: 48, textAlign: 'center', color: '#64748b' }}>
-                <i className="fas fa-notes-medical fa-3x" style={{ color: '#cbd5e1', marginBottom: 12 }} />
-                <h3 style={{ fontSize: '1.1rem', color: '#334155', fontWeight: 600 }}>No Active Referrals</h3>
-                <p style={{ fontSize: '0.9rem', marginTop: 4 }}>You have not sent any students to the clinic recently.</p>
-                <button
-                  type="button"
-                  onClick={() => setShowSickBayModal(true)}
-                  className="portal-btn portal-btn-primary"
-                  style={{ marginTop: 16 }}
-                >
-                  <i className="fas fa-plus mr-2" /> Send Student to Sick Bay
-                </button>
-              </div>
-            ) : (
-              <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
-                    <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Student</th>
-                    <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Reason & Symptoms</th>
-                    <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Urgency</th>
-                    <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Time Sent</th>
-                    <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Clinic Status</th>
-                    <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem', textAlign: 'right' }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {referrals.map(r => {
-                    const urg = (r.urgency || 'NORMAL').toUpperCase();
-                    const urgBg = urg === 'CRITICAL' ? '#fee2e2' : urg === 'URGENT' ? '#ffedd5' : '#f1f5f9';
-                    const urgColor = urg === 'CRITICAL' ? '#b91c1c' : urg === 'URGENT' ? '#c2410c' : '#475569';
-
-                    return (
-                      <tr key={r.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                        <td style={{ padding: '12px 16px', fontWeight: 700, color: '#1e293b' }}>
-                          {r.studentName || r.user?.name || r.title || 'Student'}
-                        </td>
-                        <td style={{ padding: '12px 16px', color: '#475569', fontSize: '0.9rem' }}>
-                          {r.symptoms || r.details || 'Health consultation'}
-                        </td>
-                        <td style={{ padding: '12px 16px' }}>
-                          <span style={{
-                            padding: '3px 10px',
-                            borderRadius: 12,
-                            fontSize: '0.75rem',
-                            fontWeight: 700,
-                            background: urgBg,
-                            color: urgColor
-                          }}>
-                            {urg}
-                          </span>
-                        </td>
-                        <td style={{ padding: '12px 16px', color: '#64748b', fontSize: '0.85rem' }}>
-                          {r.date || new Date(r.createdAt || Date.now()).toLocaleDateString()}
-                        </td>
-                        <td style={{ padding: '12px 16px' }}>
-                          <span style={{
-                            padding: '4px 12px',
-                            borderRadius: 12,
-                            fontSize: '0.8rem',
+                  return (
+                    <tr key={r.id}>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#fee2e2', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.8rem' }}>
+                            {(r.studentName || r.user?.name || r.title || 'S').charAt(0)}
+                          </div>
+                          <div>
+                            <div style={{ fontWeight: 700, color: '#1e293b' }}>
+                              {r.studentName || r.user?.name || r.title || 'Student'}
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                              {r.studentClass || r.user?.class?.name || 'Classroom'}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td style={{ color: '#334155', fontSize: '0.9rem' }}>
+                        {r.symptoms || r.details || 'General health consultation'}
+                      </td>
+                      <td>
+                        <span style={{
+                          padding: '3px 10px',
+                          borderRadius: 12,
+                          fontSize: '0.75rem',
+                          fontWeight: 700,
+                          background: urgBg,
+                          color: urgColor
+                        }}>
+                          {urg}
+                        </span>
+                      </td>
+                      <td style={{ color: '#64748b', fontSize: '0.85rem' }}>
+                        {r.date || new Date(r.createdAt || Date.now()).toLocaleDateString()}
+                      </td>
+                      <td>
+                        <span style={{
+                          padding: '4px 12px',
+                          borderRadius: 12,
+                          fontSize: '0.8rem',
+                          fontWeight: 600,
+                          background: (r.status || '').toLowerCase().includes('sick bay') ? '#fef3c7' : (r.status || '').toLowerCase().includes('returned') ? '#dcfce7' : '#e0f2fe',
+                          color: (r.status || '').toLowerCase().includes('sick bay') ? '#b45309' : (r.status || '').toLowerCase().includes('returned') ? '#15803d' : '#0369a1'
+                        }}>
+                          {r.status || 'Under Review'}
+                        </span>
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            showToast(`${r.studentName || r.title || 'Student'}: ${r.symptoms || r.details || 'Under nursing care'}`, 'info');
+                          }}
+                          style={{
+                            background: '#f8fafc',
+                            color: '#334155',
+                            border: '1px solid #cbd5e1',
+                            borderRadius: 6,
+                            padding: '5px 10px',
+                            fontSize: '0.78rem',
                             fontWeight: 600,
-                            background: r.status === 'In Sick Bay' ? '#fef3c7' : r.status === 'Returned to class' ? '#dcfce7' : '#e0f2fe',
-                            color: r.status === 'In Sick Bay' ? '#b45309' : r.status === 'Returned to class' ? '#15803d' : '#0369a1'
-                          }}>
-                            {r.status || 'Under Care / Reviewed'}
-                          </span>
-                        </td>
-                        <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              showToast(`${r.studentName || r.title || 'Student'}: ${r.symptoms || r.details || 'Referred for care'}`, 'info');
-                            }}
-                            title="View referral details"
-                            style={{
-                              background: '#f8fafc',
-                              color: '#334155',
-                              border: '1px solid #cbd5e1',
-                              borderRadius: 6,
-                              padding: '5px 10px',
-                              fontSize: '0.78rem',
-                              fontWeight: 600,
-                              cursor: 'pointer',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: 5
-                            }}
-                          >
-                            <i className="fas fa-file-medical" /> View Details
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            )}
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 5
+                          }}
+                        >
+                          <i className="fas fa-file-medical" /> Details
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* ── MODAL: Send to Sick Bay ── */}
       {showSickBayModal && (
@@ -474,7 +423,7 @@ export default function TeacherClinicUnified() {
           <div
             style={{
               background: '#fff',
-              borderRadius: 12,
+              borderRadius: 14,
               width: '100%',
               maxWidth: 580,
               boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
@@ -488,23 +437,23 @@ export default function TeacherClinicUnified() {
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 padding: '18px 24px',
-                borderBottom: '1px solid #f1f5f9',
+                borderBottom: '1px solid #fee2e2',
                 background: '#fef2f2'
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#fee2e2', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
+                <div style={{ width: 38, height: 38, borderRadius: '50%', background: '#fee2e2', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.15rem' }}>
                   <i className="fas fa-ambulance" />
                 </div>
                 <div>
-                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: '#991b1b' }}>Send Student to Sick Bay</h3>
-                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#b91c1c' }}>Immediate triage and nurse notification</p>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#991b1b' }}>Send Student to Sick Bay</h3>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#b91c1c' }}>Immediate triage notification to clinic nurses</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setShowSickBayModal(false)}
-                style={{ background: 'none', border: 'none', fontSize: '1.2rem', color: '#94a3b8', cursor: 'pointer' }}
+                style={{ background: 'none', border: 'none', fontSize: '1.3rem', color: '#94a3b8', cursor: 'pointer' }}
               >
                 &times;
               </button>
@@ -514,7 +463,7 @@ export default function TeacherClinicUnified() {
             <form onSubmit={handleSendToSickBay} style={{ padding: 24 }}>
               {/* Student Live Search */}
               <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: 6 }}>
                   Find Student *
                 </label>
 
@@ -532,7 +481,7 @@ export default function TeacherClinicUnified() {
                     <button
                       type="button"
                       onClick={() => setSelectedSickBayStudent(null)}
-                      style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}
+                      style={{ background: 'none', border: 'none', color: '#ef4444', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
                     >
                       Change
                     </button>
@@ -546,14 +495,13 @@ export default function TeacherClinicUnified() {
                       onChange={setStudentSearch}
                       onClear={() => setStudentSearch('')}
                     />
-                    {/* Live search results list */}
                     <div style={{ maxHeight: 180, overflowY: 'auto', marginTop: 6, border: '1px solid #e2e8f0', borderRadius: 8, background: '#f8fafc' }}>
-                      {filteredStudents.length === 0 ? (
+                      {filteredModalStudents.length === 0 ? (
                         <div style={{ padding: 14, textAlign: 'center', color: '#94a3b8', fontSize: '0.85rem' }}>
                           No students matching "{studentSearch}"
                         </div>
                       ) : (
-                        filteredStudents.map(s => (
+                        filteredModalStudents.map(s => (
                           <div
                             key={s.id}
                             onClick={() => setSelectedSickBayStudent(s)}
@@ -583,7 +531,7 @@ export default function TeacherClinicUnified() {
 
               {/* Symptoms */}
               <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: 6 }}>
                   Symptoms / Reason for Sick Bay *
                 </label>
                 <textarea
@@ -598,7 +546,7 @@ export default function TeacherClinicUnified() {
 
               {/* Urgency */}
               <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: 6 }}>
                   Urgency Level
                 </label>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
@@ -656,7 +604,7 @@ export default function TeacherClinicUnified() {
 
               {/* Context / Escort Notes */}
               <div style={{ marginBottom: 20 }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: 6 }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 700, color: '#334155', marginBottom: 6 }}>
                   Classroom Context / Escort Details
                 </label>
                 <input

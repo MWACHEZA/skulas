@@ -141,7 +141,7 @@ export default function MyAwards() {
 
   // Export Columns definition for ExportButton
   const exportColumns = useMemo(() => {
-    const cols = [
+    const cols: any[] = [
       { header: 'Award Title', key: 'title', formatter: (_: any, row: AwardItem) => row.awardName || row.title || 'Award' },
       { header: 'Reward / Gift', key: 'gift', formatter: (_: any, row: AwardItem) => row.gift || row.prize || '-' },
       { header: 'Funded Amount ($)', key: 'amount', formatter: (_: any, row: AwardItem) => `$${(row.amount || row.cashPrize || 0).toFixed(2)}` },

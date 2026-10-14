@@ -601,41 +601,216 @@ export default function Library() {
 
       {/* RESERVE BOOK MODAL */}
       {showReserveModal && selectedBookToReserve && (
-        <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: 460 }}>
-            <div className="modal-header">
-              <h2><i className="fas fa-bookmark" style={{ marginRight: 8, color: 'var(--school-primary)' }}></i>Place Hold Request</h2>
-              <button className="modal-close" onClick={() => setShowReserveModal(false)}>&times;</button>
+        <div 
+          className="modal-overlay" 
+          style={{ 
+            position: 'fixed', 
+            inset: 0, 
+            background: 'rgba(15, 23, 42, 0.7)', 
+            backdropFilter: 'blur(4px)', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            zIndex: 9999, 
+            padding: 16 
+          }}
+        >
+          <div 
+            style={{ 
+              background: '#ffffff', 
+              borderRadius: 16, 
+              width: '100%', 
+              maxWidth: 520, 
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', 
+              overflow: 'hidden',
+              animation: 'fadeIn 0.2s ease-out'
+            }}
+          >
+            {/* Header */}
+            <div 
+              style={{ 
+                padding: '18px 24px', 
+                background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', 
+                color: '#ffffff', 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center' 
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(255,255,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#38bdf8', fontSize: '1.1rem' }}>
+                  <i className="fas fa-bookmark" />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#ffffff' }}>Place Book Hold / Reservation</h3>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#94a3b8' }}>Reserve from library catalog for pickup</p>
+                </div>
+              </div>
+              <button 
+                type="button" 
+                onClick={() => setShowReserveModal(false)}
+                style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '1.3rem', cursor: 'pointer', lineHeight: 1 }}
+              >
+                &times;
+              </button>
             </div>
+
             <form onSubmit={submitReservation}>
-              <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <div style={{ background: '#f7fafc', padding: 14, borderRadius: 8 }}>
-                  <h3 style={{ margin: '0 0 4px 0', fontSize: '1rem' }}>{selectedBookToReserve.title}</h3>
-                  <p style={{ margin: 0, fontSize: '0.85rem', color: '#718096' }}>by {selectedBookToReserve.author}</p>
-                  <div style={{ marginTop: 8, fontSize: '0.85rem' }}>
-                    Current Availability: <strong>{selectedBookToReserve.available > 0 ? `${selectedBookToReserve.available} copies` : 'None in stock (you will be queued)'}</strong>
+              <div style={{ padding: '24px 24px 16px 24px', display: 'flex', flexDirection: 'column', gap: 18 }}>
+                {/* Book Card Preview */}
+                <div 
+                  style={{ 
+                    background: '#f8fafc', 
+                    borderRadius: 12, 
+                    padding: '16px', 
+                    border: '1px solid #e2e8f0', 
+                    display: 'flex', 
+                    gap: 16, 
+                    alignItems: 'center' 
+                  }}
+                >
+                  <div 
+                    style={{ 
+                      width: 60, 
+                      height: 80, 
+                      borderRadius: 8, 
+                      background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)', 
+                      color: '#ffffff', 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      flexShrink: 0,
+                      boxShadow: '0 4px 10px rgba(2, 132, 199, 0.25)' 
+                    }}
+                  >
+                    <i className="fas fa-book-open" style={{ fontSize: '1.4rem', marginBottom: 4 }} />
+                    <span style={{ fontSize: '0.6rem', fontWeight: 800, letterSpacing: '0.05em' }}>LIB</span>
+                  </div>
+
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <h4 style={{ margin: '0 0 4px 0', fontSize: '1rem', fontWeight: 800, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {selectedBookToReserve.title}
+                    </h4>
+                    <p style={{ margin: '0 0 8px 0', fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>
+                      by <strong style={{ color: '#334155' }}>{selectedBookToReserve.author}</strong>
+                    </p>
+                    
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+                      {selectedBookToReserve.available > 0 ? (
+                        <span style={{ fontSize: '0.75rem', background: '#dcfce7', color: '#166534', padding: '3px 8px', borderRadius: 6, fontWeight: 700 }}>
+                          <i className="fas fa-check-circle mr-1" /> {selectedBookToReserve.available} copies available
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: '0.75rem', background: '#fef3c7', color: '#92400e', padding: '3px 8px', borderRadius: 6, fontWeight: 700 }}>
+                          <i className="fas fa-clock mr-1" /> On Loan (You will enter waitlist)
+                        </span>
+                      )}
+
+                      {selectedBookToReserve.category && (
+                        <span style={{ fontSize: '0.75rem', background: '#e0f2fe', color: '#0369a1', padding: '3px 8px', borderRadius: 6, fontWeight: 600 }}>
+                          {typeof selectedBookToReserve.category === 'object' ? (selectedBookToReserve.category as any)?.name : selectedBookToReserve.category}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
+                {/* Policy Highlights */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                  <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, padding: '10px 12px' }}>
+                    <div style={{ fontSize: '0.72rem', color: '#166534', fontWeight: 800, textTransform: 'uppercase', marginBottom: 2 }}>
+                      <i className="fas fa-clock mr-1" /> Hold Period
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: '#15803d', fontWeight: 600 }}>
+                      48 hours to collect after ready
+                    </div>
+                  </div>
+
+                  <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, padding: '10px 12px' }}>
+                    <div style={{ fontSize: '0.72rem', color: '#1e40af', fontWeight: 800, textTransform: 'uppercase', marginBottom: 2 }}>
+                      <i className="fas fa-calendar-check mr-1" /> Loan Term
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: '#1d4ed8', fontWeight: 600 }}>
+                      Standard 14 days borrowing
+                    </div>
+                  </div>
+                </div>
+
+                {/* Reservation Notes */}
                 <div>
-                  <label style={{ display: 'block', fontWeight: 600, marginBottom: 6, fontSize: '0.9rem' }}>
-                    Notes or Reason (Optional)
+                  <label style={{ display: 'block', fontWeight: 700, marginBottom: 6, fontSize: '0.85rem', color: '#334155' }}>
+                    Special Request or Study Reason (Optional)
                   </label>
                   <textarea 
-                    className="portal-input"
                     rows={3}
-                    placeholder="e.g. For Form 4 Literature term paper..."
+                    placeholder="e.g. For Form 4 Literature term paper, need chapter on poetry analysis..."
                     value={reserveNotes}
                     onChange={e => setReserveNotes(e.target.value)}
+                    style={{ 
+                      width: '100%', 
+                      padding: '10px 12px', 
+                      borderRadius: 8, 
+                      border: '1.5px solid #cbd5e1', 
+                      fontSize: '0.9rem',
+                      fontFamily: 'inherit',
+                      outline: 'none',
+                      resize: 'vertical'
+                    }}
                   />
                 </div>
               </div>
-              <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 16 }}>
-                <button type="button" className="portal-btn-secondary" onClick={() => setShowReserveModal(false)}>
+
+              {/* Footer */}
+              <div 
+                style={{ 
+                  padding: '16px 24px', 
+                  background: '#f8fafc', 
+                  borderTop: '1px solid #edf2f7', 
+                  display: 'flex', 
+                  justifyContent: 'flex-end', 
+                  gap: 12 
+                }}
+              >
+                <button 
+                  type="button" 
+                  onClick={() => setShowReserveModal(false)}
+                  style={{
+                    padding: '10px 18px',
+                    borderRadius: 8,
+                    border: '1px solid #cbd5e1',
+                    background: '#ffffff',
+                    color: '#475569',
+                    fontWeight: 700,
+                    fontSize: '0.9rem',
+                    cursor: 'pointer'
+                  }}
+                >
                   Cancel
                 </button>
-                <button type="submit" className="portal-btn-primary" disabled={reserving}>
-                  {reserving ? <><i className="fas fa-spinner fa-spin"></i> Submitting...</> : 'Confirm Reservation'}
+                <button 
+                  type="submit" 
+                  disabled={reserving}
+                  style={{
+                    padding: '10px 22px',
+                    borderRadius: 8,
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)',
+                    color: '#ffffff',
+                    fontWeight: 800,
+                    fontSize: '0.9rem',
+                    cursor: reserving ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    boxShadow: '0 4px 12px rgba(2, 132, 199, 0.3)'
+                  }}
+                >
+                  {reserving ? (
+                    <><i className="fas fa-spinner fa-spin" /> Submitting Request...</>
+                  ) : (
+                    <><i className="fas fa-bookmark" /> Confirm Reservation</>
+                  )}
                 </button>
               </div>
             </form>

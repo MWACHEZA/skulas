@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import TeacherClassAttendance from './ClassAttendance';
-import QRAttendance from '../../shared/pages/attendance/QRAttendance';
-import DailyStudentAttendanceReport from '../../shared/pages/attendance/DailyStudentAttendanceReport';
+import ClassroomQRAttendance from './ClassroomQRAttendance';
+import ClassroomAttendanceReports from './ClassroomAttendanceReports';
 
 export type TeacherAttendanceTab = 'roll-call' | 'qr' | 'reports';
 
@@ -24,15 +24,31 @@ export default function TeacherAttendanceUnified() {
   };
 
   return (
-    <div className="portal-container" style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
-      <div className="portal-page-header" style={{ marginBottom: 20 }}>
-        <h1 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <i className="fas fa-clipboard-check" style={{ color: 'var(--school-primary, #0284c7)' }} />
-          Classroom Attendance & Roll Call
-        </h1>
-        <p style={{ color: '#64748b', fontSize: '0.95rem', marginTop: 4 }}>
-          Record daily student presence, generate automated QR check-in codes, and review class attendance history.
-        </p>
+    <div className="portal-container" style={{ padding: '24px', maxWidth: '1440px', margin: '0 auto' }}>
+      <div 
+        style={{
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+          color: '#ffffff',
+          padding: '24px 30px',
+          borderRadius: '16px',
+          marginBottom: '24px',
+          boxShadow: '0 10px 25px -5px rgba(15, 23, 42, 0.25)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 16
+        }}
+      >
+        <div>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, margin: 0, color: '#ffffff', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <i className="fas fa-clipboard-check" style={{ color: '#38bdf8' }} />
+            Classroom Attendance & Roll Call
+          </h1>
+          <p style={{ margin: '6px 0 0', color: '#94a3b8', fontSize: '0.92rem' }}>
+            Record daily student presence, generate automated QR check-in codes, and review class attendance history.
+          </p>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -44,8 +60,8 @@ export default function TeacherAttendanceUnified() {
           borderBottom: '2px solid #e2e8f0',
           marginBottom: 24,
           background: '#fff',
-          padding: '8px 12px 0 12px',
-          borderRadius: '8px 8px 0 0'
+          padding: '8px 16px 0 16px',
+          borderRadius: '12px 12px 0 0'
         }}
       >
         <button
@@ -53,7 +69,7 @@ export default function TeacherAttendanceUnified() {
           data-tour="attendance-take-btn"
           onClick={() => handleTabChange('roll-call')}
           style={{
-            padding: '10px 18px',
+            padding: '12px 20px',
             border: 'none',
             background: 'none',
             cursor: 'pointer',
@@ -75,7 +91,7 @@ export default function TeacherAttendanceUnified() {
           type="button"
           onClick={() => handleTabChange('qr')}
           style={{
-            padding: '10px 18px',
+            padding: '12px 20px',
             border: 'none',
             background: 'none',
             cursor: 'pointer',
@@ -97,7 +113,7 @@ export default function TeacherAttendanceUnified() {
           type="button"
           onClick={() => handleTabChange('reports')}
           style={{
-            padding: '10px 18px',
+            padding: '12px 20px',
             border: 'none',
             background: 'none',
             cursor: 'pointer',
@@ -118,8 +134,8 @@ export default function TeacherAttendanceUnified() {
 
       <div>
         {activeTab === 'roll-call' && <TeacherClassAttendance />}
-        {activeTab === 'qr' && <QRAttendance />}
-        {activeTab === 'reports' && <DailyStudentAttendanceReport />}
+        {activeTab === 'qr' && <ClassroomQRAttendance />}
+        {activeTab === 'reports' && <ClassroomAttendanceReports />}
       </div>
     </div>
   );

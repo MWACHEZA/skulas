@@ -1,4 +1,5 @@
-import { Link, NavLink, useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, NavLink, useParams, useLocation } from 'react-router-dom';
 import { BASE_URL } from '../../lib/api';
 import { t } from '../../utils/translate';
 
@@ -8,7 +9,13 @@ interface Props {
 
 export default function Header({ school }: Props) {
   const { schoolCode } = useParams<{ schoolCode: string }>();
+  const location = useLocation();
   const code = schoolCode || school?.code;
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
 
   const schoolName = school?.name || 'School Website';
   const logo = school?.branding?.logo;
@@ -90,40 +97,61 @@ export default function Header({ school }: Props) {
           </Link>
         </div>
 
+        {/* Mobile Backdrop */}
+        {mobileMenuOpen && (
+          <div 
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(0,0,0,0.45)',
+              zIndex: 1000,
+              backdropFilter: 'blur(2px)'
+            }}
+            onClick={() => setMobileMenuOpen(false)}
+          />
+        )}
+
         {/* Nav */}
-        <nav>
+        <nav className={mobileMenuOpen ? 'active' : ''}>
           <ul style={{ display: 'flex', listStyle: 'none', margin: 0, padding: 0, gap: '4px', alignItems: 'center' }}>
-            <li><NavLink to={base} end>{t('Home')}</NavLink></li>
-            <li><NavLink to={`${base}/about`}>{t('About Us')}</NavLink></li>
+            <li><NavLink to={base} end onClick={() => setMobileMenuOpen(false)}>{t('Home')}</NavLink></li>
+            <li><NavLink to={`${base}/about`} onClick={() => setMobileMenuOpen(false)}>{t('About Us')}</NavLink></li>
 
             {featureEnabled('departments') && (
-              <li><NavLink to={`${base}/departments`}>{t('Departments')}</NavLink></li>
+              <li><NavLink to={`${base}/departments`} onClick={() => setMobileMenuOpen(false)}>{t('Departments')}</NavLink></li>
             )}
             {featureEnabled('admissions') && (
-              <li><NavLink to={`${base}/apply`}>{t('Apply')}</NavLink></li>
+              <li><NavLink to={`${base}/apply`} onClick={() => setMobileMenuOpen(false)}>{t('Apply')}</NavLink></li>
             )}
             {featureEnabled('news') && (
-              <li><NavLink to={`${base}/news`}>{t('News')}</NavLink></li>
+              <li><NavLink to={`${base}/news`} onClick={() => setMobileMenuOpen(false)}>{t('News')}</NavLink></li>
             )}
             {featureEnabled('noticeboard') && (
-              <li><NavLink to={`${base}/noticeboard`}>{t('Noticeboard')}</NavLink></li>
+              <li><NavLink to={`${base}/noticeboard`} onClick={() => setMobileMenuOpen(false)}>{t('Noticeboard')}</NavLink></li>
             )}
             {featureEnabled('sports') && (
-              <li><NavLink to={`${base}/sports`}>{t('Sports')}</NavLink></li>
+              <li><NavLink to={`${base}/sports`} onClick={() => setMobileMenuOpen(false)}>{t('Sports')}</NavLink></li>
             )}
             {featureEnabled('clubs') && (
-              <li><NavLink to={`${base}/clubs`}>{t('Clubs')}</NavLink></li>
+              <li><NavLink to={`${base}/clubs`} onClick={() => setMobileMenuOpen(false)}>{t('Clubs')}</NavLink></li>
             )}
             {featureEnabled('gallery') && (
-              <li><NavLink to={`${base}/gallery`}>{t('Gallery')}</NavLink></li>
+              <li><NavLink to={`${base}/gallery`} onClick={() => setMobileMenuOpen(false)}>{t('Gallery')}</NavLink></li>
             )}
-            <li><NavLink to={`${base}/careers`}>{t('Careers')}</NavLink></li>
-            <li><NavLink to={`${base}/contact`}>{t('Contact')}</NavLink></li>
+            <li><NavLink to={`${base}/careers`} onClick={() => setMobileMenuOpen(false)}>{t('Careers')}</NavLink></li>
+            <li><NavLink to={`${base}/contact`} onClick={() => setMobileMenuOpen(false)}>{t('Contact')}</NavLink></li>
           </ul>
         </nav>
 
-        <div className="menu-toggle">
-          <i className="fas fa-bars"></i>
+        <div 
+          className="menu-toggle"
+          onClick={() => setMobileMenuOpen(prev => !prev)}
+          role="button"
+          tabIndex={0}
+          aria-label="Toggle navigation menu"
+          style={{ cursor: 'pointer' }}
+        >
+          <i className={`fas ${mobileMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
         </div>
       </div>
     </header>

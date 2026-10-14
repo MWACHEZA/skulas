@@ -9,54 +9,166 @@ import { NotificationService } from '../services/notifications';
 const router = Router();
 
 // Get daily attendance for a class
+// Get daily or range attendance for a class
 router.get('/', requireAuth, async (req: AuthRequest, res) => {
   try {
-    const { classId, date } = req.query;
-    if (!classId || !date) {
-      return res.status(400).json({ error: 'classId and date are required' });
+    const { classId, date, startDate, endDate } = req.query;
+    const schoolId = req.user!.schoolId!;
+
+    let dateQuery: any = {};
+    if (startDate && endDate) {
+      dateQuery = {
+        gte: startOfDay(new Date(startDate as string)),
+        lte: endOfDay(new Date(endDate as string))
+      };
+    } else if (date) {
+      const queryDate = new Date(date as string);
+      dateQuery = {
+        gte: startOfDay(queryDate),
+        lte: endOfDay(queryDate)
+      };
     }
 
-    const queryDate = new Date(date as string);
+    const where: any = { schoolId };
+    if (classId) {
+      where.student = { classId: classId as string };
+    }
+    if (Object.keys(dateQuery).length > 0) {
+      where.date = dateQuery;
+    }
+
     const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 100;
+    const limit = parseInt(req.query.limit as string) || 200;
     const skip = (page - 1) * limit;
 
     const [attendances, total] = await Promise.all([
       prisma.attendance.findMany({
-        where: {
-          schoolId: req.user!.schoolId!,
+        where,
+        include: {
           student: {
-            classId: classId as string
-          },
-          date: {
-            gte: startOfDay(queryDate),
-            lte: endOfDay(queryDate)
+            include: {
+              class: true,
+              user: { select: { id: true, name: true, email: true } }
+            }
           }
         },
-        include: {
-          student: true
-        },
+        orderBy: { date: 'desc' },
         skip,
         take: limit
       }),
-      prisma.attendance.count({
-        where: {
-          schoolId: req.user!.schoolId!,
-          student: {
-            classId: classId as string
-          },
-          date: {
-            gte: startOfDay(queryDate),
-            lte: endOfDay(queryDate)
-          }
-        }
-      })
+      prisma.attendance.count({ where })
     ]);
     
     res.json({ data: attendances, total, page, limit });
   } catch (error) {
     console.error('Error fetching attendance:', error);
-    res.status(500).json({ error: "We couldn't load the attendance records right now due to a network connection issue. Please refresh the page." });
+    res.status(500).json({ error: "Failed to load attendance records." });
+  }
+});
+
+// Get aggregated class attendance summary report from Attendance table
+router.get('/class-summary', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const { classId, startDate, endDate, month, year } = req.query;
+    const schoolId = req.user!.schoolId!;
+
+    if (!classId) {
+      return res.status(400).json({ error: 'classId is required' });
+    }
+
+    let gteDate: Date;
+    let lteDate: Date;
+
+    if (month && year) {
+      const m = parseInt(month as string) - 1;
+      const y = parseInt(year as string);
+      gteDate = new Date(y, m, 1);
+      lteDate = new Date(y, m + 1, 0, 23, 59, 59, 999);
+    } else if (startDate && endDate) {
+      gteDate = startOfDay(new Date(startDate as string));
+      lteDate = endOfDay(new Date(endDate as string));
+    } else {
+      const now = new Date();
+      gteDate = new Date(now.getFullYear(), now.getMonth(), 1);
+      lteDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
+    }
+
+    // 1. Fetch students in the class
+    const students = await prisma.student.findMany({
+      where: { classId: classId as string, schoolId },
+      include: {
+        user: { select: { id: true, name: true, email: true, phone: true } },
+        class: true
+      },
+      orderBy: { name: 'asc' }
+    });
+
+    // 2. Fetch all attendance records in range
+    const records = await prisma.attendance.findMany({
+      where: {
+        schoolId,
+        student: { classId: classId as string },
+        date: {
+          gte: gteDate,
+          lte: lteDate
+        }
+      },
+      orderBy: { date: 'asc' }
+    });
+
+    // Determine unique dates recorded
+    const distinctDates = new Set(records.map(r => r.date.toISOString().slice(0, 10)));
+    const totalRecordedDays = distinctDates.size;
+
+    // 3. Aggregate per student
+    const studentSummary = students.map(st => {
+      const studentRecords = records.filter(r => r.studentId === st.id);
+      let presentCount = 0;
+      let absentCount = 0;
+      let lateCount = 0;
+      let excusedCount = 0;
+
+      studentRecords.forEach(r => {
+        const s = (r.status || '').toLowerCase();
+        if (s === 'present') presentCount++;
+        else if (s === 'absent') absentCount++;
+        else if (s === 'late') { lateCount++; presentCount++; }
+        else if (s === 'excused') excusedCount++;
+      });
+
+      const totalDays = totalRecordedDays || studentRecords.length || 1;
+      const rate = totalDays > 0 ? Math.round((presentCount / totalDays) * 1000) / 10 : 100;
+
+      return {
+        id: st.id,
+        name: st.name || st.user?.name || 'Student',
+        studentId: st.studentId || st.id,
+        gender: st.gender,
+        parentPhone: st.phone || st.user?.phone || null,
+        totalDays,
+        presentCount,
+        absentCount,
+        lateCount,
+        excusedCount,
+        attendanceRate: rate,
+        status: rate >= 90 ? 'Regular' : rate >= 75 ? 'Punctual' : 'At Risk'
+      };
+    });
+
+    const totalPresent = studentSummary.reduce((sum, s) => sum + s.presentCount, 0);
+    const totalPossible = (studentSummary.length * (totalRecordedDays || 1)) || 1;
+    const classRate = totalRecordedDays > 0 ? Math.round((totalPresent / totalPossible) * 1000) / 10 : 100;
+
+    res.json({
+      classId,
+      totalRecordedDays,
+      classRate,
+      studentsCount: students.length,
+      students: studentSummary
+    });
+  } catch (error) {
+    console.error('Error fetching class attendance summary:', error);
+    res.status(500).json({ error: 'Failed to generate class attendance summary' });
   }
 });
 
@@ -246,39 +358,74 @@ router.get('/gate-check', requireAuth, async (req: AuthRequest, res) => {
   }
 });
 
-// Mark student attendance via QR code (with gate check enforcement)
+// Mark student attendance via QR code (with gate check enforcement for gates, or direct marking for classroom)
 router.post('/qr', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN', 'ANCILLARY'), async (req: AuthRequest, res) => {
   try {
-    const { qrData, date, forceAllow } = req.body;
+    const { qrData, date, forceAllow, classId, isClassroom } = req.body;
     
     if (!qrData) {
       return res.status(400).json({ error: 'QR data is missing' });
     }
 
     const schoolId = req.user!.schoolId!;
-    const gateCheck = await runGateCheck(qrData, schoolId);
 
-    if (!gateCheck.allowed && !forceAllow) {
-      return res.status(403).json({ 
-        error: gateCheck.reason, 
-        gateDenied: true,
-        gateCheck 
+    let student: any = null;
+    let gateCheck: any = { allowed: true, reason: 'Attendance recorded' };
+
+    if (isClassroom) {
+      // Direct classroom scan: find student by QR data
+      let cleaned = String(qrData || '').trim();
+      let lookupId = cleaned;
+      let lookupStudentId = cleaned;
+      if (cleaned.startsWith('{') && cleaned.endsWith('}')) {
+        try {
+          const parsed = JSON.parse(cleaned);
+          if (parsed.id) lookupId = String(parsed.id).trim();
+          if (parsed.studentId) lookupStudentId = String(parsed.studentId).trim();
+        } catch {}
+      }
+
+      student = await prisma.student.findFirst({
+        where: {
+          schoolId,
+          OR: [
+            { id: lookupId },
+            { studentId: lookupStudentId },
+            { studentId: lookupId },
+            { id: lookupStudentId }
+          ]
+        },
+        include: { class: true, user: true }
       });
-    }
 
-    const student = gateCheck.student;
-    if (!student) {
-      return res.status(404).json({ error: 'Student not found' });
+      if (!student) {
+        return res.status(404).json({ error: 'Student badge not recognized for this school.' });
+      }
+    } else {
+      // Gate scanner check
+      gateCheck = await runGateCheck(qrData, schoolId);
+      if (!gateCheck.allowed && !forceAllow) {
+        return res.status(403).json({ 
+          error: gateCheck.reason, 
+          gateDenied: true,
+          gateCheck 
+        });
+      }
+      student = gateCheck.student;
+      if (!student) {
+        return res.status(404).json({ error: 'Student not found' });
+      }
     }
 
     const queryDate = date ? new Date(date) : new Date();
+    const targetClassId = classId || student.classId || null;
 
     const existing = await prisma.attendance.findFirst({
       where: {
         schoolId,
         studentId: student.id,
         date: startOfDay(queryDate),
-        classId: null
+        classId: targetClassId
       }
     });
 
@@ -287,8 +434,8 @@ router.post('/qr', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_AD
       attendance = await prisma.attendance.update({
         where: { id: existing.id },
         data: {
-          status: 'present',
-          teacherId: req.user!.staffId || 'admin',
+          status: 'Present',
+          teacherId: req.user!.staffId || req.user!.id,
           scanMethod: 'QR Code'
         }
       });
@@ -298,9 +445,9 @@ router.post('/qr', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_AD
           schoolId,
           studentId: student.id,
           date: startOfDay(queryDate),
-          status: 'present',
-          teacherId: req.user!.staffId || 'admin',
-          classId: null,
+          status: 'Present',
+          teacherId: req.user!.staffId || req.user!.id,
+          classId: targetClassId,
           scanMethod: 'QR Code'
         }
       });

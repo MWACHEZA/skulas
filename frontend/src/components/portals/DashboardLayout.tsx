@@ -98,6 +98,10 @@ export default function DashboardLayout({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isMaintModalOpen, setIsMaintModalOpen] = useState(false);
 
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
   // Grouped Navigation & Search state
   const [navSearch, setNavSearch] = useState('');
   const searchInputRef = React.useRef<HTMLInputElement | null>(null);
@@ -265,7 +269,24 @@ export default function DashboardLayout({
     const nextStatus = isAllDone ? 'completed' : 'in_progress';
     
     setTutorialState({ status: nextStatus, completedStepIds: updatedIds });
-    setActiveTourStep(null);
+
+    // Move to next step in sequence
+    if (tutorialConfig && !isAllDone) {
+      const currentIndex = tutorialConfig.steps.findIndex(s => s.id === stepId);
+      const nextStep = tutorialConfig.steps.slice(currentIndex + 1).find(s => !updatedIds.includes(s.id))
+        || tutorialConfig.steps.find(s => !updatedIds.includes(s.id));
+
+      if (nextStep) {
+        setActiveTourStep(nextStep);
+        if (nextStep.route && location.pathname !== nextStep.route) {
+          navigate(nextStep.route);
+        }
+      } else {
+        setActiveTourStep(null);
+      }
+    } else {
+      setActiveTourStep(null);
+    }
 
     try {
       await api.patch('/api/users/me/tutorial', {
@@ -829,6 +850,12 @@ export default function DashboardLayout({
       {/* Role Onboarding Tooltip Runner */}
       <TutorialRunner
         activeStep={activeTourStep}
+        stepNumber={
+          activeTourStep && tutorialConfig?.steps
+            ? tutorialConfig.steps.findIndex(s => s.id === activeTourStep.id) + 1
+            : 1
+        }
+        totalSteps={tutorialConfig?.steps.length || 1}
         onCompleteStep={handleCompleteTourStep}
         onCloseTooltip={() => setActiveTourStep(null)}
       />

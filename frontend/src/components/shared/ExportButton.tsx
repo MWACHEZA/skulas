@@ -3,13 +3,14 @@ import { exportData, type ExportColumn, type ExportOptions } from '../../utils/e
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from '../../context/ToastContext';
 
-export interface ExportButtonProps<T = any> {
+export interface ExportButtonProps<_T = any> {
   filename?: string;
   title?: string;
   subtitle?: string;
   schoolName?: string;
-  columns?: ExportColumn<T>[];
-  data?: T[];
+  columns?: ExportColumn<any>[];
+  headers?: string[];
+  data?: any;
   orientation?: 'portrait' | 'landscape';
   metadata?: Record<string, string>;
   visibleFormats?: ('excel' | 'word' | 'pdf' | 'csv')[];

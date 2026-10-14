@@ -4,10 +4,10 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 
-export interface ExportColumn<T = any> {
+export interface ExportColumn<_T = any> {
   header: string;
   key?: string;
-  formatter?: (row: T, index: number) => string | number | null | undefined;
+  formatter?: (valueOrRow?: any, rowOrIndex?: any, index?: any) => string | number | null | undefined;
   width?: number;
 }
 
@@ -27,7 +27,13 @@ export interface ExportOptions<T = any> {
  */
 function getCellValue<T>(col: ExportColumn<T>, row: T, index: number): string {
   if (col.formatter) {
-    const val = col.formatter(row, index);
+    const rawVal = col.key && row && typeof row === 'object' ? (row as any)[col.key] : undefined;
+    let val: any;
+    if (rawVal !== undefined) {
+      val = col.formatter(rawVal, row, index);
+    } else {
+      val = col.formatter(row, index);
+    }
     return val === null || val === undefined ? '' : String(val);
   }
   if (col.key && row && typeof row === 'object') {

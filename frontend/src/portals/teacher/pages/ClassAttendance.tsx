@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useSearchParams } from 'react-router-dom';
@@ -12,22 +12,99 @@ interface Student {
   note: string;
 }
 
+interface AssignedClass {
+  id: string;
+  name: string;
+  role?: string;
+  _count?: {
+    students: number;
+  };
+}
+
 export default function TeacherClassAttendance() {
-  const [searchParams] = useSearchParams();
-  const classId = searchParams.get('classId');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlClassId = searchParams.get('classId');
+  
+  const [classes, setClasses] = useState<AssignedClass[]>([]);
+  const [selectedClassId, setSelectedClassId] = useState<string>(urlClassId || '');
+  const [loadingClasses, setLoadingClasses] = useState<boolean>(true);
+  
   const [students, setStudents] = useState<Student[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [saving, setSaving] = useState(false);
   
   const { showToast } = useToast();
 
+  // Load teacher's assigned classes on mount
   useEffect(() => {
-    if (classId) {
-      fetchStudents();
+    const fetchClasses = async () => {
+      try {
+        setLoadingClasses(true);
+        const { data } = await api.get('/api/teachers/my-classes');
+        const list = Array.isArray(data) ? data : [];
+        setClasses(list);
+
+        if (list.length > 0) {
+          const matched = list.find(c => c.id === urlClassId);
+          const initialClassId = matched ? matched.id : list[0].id;
+          setSelectedClassId(initialClassId);
+          if (initialClassId !== urlClassId) {
+            setSearchParams(prev => {
+              const next = new URLSearchParams(prev);
+              next.set('classId', initialClassId);
+              return next;
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load teacher classes:', err);
+        showToast('Failed to load assigned classes', 'error');
+      } finally {
+        setLoadingClasses(false);
+      }
+    };
+
+    fetchClasses();
+  }, []);
+
+  const handleClassChange = (newClassId: string) => {
+    setSelectedClassId(newClassId);
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('classId', newClassId);
+      return next;
+    });
+  };
+
+  const fetchStudents = useCallback(async (classIdToFetch: string) => {
+    if (!classIdToFetch) return;
+    try {
+      setLoading(true);
+      const { data } = await api.get(`/api/teachers/my-students?classId=${classIdToFetch}`);
+      const list = Array.isArray(data) ? data : [];
+      setStudents(list.map((s: any) => ({
+        id: s.id,
+        studentId: s.studentId || '—',
+        name: s.user?.name || s.name || 'Student',
+        status: 'Present',
+        note: ''
+      })));
+      setHasUnsavedChanges(false);
+    } catch (err) {
+      showToast('Failed to load class roster', 'error');
+    } finally {
+      setLoading(false);
     }
-  }, [classId]);
+  }, [showToast]);
+
+  useEffect(() => {
+    if (selectedClassId) {
+      fetchStudents(selectedClassId);
+    }
+  }, [selectedClassId, fetchStudents]);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -40,50 +117,39 @@ export default function TeacherClassAttendance() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [hasUnsavedChanges]);
 
-  const fetchStudents = async () => {
-    try {
-      setLoading(true);
-      const { data } = await api.get(`/api/teachers/my-students?classId=${classId}`);
-      // The response is a direct array of students from /api/teachers/my-students
-      setStudents(data.map((s: any) => ({
-        id: s.id,
-        studentId: s.studentId,
-        name: s.user?.name || s.name,
-        status: 'Present',
-        note: ''
-      })));
-    } catch (err) {
-      showToast('Failed to load class roster', 'error');
-    
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const updateStatus = (id: string, status: string) => {
     setStudents(prev => prev.map(s => s.id === id ? { ...s, status } : s));
     setHasUnsavedChanges(true);
   };
 
+  const markAll = (status: 'Present' | 'Absent') => {
+    setStudents(prev => prev.map(s => ({ ...s, status })));
+    setHasUnsavedChanges(true);
+    showToast(`Marked all students as ${status}`, 'info');
+  };
+
   const handleSave = async () => {
+    if (!selectedClassId) return;
     try {
+      setSaving(true);
       const records = students.map(s => ({
         studentId: s.id,
         status: s.status,
         note: s.note
       }));
-      await api.post('/api/teachers/attendance/mark-bulk', { date, records, classId });
-      showToast('Attendance saved successfully', 'success');
+      await api.post('/api/teachers/attendance/mark-bulk', { date, records, classId: selectedClassId });
+      showToast('Attendance recorded and saved successfully', 'success');
       setHasUnsavedChanges(false);
     } catch (err: any) {
-      showToast(err.response?.data?.error || "We couldn't save today's attendance because the connection to the server was lost. Please check your internet and try clicking save again.", 'error');
+      showToast(err.response?.data?.error || "Failed to save attendance record. Please try again.", 'error');
+    } finally {
+      setSaving(false);
     }
   };
 
-  if (!classId) return <div className="p-8 text-center">Please select a class from your dashboard first.</div>;
-
   const presentCount = students.filter(s => s.status === 'Present').length;
   const absentCount = students.filter(s => s.status === 'Absent').length;
+  const lateCount = students.filter(s => s.status === 'Late').length;
 
   const filteredStudents = students.filter(s => {
     const term = searchTerm.toLowerCase();
@@ -94,32 +160,183 @@ export default function TeacherClassAttendance() {
     );
   });
 
-  return (
-    <>
-      <div className="portal-page-header">
-        <h1>Class Attendance</h1>
-        <p>Record and monitor daily student attendance for your assigned classes.</p>
-      </div>
+  const selectedClass = classes.find(c => c.id === selectedClassId);
 
-      <div className="portal-card">
-        <div className="portal-card-header">
-          <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-            <h2 style={{ margin: 0 }}><i className="fas fa-user-check" style={{ marginRight: 8, color: 'var(--school-primary, #3182ce)' }}></i>Record Attendance</h2>
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      {/* Top Selector Card */}
+      <div 
+        style={{
+          background: '#ffffff',
+          borderRadius: 12,
+          padding: '20px 24px',
+          border: '1px solid #e2e8f0',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 16
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: 6, letterSpacing: '0.05em' }}>
+              <i className="fas fa-chalkboard mr-1" /> Assigned Class
+            </label>
+            {loadingClasses ? (
+              <span style={{ fontSize: '0.9rem', color: '#64748b' }}>
+                <i className="fas fa-spinner fa-spin mr-1" /> Loading classes...
+              </span>
+            ) : classes.length === 0 ? (
+              <span style={{ fontSize: '0.9rem', color: '#ef4444', fontWeight: 600 }}>
+                No assigned classes found
+              </span>
+            ) : (
+              <select
+                value={selectedClassId}
+                onChange={e => handleClassChange(e.target.value)}
+                style={{
+                  padding: '9px 14px',
+                  borderRadius: 8,
+                  border: '1.5px solid #cbd5e1',
+                  background: '#f8fafc',
+                  fontSize: '0.95rem',
+                  fontWeight: 700,
+                  color: '#0f172a',
+                  minWidth: 260,
+                  outline: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                {classes.map(c => (
+                  <option key={c.id} value={c.id}>
+                    {c.name} {c.role ? `(${c.role})` : ''} — {c._count?.students ?? ''} students
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', marginBottom: 6, letterSpacing: '0.05em' }}>
+              <i className="fas fa-calendar-day mr-1" /> Register Date
+            </label>
             <input 
               type="date" 
               className="portal-input" 
               value={date} 
               onChange={e => setDate(e.target.value)}
-              style={{ padding: '4px 8px' }}
+              style={{
+                padding: '8px 12px',
+                borderRadius: 8,
+                border: '1.5px solid #cbd5e1',
+                fontSize: '0.95rem',
+                fontWeight: 600,
+                color: '#0f172a'
+              }}
             />
-          </div>
-          <div style={{ display: 'flex', gap: 10 }}>
-            <span className="portal-badge success">Present: {presentCount}</span>
-            <span className="portal-badge danger">Absent: {absentCount}</span>
           </div>
         </div>
 
-        <div style={{ padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, borderBottom: '1px solid #edf2f7', flexWrap: 'wrap' }}>
+        {/* Quick Bulk Actions & Unsaved Notice */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            onClick={() => markAll('Present')}
+            disabled={students.length === 0}
+            style={{
+              padding: '8px 14px',
+              borderRadius: 8,
+              border: '1px solid #bbf7d0',
+              background: '#f0fdf4',
+              color: '#166534',
+              fontWeight: 700,
+              fontSize: '0.85rem',
+              cursor: students.length === 0 ? 'not-allowed' : 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6
+            }}
+          >
+            <i className="fas fa-check-double" /> Mark All Present
+          </button>
+
+          <button
+            type="button"
+            onClick={() => markAll('Absent')}
+            disabled={students.length === 0}
+            style={{
+              padding: '8px 14px',
+              borderRadius: 8,
+              border: '1px solid #fecaca',
+              background: '#fef2f2',
+              color: '#991b1b',
+              fontWeight: 700,
+              fontSize: '0.85rem',
+              cursor: students.length === 0 ? 'not-allowed' : 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6
+            }}
+          >
+            <i className="fas fa-user-slash" /> Mark All Absent
+          </button>
+        </div>
+      </div>
+
+      {/* Main Table Card */}
+      <div 
+        style={{
+          background: '#ffffff',
+          borderRadius: 12,
+          border: '1px solid #e2e8f0',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+          overflow: 'hidden'
+        }}
+      >
+        <div 
+          style={{
+            padding: '16px 20px',
+            borderBottom: '1px solid #edf2f7',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 12
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#1e293b' }}>
+              {selectedClass ? `${selectedClass.name} Roster` : 'Class Roster'}
+            </h3>
+            {hasUnsavedChanges && (
+              <span style={{ fontSize: '0.75rem', background: '#fef3c7', color: '#92400e', padding: '3px 8px', borderRadius: 6, fontWeight: 700 }}>
+                Unsaved changes
+              </span>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <span style={{ fontSize: '0.8rem', background: '#dcfce7', color: '#166534', padding: '4px 10px', borderRadius: 8, fontWeight: 700 }}>
+              Present: {presentCount}
+            </span>
+            <span style={{ fontSize: '0.8rem', background: '#fee2e2', color: '#991b1b', padding: '4px 10px', borderRadius: 8, fontWeight: 700 }}>
+              Absent: {absentCount}
+            </span>
+            {lateCount > 0 && (
+              <span style={{ fontSize: '0.8rem', background: '#fef3c7', color: '#92400e', padding: '4px 10px', borderRadius: 8, fontWeight: 700 }}>
+                Late: {lateCount}
+              </span>
+            )}
+            <span style={{ fontSize: '0.8rem', background: '#f1f5f9', color: '#475569', padding: '4px 10px', borderRadius: 8, fontWeight: 700 }}>
+              Total: {students.length}
+            </span>
+          </div>
+        </div>
+
+        {/* Search and Export Bar */}
+        <div style={{ padding: '12px 20px', background: '#f8fafc', borderBottom: '1px solid #edf2f7', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <div style={{ flex: 1, minWidth: 240, maxWidth: 380 }}>
             <SearchInput
               value={searchTerm}
@@ -133,65 +350,135 @@ export default function TeacherClassAttendance() {
               name: s.name,
               status: s.status,
               note: s.note || '—',
-              date: date
+              date: date,
+              class: selectedClass?.name || 'Class'
             }))}
             columns={[
               { header: 'Student ID', key: 'studentId', width: 18 },
               { header: 'Student Name', key: 'name', width: 25 },
+              { header: 'Class', key: 'class', width: 16 },
               { header: 'Status', key: 'status', width: 14 },
               { header: 'Note / Remarks', key: 'note', width: 25 },
               { header: 'Date', key: 'date', width: 14 }
             ]}
-            filename={`class-attendance-${date}`}
-            title={`Class Attendance Register - ${date}`}
-            subtitle={`Present: ${presentCount} | Absent: ${absentCount}`}
+            filename={`class-attendance-${selectedClass?.name || 'class'}-${date}`}
+            title={`Class Attendance Register - ${selectedClass?.name || ''} (${date})`}
+            subtitle={`Present: ${presentCount} | Absent: ${absentCount} | Late: ${lateCount}`}
           />
         </div>
 
-        <div className="portal-card-body" style={{ padding: 0 }}>
+        {/* Students Table */}
+        <div style={{ overflowX: 'auto' }}>
           {loading ? (
-             <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin"></i> Loading roster...</div>
+            <div style={{ padding: 48, textAlign: 'center', color: '#64748b' }}>
+              <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7' }} />
+              <p style={{ marginTop: 10, fontWeight: 600 }}>Loading class roster...</p>
+            </div>
+          ) : classes.length === 0 ? (
+            <div style={{ padding: 48, textAlign: 'center', color: '#64748b' }}>
+              <i className="fas fa-chalkboard-teacher fa-3x" style={{ color: '#cbd5e1', marginBottom: 12 }} />
+              <h3 style={{ fontSize: '1.1rem', color: '#334155', fontWeight: 700 }}>No Assigned Classes</h3>
+              <p style={{ fontSize: '0.9rem', marginTop: 4 }}>You have not been assigned as a homeroom or subject teacher to any classes yet.</p>
+            </div>
+          ) : filteredStudents.length === 0 ? (
+            <div style={{ padding: 48, textAlign: 'center', color: '#64748b' }}>
+              <i className="fas fa-user-graduate fa-3x" style={{ color: '#cbd5e1', marginBottom: 12 }} />
+              <h3 style={{ fontSize: '1.1rem', color: '#334155', fontWeight: 700 }}>No Students in this Class</h3>
+              <p style={{ fontSize: '0.9rem', marginTop: 4 }}>
+                {searchTerm ? 'No students matched your search criteria.' : 'This class currently has no enrolled students.'}
+              </p>
+            </div>
           ) : (
-            <table className="portal-table">
+            <table className="portal-table" style={{ width: '100%' }}>
               <thead>
-                <tr><th>Student ID</th><th>Full Name</th><th>Status</th><th>Note</th></tr>
+                <tr>
+                  <th style={{ width: '160px' }}>Student ID</th>
+                  <th>Full Name</th>
+                  <th style={{ width: '260px' }}>Attendance Status</th>
+                  <th>Remarks / Note</th>
+                </tr>
               </thead>
               <tbody>
-                {filteredStudents.length === 0 ? (
-                  <tr><td colSpan={4} style={{ textAlign: 'center', padding: 24, color: '#94a3b8' }}>No students found matching search.</td></tr>
-                ) : filteredStudents.map((student) => (
+                {filteredStudents.map(student => (
                   <tr key={student.id}>
-                    <td style={{ fontSize: '0.85rem', color: '#718096' }}>{student.studentId}</td>
-                    <td style={{ fontWeight: 600 }}>{student.name}</td>
+                    <td style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>
+                      {student.studentId}
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#e0f2fe', color: '#0369a1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.8rem' }}>
+                          {student.name.charAt(0)}
+                        </div>
+                        <span style={{ fontWeight: 700, color: '#1e293b' }}>{student.name}</span>
+                      </div>
+                    </td>
                     <td>
                       <div style={{ display: 'flex', gap: 6 }}>
                         <button 
+                          type="button"
                           onClick={() => updateStatus(student.id, 'Present')}
-                          className={`portal-badge ${student.status === 'Present' ? 'success' : 'neutral'}`} 
-                          style={{ border: 'none', cursor: 'pointer' }}
-                        >Present</button>
+                          style={{
+                            padding: '6px 12px',
+                            borderRadius: 6,
+                            border: 'none',
+                            fontWeight: 700,
+                            fontSize: '0.8rem',
+                            cursor: 'pointer',
+                            background: student.status === 'Present' ? '#10b981' : '#f1f5f9',
+                            color: student.status === 'Present' ? '#ffffff' : '#475569',
+                            transition: 'all 0.15s ease'
+                          }}
+                        >
+                          <i className="fas fa-check mr-1" /> Present
+                        </button>
+
                         <button 
+                          type="button"
                           onClick={() => updateStatus(student.id, 'Absent')}
-                          className={`portal-badge ${student.status === 'Absent' ? 'danger' : 'neutral'}`} 
-                          style={{ border: 'none', cursor: 'pointer' }}
-                        >Absent</button>
+                          style={{
+                            padding: '6px 12px',
+                            borderRadius: 6,
+                            border: 'none',
+                            fontWeight: 700,
+                            fontSize: '0.8rem',
+                            cursor: 'pointer',
+                            background: student.status === 'Absent' ? '#ef4444' : '#f1f5f9',
+                            color: student.status === 'Absent' ? '#ffffff' : '#475569',
+                            transition: 'all 0.15s ease'
+                          }}
+                        >
+                          <i className="fas fa-times mr-1" /> Absent
+                        </button>
+
                         <button 
+                          type="button"
                           onClick={() => updateStatus(student.id, 'Late')}
-                          className={`portal-badge ${student.status === 'Late' ? 'warning' : 'neutral'}`} 
-                          style={{ border: 'none', cursor: 'pointer' }}
-                        >Late</button>
+                          style={{
+                            padding: '6px 12px',
+                            borderRadius: 6,
+                            border: 'none',
+                            fontWeight: 700,
+                            fontSize: '0.8rem',
+                            cursor: 'pointer',
+                            background: student.status === 'Late' ? '#f59e0b' : '#f1f5f9',
+                            color: student.status === 'Late' ? '#ffffff' : '#475569',
+                            transition: 'all 0.15s ease'
+                          }}
+                        >
+                          <i className="fas fa-clock mr-1" /> Late
+                        </button>
                       </div>
                     </td>
                     <td>
                       <input 
                         className="portal-input"
-                        placeholder="Add note..."
+                        placeholder="Add note or reason..."
                         value={student.note}
                         onChange={e => {
                           setStudents(prev => prev.map(s => s.id === student.id ? { ...s, note: e.target.value } : s));
                           setHasUnsavedChanges(true);
                         }}
-                        style={{ padding: '4px 8px', fontSize: '0.8rem' }}
+                        style={{ padding: '6px 10px', fontSize: '0.85rem', width: '100%', maxWidth: '320px' }}
                       />
                     </td>
                   </tr>
@@ -199,19 +486,57 @@ export default function TeacherClassAttendance() {
               </tbody>
             </table>
           )}
-          <div style={{ padding: 20, textAlign: 'right', borderTop: '1px solid #edf2f7' }}>
-             <button 
-               data-tour="attendance-take-btn"
-               onClick={handleSave}
-               disabled={students.length === 0}
-               className="portal-btn-primary" 
-               style={{ padding: '12px 24px' }}
-             >
-               Save Attendance Record
-             </button>
-          </div>
+        </div>
+
+        {/* Footer with Save Button */}
+        <div 
+          style={{
+            padding: '16px 20px',
+            borderTop: '1px solid #edf2f7',
+            background: '#f8fafc',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
+        >
+          <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+            {hasUnsavedChanges ? (
+              <span style={{ color: '#d97706', fontWeight: 600 }}>
+                <i className="fas fa-exclamation-triangle mr-1" /> You have unsaved attendance changes.
+              </span>
+            ) : (
+              <span>All records up to date.</span>
+            )}
+          </span>
+
+          <button 
+            type="button"
+            data-tour="attendance-take-btn"
+            onClick={handleSave}
+            disabled={students.length === 0 || saving}
+            className="portal-btn-primary"
+            style={{
+              padding: '10px 24px',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              opacity: students.length === 0 ? 0.6 : 1,
+              cursor: students.length === 0 ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {saving ? (
+              <>
+                <i className="fas fa-spinner fa-spin" /> Saving...
+              </>
+            ) : (
+              <>
+                <i className="fas fa-save" /> Save Attendance Register
+              </>
+            )}
+          </button>
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -305,7 +305,7 @@ export default function FarmManagement() {
 
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           <ExportButton
-            data={exportData}
+            data={exportData as any}
             filename={`farm_${activeTab}_report`}
             title={`${title} - ${activeTab.toUpperCase()}`}
             headers={exportHeaders}

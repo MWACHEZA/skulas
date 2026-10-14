@@ -613,7 +613,7 @@ export default function AdminUniformsInventory() {
               <SearchableCombobox
                 options={studentOptions}
                 value={selectedStudent?.id}
-                onChange={(val, opt) => {
+                onChange={(_val, opt) => {
                   const chosen = Array.isArray(opt) ? opt[0] : opt;
                   setSelectedStudent(chosen?.extra || null);
                 }}

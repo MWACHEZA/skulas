@@ -232,7 +232,7 @@ export default function TeacherCurriculum() {
           </p>
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
-          {activeTab === 'observations' && isHodOrAdmin && (
+          {activeTab === 'observations' && (
             <button
               data-tour="hod-observation-btn"
               style={{
@@ -626,7 +626,23 @@ export default function TeacherCurriculum() {
             </div>
 
             <div className="portal-card" style={{ padding: 24, background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0' }}>
-              <h2 style={{ fontSize: '1.2rem', fontWeight: 700, margin: '0 0 16px', color: '#1e293b' }}>Lesson Observation Feedback Records</h2>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
+                <div>
+                  <h2 style={{ fontSize: '1.2rem', fontWeight: 700, margin: 0, color: '#1e293b' }}>Lesson Observation Feedback Records</h2>
+                  <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.85rem' }}>
+                    Instructional evaluations, rubric scores, and continuous professional development feedback.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="portal-btn-primary"
+                  onClick={() => setShowObsModal(true)}
+                  style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '9px 18px', fontSize: '0.88rem', fontWeight: 700 }}
+                >
+                  <i className="fas fa-plus" />
+                  Record Lesson Observation
+                </button>
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                 {observations.map(obs => (
                   <div key={obs.id} style={{ border: '1px solid #e2e8f0', borderRadius: 8, padding: 18, background: '#f8fafc' }}>
