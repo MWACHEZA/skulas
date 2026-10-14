@@ -390,11 +390,20 @@ router.get('/textbooks', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 
  * @route   GET /api/teachers/my-classes
  * @desc    [TEACHER] Get classes assigned to teacher (as class teacher or subject teacher)
  */
-router.get('/my-classes', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER'), async (req, res) => {
+router.get('/my-classes', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
         const teacher = await prisma_1.default.teacher.findFirst({ where: { userId: req.user.id } });
-        if (!teacher)
+        if (!teacher) {
+            if (['ADMIN', 'SCHOOL_ADMIN', 'SUPER_ADMIN'].includes(req.user.role)) {
+                const allClasses = await prisma_1.default.schoolClass.findMany({
+                    where: { schoolId: req.user.schoolId },
+                    include: { _count: { select: { students: true } } },
+                    orderBy: { name: 'asc' }
+                });
+                return res.json(allClasses.map(c => ({ ...c, role: 'Administrator' })));
+            }
             return res.status(404).json({ error: 'Teacher record not found' });
+        }
         // Classes where they are the Class Teacher
         const homeroomClasses = await prisma_1.default.schoolClass.findMany({
             where: { teacherId: teacher.id },
@@ -439,7 +448,7 @@ router.get('/my-classes', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER')
  * @route   GET /api/teachers/my-students
  * @desc    [TEACHER] Get students in a specific class assigned to the teacher
  */
-router.get('/my-students', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER'), async (req, res) => {
+router.get('/my-students', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     const { classId } = req.query;
     try {
         const students = await prisma_1.default.student.findMany({

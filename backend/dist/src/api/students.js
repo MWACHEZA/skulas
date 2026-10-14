@@ -218,6 +218,9 @@ router.get('/me/dashboard', auth_1.requireAuth, (0, auth_1.requireRole)('STUDENT
             where: { userId: req.user.id, schoolId: req.user.schoolId },
             include: {
                 class: true,
+                house: { select: { name: true } },
+                hostel: { select: { name: true } },
+                user: { select: { avatar: true, name: true } },
                 grades: { include: { subject: { select: { name: true } } } },
                 fees: true,
                 attendance: { orderBy: { date: 'desc' }, take: 30 },
@@ -269,6 +272,10 @@ router.get('/me/dashboard', auth_1.requireAuth, (0, auth_1.requireRole)('STUDENT
                 id: student.id,
                 name: student.name,
                 studentId: student.studentId,
+                avatar: student.user?.avatar || null,
+                boardingStatus: student.boardingStatus || 'Day Scholar',
+                house: student.house?.name || null,
+                hostel: student.hostel?.name || null,
                 class: student.class,
                 attendance: student.attendance || []
             },

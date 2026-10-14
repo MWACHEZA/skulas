@@ -58,11 +58,16 @@ export const TutorialChecklist: React.FC<TutorialChecklistProps> = ({
             <i className="fas fa-compass" />
           </div>
           <div>
-            <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#1e293b' }}>
-              {tutorial.welcomeTitle}
-            </h3>
-            <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>
-              Progress: {completedCount} of {totalSteps} tasks completed ({progressPct}%)
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#1e293b' }}>
+                {tutorial.welcomeTitle}
+              </h3>
+              <span style={{ fontSize: '0.72rem', background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '2px 8px', borderRadius: '12px', fontWeight: 700 }}>
+                UI Quick Tour
+              </span>
+            </div>
+            <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>
+              Progress: {completedCount} of {totalSteps} navigation stops ({progressPct}%) · Institutional module settings are configured in School Setup below
             </span>
           </div>
         </div>

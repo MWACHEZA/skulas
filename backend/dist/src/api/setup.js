@@ -300,6 +300,10 @@ router.get('/role-orientation', auth_1.requireAuth, async (req, res) => {
         const dbUser = await prisma_1.default.user.findUnique({ where: { id: userId } });
         const userMeta = dbUser?.metadata || {};
         const isDismissed = !!userMeta.orientationDismissed;
+        // School Admins use the institutional Onboarding Setup Wizard instead of desk orientation
+        if (['SUPER_ADMIN', 'SCHOOL_ADMIN', 'ADMIN'].includes(req.user.role)) {
+            return res.json({ dismissed: true });
+        }
         let orientationGuide = {
             title: 'Welcome to ACADEX Portal',
             description: 'Your account is ready. Explore key tools and shortcuts tailored for your role.',

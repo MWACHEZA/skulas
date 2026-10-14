@@ -70,6 +70,8 @@ import ResearchDashboard from './portals/student/pages/ResearchDashboard';
 import CBTExams from './portals/student/pages/CBTExams';
 import CBTResults from './portals/shared/pages/cbt/CBTResults';
 import CleaningRequests from './portals/student/pages/CleaningRequests';
+import StudentOwnProfile from './portals/student/pages/StudentProfile';
+import StudentUniforms from './portals/student/pages/StudentUniforms';
 import LeaderGuard from './components/auth/LeaderGuard';
 import StudentClinicUnified from './portals/student/pages/StudentClinicUnified';
 import TeacherAttendanceUnified from './portals/teacher/pages/TeacherAttendanceUnified';
@@ -495,12 +497,13 @@ export default function App() {
               <Route path="farm" element={<FarmManagement />} />
               <Route path="clinic" element={<StudentClinicUnified />} />
               <Route path="support" element={<ITSupportPage />} />
-              <Route path="uniforms" element={<UniformsPage />} />
+              <Route path="uniforms" element={<StudentUniforms />} />
               <Route path="research" element={<ResearchDashboard />} />
               <Route path="portfolio" element={<AcademicPortfolio />} />
               <Route path="messages" element={<MessagesPage />} />
               <Route path="settings" element={<PersonalPreferences />} />
-              <Route path="profile" element={<ProfilePage />} />
+              <Route path="profile" element={<StudentOwnProfile />} />
+              <Route path="my-profile" element={<StudentOwnProfile />} />
               <Route path="cbt" element={<CBTExams />} />
               <Route path="cbt/take/:id" element={<TakeExam />} />
               <Route path="cleaning-requests" element={
@@ -659,6 +662,7 @@ export default function App() {
               <Route path="attendance" element={<AdminAttendance />} />
               <Route path="attendance/staff" element={<AdminStaffAttendance />} />
               <Route path="gate-dashboard" element={<AdminGateDashboard />} />
+              <Route path="gate" element={<Navigate to="/admin/gate-dashboard" replace />} />
               <Route path="qr-cards" element={<AdminQrCards />} />
 
               {/* 5. Welfare & Student Life Module */}

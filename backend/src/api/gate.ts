@@ -249,6 +249,38 @@ router.post('/staff/:id/reissue-qr', requireAuth, requireRole('SCHOOL_ADMIN', 'S
 });
 
 /**
+ * POST /api/gate/student/:id/photo
+ * Assign / update student photo for ID cards and gate records
+ */
+router.post('/student/:id/photo', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR', 'SUPER_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const studentId = String(req.params.id);
+    const { avatar } = req.body;
+
+    const student = await prisma.student.findFirst({
+      where: { id: studentId, schoolId }
+    });
+
+    if (!student) {
+      return res.status(404).json({ error: 'Student record not found' });
+    }
+
+    if (student.userId) {
+      await prisma.user.update({
+        where: { id: student.userId },
+        data: { avatar }
+      });
+    }
+
+    res.json({ success: true, avatar });
+  } catch (error: any) {
+    console.error('Error updating student photo:', error);
+    res.status(500).json({ error: error.message || 'Failed to update student photo' });
+  }
+});
+
+/**
  * GET /api/gate/qr-cards
  * Returns printable ID card data for all students in a class or school.
  */

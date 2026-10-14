@@ -304,6 +304,11 @@ router.get('/role-orientation', requireAuth, async (req: AuthRequest, res: Respo
     const userMeta = (dbUser?.metadata as any) || {};
     const isDismissed = !!userMeta.orientationDismissed;
 
+    // School Admins use the institutional Onboarding Setup Wizard instead of desk orientation
+    if (['SUPER_ADMIN', 'SCHOOL_ADMIN', 'ADMIN'].includes(req.user!.role)) {
+      return res.json({ dismissed: true });
+    }
+
     let orientationGuide = {
       title: 'Welcome to ACADEX Portal',
       description: 'Your account is ready. Explore key tools and shortcuts tailored for your role.',

@@ -31,7 +31,7 @@ export const adminTutorial: RoleTutorial = {
       id: 'admin-step-4',
       title: 'Campus Security & Gate Scanning',
       description: 'Supervise real-time gate entry/exit logs, generate student QR cards, and terminal devices.',
-      route: '/admin/gate',
+      route: '/admin/gate-dashboard',
       target: TOUR_TARGETS.ADMIN_GATE_LINK
     }
   ]

@@ -117,7 +117,10 @@ router.get('/preview', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN
                                 class: true,
                                 grades: {
                                     where: { term: String(term), year: parseInt(String(year)) },
-                                    include: { teacher: { include: { user: { select: { name: true } } } } }
+                                    include: {
+                                        subject: { select: { id: true, name: true, code: true } },
+                                        teacher: { include: { user: { select: { name: true } } } }
+                                    }
                                 },
                                 attendance: {
                                     where: {
@@ -132,7 +135,13 @@ router.get('/preview', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN
                     }
                 });
                 data = students.map(u => {
-                    const grades = u.student?.grades || [];
+                    const rawGrades = u.student?.grades || [];
+                    const grades = rawGrades.map((g) => ({
+                        ...g,
+                        subject: g.subject?.name || g.subjectId,
+                        subjectName: g.subject?.name || g.subjectId,
+                        subjectCode: g.subject?.code || ''
+                    }));
                     const avgScore = grades.length > 0
                         ? Math.round(grades.reduce((acc, g) => acc + (g.score || 0), 0) / grades.length)
                         : 0;
@@ -262,7 +271,11 @@ router.post('/snapshot', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADM
                     include: {
                         class: true,
                         grades: {
-                            where: { term: term, year: parseInt(year) }
+                            where: { term: term, year: parseInt(year) },
+                            include: {
+                                subject: { select: { id: true, name: true, code: true } },
+                                teacher: { include: { user: { select: { name: true } } } }
+                            }
                         },
                         attendance: {
                             where: {

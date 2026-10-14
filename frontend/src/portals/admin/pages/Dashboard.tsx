@@ -5,7 +5,6 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import ClockInModal from '../../../components/attendance/ClockInModal';
 import { SetupProgressBanner } from '../../../components/common/SetupProgressBanner';
-import { RoleOrientationModal } from '../../../components/common/RoleOrientationModal';
 import { formatCurrency } from '../../../utils/formatters';
 import '../../../styles/portal.css';
 
@@ -115,7 +114,6 @@ export default function AdminDashboard() {
       </div>
 
       <SetupProgressBanner />
-      <RoleOrientationModal />
 
       {/* ============================================================== */}
       {/* 1. ACTION-ORIENTED TODAY ROW & ATTENDANCE CLOCK */}
