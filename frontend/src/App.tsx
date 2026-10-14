@@ -774,9 +774,12 @@ export default function App() {
               <Route path="clinic/icd10" element={<Navigate to="/admin/clinic?tab=visits" replace />} />
               <Route path="clinic/billing" element={<Navigate to="/admin/clinic?tab=inventory" replace />} />
 
-              <Route path="prefects" element={<Navigate to="/admin/discipline?tab=conduct" replace />} />
+              <Route path="prefects" element={<PrefectCouncil />} />
+              <Route path="chaplaincy" element={<ChaplaincyDashboard />} />
               <Route path="awards" element={<Navigate to="/admin/discipline?tab=awards" replace />} />
               <Route path="hr/awards" element={<Navigate to="/admin/discipline?tab=awards" replace />} />
+              <Route path="leave" element={<TeacherLeave />} />
+              <Route path="hr/leave" element={<TeacherLeave />} />
 
               <Route path="transportation/routes" element={<Navigate to="/admin/transport?tab=routes" replace />} />
               <Route path="transportation/vehicles" element={<Navigate to="/admin/transport?tab=buses" replace />} />
@@ -905,7 +908,7 @@ export default function App() {
               <Route path="class-migration" element={<AdminClassMigration />} />
               <Route path="payment-plans" element={<ManagePaymentPlans />} />
               <Route path="students" element={<AdminStudents />} />
-              <Route path="leave" element={<MyLeave />} />
+              <Route path="leave" element={<TeacherLeave />} />
               <Route path="awards" element={<MyAwards />} />
               <Route path="messages" element={<MessagesPage />} />
               {/* LIBRARY FINANCIAL MODULE ACCESS FOR BURSAR */}
@@ -943,7 +946,7 @@ export default function App() {
               <Route path="messages" element={<MessagesPage />} />
               <Route path="settings" element={<PersonalPreferences />} />
               <Route path="profile" element={<ProfilePage />} />
-              <Route path="leave" element={<MyLeave />} />
+              <Route path="leave" element={<TeacherLeave />} />
               <Route path="awards" element={<MyAwards />} />
               <Route path="payslips" element={<MyPaymentSlip />} />
               <Route path="schedules" element={<AncillarySchedules />} />
@@ -1017,7 +1020,7 @@ export default function App() {
               <Route path="farm" element={<FarmManagement />} />
               <Route path="dining-hall" element={<DHRepresentative />} />
               <Route path="sports" element={<SportsManagement />} />
-              <Route path="leave" element={<LeaveManagement />} />
+              <Route path="leave" element={<TeacherLeave />} />
               <Route path="hr-services" element={<AncillaryHRServices />} />
               <Route path="hr" element={<AncillaryHRServices />} />
               <Route path="awards" element={<MyAwards />} />
@@ -1130,6 +1133,7 @@ export default function App() {
               <Route path="wellness" element={<ClinicWellnessPage />} />
               <Route path="emergency" element={<ClinicEmergencyPage />} />
               <Route path="reports" element={<ClinicReportsUnifiedPage />} />
+              <Route path="leave" element={<TeacherLeave />} />
 
               {/* Backward-Compatible Redirects */}
               <Route path="emergencies" element={<Navigate to="/clinic/emergency?tab=emergency-log" replace />} />

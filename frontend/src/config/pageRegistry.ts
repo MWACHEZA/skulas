@@ -329,6 +329,26 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     searchKeywords: ['conduct', 'detention', 'punishment', 'infractions', 'merits', 'awards', 'certificates']
   },
   {
+    id: 'admin-prefects',
+    label: 'Prefects Board / SRC',
+    route: '/admin/prefects',
+    group: 'STUDENT_LIFE',
+    icon: 'fas fa-user-tie',
+    permissionKey: PERMISSIONS.STUDENT_LIFE_PREFECTS,
+    portalVisibility: ['admin'],
+    searchKeywords: ['prefects', 'student leaders', 'src', 'duty roster']
+  },
+  {
+    id: 'admin-chaplaincy',
+    label: 'Chaplaincy Services',
+    route: '/admin/chaplaincy',
+    group: 'STUDENT_LIFE',
+    icon: 'fas fa-church',
+    permissionKey: PERMISSIONS.STUDENT_LIFE_CHAPLAINCY,
+    portalVisibility: ['admin'],
+    searchKeywords: ['chapel', 'church', 'spiritual', 'prayers']
+  },
+  {
     id: 'admin-trips',
     label: 'Trips & Excursions',
     route: '/admin/trips',
@@ -1370,13 +1390,76 @@ export const PAGE_REGISTRY: PageDefinition[] = [
   // =========================================================================
   {
     id: 'admin-my-leave',
-    label: 'My Leave Application',
+    label: 'Leave Management',
     route: '/admin/leave',
     group: 'HR_PAYROLL',
     icon: 'fas fa-calendar-minus',
     permissionKey: PERMISSIONS.HR_LEAVE_APPLY,
-    portalVisibility: ['teacher', 'bursar', 'librarian', 'ancillary'],
-    searchKeywords: ['vacation', 'sick leave', 'time off', 'application']
+    portalVisibility: ['admin'],
+    tabs: [
+      { id: 'my', label: 'My Leave' },
+      { id: 'cover', label: 'Cover Arrangements' },
+      { id: 'dept', label: 'Department Approvals' },
+      { id: 'all', label: 'All Leaves & Governance' }
+    ],
+    searchKeywords: ['leave', 'vacation', 'sick leave', 'time off', 'application', 'governance']
+  },
+  {
+    id: 'bursar-leave',
+    label: 'Leave Management',
+    route: '/bursar/leave',
+    group: 'HR_PAYROLL',
+    icon: 'fas fa-calendar-minus',
+    permissionKey: PERMISSIONS.HR_LEAVE_APPLY,
+    portalVisibility: ['bursar'],
+    tabs: [
+      { id: 'my', label: 'My Leave' },
+      { id: 'cover', label: 'Cover Arrangements' },
+      { id: 'all', label: 'All Leaves & Governance' }
+    ],
+    searchKeywords: ['leave', 'vacation', 'sick leave', 'time off', 'application']
+  },
+  {
+    id: 'ancillary-leave',
+    label: 'Leave Management',
+    route: '/ancillary/leave',
+    group: 'HR_PAYROLL',
+    icon: 'fas fa-calendar-minus',
+    permissionKey: PERMISSIONS.HR_LEAVE_APPLY,
+    portalVisibility: ['ancillary'],
+    tabs: [
+      { id: 'my', label: 'My Leave' },
+      { id: 'cover', label: 'Cover Arrangements' }
+    ],
+    searchKeywords: ['leave', 'vacation', 'sick leave', 'time off', 'application']
+  },
+  {
+    id: 'librarian-leave',
+    label: 'Leave Management',
+    route: '/librarian/leave',
+    group: 'HR_PAYROLL',
+    icon: 'fas fa-calendar-minus',
+    permissionKey: PERMISSIONS.HR_LEAVE_APPLY,
+    portalVisibility: ['librarian'],
+    tabs: [
+      { id: 'my', label: 'My Leave' },
+      { id: 'cover', label: 'Cover Arrangements' }
+    ],
+    searchKeywords: ['leave', 'vacation', 'sick leave', 'time off', 'application']
+  },
+  {
+    id: 'clinic-leave',
+    label: 'Leave Management',
+    route: '/clinic/leave',
+    group: 'HR_PAYROLL',
+    icon: 'fas fa-calendar-minus',
+    permissionKey: PERMISSIONS.HR_LEAVE_APPLY,
+    portalVisibility: ['clinic'],
+    tabs: [
+      { id: 'my', label: 'My Leave' },
+      { id: 'cover', label: 'Cover Arrangements' }
+    ],
+    searchKeywords: ['leave', 'vacation', 'sick leave', 'time off', 'application']
   },
   {
     id: 'admin-my-awards',

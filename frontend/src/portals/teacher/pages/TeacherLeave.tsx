@@ -283,6 +283,20 @@ export default function TeacherLeave() {
     { code: 'special', name: 'Special Leave', defaultDays: 10, paid: true, requiresAttachment: false, description: 'National/court duties' }
   ];
 
+  const getLeaveIcon = (code: string) => {
+    switch (code.toLowerCase()) {
+      case 'annual': return 'fa-umbrella-beach';
+      case 'sick': return 'fa-briefcase-medical';
+      case 'maternity': return 'fa-baby';
+      case 'paternity': return 'fa-hands-holding-child';
+      case 'compassionate': return 'fa-heart-pulse';
+      case 'study': return 'fa-graduation-cap';
+      case 'unpaid': return 'fa-calendar-xmark';
+      case 'in_lieu': return 'fa-scale-balanced';
+      default: return 'fa-calendar-check';
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'approved':
@@ -302,28 +316,94 @@ export default function TeacherLeave() {
 
   const MyLeaveTab = () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      {/* Balances Grid: Tenant catalog aware */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '14px' }}>
+      {/* Balances Grid: Tenant catalog aware, responsive, non-overlapping */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '16px' }}>
         {effectiveTypes.map(t => {
           const type = t.code;
           const total = balance ? (balance[`${type}Total`] ?? t.defaultDays) : t.defaultDays;
           const used = balance ? (balance[`${type}Used`] ?? 0) : 0;
           const rem = Math.max(0, Number(total) - Number(used));
+          const usedPct = total > 0 ? Math.min(100, Math.round((Number(used) / Number(total)) * 100)) : 0;
+          const icon = getLeaveIcon(t.code);
 
           return (
-            <div key={type} className="portal-stat-card" style={{ padding: '14px', background: '#fff', borderRadius: 10, border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 700 }}>{t.name}</span>
+            <div 
+              key={type} 
+              style={{
+                padding: '16px 18px',
+                background: '#ffffff',
+                borderRadius: '14px',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                minHeight: '130px',
+                transition: 'transform 0.15s ease, box-shadow 0.15s ease'
+              }}
+            >
+              {/* Header: Icon + Title + Status Pill */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, overflow: 'hidden' }}>
+                  <div style={{ 
+                    width: '30px', 
+                    height: '30px', 
+                    borderRadius: '8px', 
+                    background: t.paid ? '#ecfdf5' : '#fff1f2', 
+                    color: t.paid ? '#059669' : '#e11d48',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '0.85rem',
+                    flexShrink: 0
+                  }}>
+                    <i className={`fas ${icon}`} />
+                  </div>
+                  <span style={{ fontSize: '0.88rem', color: '#1e293b', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {t.name}
+                  </span>
+                </div>
                 {t.paid ? (
-                  <span style={{ fontSize: '0.65rem', background: '#dcfce7', color: '#166534', padding: '2px 6px', borderRadius: 4, fontWeight: 700 }}>PAID</span>
+                  <span style={{ fontSize: '0.65rem', background: '#dcfce7', color: '#166534', padding: '3px 8px', borderRadius: '6px', fontWeight: 800, flexShrink: 0, letterSpacing: '0.04em' }}>
+                    PAID
+                  </span>
                 ) : (
-                  <span style={{ fontSize: '0.65rem', background: '#fee2e2', color: '#991b1b', padding: '2px 6px', borderRadius: 4, fontWeight: 700 }}>UNPAID</span>
+                  <span style={{ fontSize: '0.65rem', background: '#fee2e2', color: '#991b1b', padding: '3px 8px', borderRadius: '6px', fontWeight: 800, flexShrink: 0, letterSpacing: '0.04em' }}>
+                    UNPAID
+                  </span>
                 )}
               </div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 800, color: '#1e293b', margin: '6px 0 2px' }}>
-                {rem} <span style={{ fontSize: '0.75rem', fontWeight: 500, color: '#94a3b8' }}>days left</span>
+
+              {/* Middle: Days Remaining */}
+              <div style={{ margin: '10px 0 6px' }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                  <span style={{ fontSize: '1.75rem', fontWeight: 800, color: rem > 0 ? '#0f172a' : '#94a3b8', lineHeight: 1 }}>
+                    {rem}
+                  </span>
+                  <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b' }}>
+                    days left
+                  </span>
+                </div>
+
+                {/* Visual Progress Bar */}
+                <div style={{ height: '6px', background: '#f1f5f9', borderRadius: '3px', marginTop: '8px', overflow: 'hidden' }}>
+                  <div 
+                    style={{ 
+                      height: '100%', 
+                      width: `${Math.min(100, Math.max(total > 0 ? 4 : 0, ((Number(total) - Number(used)) / Number(total)) * 100))}%`, 
+                      background: t.paid ? 'linear-gradient(90deg, #10b981, #059669)' : 'linear-gradient(90deg, #f59e0b, #d97706)',
+                      borderRadius: '3px',
+                      transition: 'width 0.3s ease'
+                    }} 
+                  />
+                </div>
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Used: {used} / {total} days</div>
+
+              {/* Bottom: Used Tally */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', color: '#64748b', fontWeight: 500, paddingTop: '4px' }}>
+                <span>Used: <strong style={{ color: '#1e293b' }}>{used}</strong> / {total} days</span>
+                <span style={{ color: '#94a3b8' }}>{usedPct}% utilized</span>
+              </div>
             </div>
           );
         })}
