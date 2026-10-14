@@ -31,7 +31,13 @@ export const TOUR_TARGETS = {
   // Clerk / Ancillary / Reception targets
   CLERK_RECEPTION_LINK: 'clerk-reception-link',
   CLERK_ADMISSIONS_BTN: 'clerk-admissions-btn',
-  CLERK_DOCUMENTS_LINK: 'clerk-documents-link'
+  CLERK_DOCUMENTS_LINK: 'clerk-documents-link',
+
+  // Admin targets
+  ADMIN_ACADEMIC_LINK: 'admin-academic-link',
+  ADMIN_ATTENDANCE_LINK: 'admin-attendance-link',
+  ADMIN_FEES_LINK: 'admin-fees-link',
+  ADMIN_GATE_LINK: 'admin-gate-link'
 } as const;
 
 export type TourTargetId = typeof TOUR_TARGETS[keyof typeof TOUR_TARGETS];

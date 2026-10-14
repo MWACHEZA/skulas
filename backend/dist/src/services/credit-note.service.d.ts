@@ -212,6 +212,8 @@ export declare class CreditNoteService {
                 gateMinPaidAmount: number;
                 gateMinPaidPercent: number;
                 gateRequiredType: string;
+                gateGraceDays: number;
+                gateCutoffTime: string | null;
                 idCardTemplateFront: string | null;
                 idCardTemplateBack: string | null;
                 setupStatus: Prisma.JsonValue | null;

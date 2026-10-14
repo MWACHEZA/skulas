@@ -317,11 +317,11 @@ router.get('/me/tutorial', requireAuth, async (req: AuthRequest, res: Response) 
     let roleTutorial = tutorialStates[role];
 
     if (!roleTutorial) {
-      // Default / backfill state: 'dismissed' for existing users so current staff aren't interrupted
+      // Default initial state: 'pending' so onboarding checklist is accessible for the role
       roleTutorial = {
         userId,
         role,
-        status: 'dismissed',
+        status: 'pending',
         completedStepIds: [],
         updatedAt: new Date().toISOString()
       };

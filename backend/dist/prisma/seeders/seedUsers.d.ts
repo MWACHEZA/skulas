@@ -83,6 +83,7 @@ export declare function seedUsers(prisma: PrismaClient, school: School, emailPre
         preferredLanguage: string | null;
         staffId: string | null;
         departmentId: string | null;
+        gatePin: string | null;
         metadata: import("../../src/generated/client/runtime/library").JsonValue | null;
         isLocked: boolean;
         mustChangePassword: boolean;
@@ -104,6 +105,7 @@ export declare function seedUsers(prisma: PrismaClient, school: School, emailPre
         preferredLanguage: string | null;
         staffId: string | null;
         departmentId: string | null;
+        gatePin: string | null;
         metadata: import("../../src/generated/client/runtime/library").JsonValue | null;
         isLocked: boolean;
         mustChangePassword: boolean;
@@ -152,6 +154,7 @@ export declare function seedUsers(prisma: PrismaClient, school: School, emailPre
         preferredLanguage: string | null;
         staffId: string | null;
         departmentId: string | null;
+        gatePin: string | null;
         metadata: import("../../src/generated/client/runtime/library").JsonValue | null;
         isLocked: boolean;
         mustChangePassword: boolean;
@@ -173,6 +176,7 @@ export declare function seedUsers(prisma: PrismaClient, school: School, emailPre
         preferredLanguage: string | null;
         staffId: string | null;
         departmentId: string | null;
+        gatePin: string | null;
         metadata: import("../../src/generated/client/runtime/library").JsonValue | null;
         isLocked: boolean;
         mustChangePassword: boolean;
@@ -194,6 +198,7 @@ export declare function seedUsers(prisma: PrismaClient, school: School, emailPre
         preferredLanguage: string | null;
         staffId: string | null;
         departmentId: string | null;
+        gatePin: string | null;
         metadata: import("../../src/generated/client/runtime/library").JsonValue | null;
         isLocked: boolean;
         mustChangePassword: boolean;
@@ -215,6 +220,7 @@ export declare function seedUsers(prisma: PrismaClient, school: School, emailPre
         preferredLanguage: string | null;
         staffId: string | null;
         departmentId: string | null;
+        gatePin: string | null;
         metadata: import("../../src/generated/client/runtime/library").JsonValue | null;
         isLocked: boolean;
         mustChangePassword: boolean;

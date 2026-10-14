@@ -10,7 +10,8 @@ export type RoleId =
   | 'LIBRARIAN' 
   | 'ANCILLARY' 
   | 'CLINIC'
-  | 'SCHOOL_ADMIN';
+  | 'SCHOOL_ADMIN'
+  | 'ADMIN';
 
 export type TutorialStatus = 'pending' | 'in_progress' | 'completed' | 'dismissed';
 

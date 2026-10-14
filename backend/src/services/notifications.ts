@@ -34,6 +34,19 @@ export class NotificationService {
   }
 
   /**
+   * Helper to send SMS directly or enqueue.
+   */
+  static async sendSms(recipientPhone: string, message: string, schoolId = 'system', senderId = 'system') {
+    return this.enqueue({
+      type: 'SMS',
+      schoolId,
+      senderId,
+      recipientPhone,
+      payload: { message }
+    }).catch(() => null);
+  }
+
+  /**
    * Directly insert into CommunicationLog
    */
   static async logCommunication(data: {

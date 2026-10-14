@@ -221,7 +221,7 @@ router.get('/dashboard', requireAuth, async (req: AuthRequest, res: Response) =>
 router.post('/student/:id/reissue-qr', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR', 'SUPER_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
-    const studentId = req.params.id;
+    const studentId = String(req.params.id);
 
     const qrToken = await GateService.issueStudentQrToken(schoolId, studentId);
     res.json({ success: true, qrToken });
@@ -238,7 +238,7 @@ router.post('/student/:id/reissue-qr', requireAuth, requireRole('SCHOOL_ADMIN', 
 router.post('/staff/:id/reissue-qr', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
-    const staffId = req.params.id;
+    const staffId = String(req.params.id);
 
     const qrToken = await GateService.issueStaffQrToken(schoolId, staffId);
     res.json({ success: true, qrToken });
@@ -313,7 +313,7 @@ router.get('/qr-cards', requireAuth, async (req: AuthRequest, res: Response) => 
 router.post('/payment-plan/:id/toggle-gate-entry', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
-    const planId = req.params.id;
+    const planId = String(req.params.id);
     const { allowGateEntry } = req.body;
 
     const plan = await prisma.paymentPlan.findFirst({

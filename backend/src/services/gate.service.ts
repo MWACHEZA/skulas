@@ -601,7 +601,7 @@ export class GateService {
           studentId: student.studentId,
           name: student.name,
           className: student.class?.name || null,
-          avatar: student.user?.avatar || null,
+          avatar: (student as any).user?.avatar || (student as any).avatar || null,
           boardingStatus: student.boardingStatus,
           balance: compliance.balance,
           parentPhone
@@ -675,7 +675,7 @@ export class GateService {
         studentId: student.studentId,
         name: student.name,
         className: student.class?.name || null,
-        avatar: student.user?.avatar || null,
+        avatar: (student as any).user?.avatar || (student as any).avatar || null,
         boardingStatus: student.boardingStatus,
         balance: compliance.balance,
         parentPhone
@@ -874,7 +874,7 @@ export class GateService {
         regNo: s.studentId,
         name: s.name,
         className: s.class?.name || null,
-        photoUrl: s.user?.avatar || null,
+        photoUrl: (s as any).user?.avatar || (s as any).avatar || null,
         qrToken: activeQr,
         isBoarder,
         feeStatus,

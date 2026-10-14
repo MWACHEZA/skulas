@@ -2125,11 +2125,13 @@ progress.portal-progress-bar::-moz-progress-bar {
 
 /* Setup Progress Banner Utilities */
 .portal-setup-banner-card {
-  background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
-  color: white;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #0f172a 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid #334155 !important;
   margin-bottom: 24px;
-  padding: 20px 24px;
+  padding: 22px 26px;
   border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.35), 0 8px 10px -6px rgba(15, 23, 42, 0.25);
 }
 
 .portal-setup-banner-content {
@@ -2166,13 +2168,14 @@ progress.portal-progress-bar::-moz-progress-bar {
   margin: 0 0 6px;
   font-size: 1.25rem;
   font-weight: 800;
-  color: #f7fafc;
+  color: #ffffff !important;
 }
 
 .portal-setup-banner-desc {
   margin: 0;
   font-size: 0.88rem;
-  opacity: 0.85;
+  color: #cbd5e1 !important;
+  opacity: 0.9;
   max-width: 600px;
 }
 

@@ -5,11 +5,16 @@ import { studentTutorial } from './student.tutorial';
 import { parentTutorial } from './parent.tutorial';
 import { hodTutorial } from './hod.tutorial';
 import { clerkTutorial } from './clerk.tutorial';
+import { adminTutorial } from './admin.tutorial';
 
 export * from './types';
 export * from './tourTargets';
 
 export const ROLE_TUTORIALS: Record<string, RoleTutorial> = {
+  ADMIN: adminTutorial,
+  SCHOOL_ADMIN: adminTutorial,
+  HEADMISTRESS: adminTutorial,
+  PRINCIPAL: adminTutorial,
   TEACHER: teacherTutorial,
   BURSAR: bursarTutorial,
   STUDENT: studentTutorial,

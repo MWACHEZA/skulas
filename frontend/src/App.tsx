@@ -800,13 +800,15 @@ export default function App() {
               <Route path="staff-admins" element={<Navigate to="/admin/staff?role=SCHOOL_ADMIN" replace />} />
               <Route path="parents" element={<Navigate to="/admin/system?role=PARENT" replace />} />
               <Route path="alumni" element={<Navigate to="/admin/system?role=ALUMNI" replace />} />
-              <Route path="accounts/gl" element={<GeneralLedgerPage readOnly={true} />} />
-              <Route path="accounts/financial-reports" element={<Navigate to="/bursar/accounts/financial-reports" replace />} />
-              <Route path="accounts/coa" element={<Navigate to="/bursar/accounts/coa" replace />} />
-              <Route path="budgets" element={<Navigate to="/bursar/budgets" replace />} />
-              <Route path="fiscal" element={<Navigate to="/bursar/fiscal" replace />} />
-              <Route path="fiscal/*" element={<Navigate to="/bursar/fiscal" replace />} />
-              <Route path="zimra/returns" element={<Navigate to="/bursar/zimra/returns" replace />} />
+              <Route path="accounts/gl" element={<GeneralLedgerPage />} />
+              <Route path="accounts/financial-reports" element={<FinancialReportsPage />} />
+              <Route path="accounts/coa" element={<ChartOfAccountsPage />} />
+              <Route path="accounts/bank-reconciliation" element={<BankReconciliationPage />} />
+              <Route path="budgets" element={<BudgetsPage />} />
+              <Route path="fiscal" element={<FiscalManagementPage />} />
+              <Route path="fiscal/*" element={<FiscalManagementPage />} />
+              <Route path="zimra/returns" element={<ZimraReturnsPage />} />
+              <Route path="tuckshop" element={<BursarTuckshopUnified />} />
               <Route path="house" element={<Navigate to="/admin/boarding" replace />} />
             </Route>
 

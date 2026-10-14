@@ -29,6 +29,19 @@ const getTourAttr = (to?: string): string | undefined => {
   if (to.includes('/teacher/curriculum')) return 'hod-curriculum-link';
   if (to.includes('/admin/reception')) return 'clerk-reception-link';
   if (to.includes('/admin/document-templates')) return 'clerk-documents-link';
+  // Admin targets
+  if (to.includes('/admin/departments')) return 'admin-academic-link';
+  if (to.includes('/admin/attendance')) return 'admin-attendance-link';
+  if (to.includes('/admin/fee-groups')) return 'admin-fees-link';
+  if (to.includes('/admin/gate') || to.includes('/admin/qr-cards')) return 'admin-gate-link';
+  // Clinic targets
+  if (to.includes('/clinic/triage')) return 'clinic-triage-link';
+  if (to.includes('/clinic/consultations')) return 'clinic-consult-link';
+  if (to.includes('/clinic/hospitalization')) return 'clinic-hospital-link';
+  // Library targets
+  if (to.includes('/library/catalog')) return 'lib-catalog-link';
+  if (to.includes('/library/circulation')) return 'lib-circ-link';
+  if (to.includes('/library/fines')) return 'lib-fines-link';
   return undefined;
 };
 
@@ -222,8 +235,15 @@ export default function DashboardLayout({
   const isTourLandingRoute = React.useMemo(() => {
     const currentPath = location.pathname;
     const match = PAGE_REGISTRY.find(p => p.route === currentPath);
-    return Boolean(match?.showTour);
-  }, [location.pathname]);
+    if (match?.showTour) return true;
+    if (tutorialConfig?.landingRoute) {
+      if (currentPath === tutorialConfig.landingRoute) return true;
+      if (currentPath === tutorialConfig.landingRoute.replace(/\/dashboard$/, '')) return true;
+      if (currentPath === tutorialConfig.landingRoute.replace(/\/dashboard$/, '/')) return true;
+    }
+    if (currentPath.endsWith('/dashboard')) return true;
+    return false;
+  }, [location.pathname, tutorialConfig?.landingRoute]);
 
   const shouldShowTutorialChecklist = Boolean(
     tutorialConfig &&

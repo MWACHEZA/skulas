@@ -28,6 +28,13 @@ export default function TillCashupComponent() {
   });
   const [closeNotes, setCloseNotes] = useState('');
 
+  // Add Device modal state
+  const [isAddDeviceModal, setIsAddDeviceModal] = useState(false);
+  const [newDeviceLocation, setNewDeviceLocation] = useState('Main Tuckshop Counter 1');
+  const [newDeviceModel, setNewDeviceModel] = useState('Touchscreen POS Terminal');
+  const [newDeviceSerial, setNewDeviceSerial] = useState('TILL-01');
+  const [creatingDevice, setCreatingDevice] = useState(false);
+
   useEffect(() => {
     fetchDevices();
     fetchVariances();
@@ -78,8 +85,34 @@ export default function TillCashupComponent() {
     }
   };
 
+  const handleCreateDevice = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setCreatingDevice(true);
+    try {
+      const res = await api.post('/api/fiscal/devices', {
+        serialNo: newDeviceSerial.trim() || `TILL-${Date.now().toString().slice(-4)}`,
+        deviceModel: newDeviceModel.trim() || 'Touchscreen POS Terminal',
+        location: newDeviceLocation.trim() || 'Tuckshop Counter 1',
+        activationKey: 'TILL-' + Math.random().toString(36).substring(2, 8).toUpperCase()
+      });
+      showToast('Till device registered successfully', 'success');
+      setIsAddDeviceModal(false);
+      await fetchDevices();
+      if (res.data?.id) {
+        setSelectedDeviceId(res.data.id);
+      }
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to register till device', 'error');
+    } finally {
+      setCreatingDevice(false);
+    }
+  };
+
   const handleOpenTill = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!selectedDeviceId) {
+      return showToast('Please select or create a till location / device first', 'warning');
+    }
     try {
       await api.post('/api/tills/open', {
         deviceId: selectedDeviceId,
@@ -134,21 +167,98 @@ export default function TillCashupComponent() {
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      {/* Informational banner if no devices exist */}
+      {devices.length === 0 && (
+        <div style={{
+          background: '#eff6ff',
+          border: '1px solid #bfdbfe',
+          borderRadius: 12,
+          padding: '16px 20px',
+          marginBottom: 20,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: 12
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 38, height: 38, borderRadius: 10, background: '#dbeafe', color: '#1d4ed8', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.2rem' }}>
+              <i className="fas fa-cash-register" />
+            </div>
+            <div>
+              <div style={{ fontWeight: 800, color: '#1e3a8a', fontSize: '0.95rem' }}>No Till Locations or POS Devices Configured</div>
+              <div style={{ fontSize: '0.82rem', color: '#3b82f6' }}>You need at least one till location (e.g. Counter 1) to open a register session and track sales.</div>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => handleCreateDevice()}
+            disabled={creatingDevice}
+            style={{
+              padding: '9px 18px',
+              backgroundColor: '#2563eb',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 8,
+              fontWeight: 700,
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              boxShadow: '0 2px 4px rgba(37, 99, 235, 0.2)'
+            }}
+          >
+            {creatingDevice ? <i className="fas fa-spinner fa-spin" /> : <i className="fas fa-magic" />}
+            <span>Auto-Create Default Till (Counter 1)</span>
+          </button>
+        </div>
+      )}
+
       {/* Device selector */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <label style={{ fontWeight: 700, color: '#334155' }}>Select Till Location / Device:</label>
           <select
             value={selectedDeviceId}
             onChange={e => setSelectedDeviceId(e.target.value)}
-            style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #cbd5e1', fontWeight: 600 }}
+            style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid #cbd5e1', fontWeight: 600, minWidth: 220 }}
           >
-            {devices.map(d => (
-              <option key={d.id} value={d.id}>
-                {d.location} ({d.serialNo})
-              </option>
-            ))}
+            {devices.length === 0 ? (
+              <option value="">-- No Till Devices Configured --</option>
+            ) : (
+              devices.map(d => (
+                <option key={d.id} value={d.id}>
+                  {d.location} ({d.serialNo})
+                </option>
+              ))
+            )}
           </select>
+
+          <button
+            type="button"
+            onClick={() => {
+              setNewDeviceSerial(`TILL-0${devices.length + 1}`);
+              setNewDeviceLocation(`Tuckshop Counter ${devices.length + 1}`);
+              setIsAddDeviceModal(true);
+            }}
+            style={{
+              padding: '8px 14px',
+              backgroundColor: '#f0f9ff',
+              color: '#0284c7',
+              border: '1px solid #bae6fd',
+              borderRadius: 8,
+              fontWeight: 700,
+              fontSize: '0.82rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6
+            }}
+          >
+            <i className="fas fa-plus-circle" />
+            <span>+ Add Device</span>
+          </button>
         </div>
 
         <div>
@@ -434,6 +544,122 @@ export default function TillCashupComponent() {
                   style={{ padding: '8px 24px', borderRadius: 6, border: 'none', background: '#dc2626', color: '#fff', fontWeight: 700 }}
                 >
                   Confirm & Post Cash-Up to GL
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Add New Till / Device */}
+      {isAddDeviceModal && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(15, 23, 42, 0.6)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 16
+        }}>
+          <div style={{
+            background: '#fff',
+            borderRadius: 14,
+            width: '100%',
+            maxWidth: 480,
+            padding: 24,
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 8, background: '#e0f2fe', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
+                  <i className="fas fa-cash-register" />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#0f172a' }}>Register Till Device</h3>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748b' }}>Add a counter or POS location for drawer sessions</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAddDeviceModal(false)}
+                style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '1.2rem', cursor: 'pointer' }}
+              >
+                <i className="fas fa-times" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateDevice}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: 4 }}>
+                    Till Location / Desk Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Main Tuckshop Counter 1"
+                    value={newDeviceLocation}
+                    onChange={e => setNewDeviceLocation(e.target.value)}
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: '0.9rem', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: 4 }}>
+                    Serial Number / Identifier *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. TILL-01"
+                    value={newDeviceSerial}
+                    onChange={e => setNewDeviceSerial(e.target.value)}
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: '0.9rem', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 700, color: '#334155', marginBottom: 4 }}>
+                    Device / Hardware Model
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Touchscreen POS Terminal"
+                    value={newDeviceModel}
+                    onChange={e => setNewDeviceModel(e.target.value)}
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: '0.9rem', boxSizing: 'border-box' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 20 }}>
+                <button
+                  type="button"
+                  onClick={() => setIsAddDeviceModal(false)}
+                  style={{ padding: '9px 18px', borderRadius: 8, border: '1px solid #cbd5e1', background: '#fff', fontWeight: 600, cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={creatingDevice}
+                  style={{
+                    padding: '9px 20px',
+                    borderRadius: 8,
+                    border: 'none',
+                    background: '#0284c7',
+                    color: '#fff',
+                    fontWeight: 700,
+                    cursor: creatingDevice ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8
+                  }}
+                >
+                  {creatingDevice && <i className="fas fa-spinner fa-spin" />}
+                  <span>Save & Select Till</span>
                 </button>
               </div>
             </form>

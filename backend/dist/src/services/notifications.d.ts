@@ -29,6 +29,26 @@ export declare class NotificationService {
         nextAttempt: Date;
     }>;
     /**
+     * Helper to send SMS directly or enqueue.
+     */
+    static sendSms(recipientPhone: string, message: string, schoolId?: string, senderId?: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        type: string;
+        status: string;
+        schoolId: string;
+        studentId: string | null;
+        senderId: string;
+        retries: number;
+        errorDetails: string | null;
+        recipientPhone: string | null;
+        recipientEmail: string | null;
+        template: string | null;
+        payload: string;
+        nextAttempt: Date;
+    } | null>;
+    /**
      * Directly insert into CommunicationLog
      */
     static logCommunication(data: {

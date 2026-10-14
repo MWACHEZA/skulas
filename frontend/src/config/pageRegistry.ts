@@ -152,6 +152,16 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     searchKeywords: ['invoices', 'receipts', 'student ledgers', 'billing', 'payments', 'statements']
   },
   {
+    id: 'admin-fee-groups',
+    label: 'Fee Groups & Structure',
+    route: '/admin/fee-groups',
+    group: 'FINANCE_BILLING',
+    icon: 'fas fa-layer-group',
+    permissionKey: PERMISSIONS.FINANCE_FEES_BILLING,
+    portalVisibility: ['admin'],
+    searchKeywords: ['fee groups', 'fee structure', 'tuition', 'levy', 'class fees', 'term billing', 'amounts']
+  },
+  {
     id: 'admin-finance-payment-plans',
     label: 'Payment Plans',
     route: '/admin/finance/payment-plans',
@@ -557,7 +567,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     group: 'FINANCE_BILLING',
     icon: 'fas fa-layer-group',
     permissionKey: PERMISSIONS.FINANCE_FEES_BILLING,
-    portalVisibility: ['bursar', 'admin'],
+    portalVisibility: ['bursar'],
     searchKeywords: ['fee groups', 'fee structure', 'tuition', 'levy', 'class fees', 'term billing', 'amounts']
   },
   {
@@ -620,11 +630,28 @@ export const PAGE_REGISTRY: PageDefinition[] = [
   {
     id: 'admin-financial-reports',
     label: 'Financial Reports Suite',
+    route: '/admin/accounts/financial-reports',
+    group: 'FINANCE_BILLING',
+    icon: 'fas fa-chart-line',
+    permissionKey: PERMISSIONS.FINANCE_REPORTS_VIEW,
+    portalVisibility: ['admin'],
+    tabs: [
+      { id: 'trial-balance', label: 'Trial Balance' },
+      { id: 'income-statement', label: 'Income Statement' },
+      { id: 'balance-sheet', label: 'Balance Sheet' },
+      { id: 'cash-flow', label: 'Cash Flow' },
+      { id: 'aged-debtors', label: 'Aged Debtors' }
+    ],
+    searchKeywords: ['financial statements', 'trial balance', 'income statement', 'balance sheet', 'cash flow', 'aged debtors']
+  },
+  {
+    id: 'bursar-financial-reports',
+    label: 'Financial Reports Suite',
     route: '/bursar/accounts/financial-reports',
     group: 'FINANCE_BILLING',
     icon: 'fas fa-chart-line',
     permissionKey: PERMISSIONS.FINANCE_REPORTS_VIEW,
-    portalVisibility: ['bursar', 'admin'],
+    portalVisibility: ['bursar'],
     tabs: [
       { id: 'trial-balance', label: 'Trial Balance' },
       { id: 'income-statement', label: 'Income Statement' },
@@ -637,21 +664,31 @@ export const PAGE_REGISTRY: PageDefinition[] = [
   {
     id: 'admin-budgets',
     label: 'Budgets & Approvals',
+    route: '/admin/budgets',
+    group: 'FINANCE_BILLING',
+    icon: 'fas fa-balance-scale',
+    permissionKey: PERMISSIONS.FINANCE_COA_MANAGE,
+    portalVisibility: ['admin'],
+    searchKeywords: ['budget', 'approvals', 'threshold', 'governance', 'tier']
+  },
+  {
+    id: 'bursar-budgets',
+    label: 'Budgets & Approvals',
     route: '/bursar/budgets',
     group: 'FINANCE_BILLING',
     icon: 'fas fa-balance-scale',
     permissionKey: PERMISSIONS.FINANCE_COA_MANAGE,
-    portalVisibility: ['bursar', 'admin'],
+    portalVisibility: ['bursar'],
     searchKeywords: ['budget', 'approvals', 'threshold', 'governance', 'tier']
   },
   {
-    id: 'bursar-fiscal',
+    id: 'admin-fiscal',
     label: 'ZIMRA Fiscalisation',
-    route: '/bursar/fiscal',
+    route: '/admin/fiscal',
     group: 'FINANCE_BILLING',
     icon: 'fas fa-shield-alt',
     permissionKey: PERMISSIONS.FINANCE_REPORTS_VIEW,
-    portalVisibility: ['bursar', 'admin'],
+    portalVisibility: ['admin'],
     tabs: [
       { id: 'devices', label: 'Virtual Devices' },
       { id: 'receipts', label: 'Fiscal Receipts' },
@@ -660,13 +697,44 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     searchKeywords: ['fiscal', 'zimra', 'vfd', 'fdms', 'receipt', 'tax invoice', 'hardware']
   },
   {
+    id: 'bursar-fiscal',
+    label: 'ZIMRA Fiscalisation',
+    route: '/bursar/fiscal',
+    group: 'FINANCE_BILLING',
+    icon: 'fas fa-shield-alt',
+    permissionKey: PERMISSIONS.FINANCE_REPORTS_VIEW,
+    portalVisibility: ['bursar'],
+    tabs: [
+      { id: 'devices', label: 'Virtual Devices' },
+      { id: 'receipts', label: 'Fiscal Receipts' },
+      { id: 'queue', label: 'Pending Queue' }
+    ],
+    searchKeywords: ['fiscal', 'zimra', 'vfd', 'fdms', 'receipt', 'tax invoice', 'hardware']
+  },
+  {
+    id: 'admin-zimra-returns',
+    label: 'Statutory & EMIS Returns',
+    route: '/admin/zimra/returns',
+    group: 'FINANCE_BILLING',
+    icon: 'fas fa-landmark',
+    permissionKey: PERMISSIONS.FINANCE_REPORTS_VIEW,
+    portalVisibility: ['admin'],
+    tabs: [
+      { id: 'vat2', label: 'VAT 2 Return' },
+      { id: 'p2', label: 'NSSA P2' },
+      { id: 'emis', label: 'Zimche/EMIS' },
+      { id: 'clearance', label: 'ITF263 Clearance' }
+    ],
+    searchKeywords: ['zimra', 'vat2', 'p2', 'nssa', 'emis', 'clearance', 'statutory']
+  },
+  {
     id: 'bursar-zimra-returns',
     label: 'Statutory & EMIS Returns',
     route: '/bursar/zimra/returns',
     group: 'FINANCE_BILLING',
     icon: 'fas fa-landmark',
     permissionKey: PERMISSIONS.FINANCE_REPORTS_VIEW,
-    portalVisibility: ['bursar', 'admin'],
+    portalVisibility: ['bursar'],
     tabs: [
       { id: 'vat2', label: 'VAT 2 Return' },
       { id: 'p2', label: 'NSSA P2' },
