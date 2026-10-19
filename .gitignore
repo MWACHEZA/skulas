@@ -7,3 +7,5 @@ build/
 scratch/
 *.log
 .DS_Store
+storage/
+backend/storage/

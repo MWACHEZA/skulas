@@ -151,6 +151,88 @@ router.post('/import', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN
     }
 });
 /**
+ * @route   GET /api/users/check-duplicate
+ * @desc    Live duplicate check for email and national ID / birth certificate within tenant
+ */
+router.get('/check-duplicate', auth_1.requireAuth, async (req, res) => {
+    const { email, nationalId, role, excludeUserId } = req.query;
+    const schoolId = req.user.schoolId;
+    if (!schoolId) {
+        return res.status(400).json({ error: 'School ID required' });
+    }
+    try {
+        let emailCollision = null;
+        let nationalIdCollision = null;
+        if (email && typeof email === 'string' && email.trim()) {
+            const cleanEmail = email.trim().toLowerCase();
+            emailCollision = await prisma_1.default.user.findFirst({
+                where: {
+                    schoolId,
+                    email: cleanEmail,
+                    ...(excludeUserId ? { id: { not: String(excludeUserId) } } : {})
+                },
+                select: { id: true, name: true, role: true, email: true }
+            });
+        }
+        if (nationalId && typeof nationalId === 'string' && nationalId.trim()) {
+            const cleanNationalId = nationalId.trim();
+            // Check students by nationalId column
+            const studentMatch = await prisma_1.default.student.findFirst({
+                where: {
+                    schoolId,
+                    nationalId: { equals: cleanNationalId, mode: 'insensitive' },
+                    ...(excludeUserId ? { userId: { not: String(excludeUserId) } } : {})
+                },
+                select: { id: true, name: true, class: { select: { name: true } }, user: { select: { id: true, role: true } } }
+            });
+            if (studentMatch) {
+                nationalIdCollision = {
+                    name: studentMatch.name,
+                    role: 'STUDENT',
+                    className: studentMatch.class?.name || null
+                };
+            }
+            else {
+                // Also check if any staff or other user has this national ID in metadata
+                const userMatch = await prisma_1.default.user.findFirst({
+                    where: {
+                        schoolId,
+                        ...(excludeUserId ? { id: { not: String(excludeUserId) } } : {}),
+                        OR: [
+                            { metadata: { path: ['nationalId'], equals: cleanNationalId } },
+                            { student: { nationalId: { equals: cleanNationalId, mode: 'insensitive' } } }
+                        ]
+                    },
+                    select: { id: true, name: true, role: true }
+                });
+                if (userMatch) {
+                    nationalIdCollision = {
+                        name: userMatch.name,
+                        role: userMatch.role,
+                        className: null
+                    };
+                }
+            }
+        }
+        return res.json({
+            emailExists: !!emailCollision,
+            emailMessage: emailCollision
+                ? `An account with this email already exists: ${emailCollision.name} (${emailCollision.role})`
+                : null,
+            nationalIdExists: !!nationalIdCollision,
+            nationalIdMessage: nationalIdCollision
+                ? (nationalIdCollision.role === 'STUDENT'
+                    ? `A student with this ID already exists: ${nationalIdCollision.name}${nationalIdCollision.className ? `, ${nationalIdCollision.className}` : ''}`
+                    : `A staff account with this National ID already exists: ${nationalIdCollision.name} (${nationalIdCollision.role})`)
+                : null
+        });
+    }
+    catch (error) {
+        console.error('Check duplicate error:', error);
+        res.status(500).json({ error: 'Failed to verify duplicates' });
+    }
+});
+/**
  * @route   GET /api/users/search
  * @desc    Search registered users (students and staff) in the school by name or ID
  */
@@ -596,13 +678,156 @@ router.post('/', auth_1.requireAuth, upload_1.staffDocumentUpload.fields([
         return res.status(403).json({ error: 'Unauthorized to create users' });
     }
     try {
-        const randomPassword = password || crypto_1.default.randomBytes(8).toString('hex');
-        const hashedPassword = await bcryptjs_1.default.hash(randomPassword, 10);
-        const finalRole = role.toUpperCase();
+        const finalRole = (role || 'STUDENT').toUpperCase();
         // Role escalation guard: SCHOOL_ADMINs cannot assign privileged roles to users
         if (req.user.role === 'SCHOOL_ADMIN' && !SCHOOL_ADMIN_ASSIGNABLE_ROLES.includes(finalRole)) {
             return res.status(403).json({ error: `Unauthorized: Cannot assign role '${finalRole}'` });
         }
+        // 1. Email Handling & Validation
+        let effectiveEmail = normalizedEmail;
+        if (finalRole === 'STUDENT' && !effectiveEmail) {
+            if (req.body.guardianEmail && req.body.guardianEmail.trim()) {
+                effectiveEmail = req.body.guardianEmail.trim().toLowerCase();
+            }
+            else {
+                const tempUnique = Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
+                effectiveEmail = `student_${tempUnique}@skulas.internal`;
+            }
+        }
+        if (!effectiveEmail) {
+            return res.status(400).json({ error: 'Email address is required' });
+        }
+        if (!effectiveEmail.endsWith('@skulas.internal')) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(effectiveEmail)) {
+                return res.status(400).json({ error: `Invalid email address format: ${effectiveEmail}` });
+            }
+            // Email uniqueness check across the whole tenant
+            const existingEmail = await prisma_1.default.user.findFirst({
+                where: { schoolId, email: effectiveEmail }
+            });
+            if (existingEmail) {
+                return res.status(400).json({
+                    error: `An account with email '${effectiveEmail}' already exists in this school (${existingEmail.name} - ${existingEmail.role}).`
+                });
+            }
+        }
+        // 2. National ID & Birth Certificate Validation and Uniqueness
+        const zimIdRegex = /^[0-9]{2}-?[0-9]{6,7}\s?[A-Za-z]\s?-?[0-9]{2}$/;
+        const birthCertRegex = /^[A-Za-z0-9/_-]{3,25}$/;
+        if (nationalId && typeof nationalId === 'string' && nationalId.trim()) {
+            const cleanNid = nationalId.trim();
+            if (STAFF_ROLES.includes(finalRole)) {
+                const isZim = nationality ? nationality.toLowerCase().includes('zimbabw') : true;
+                if (isZim && !zimIdRegex.test(cleanNid)) {
+                    return res.status(400).json({
+                        error: `Invalid Zimbabwean National ID format: '${cleanNid}'. Expected format: 63-1234567-X-42`
+                    });
+                }
+            }
+            else if (finalRole === 'STUDENT') {
+                if (!zimIdRegex.test(cleanNid) && !birthCertRegex.test(cleanNid)) {
+                    return res.status(400).json({
+                        error: `Invalid National ID or Birth Certificate number: '${cleanNid}'`
+                    });
+                }
+            }
+            const existingStudentNid = await prisma_1.default.student.findFirst({
+                where: { schoolId, nationalId: { equals: cleanNid, mode: 'insensitive' } },
+                include: { class: true }
+            });
+            if (existingStudentNid) {
+                return res.status(400).json({
+                    error: `A student with National ID/Birth Certificate '${cleanNid}' already exists: ${existingStudentNid.name}${existingStudentNid.class ? ` (${existingStudentNid.class.name})` : ''}`
+                });
+            }
+            const existingUserNid = await prisma_1.default.user.findFirst({
+                where: {
+                    schoolId,
+                    OR: [
+                        { metadata: { path: ['nationalId'], equals: cleanNid } },
+                        { student: { nationalId: { equals: cleanNid, mode: 'insensitive' } } }
+                    ]
+                }
+            });
+            if (existingUserNid) {
+                return res.status(400).json({
+                    error: `A user with National ID '${cleanNid}' already exists: ${existingUserNid.name} (${existingUserNid.role})`
+                });
+            }
+        }
+        else if (STAFF_ROLES.includes(finalRole)) {
+            const isZim = nationality ? nationality.toLowerCase().includes('zimbabw') : true;
+            if (isZim) {
+                return res.status(400).json({ error: 'National ID is required for Zimbabwean staff members' });
+            }
+        }
+        // 3. Logic & Date Checks
+        if (finalRole === 'STUDENT') {
+            if (dob) {
+                const birthDate = new Date(dob);
+                if (birthDate > new Date()) {
+                    return res.status(400).json({ error: 'Date of birth cannot be in the future' });
+                }
+                const ageYears = (Date.now() - birthDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000);
+                if (ageYears < 5) {
+                    return res.status(400).json({ error: 'Student must be at least 5 years of age for enrollment' });
+                }
+            }
+            if (dateAdmitted && new Date(dateAdmitted) > new Date()) {
+                return res.status(400).json({ error: 'Admission date cannot be in the future' });
+            }
+        }
+        if (STAFF_ROLES.includes(finalRole)) {
+            if (!name || !name.trim()) {
+                return res.status(400).json({ error: 'Staff name is required' });
+            }
+            if (!dateAssumedPost) {
+                return res.status(400).json({ error: 'Date assumed post is required for staff' });
+            }
+            if (new Date(dateAssumedPost) > new Date()) {
+                return res.status(400).json({ error: 'Date assumed post cannot be in the future' });
+            }
+            if (dateOfLeaving && new Date(dateOfLeaving) < new Date(dateAssumedPost)) {
+                return res.status(400).json({ error: 'Date of leaving cannot be earlier than date assumed post' });
+            }
+            if (dob) {
+                const birthDate = new Date(dob);
+                if (birthDate > new Date()) {
+                    return res.status(400).json({ error: 'Date of birth cannot be in the future' });
+                }
+                const ageYears = (Date.now() - birthDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000);
+                if (ageYears < 18) {
+                    return res.status(400).json({ error: 'Staff members must be at least 18 years of age' });
+                }
+            }
+        }
+        // 4. File Size Limits Check (Photo <= 5MB, Docs <= 15MB)
+        const MAX_AVATAR_SIZE = 5 * 1024 * 1024;
+        const MAX_DOC_SIZE = 15 * 1024 * 1024;
+        if (files['avatar'] && files['avatar'][0].size > MAX_AVATAR_SIZE) {
+            return res.status(400).json({ error: 'Profile photo exceeds the 5MB size limit' });
+        }
+        const docFields = ['idDoc', 'residenceDoc', 'qualificationsDoc', 'transferCertificate', 'birthCertificate'];
+        for (const f of docFields) {
+            if (files[f] && files[f][0].size > MAX_DOC_SIZE) {
+                return res.status(400).json({ error: `Supporting document (${f}) exceeds the 15MB size limit` });
+            }
+        }
+        const randomPassword = password || crypto_1.default.randomBytes(8).toString('hex');
+        const hashedPassword = await bcryptjs_1.default.hash(randomPassword, 10);
+        // Auto-generate placeholder NSSA and ZIMRA if left blank at creation
+        const nssaNumber = req.body.nssaNumber ? req.body.nssaNumber.trim() : 'PENDING_REGISTRATION';
+        const taxNumber = req.body.taxNumber ? req.body.taxNumber.trim() : (req.body.taxBpNumber ? req.body.taxBpNumber.trim() : 'PENDING_REGISTRATION');
+        // Consolidate enriched metadata
+        const finalMetadata = {
+            ...metadata,
+            effectiveEmail,
+            nssaNumber,
+            taxNumber,
+            nssaStatus: nssaNumber === 'PENDING_REGISTRATION' ? 'PENDING' : 'REGISTERED',
+            zimraStatus: taxNumber === 'PENDING_REGISTRATION' ? 'PENDING' : 'REGISTERED'
+        };
         // Use transaction for atomic ID generation and record creation
         const user = await prisma_1.default.$transaction(async (tx) => {
             // 1. Generate sequential ID inside transaction
@@ -610,7 +835,7 @@ router.post('/', auth_1.requireAuth, upload_1.staffDocumentUpload.fields([
             // 2. Create the base User
             const newUser = await tx.user.create({
                 data: {
-                    email: normalizedEmail,
+                    email: effectiveEmail,
                     password: hashedPassword,
                     name,
                     role: finalRole,
@@ -620,8 +845,8 @@ router.post('/', auth_1.requireAuth, upload_1.staffDocumentUpload.fields([
                     religion,
                     staffId: staffId || studentId || vendorNo || generatedId,
                     schoolId,
-                    departmentId: (role === 'TEACHER' && !departmentId) ? req.body.departmentId : departmentId, // Fallback for teacher specific logic if needed
-                    metadata: metadata,
+                    departmentId: (role === 'TEACHER' && !departmentId) ? req.body.departmentId : departmentId,
+                    metadata: finalMetadata,
                     mustChangePassword: true,
                     ...(finalRole === 'TEACHER' && {
                         teacher: {
@@ -640,7 +865,7 @@ router.post('/', auth_1.requireAuth, upload_1.staffDocumentUpload.fields([
                                 studentId: studentId || generatedId,
                                 nationalId: nationalId || null,
                                 name,
-                                email: normalizedEmail,
+                                email: effectiveEmail,
                                 phone,
                                 dob: dob ? new Date(dob) : null,
                                 gender,

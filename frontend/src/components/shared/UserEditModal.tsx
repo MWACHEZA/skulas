@@ -4,6 +4,14 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import SecondaryRoleSelect from './SecondaryRoleSelect';
 import { getAvatarUrl } from '../../utils/formatters';
+import {
+  validateZimNationalId,
+  validateNationalIdOrBirthCert,
+  validatePhone,
+  validateEmail,
+  validateBankAccount,
+  checkImageDimensions
+} from '../../utils/validation';
 
 const NATIONALITIES = [
   "Zimbabwean", "South African", "Malawian", "Zambian", "Mozambican", "Botswanan", "Namibian", "Angolan", "Lesotho", "Swazi",
@@ -171,11 +179,20 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 20 * 1024 * 1024) {
-        showToast('File size exceeds 20MB limit', 'error');
+      if (file.size > 5 * 1024 * 1024) {
+        showToast('Profile photo exceeds the 5MB limit', 'error');
+        return;
+      }
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        showToast('Profile photo must be JPG or PNG', 'error');
+        return;
+      }
+      const dimCheck = await checkImageDimensions(file, 200, 200);
+      if (!dimCheck.valid) {
+        showToast(dimCheck.message || 'Image resolution too low (minimum 200x200px)', 'error');
         return;
       }
       setAvatarFile(file);
@@ -190,8 +207,13 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
   const handleDocFileChange = (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        showToast('Document size exceeds 10MB limit', 'error');
+      if (file.size > 15 * 1024 * 1024) {
+        showToast('Document size exceeds 15MB limit', 'error');
+        return;
+      }
+      const allowed = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
+      if (!allowed.includes(file.type)) {
+        showToast('Document must be PDF, JPG or PNG', 'error');
         return;
       }
       setDocFiles(prev => ({ ...prev, [key]: file }));
@@ -200,6 +222,30 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (formData.email && typeof formData.email === 'string' && formData.email.trim()) {
+      if (!validateEmail(formData.email)) {
+        showToast('Invalid email syntax (e.g. user@school.co.zw)', 'warning');
+        return;
+      }
+    }
+
+    if (formData.phone && typeof formData.phone === 'string' && formData.phone.trim()) {
+      const pCheck = validatePhone(formData.phone);
+      if (!pCheck.valid) {
+        showToast('Invalid phone format (e.g. +263 77 123 4567 or 0771234567)', 'warning');
+        return;
+      }
+    }
+
+    if (formData.nationalId && typeof formData.nationalId === 'string' && formData.nationalId.trim()) {
+      const nidCheck = validateNationalIdOrBirthCert(formData.nationalId);
+      if (!nidCheck.valid) {
+        showToast('Invalid National ID or Birth Certificate format', 'warning');
+        return;
+      }
+    }
+
     setLoading(true);
     
     try {
