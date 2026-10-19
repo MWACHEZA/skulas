@@ -77,38 +77,72 @@ router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'
  * @desc    [TEACHER] Create a new assignment for a specific class with optional attachment
  */
 router.post('/assignments', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN'), upload_1.assignmentUpload.array('files', 5), (0, validation_1.validate)(teacher_schema_1.CreateAssignmentSchema), async (req, res) => {
-    const { title, description, subjectId, classId, dueDate, maxScore, category, timeLimit, allowLate, questions // JSON string if provided
+    const { title, description, subjectId, classId, dueDate, maxScore, category, type, status, timeLimit, allowLate, allowResubmission, latePenaltyPercent, targetType, targetStudentIds, includeInTermReport, term, questions // JSON string if provided
      } = req.body;
     // Handle multiple file storage
     const files = req.files;
     const uploadPath = req.uploadCategoryPath || 'global/assignments';
-    const attachments = files ? files.map(f => ({
+    const fileAttachments = files ? files.map(f => ({
         name: f.originalname,
         url: `${uploadPath}/${f.filename}`.replace(/\\/g, '/')
     })) : [];
+    let parsedTargetStudentIds = [];
+    if (Array.isArray(targetStudentIds)) {
+        parsedTargetStudentIds = targetStudentIds;
+    }
+    else if (typeof targetStudentIds === 'string' && targetStudentIds.trim()) {
+        try {
+            parsedTargetStudentIds = JSON.parse(targetStudentIds);
+        }
+        catch {
+            parsedTargetStudentIds = targetStudentIds.split(',').map(s => s.trim()).filter(Boolean);
+        }
+    }
+    const structuredMetadata = {
+        files: fileAttachments,
+        type: type || (category ? category.toLowerCase() : 'homework'),
+        status: status || 'published',
+        allowResubmission: allowResubmission === 'true' || allowResubmission === true,
+        latePenaltyPercent: latePenaltyPercent ? parseFloat(latePenaltyPercent) : 0,
+        targetType: targetType || 'class',
+        targetStudentIds: parsedTargetStudentIds,
+        includeInTermReport: includeInTermReport === 'true' || includeInTermReport === true,
+        term: term || 'Term 1',
+        gradesReleased: false,
+        gradesReleasedAt: null
+    };
     try {
+        const schoolId = req.user.schoolId;
         // Find teacher record
         const teacher = await prisma_1.default.teacher.findFirst({ where: { userId: req.user.id } });
-        if (!teacher)
+        if (!teacher && req.user.role !== 'SCHOOL_ADMIN')
             return res.status(404).json({ error: 'Teacher record not found' });
+        const teacherId = teacher ? teacher.id : (await prisma_1.default.teacher.findFirst({ where: { schoolId } }))?.id;
+        if (!teacherId)
+            return res.status(400).json({ error: 'No valid teacher account available for assignment creation' });
+        const parsedDue = dueDate ? new Date(dueDate) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
         const assignment = await prisma_1.default.assignment.create({
             data: {
+                schoolId,
                 title,
-                description,
+                description: description || null,
                 subjectId,
                 classId,
-                attachments: attachments,
-                dueDate: new Date(dueDate),
+                attachments: structuredMetadata,
+                dueDate: parsedDue,
                 maxScore: parseFloat(maxScore || '100'),
-                teacherId: teacher.id,
-                category: category || 'ASSIGNMENT',
+                teacherId,
+                category: category || (type ? type.toUpperCase() : 'ASSIGNMENT'),
                 timeLimit: timeLimit ? parseInt(timeLimit) : null,
                 allowLate: allowLate === 'true' || allowLate === true,
-                isAccepting: true,
-                questions: questions ? JSON.parse(questions) : null
+                isAccepting: (status || 'published') !== 'closed',
+                questions: questions ? (typeof questions === 'string' ? JSON.parse(questions) : questions) : null
             }
         });
-        res.status(201).json(assignment);
+        res.status(201).json({
+            ...assignment,
+            ...structuredMetadata
+        });
     }
     catch (error) {
         console.error('Create assignment error:', error);
@@ -123,9 +157,22 @@ router.patch('/assignments/:id/toggle-status', auth_1.requireAuth, (0, auth_1.re
     const id = req.params.id;
     const { isAccepting } = req.body;
     try {
+        const existing = await prisma_1.default.assignment.findFirst({
+            where: { id, schoolId: req.user.schoolId }
+        });
+        if (!existing)
+            return res.status(404).json({ error: 'Assignment not found' });
+        const currentMeta = existing.attachments || {};
+        const updatedMeta = {
+            ...currentMeta,
+            status: isAccepting ? 'published' : 'closed'
+        };
         const assignment = await prisma_1.default.assignment.update({
             where: { id },
-            data: { isAccepting }
+            data: {
+                isAccepting: !!isAccepting,
+                attachments: updatedMeta
+            }
         });
         res.json(assignment);
     }
@@ -135,25 +182,76 @@ router.patch('/assignments/:id/toggle-status', auth_1.requireAuth, (0, auth_1.re
 });
 /**
  * @route   GET /api/teachers/assignments
- * @desc    [TEACHER] List assignments created by the teacher
+ * @desc    [TEACHER] List assignments created by the teacher with target stats and metadata
  */
 router.get('/assignments', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN'), async (req, res) => {
     try {
-        const teacher = await prisma_1.default.teacher.findFirst({ where: { userId: req.user.id } });
-        if (!teacher)
-            return res.status(404).json({ error: 'Teacher record not found' });
+        const schoolId = req.user.schoolId;
+        let teacherId;
+        if (req.user.role === 'TEACHER') {
+            const teacher = await prisma_1.default.teacher.findFirst({ where: { userId: req.user.id } });
+            if (!teacher)
+                return res.status(404).json({ error: 'Teacher record not found' });
+            teacherId = teacher.id;
+        }
         const assignments = await prisma_1.default.assignment.findMany({
-            where: { teacherId: teacher.id },
+            where: {
+                schoolId,
+                ...(teacherId ? { teacherId } : {})
+            },
             include: {
-                class: { select: { name: true } },
-                subject: { select: { name: true } },
+                class: {
+                    select: {
+                        id: true,
+                        name: true,
+                        _count: { select: { students: true } }
+                    }
+                },
+                subject: { select: { id: true, name: true } },
+                submissions: {
+                    select: {
+                        id: true,
+                        status: true,
+                        grade: true,
+                        submittedAt: true
+                    }
+                },
                 _count: { select: { submissions: true } }
             },
             orderBy: { createdAt: 'desc' }
         });
-        res.json(assignments);
+        const enriched = assignments.map(a => {
+            const meta = a.attachments || {};
+            const files = meta.files || (Array.isArray(a.attachments) ? a.attachments : []);
+            const totalStudents = a.class?._count?.students || 0;
+            const targetCount = (meta.targetType === 'student' && Array.isArray(meta.targetStudentIds) && meta.targetStudentIds.length > 0)
+                ? meta.targetStudentIds.length
+                : totalStudents;
+            const submissions = a.submissions || [];
+            const submittedCount = submissions.length;
+            const gradedCount = submissions.filter(s => s.status === 'GRADED' && s.grade !== null).length;
+            return {
+                ...a,
+                type: meta.type || (a.category ? a.category.toLowerCase() : 'homework'),
+                status: meta.status || (a.isAccepting ? 'published' : 'closed'),
+                allowResubmission: meta.allowResubmission ?? true,
+                latePenaltyPercent: meta.latePenaltyPercent ?? 0,
+                targetType: meta.targetType || 'class',
+                targetStudentIds: meta.targetStudentIds || [],
+                includeInTermReport: meta.includeInTermReport ?? false,
+                term: meta.term || 'Term 1',
+                gradesReleased: meta.gradesReleased ?? false,
+                gradesReleasedAt: meta.gradesReleasedAt ?? null,
+                files,
+                totalTargetCount: targetCount,
+                submittedCount,
+                gradedCount
+            };
+        });
+        res.json(enriched);
     }
     catch (error) {
+        console.error('Fetch assignments error:', error);
         res.status(500).json({ error: 'Failed to fetch assignments' });
     }
 });
@@ -165,13 +263,30 @@ router.get('/assignments/:id', auth_1.requireAuth, (0, auth_1.requireRole)('TEAC
     const id = req.params.id;
     try {
         const assignment = await prisma_1.default.assignment.findFirst({
-            where: { id },
+            where: { id, schoolId: req.user.schoolId },
             include: {
-                class: { select: { name: true } },
-                subject: { select: { name: true } }
+                class: { select: { id: true, name: true } },
+                subject: { select: { id: true, name: true } }
             }
         });
-        res.json(assignment);
+        if (!assignment)
+            return res.status(404).json({ error: 'Assignment not found' });
+        const meta = assignment.attachments || {};
+        const files = meta.files || (Array.isArray(assignment.attachments) ? assignment.attachments : []);
+        res.json({
+            ...assignment,
+            type: meta.type || (assignment.category ? assignment.category.toLowerCase() : 'homework'),
+            status: meta.status || (assignment.isAccepting ? 'published' : 'closed'),
+            allowResubmission: meta.allowResubmission ?? true,
+            latePenaltyPercent: meta.latePenaltyPercent ?? 0,
+            targetType: meta.targetType || 'class',
+            targetStudentIds: meta.targetStudentIds || [],
+            includeInTermReport: meta.includeInTermReport ?? false,
+            term: meta.term || 'Term 1',
+            gradesReleased: meta.gradesReleased ?? false,
+            gradesReleasedAt: meta.gradesReleasedAt ?? null,
+            files
+        });
     }
     catch (error) {
         res.status(500).json({ error: 'Failed to fetch assignment details' });
@@ -179,21 +294,54 @@ router.get('/assignments/:id', auth_1.requireAuth, (0, auth_1.requireRole)('TEAC
 });
 /**
  * @route   GET /api/teachers/assignments/:id/submissions
- * @desc    [TEACHER] Get all student submissions for an assignment
+ * @desc    [TEACHER] Get all student submissions for an assignment, including roster gap detection
  */
 router.get('/assignments/:id/submissions', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN'), async (req, res) => {
     const id = req.params.id;
+    const schoolId = req.user.schoolId;
     try {
+        const assignment = await prisma_1.default.assignment.findFirst({
+            where: { id, schoolId },
+            include: { class: true }
+        });
+        if (!assignment)
+            return res.status(404).json({ error: 'Assignment not found' });
+        const meta = assignment.attachments || {};
         const submissions = await prisma_1.default.assignmentSubmission.findMany({
-            where: { assignmentId: id },
+            where: { assignmentId: id, schoolId },
             include: {
-                student: { include: { user: { select: { name: true } } } }
+                student: {
+                    include: {
+                        class: { select: { name: true } },
+                        user: { select: { name: true, email: true, avatar: true } }
+                    }
+                }
             },
             orderBy: { submittedAt: 'desc' }
         });
-        res.json(submissions);
+        // Unpack attachment metadata (files, text, history)
+        const formattedSubmissions = submissions.map(s => {
+            const sData = s.attachments || {};
+            const files = Array.isArray(sData) ? sData : (sData.files || []);
+            const submissionText = sData.submissionText || null;
+            const history = sData.history || [];
+            const answers = sData.answers || null;
+            const isLate = assignment.dueDate ? new Date(s.submittedAt) > new Date(assignment.dueDate) : false;
+            const latePenalty = (isLate && meta.latePenaltyPercent > 0) ? meta.latePenaltyPercent : 0;
+            return {
+                ...s,
+                attachments: files,
+                submissionText,
+                submissionHistory: history,
+                answers,
+                isLate,
+                latePenaltyPercent: latePenalty
+            };
+        });
+        res.json(formattedSubmissions);
     }
     catch (error) {
+        console.error('Fetch submissions error:', error);
         res.status(500).json({ error: 'Failed to fetch submissions' });
     }
 });
@@ -203,13 +351,21 @@ router.get('/assignments/:id/submissions', auth_1.requireAuth, (0, auth_1.requir
  */
 router.post('/submissions/:id/grade', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN'), (0, validation_1.validate)(teacher_schema_1.GradeSubmissionSchema), async (req, res) => {
     const id = req.params.id;
-    const { grade, feedback } = req.body;
+    const { grade, feedback, penaltyApplied, finalGrade } = req.body;
+    const schoolId = req.user.schoolId;
     try {
+        const existing = await prisma_1.default.assignmentSubmission.findFirst({
+            where: { id, schoolId }
+        });
+        if (!existing)
+            return res.status(404).json({ error: 'Submission not found' });
+        const rawGrade = parseFloat(grade);
+        const assignedGrade = finalGrade !== undefined ? parseFloat(finalGrade) : rawGrade;
         const submission = await prisma_1.default.assignmentSubmission.update({
             where: { id },
             data: {
-                grade: parseFloat(grade),
-                feedback,
+                grade: isNaN(assignedGrade) ? null : assignedGrade,
+                feedback: feedback || null,
                 status: 'GRADED',
                 gradedAt: new Date()
             }
@@ -217,7 +373,174 @@ router.post('/submissions/:id/grade', auth_1.requireAuth, (0, auth_1.requireRole
         res.json(submission);
     }
     catch (error) {
+        console.error('Grade submission error:', error);
         res.status(500).json({ error: 'Failed to record grade' });
+    }
+});
+/**
+ * @route   POST /api/teachers/assignments/:id/release-grades
+ * @desc    [TEACHER] Explicitly publish and release grades to the entire class & write to Continuous Assessment
+ */
+router.post('/assignments/:id/release-grades', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN'), async (req, res) => {
+    const id = req.params.id;
+    const schoolId = req.user.schoolId;
+    try {
+        const assignment = await prisma_1.default.assignment.findFirst({
+            where: { id, schoolId },
+            include: {
+                class: true,
+                subject: true,
+                submissions: {
+                    where: { status: 'GRADED' },
+                    include: { student: true }
+                }
+            }
+        });
+        if (!assignment)
+            return res.status(404).json({ error: 'Assignment not found' });
+        const meta = assignment.attachments || {};
+        const updatedMeta = {
+            ...meta,
+            gradesReleased: true,
+            gradesReleasedAt: new Date().toISOString()
+        };
+        // 1. Mark assignment grades as released
+        await prisma_1.default.assignment.update({
+            where: { id },
+            data: {
+                attachments: updatedMeta
+            }
+        });
+        // 2. If assignment is designated for Continuous Assessment / Term Report, synchronize with Marks Entry module
+        let assessmentRecordId = null;
+        const gradedSubmissions = assignment.submissions.filter(s => s.grade !== null);
+        if (meta.includeInTermReport && assignment.classId && assignment.subjectId && gradedSubmissions.length > 0) {
+            const termName = meta.term || 'Term 1';
+            const yearNum = new Date().getFullYear();
+            // Find or create assessment container in continuous assessment module
+            let assessment = await prisma_1.default.assessment.findFirst({
+                where: {
+                    schoolId,
+                    classId: assignment.classId,
+                    subjectId: assignment.subjectId,
+                    title: assignment.title,
+                    term: termName
+                }
+            });
+            if (!assessment) {
+                assessment = await prisma_1.default.assessment.create({
+                    data: {
+                        schoolId,
+                        title: assignment.title,
+                        classId: assignment.classId,
+                        subjectId: assignment.subjectId,
+                        term: termName,
+                        year: yearNum,
+                        totalMarks: assignment.maxScore || 100,
+                        weight: 15,
+                        status: 'published',
+                        publishedAt: new Date(),
+                        createdById: req.user.id
+                    }
+                });
+            }
+            assessmentRecordId = assessment.id;
+            // Upsert individual student scores into Continuous Assessment ledger
+            for (const sub of gradedSubmissions) {
+                await prisma_1.default.studentAssessment.upsert({
+                    where: {
+                        assessmentId_studentId: {
+                            assessmentId: assessment.id,
+                            studentId: sub.studentId
+                        }
+                    },
+                    update: {
+                        marksObtained: sub.grade,
+                        feedback: sub.feedback
+                    },
+                    create: {
+                        schoolId,
+                        assessmentId: assessment.id,
+                        studentId: sub.studentId,
+                        marksObtained: sub.grade,
+                        feedback: sub.feedback
+                    }
+                });
+            }
+        }
+        res.json({
+            success: true,
+            message: `Grades successfully released to students for "${assignment.title}".`,
+            releasedCount: gradedSubmissions.length,
+            linkedAssessmentId: assessmentRecordId
+        });
+    }
+    catch (error) {
+        console.error('Release grades error:', error);
+        res.status(500).json({ error: error.message || 'Failed to release grades' });
+    }
+});
+/**
+ * @route   POST /api/teachers/assignments/:id/bulk-zero-unsubmitted
+ * @desc    [TEACHER] Assign 0 marks to all learners who did not submit before deadline
+ */
+router.post('/assignments/:id/bulk-zero-unsubmitted', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN'), async (req, res) => {
+    const id = req.params.id;
+    const schoolId = req.user.schoolId;
+    try {
+        const assignment = await prisma_1.default.assignment.findFirst({
+            where: { id, schoolId },
+            include: {
+                submissions: { select: { studentId: true } }
+            }
+        });
+        if (!assignment || !assignment.classId)
+            return res.status(404).json({ error: 'Assignment not found or unlinked to class' });
+        const meta = assignment.attachments || {};
+        const submittedStudentIds = new Set(assignment.submissions.map(s => s.studentId));
+        // Determine target students
+        let targetStudents = [];
+        if (meta.targetType === 'student' && Array.isArray(meta.targetStudentIds) && meta.targetStudentIds.length > 0) {
+            targetStudents = await prisma_1.default.student.findMany({
+                where: { id: { in: meta.targetStudentIds }, schoolId },
+                select: { id: true }
+            });
+        }
+        else {
+            targetStudents = await prisma_1.default.student.findMany({
+                where: { classId: assignment.classId, schoolId },
+                select: { id: true }
+            });
+        }
+        const unsubmittedStudents = targetStudents.filter(s => !submittedStudentIds.has(s.id));
+        let createdCount = 0;
+        for (const student of unsubmittedStudents) {
+            await prisma_1.default.assignmentSubmission.create({
+                data: {
+                    schoolId,
+                    assignmentId: id,
+                    studentId: student.id,
+                    status: 'GRADED',
+                    grade: 0,
+                    feedback: 'Automated 0 mark assigned for non-submission after deadline.',
+                    gradedAt: new Date(),
+                    attachments: {
+                        files: [],
+                        submissionText: 'NON_SUBMISSION_DEFAULT_ZERO'
+                    }
+                }
+            });
+            createdCount++;
+        }
+        res.json({
+            success: true,
+            message: `Assigned 0 to ${createdCount} non-submitting learners.`,
+            count: createdCount
+        });
+    }
+    catch (error) {
+        console.error('Bulk zero error:', error);
+        res.status(500).json({ error: error.message || 'Failed to apply bulk 0 marks' });
     }
 });
 /**

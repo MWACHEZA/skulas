@@ -547,8 +547,13 @@ router.post('/me/tutorial/reset', requireAuth, async (req: AuthRequest, res: Res
  * @desc    [ADMIN] Get all users with optional role filter
  */
 router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN', 'CLINIC'), async (req: AuthRequest, res: Response) => {
-  const { role } = req.query;
+  const { role, staffOnly } = req.query;
   const targetRole = role ? String(role).toUpperCase() : undefined;
+  const isStaffOnly = staffOnly === 'true';
+  const excludedRoles: any[] = ['SUPPLIER', 'PARENT'];
+  if (isStaffOnly) {
+    excludedRoles.push('STUDENT');
+  }
   
   try {
     const school = await prisma.school.findUnique({ where: { id: req.user!.schoolId! }});
@@ -557,8 +562,7 @@ router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN', 'CLINIC'
     let users = await prisma.user.findMany({
       where: { 
         schoolId: req.user!.schoolId,
-        role: { notIn: ['SUPPLIER', 'PARENT'] },
-        ...(targetRole ? { role: targetRole } : {})
+        role: targetRole ? targetRole : { notIn: excludedRoles },
       },
       select: {
         id: true,
@@ -586,8 +590,8 @@ router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN', 'CLINIC'
       orderBy: { name: 'asc' }
     });
 
-    // 2. Fetch Global Roles (SUPPLIER/PARENT) via junction tables
-    if (!targetRole || targetRole === 'SUPPLIER') {
+    // 2. Fetch Global Roles (SUPPLIER/PARENT) via junction tables (only when not staff-only)
+    if (!isStaffOnly && (!targetRole || targetRole === 'SUPPLIER')) {
         const linkedSuppliers = await prisma.schoolSupplier.findMany({
             where: { schoolId: req.user!.schoolId!, status: 'APPROVED' },
             include: { supplier: { include: { user: true } } }

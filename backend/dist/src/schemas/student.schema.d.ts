@@ -33,6 +33,8 @@ export declare const GenerateReportSchema: z.ZodObject<{
 }, z.core.$strip>;
 export declare const SubmitAssignmentSchema: z.ZodObject<{
     body: z.ZodObject<{
+        submissionText: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        notes: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         answers: z.ZodNullable<z.ZodOptional<z.ZodPipe<z.ZodTransform<any, unknown>, z.ZodRecord<z.ZodString, z.ZodAny>>>>;
     }, z.core.$strip>;
 }, z.core.$strip>;

@@ -8,8 +8,16 @@ export declare const CreateAssignmentSchema: z.ZodObject<{
         dueDate: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         maxScore: z.ZodNullable<z.ZodOptional<z.ZodUnion<readonly [z.ZodNumber, z.ZodString]>>>;
         category: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        type: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        status: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         timeLimit: z.ZodNullable<z.ZodOptional<z.ZodUnion<readonly [z.ZodNumber, z.ZodString]>>>;
         allowLate: z.ZodNullable<z.ZodOptional<z.ZodUnion<readonly [z.ZodBoolean, z.ZodString]>>>;
+        allowResubmission: z.ZodNullable<z.ZodOptional<z.ZodUnion<readonly [z.ZodBoolean, z.ZodString]>>>;
+        latePenaltyPercent: z.ZodNullable<z.ZodOptional<z.ZodUnion<readonly [z.ZodNumber, z.ZodString]>>>;
+        targetType: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        targetStudentIds: z.ZodNullable<z.ZodOptional<z.ZodAny>>;
+        includeInTermReport: z.ZodNullable<z.ZodOptional<z.ZodUnion<readonly [z.ZodBoolean, z.ZodString]>>>;
+        term: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         questions: z.ZodNullable<z.ZodOptional<z.ZodPipe<z.ZodTransform<any, unknown>, z.ZodArray<z.ZodAny>>>>;
     }, z.core.$strip>;
 }, z.core.$strip>;

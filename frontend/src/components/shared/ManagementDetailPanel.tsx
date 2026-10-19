@@ -2,7 +2,7 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { BASE_URL } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
-import { getAvatarUrl } from '../../utils/formatters';
+import { getAvatarUrl, parseCleanBadges } from '../../utils/formatters';
 
 interface DetailField {
   label: string;
@@ -78,7 +78,7 @@ const ManagementDetailPanel: React.FC<ManagementDetailPanelProps> = ({
               <h3>{title}</h3>
               <div className="role-badges-group">
                 <span className={`role-badge role-${role?.toLowerCase().replace('_', '-')}`}>{role}</span>
-                {secondaryRoles.map((sRole, idx) => (
+                {parseCleanBadges(secondaryRoles).map((sRole, idx) => (
                   <span key={idx} className="secondary-role-badge">{sRole}</span>
                 ))}
               </div>

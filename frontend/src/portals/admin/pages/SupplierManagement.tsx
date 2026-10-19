@@ -5,7 +5,7 @@ import UserEditModal from '../../../components/shared/UserEditModal';
 import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModal';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
-import { getAvatarUrl } from '../../../utils/formatters';
+import { getAvatarUrl, parseCleanBadges } from '../../../utils/formatters';
 import { SearchInput, ExportButton } from '../../../components/shared';
 import '../../../styles/portal.css';
 
@@ -214,7 +214,7 @@ export default function SupplierManagement() {
                           <span className="user-name">{s.metadata?.companyName || s.name}</span>
                           <div className="role-badges-group">
                             <span className="role-badge role-teacher" style={{ background: '#f6ad55' }}>Supplier</span>
-                            {(s.secondaryRoles || []).map((r: string, idx: number) => (
+                            {parseCleanBadges(s.secondaryRoles).map((r: string, idx: number) => (
                               <span key={idx} className="secondary-role-badge">{r}</span>
                             ))}
                           </div>

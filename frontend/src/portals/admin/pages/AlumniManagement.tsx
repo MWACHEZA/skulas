@@ -6,7 +6,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModal';
 import { SearchInput, ExportButton } from '../../../components/shared';
-import { getAvatarUrl } from '../../../utils/formatters';
+import { getAvatarUrl, parseCleanBadges } from '../../../utils/formatters';
 import '../../../styles/portal.css';
 
 export default function AlumniManagement() {
@@ -165,7 +165,7 @@ export default function AlumniManagement() {
                           <span className="user-name">{s.name}</span>
                           <div className="role-badges-group">
                             <span className="role-badge role-teacher" style={{ background: '#4a5568' }}>Alumnus</span>
-                            {(s.secondaryRoles || []).map((r: string, idx: number) => (
+                            {parseCleanBadges(s.secondaryRoles).map((r: string, idx: number) => (
                               <span key={idx} className="secondary-role-badge">{r}</span>
                             ))}
                           </div>

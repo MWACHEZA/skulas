@@ -6,7 +6,7 @@ import UserEditModal from '../../../components/shared/UserEditModal';
 import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModal';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
-import { getAvatarUrl, formatCurrency } from '../../../utils/formatters';
+import { getAvatarUrl, formatCurrency, parseCleanBadges } from '../../../utils/formatters';
 import { SearchInput, FilterBar, ExportButton, DataImportModal } from '../../../components/shared';
 import type { ExportColumn } from '../../../utils/exportService';
 import '../../../styles/portal.css';
@@ -556,9 +556,8 @@ export default function AdminStudents() {
                   
                   return currentItems.map(s => {
                     const name = s.user?.name || s.name;
-                    const leaderAssignment = Array.isArray(s.leadershipAssignments) && s.leadershipAssignments.length > 0
-                      ? s.leadershipAssignments[0]
-                      : null;
+                    const cleanLeaderBadges = parseCleanBadges(s.leadershipAssignments);
+                    const cleanSecRoles = parseCleanBadges(s.user?.secondaryRoles || s.secondaryRoles);
                     const aging = getStudentFeeAging(s);
 
                     return (
@@ -587,7 +586,7 @@ export default function AdminStudents() {
                                 {s.gender && (
                                   <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>({s.gender.charAt(0)})</span>
                                 )}
-                                {(Array.isArray(s.user?.secondaryRoles) ? s.user.secondaryRoles : []).map((r: string, idx: number) => (
+                                {cleanSecRoles.map((r: string, idx: number) => (
                                   <span key={idx} className="secondary-role-badge">{r}</span>
                                 ))}
                               </div>
@@ -605,12 +604,15 @@ export default function AdminStudents() {
 
                         {showLeaderColumn && (
                           <td>
-                            {leaderAssignment ? (
-                              <span className="badge bg-primary" style={{ padding: '4px 8px', borderRadius: '6px', fontSize: '0.8rem', background: '#2563eb', color: '#fff', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                                <i className="fas fa-award"></i>
-                                {leaderAssignment.leadershipRole?.replace('_', ' ')}
-                                {leaderAssignment.hostel?.name ? ` (${leaderAssignment.hostel.name})` : ''}
-                              </span>
+                            {cleanLeaderBadges.length > 0 ? (
+                              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+                                {cleanLeaderBadges.map((badge, bIdx) => (
+                                  <span key={bIdx} className="badge bg-primary" style={{ padding: '4px 8px', borderRadius: '6px', fontSize: '0.8rem', background: '#2563eb', color: '#fff', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                    <i className="fas fa-award"></i>
+                                    {badge}
+                                  </span>
+                                ))}
+                              </div>
                             ) : (
                               <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>—</span>
                             )}

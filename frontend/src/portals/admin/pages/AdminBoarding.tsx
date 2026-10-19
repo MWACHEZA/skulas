@@ -28,6 +28,16 @@ interface RoomItem {
   hostelId: string;
   hostel?: { name: string };
   _count?: { bedAllocations: number; students: number };
+  bedAllocations?: Array<{
+    id: string;
+    student?: {
+      id: string;
+      name: string;
+      studentId: string;
+      avatar?: string;
+      class?: { name: string };
+    };
+  }>;
 }
 
 interface Allocation {
@@ -166,6 +176,26 @@ export default function AdminBoarding() {
       badge: s.boardingStatus || 'Boarder'
     }));
   }, [students]);
+
+  const selectedHostelRooms = useMemo(() => {
+    if (!assignForm.hostelId) return [];
+    const h = hostels.find(x => x.id === assignForm.hostelId);
+    return h?.rooms || [];
+  }, [hostels, assignForm.hostelId]);
+
+  const selectedRoomObj = useMemo(() => {
+    if (!assignForm.roomId) return null;
+    return selectedHostelRooms.find(r => r.id === assignForm.roomId) || null;
+  }, [selectedHostelRooms, assignForm.roomId]);
+
+  const selectedRoomFreeCount = useMemo(() => {
+    if (!selectedRoomObj) return 0;
+    const maxB = selectedRoomObj.bedCount || selectedRoomObj.capacity || 1;
+    const alloc = selectedRoomObj._count?.bedAllocations || (selectedRoomObj.bedAllocations?.length || 0);
+    return Math.max(0, maxB - alloc);
+  }, [selectedRoomObj]);
+
+  const isSelectedRoomFull = selectedRoomObj ? selectedRoomFreeCount === 0 : false;
 
   useEffect(() => {
     loadInitialData();
@@ -808,10 +838,93 @@ export default function AdminBoarding() {
                                 </span>
                               </div>
 
-                              <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#475569' }}>
-                                <span><i className="fas fa-bed"></i> Beds: {rm.bedCount || rm.capacity}</span>
-                                <span><i className="fas fa-user-friends"></i> Allocated: {rm._count?.bedAllocations || 0}</span>
-                              </div>
+                              {(() => {
+                                const maxCap = rm.bedCount || rm.capacity || 1;
+                                const allocCount = rm._count?.bedAllocations || (rm.bedAllocations?.length || 0);
+                                const availableBeds = Math.max(0, maxCap - allocCount);
+                                const isFull = availableBeds === 0;
+                                const pctOccupied = Math.min(100, Math.round((allocCount / maxCap) * 100));
+
+                                return (
+                                  <>
+                                    <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#475569' }}>
+                                      <span><i className="fas fa-bed"></i> Beds: {maxCap}</span>
+                                      <span style={{ fontWeight: 600, color: isFull ? '#dc2626' : '#2563eb' }}>
+                                        <i className="fas fa-user-friends"></i> {allocCount} Occupied ({availableBeds} free)
+                                      </span>
+                                    </div>
+
+                                    {/* Occupancy bar */}
+                                    <div style={{ height: '5px', background: '#e2e8f0', borderRadius: '3px', marginTop: '6px', overflow: 'hidden' }}>
+                                      <div style={{
+                                        height: '100%',
+                                        width: `${pctOccupied}%`,
+                                        background: isFull ? '#ef4444' : pctOccupied > 75 ? '#f59e0b' : '#10b981',
+                                        borderRadius: '3px',
+                                        transition: 'width 0.3s ease'
+                                      }} />
+                                    </div>
+
+                                    {/* Resident Avatars if any */}
+                                    {rm.bedAllocations && rm.bedAllocations.length > 0 && (
+                                      <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
+                                        {rm.bedAllocations.slice(0, 4).map((ba, bIdx) => (
+                                          <span
+                                            key={ba.id || bIdx}
+                                            title={ba.student?.name}
+                                            style={{
+                                              display: 'inline-flex',
+                                              alignItems: 'center',
+                                              gap: '4px',
+                                              fontSize: '0.7rem',
+                                              background: '#f1f5f9',
+                                              padding: '2px 6px',
+                                              borderRadius: '10px',
+                                              color: '#334155'
+                                            }}
+                                          >
+                                            <i className="fas fa-user" style={{ fontSize: '0.65rem', color: '#64748b' }}></i>
+                                            {ba.student?.name?.split(' ')[0]}
+                                          </span>
+                                        ))}
+                                        {rm.bedAllocations.length > 4 && (
+                                          <span style={{ fontSize: '0.7rem', color: '#64748b' }}>+{rm.bedAllocations.length - 4} more</span>
+                                        )}
+                                      </div>
+                                    )}
+
+                                    {/* Quick Assign Action */}
+                                    <div style={{ marginTop: '10px', borderTop: '1px solid #f1f5f9', paddingTop: '8px', display: 'flex', justifyContent: 'flex-end' }}>
+                                      {!isFull ? (
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            setAssignForm({ studentId: '', hostelId: h.id, roomId: rm.id, term: 'Term 1', feeAmount: 350 });
+                                            setShowAssignModal(true);
+                                          }}
+                                          className="btn btn-xs"
+                                          style={{
+                                            background: '#eff6ff',
+                                            color: '#2563eb',
+                                            border: '1px solid #bfdbfe',
+                                            borderRadius: '4px',
+                                            padding: '4px 8px',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 600,
+                                            cursor: 'pointer'
+                                          }}
+                                        >
+                                          <i className="fas fa-user-plus mr-1"></i> Assign Bed
+                                        </button>
+                                      ) : (
+                                        <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#dc2626', background: '#fef2f2', padding: '3px 8px', borderRadius: '4px', border: '1px solid #fecaca' }}>
+                                          <i className="fas fa-lock mr-1"></i> Full
+                                        </span>
+                                      )}
+                                    </div>
+                                  </>
+                                );
+                              })()}
                             </div>
                           );
                         })}
@@ -1547,12 +1660,12 @@ export default function AdminBoarding() {
                   <select
                     required
                     value={assignForm.hostelId}
-                    onChange={e => setAssignForm(prev => ({ ...prev, hostelId: e.target.value }))}
+                    onChange={e => setAssignForm(prev => ({ ...prev, hostelId: e.target.value, roomId: '' }))}
                     style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
                   >
                     <option value="">-- Choose Hostel --</option>
                     {hostels.map(h => (
-                      <option key={h.id} value={h.id}>{h.name}</option>
+                      <option key={h.id} value={h.id}>{h.name} ({h.type})</option>
                     ))}
                   </select>
                 </div>
@@ -1571,6 +1684,84 @@ export default function AdminBoarding() {
                 </div>
               </div>
 
+              {/* Room Selection */}
+              {assignForm.hostelId && (
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>
+                    Select Dormitory Room <span style={{ color: '#ef4444' }}>*</span>
+                  </label>
+                  <select
+                    required
+                    value={assignForm.roomId}
+                    onChange={e => setAssignForm(prev => ({ ...prev, roomId: e.target.value }))}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: isSelectedRoomFull ? '1px solid #ef4444' : '1px solid #cbd5e1' }}
+                  >
+                    <option value="">-- Choose Room / Dorm --</option>
+                    {selectedHostelRooms.map(rm => {
+                      const totalBeds = rm.bedCount || rm.capacity || 1;
+                      const occupied = rm._count?.bedAllocations || (rm.bedAllocations?.length || 0);
+                      const free = Math.max(0, totalBeds - occupied);
+                      const isFull = free === 0;
+                      return (
+                        <option key={rm.id} value={rm.id} disabled={isFull}>
+                          {rm.name} {rm.roomNumber ? `(#${rm.roomNumber})` : ''} — {isFull ? '🔴 FULL (0 beds free)' : `🟢 ${free} of ${totalBeds} beds free`}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+              )}
+
+              {/* Visual Bed Map of Selected Room */}
+              {selectedRoomObj && (
+                <div style={{ marginBottom: '14px', background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#334155' }}>
+                      <i className="fas fa-bed"></i> Room Bed Map ({selectedRoomObj.name})
+                    </span>
+                    <span style={{ fontSize: '0.75rem', color: isSelectedRoomFull ? '#dc2626' : '#16a34a', fontWeight: 600 }}>
+                      {isSelectedRoomFull ? '⚠️ Capacity Reached' : `${selectedRoomFreeCount} bed(s) available`}
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: '8px' }}>
+                    {Array.from({ length: selectedRoomObj.bedCount || selectedRoomObj.capacity || 1 }).map((_, idx) => {
+                      const bedNum = idx + 1;
+                      const occupant = selectedRoomObj.bedAllocations?.[idx]?.student;
+                      const isOccupied = !!occupant || idx < (selectedRoomObj._count?.bedAllocations || 0);
+
+                      return (
+                        <div
+                          key={bedNum}
+                          style={{
+                            padding: '8px',
+                            borderRadius: '6px',
+                            border: isOccupied ? '1px solid #fecaca' : '1px solid #bbf7d0',
+                            background: isOccupied ? '#fef2f2' : '#f0fdf4',
+                            textAlign: 'center',
+                            fontSize: '0.75rem'
+                          }}
+                        >
+                          <div style={{ fontSize: '1rem', color: isOccupied ? '#ef4444' : '#16a34a', marginBottom: '2px' }}>
+                            <i className="fas fa-bed"></i>
+                          </div>
+                          <div style={{ fontWeight: 700, color: '#1e293b' }}>Bed #{bedNum}</div>
+                          <div style={{ color: isOccupied ? '#b91c1c' : '#15803d', fontSize: '0.7rem', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {occupant ? occupant.name : (isOccupied ? 'Occupied' : 'Available')}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {isSelectedRoomFull && (
+                    <div style={{ marginTop: '10px', padding: '6px 10px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '4px', color: '#b91c1c', fontSize: '0.78rem' }}>
+                      <i className="fas fa-exclamation-triangle mr-1"></i> This room is full. You cannot allocate additional students to this room.
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div style={{ marginBottom: '14px' }}>
                 <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Boarding Fee ($ USD)</label>
                 <input
@@ -1585,8 +1776,19 @@ export default function AdminBoarding() {
 
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
                 <button type="button" onClick={() => setShowAssignModal(false)} className="btn btn-secondary" style={{ padding: '8px 16px', borderRadius: '6px' }}>Cancel</button>
-                <button type="submit" disabled={submitting} className="btn btn-primary" style={{ padding: '8px 16px', background: '#2563eb', color: '#fff', borderRadius: '6px' }}>
-                  {submitting ? 'Allocating & Invoicing...' : 'Allocate & Invoice'}
+                <button
+                  type="submit"
+                  disabled={submitting || isSelectedRoomFull || (selectedHostelRooms.length > 0 && !assignForm.roomId)}
+                  className="btn btn-primary"
+                  style={{
+                    padding: '8px 16px',
+                    background: (isSelectedRoomFull || (selectedHostelRooms.length > 0 && !assignForm.roomId)) ? '#94a3b8' : '#2563eb',
+                    color: '#fff',
+                    borderRadius: '6px',
+                    cursor: (isSelectedRoomFull || (selectedHostelRooms.length > 0 && !assignForm.roomId)) ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  {submitting ? 'Allocating & Invoicing...' : isSelectedRoomFull ? 'Room Full' : 'Allocate & Invoice'}
                 </button>
               </div>
             </form>

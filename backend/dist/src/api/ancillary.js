@@ -82,7 +82,11 @@ router.get('/hostels', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN
                 roomType: true,
                 rooms: {
                     include: {
-                        _count: { select: { bedAllocations: true, students: true } }
+                        _count: { select: { bedAllocations: true, students: true } },
+                        bedAllocations: {
+                            where: { status: 'ACTIVE' },
+                            include: { student: { select: { id: true, name: true, studentId: true, avatar: true, class: { select: { name: true } } } } }
+                        }
                     },
                     orderBy: { name: 'asc' }
                 },

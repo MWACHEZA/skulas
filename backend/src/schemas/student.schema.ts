@@ -38,6 +38,8 @@ export const GenerateReportSchema = z.object({
 // Using preprocess to support both stringified JSON or raw objects for answers
 export const SubmitAssignmentSchema = z.object({
   body: z.object({
+    submissionText: z.string().optional().nullable(),
+    notes: z.string().optional().nullable(),
     answers: z.preprocess(
       (val) => {
         if (typeof val === 'string') {

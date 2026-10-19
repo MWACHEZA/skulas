@@ -8,11 +8,19 @@ exports.CreateAssignmentSchema = zod_1.z.object({
         description: zod_1.z.string().optional().nullable(),
         subjectId: zod_1.z.string().min(1, 'Subject ID is required'),
         classId: zod_1.z.string().min(1, 'Class ID is required'),
-        dueDate: zod_1.z.string().datetime().optional().nullable(),
+        dueDate: zod_1.z.string().optional().nullable(),
         maxScore: zod_1.z.union([zod_1.z.number(), zod_1.z.string()]).optional().nullable(),
         category: zod_1.z.string().optional().nullable(),
+        type: zod_1.z.string().optional().nullable(),
+        status: zod_1.z.string().optional().nullable(),
         timeLimit: zod_1.z.union([zod_1.z.number(), zod_1.z.string()]).optional().nullable(),
         allowLate: zod_1.z.union([zod_1.z.boolean(), zod_1.z.string()]).optional().nullable(),
+        allowResubmission: zod_1.z.union([zod_1.z.boolean(), zod_1.z.string()]).optional().nullable(),
+        latePenaltyPercent: zod_1.z.union([zod_1.z.number(), zod_1.z.string()]).optional().nullable(),
+        targetType: zod_1.z.string().optional().nullable(),
+        targetStudentIds: zod_1.z.any().optional().nullable(),
+        includeInTermReport: zod_1.z.union([zod_1.z.boolean(), zod_1.z.string()]).optional().nullable(),
+        term: zod_1.z.string().optional().nullable(),
         questions: zod_1.z.preprocess((val) => {
             if (typeof val === 'string') {
                 try {

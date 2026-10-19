@@ -7,7 +7,7 @@ import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModa
 import { SearchInput, ExportButton, DataImportModal } from '../../../components/shared';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
-import { getAvatarUrl } from '../../../utils/formatters';
+import { getAvatarUrl, parseCleanBadges } from '../../../utils/formatters';
 import type { ExportColumn } from '../../../utils/exportService';
 import '../../../styles/portal.css';
 
@@ -55,6 +55,7 @@ export default function StaffDirectory() {
   const [activeTab, setActiveTab] = useState<string>(
     ROLE_TABS.some(t => t.id === initialRoleParam) ? initialRoleParam : 'ALL'
   );
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -77,6 +78,7 @@ export default function StaffDirectory() {
   // Synchronize URL query params when tab changes
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
+    setIsMoreOpen(false);
     setCurrentPage(1);
     if (tabId === 'ALL') {
       searchParams.delete('role');
@@ -102,8 +104,11 @@ export default function StaffDirectory() {
   const fetchStaff = async () => {
     setLoading(true);
     try {
-      const { data } = await api.get('/api/users');
-      setUsers(Array.isArray(data.users) ? data.users : []);
+      const { data } = await api.get('/api/users?staffOnly=true');
+      const rawList = Array.isArray(data.users) ? data.users : Array.isArray(data) ? data : [];
+      // Strictly exclude any students, parents, or suppliers
+      const staffOnly = rawList.filter((u: any) => !['STUDENT', 'PARENT', 'SUPPLIER'].includes(u.role));
+      setUsers(staffOnly);
     } catch (err) {
       showToast('Failed to load institution staff directory', 'error');
     } finally {
@@ -123,17 +128,23 @@ export default function StaffDirectory() {
 
   // Statistics
   const stats = useMemo(() => {
-    const total = users.length;
-    const teachers = users.filter(u => u.role === 'TEACHER').length;
-    const bursar = users.filter(u => u.role === 'BURSAR').length;
-    const support = users.filter(u => ['ANCILLARY', 'NURSE', 'LIBRARIAN'].includes(u.role)).length;
-    const admins = users.filter(u => u.role === 'SCHOOL_ADMIN' || u.role === 'SUPER_ADMIN').length;
+    const staffOnly = users.filter(u => !['STUDENT', 'PARENT', 'SUPPLIER'].includes(u.role));
+    const total = staffOnly.length;
+    const teachers = staffOnly.filter(u => u.role === 'TEACHER').length;
+    const bursar = staffOnly.filter(u => u.role === 'BURSAR').length;
+    const support = staffOnly.filter(u => ['ANCILLARY', 'NURSE', 'LIBRARIAN'].includes(u.role)).length;
+    const admins = staffOnly.filter(u => u.role === 'SCHOOL_ADMIN' || u.role === 'SUPER_ADMIN').length;
     return { total, teachers, bursar, support, admins };
   }, [users]);
 
   // Filtered dataset
   const filteredUsers = useMemo(() => {
     return users.filter(u => {
+      // Strictly exclude non-staff roles
+      if (['STUDENT', 'PARENT', 'SUPPLIER'].includes(u.role)) {
+        return false;
+      }
+
       // Role filter
       if (activeTab !== 'ALL' && u.role !== activeTab) {
         return false;
@@ -372,7 +383,7 @@ export default function StaffDirectory() {
         </div>
       </div>
 
-      {/* Role Navigation Tabs */}
+      {/* Role Navigation Tabs (Responsive with More... dropdown) */}
       <div
         style={{
           display: 'flex',
@@ -382,11 +393,12 @@ export default function StaffDirectory() {
           background: '#fff',
           padding: '8px 12px 0 12px',
           borderRadius: '12px 12px 0 0',
-          overflowX: 'auto',
-          boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+          alignItems: 'center',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+          position: 'relative'
         }}
       >
-        {ROLE_TABS.map(tab => {
+        {ROLE_TABS.slice(0, 4).map(tab => {
           const count = tab.id === 'ALL' 
             ? users.length 
             : users.filter(u => u.role === tab.id).length;
@@ -431,6 +443,123 @@ export default function StaffDirectory() {
             </button>
           );
         })}
+
+        {/* More Roles Dropdown Menu */}
+        <div style={{ position: 'relative', marginLeft: 'auto' }}>
+          {(() => {
+            const moreTabs = ROLE_TABS.slice(4);
+            const activeMoreTab = moreTabs.find(t => t.id === activeTab);
+            const isMoreActive = Boolean(activeMoreTab);
+
+            return (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setIsMoreOpen(prev => !prev)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '10px 16px',
+                    border: 'none',
+                    background: isMoreActive ? '#f0f9ff' : 'none',
+                    cursor: 'pointer',
+                    fontWeight: isMoreActive ? 700 : 600,
+                    color: isMoreActive ? '#0284c7' : '#475569',
+                    borderBottom: isMoreActive ? '3px solid #0284c7' : '3px solid transparent',
+                    marginBottom: '-2px',
+                    borderRadius: '6px 6px 0 0',
+                    fontSize: '0.92rem',
+                    whiteSpace: 'nowrap',
+                    transition: 'all 0.15s ease'
+                  }}
+                  title="View more staff roles"
+                >
+                  <i className="fas fa-layer-group" style={{ fontSize: '0.95rem' }}></i>
+                  <span>{activeMoreTab ? activeMoreTab.label : 'More Roles'}</span>
+                  {activeMoreTab && (
+                    <span
+                      style={{
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        padding: '2px 8px',
+                        borderRadius: 10,
+                        background: '#e0f2fe',
+                        color: '#0369a1'
+                      }}
+                    >
+                      {users.filter(u => u.role === activeMoreTab.id).length}
+                    </span>
+                  )}
+                  <i className={`fas fa-chevron-${isMoreOpen ? 'up' : 'down'}`} style={{ fontSize: '0.75rem', marginLeft: 2 }}></i>
+                </button>
+
+                {isMoreOpen && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      right: 0,
+                      top: '100%',
+                      background: '#fff',
+                      borderRadius: 10,
+                      border: '1px solid #e2e8f0',
+                      boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)',
+                      zIndex: 30,
+                      minWidth: 230,
+                      padding: 6,
+                      marginTop: 4
+                    }}
+                  >
+                    <div style={{ padding: '6px 12px', fontSize: '0.72rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      Additional Roles
+                    </div>
+                    {moreTabs.map(tab => {
+                      const count = users.filter(u => u.role === tab.id).length;
+                      const isTabActive = activeTab === tab.id;
+                      return (
+                        <button
+                          key={tab.id}
+                          type="button"
+                          onClick={() => handleTabChange(tab.id)}
+                          style={{
+                            width: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '9px 12px',
+                            border: 'none',
+                            background: isTabActive ? '#eff6ff' : 'transparent',
+                            color: isTabActive ? '#1d4ed8' : '#334155',
+                            fontWeight: isTabActive ? 700 : 500,
+                            borderRadius: 6,
+                            cursor: 'pointer',
+                            fontSize: '0.88rem',
+                            textAlign: 'left',
+                            transition: 'background 0.15s ease'
+                          }}
+                          onMouseEnter={e => {
+                            if (!isTabActive) (e.currentTarget as HTMLElement).style.background = '#f8fafc';
+                          }}
+                          onMouseLeave={e => {
+                            if (!isTabActive) (e.currentTarget as HTMLElement).style.background = 'transparent';
+                          }}
+                        >
+                          <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <i className={tab.icon} style={{ width: 16, textAlign: 'center', color: isTabActive ? '#2563eb' : '#64748b' }}></i>
+                            {tab.label}
+                          </span>
+                          <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '2px 7px', borderRadius: 8, background: isTabActive ? '#dbeafe' : '#f1f5f9', color: isTabActive ? '#1e40af' : '#64748b' }}>
+                            {count}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
+            );
+          })()}
+        </div>
       </div>
 
       {/* Filter and Search Bar */}
@@ -534,8 +663,8 @@ export default function StaffDirectory() {
           </div>
         ) : (
           <>
-            <div style={{ overflowX: 'auto' }}>
-              <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <div style={{ overflowX: 'auto', position: 'relative' }}>
+              <table className="portal-table" style={{ width: '100%', minWidth: 980, borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
                     <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Staff Member</th>
@@ -544,13 +673,13 @@ export default function StaffDirectory() {
                     <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Department</th>
                     <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Specialty / Allocations</th>
                     <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Status</th>
-                    <th style={{ padding: '12px 16px', textAlign: 'right', fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Actions</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'right', fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', position: 'sticky', right: 0, background: '#f8fafc', zIndex: 3, boxShadow: '-3px 0 6px rgba(0,0,0,0.04)' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginatedUsers.map((member) => {
                     const deptName = member.dept?.name || member.teacher?.department || (member.metadata as any)?.department || '—';
-                    const hasSecRoles = Array.isArray(member.secondaryRoles) && member.secondaryRoles.length > 0;
+                    const cleanSecRoles = parseCleanBadges(member.secondaryRoles);
                     const teacher = member.teacher;
                     const subjectCount = teacher?.subjects?.length || 0;
                     const classCount = teacher?.classes?.length || 0;
@@ -595,9 +724,9 @@ export default function StaffDirectory() {
                             <span style={{ backgroundColor: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe', padding: '3px 8px', borderRadius: 6, fontSize: '0.75rem', fontWeight: 700 }}>
                               {member.role.replace('_', ' ')}
                             </span>
-                            {hasSecRoles && (
+                            {cleanSecRoles.length > 0 && (
                               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                                {member.secondaryRoles!.map(sr => (
+                                {cleanSecRoles.map(sr => (
                                   <span key={sr} style={{ backgroundColor: '#fffbeb', color: '#b45309', border: '1px solid #fde68a', borderRadius: 4, padding: '2px 6px', fontSize: '0.65rem', fontWeight: 600 }}>
                                     {sr}
                                   </span>
@@ -649,7 +778,7 @@ export default function StaffDirectory() {
                           )}
                         </td>
 
-                        <td style={{ padding: '14px 16px', textAlign: 'right' }}>
+                        <td style={{ padding: '14px 16px', textAlign: 'right', position: 'sticky', right: 0, background: '#fff', zIndex: 2, boxShadow: '-3px 0 6px rgba(0,0,0,0.04)' }}>
                           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                             <button
                               onClick={() => openDetail(member)}

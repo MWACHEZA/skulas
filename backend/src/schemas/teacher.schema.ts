@@ -6,11 +6,19 @@ export const CreateAssignmentSchema = z.object({
     description: z.string().optional().nullable(),
     subjectId: z.string().min(1, 'Subject ID is required'),
     classId: z.string().min(1, 'Class ID is required'),
-    dueDate: z.string().datetime().optional().nullable(),
+    dueDate: z.string().optional().nullable(),
     maxScore: z.union([z.number(), z.string()]).optional().nullable(),
     category: z.string().optional().nullable(),
+    type: z.string().optional().nullable(),
+    status: z.string().optional().nullable(),
     timeLimit: z.union([z.number(), z.string()]).optional().nullable(),
     allowLate: z.union([z.boolean(), z.string()]).optional().nullable(),
+    allowResubmission: z.union([z.boolean(), z.string()]).optional().nullable(),
+    latePenaltyPercent: z.union([z.number(), z.string()]).optional().nullable(),
+    targetType: z.string().optional().nullable(),
+    targetStudentIds: z.any().optional().nullable(),
+    includeInTermReport: z.union([z.boolean(), z.string()]).optional().nullable(),
+    term: z.string().optional().nullable(),
     questions: z.preprocess(
       (val) => {
         if (typeof val === 'string') {

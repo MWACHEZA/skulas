@@ -428,9 +428,10 @@ router.get('/me/portfolio', requireAuth, async (req: AuthRequest, res: Response)
 router.get('/assignments', requireAuth, requireRole('STUDENT'), async (req: AuthRequest, res: Response) => {
   const userId = req.user!.id;
   try {
+    const schoolId = req.user!.schoolId!;
     const student = await prisma.student.findFirst({
-      where: { userId, schoolId: req.user!.schoolId },
-      select: { classId: true }
+      where: { userId, schoolId },
+      select: { id: true, classId: true }
     });
 
     if (!student || !student.classId) return res.json([]);
@@ -438,31 +439,77 @@ router.get('/assignments', requireAuth, requireRole('STUDENT'), async (req: Auth
     const assignments = await prisma.assignment.findMany({
       where: { 
         classId: student.classId,
-        schoolId: req.user!.schoolId,
-        isAccepting: true
+        schoolId
       },
       include: { 
-        subject: { select: { name: true } }
+        subject: { select: { id: true, name: true } },
+        teacher: { select: { user: { select: { name: true } } } }
       },
       orderBy: { dueDate: 'asc' }
     });
 
-    const studentRecord = await prisma.student.findFirst({ where: { userId, schoolId: req.user!.schoolId } });
-    if (!studentRecord) return res.json([]);
+    const studentRecord = student;
 
-    const assignmentsWithUserSubmissions = await Promise.all(assignments.map(async (a) => {
+    // Filter assignments and attach student submission (with unreleased grades protected)
+    const validAssignments: any[] = [];
+    for (const a of assignments) {
+      const meta = (a.attachments as any) || {};
+      
+      // Exclude draft assignments
+      if (meta.status === 'draft') continue;
+
+      // Check student-specific targeting
+      if (meta.targetType === 'student' && Array.isArray(meta.targetStudentIds) && meta.targetStudentIds.length > 0) {
+        if (!meta.targetStudentIds.includes(studentRecord.id)) continue;
+      }
+
       const submission = await prisma.assignmentSubmission.findFirst({
         where: { 
           assignmentId: a.id, 
           studentId: studentRecord.id,
-          schoolId: req.user!.schoolId
+          schoolId
         }
       });
-      return { ...a, submissions: submission ? [submission] : [] };
-    }));
 
-    res.json(assignmentsWithUserSubmissions);
+      const gradesReleased = meta.gradesReleased === true;
+      let safeSubmission = null;
+      if (submission) {
+        const subData = (submission.attachments as any) || {};
+        const subFiles = Array.isArray(subData) ? subData : (subData.files || []);
+        const submissionText = subData.submissionText || null;
+        const history = subData.history || [];
+
+        safeSubmission = {
+          ...submission,
+          attachments: subFiles,
+          submissionText,
+          submissionHistory: history,
+          // Conceal grade and feedback until explicit release by teacher
+          grade: gradesReleased ? submission.grade : null,
+          feedback: gradesReleased ? submission.feedback : null,
+          gradesReleased,
+          status: gradesReleased ? submission.status : (submission.status === 'GRADED' ? 'SUBMITTED' : submission.status)
+        };
+      }
+
+      const files = meta.files || (Array.isArray(a.attachments) ? a.attachments : []);
+
+      validAssignments.push({
+        ...a,
+        type: meta.type || (a.category ? a.category.toLowerCase() : 'homework'),
+        status: meta.status || (a.isAccepting ? 'published' : 'closed'),
+        allowResubmission: meta.allowResubmission ?? true,
+        latePenaltyPercent: meta.latePenaltyPercent ?? 0,
+        targetType: meta.targetType || 'class',
+        gradesReleased,
+        files,
+        submissions: safeSubmission ? [safeSubmission] : []
+      });
+    }
+
+    res.json(validAssignments);
   } catch (error) {
+    console.error('Fetch student assignments error:', error);
     res.status(500).json({ error: 'Failed to fetch assignments' });
   }
 });
@@ -812,40 +859,80 @@ router.post('/assignments/:id/submit', requireAuth, requireRole('STUDENT'), uplo
     }) as any;
     if (!assignment) return res.status(404).json({ error: 'Assignment not found' });
 
+    const meta = (assignment.attachments as any) || {};
+
     // 1. Check if submissions are manually closed
-    if (!assignment.isAccepting) {
+    if (!assignment.isAccepting || meta.status === 'closed') {
       return res.status(403).json({ error: 'This assignment is no longer accepting submissions.' });
     }
 
     // 2. Check hard deadline
     const now = new Date();
-    const isLate = now > new Date(assignment.dueDate);
+    const isLate = assignment.dueDate ? now > new Date(assignment.dueDate) : false;
     if (isLate && !assignment.allowLate) {
       return res.status(403).json({ error: 'The deadline has passed and late submissions are disabled.' });
     }
 
-    // 3. Automated Quiz Grading
-    let autoScore = null;
-    let submissionData = attachments;
+    // 3. Check Resubmission Policy and preserve Version History
+    const existingSubmission = await prisma.assignmentSubmission.findFirst({
+      where: { assignmentId: id, studentId: student.id, schoolId: req.user!.schoolId! }
+    });
+
+    if (existingSubmission) {
+      const allowResubmission = meta.allowResubmission ?? true;
+      if (!allowResubmission) {
+        return res.status(403).json({ error: 'Resubmissions are not permitted for this assignment.' });
+      }
+    }
+
+    // Ensure non-quiz submission has at least text or a file
+    if (!assignment.questions && attachments.length === 0 && !(req.body.submissionText && req.body.submissionText.trim()) && !(req.body.notes && req.body.notes.trim())) {
+      return res.status(400).json({ error: 'Please enter your response text or attach at least one file.' });
+    }
+
+    // 4. Automated Quiz Grading (if quiz)
+    let autoScore: number | null = null;
+    let quizAnswers: any = null;
     
-    // If it's an online quiz, the answers are in the body instead of files
     if (assignment.questions && req.body.answers) {
-      const answers = JSON.parse(req.body.answers); // { "q1": "Answer", "q2": "OptionB" }
+      quizAnswers = typeof req.body.answers === 'string' ? JSON.parse(req.body.answers) : req.body.answers;
       const questions = assignment.questions as any[];
       let totalPoints = 0;
       let earnedPoints = 0;
 
       questions.forEach(q => {
         totalPoints += q.points || 0;
-        const studentAns = answers[q.id];
+        const studentAns = quizAnswers[q.id];
         if (studentAns === q.answer) {
           earnedPoints += q.points || 0;
         }
       });
 
       autoScore = totalPoints > 0 ? (earnedPoints / totalPoints) * 100 : 0;
-      submissionData = answers; // Store answers in attachments JSON
     }
+
+    // 5. Version History Preservation
+    const priorMeta = existingSubmission ? ((existingSubmission.attachments as any) || {}) : {};
+    const priorHistory = Array.isArray(priorMeta.history) ? priorMeta.history : [];
+    if (existingSubmission) {
+      priorHistory.push({
+        version: priorHistory.length + 1,
+        submittedAt: existingSubmission.submittedAt,
+        files: priorMeta.files || (Array.isArray(existingSubmission.attachments) ? existingSubmission.attachments : []),
+        submissionText: priorMeta.submissionText || null,
+        grade: existingSubmission.grade,
+        feedback: existingSubmission.feedback,
+        status: existingSubmission.status
+      });
+    }
+
+    const submissionPayload = {
+      files: attachments,
+      submissionText: req.body.submissionText || req.body.notes || null,
+      answers: quizAnswers,
+      history: priorHistory,
+      isResubmission: !!existingSubmission
+    };
 
     const submission = await prisma.assignmentSubmission.upsert({
       where: { 
@@ -853,23 +940,33 @@ router.post('/assignments/:id/submit', requireAuth, requireRole('STUDENT'), uplo
         schoolId: req.user!.schoolId as string
       } as any,
       update: { 
-        attachments: submissionData as any,
+        attachments: submissionPayload as any,
         submittedAt: now, 
         status: isLate ? 'LATE' : 'SUBMITTED',
-        autoScore: autoScore
+        autoScore: autoScore,
+        // Reset grade for new review on student resubmission
+        grade: null,
+        feedback: null,
+        gradedAt: null
       } as any,
       create: {
         assignmentId: id,
         studentId: student.id,
         schoolId: req.user!.schoolId as string,
-        attachments: submissionData as any,
+        attachments: submissionPayload as any,
         submittedAt: now,
         status: isLate ? 'LATE' : 'SUBMITTED',
         autoScore: autoScore
       } as any
     });
 
-    res.json(submission);
+    res.json({
+      ...submission,
+      attachments: attachments,
+      submissionText: submissionPayload.submissionText,
+      submissionHistory: priorHistory,
+      isResubmission: !!existingSubmission
+    });
   } catch (error) {
     console.error('Submission error:', error);
     res.status(500).json({ error: 'Failed to submit assignment' });

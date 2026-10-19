@@ -61,3 +61,64 @@ export const getAvatarUrl = (avatar?: string | null, schoolCode?: string | null,
   }
   return url;
 };
+
+/**
+ * Parses and sanitizes array or JSON-stringified roles/tags into clean badge strings.
+ * Completely eliminates raw brackets [], quotes, and empty artifacts.
+ */
+export const parseCleanBadges = (val: any): string[] => {
+  if (!val) return [];
+  let items: any[] = [];
+  if (Array.isArray(val)) {
+    items = val;
+  } else if (typeof val === 'string') {
+    const trimmed = val.trim();
+    if (!trimmed || trimmed === '[]' || trimmed === '[""]' || trimmed === 'null' || trimmed === 'undefined') return [];
+    if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) items = parsed;
+        else if (typeof parsed === 'string') items = [parsed];
+      } catch {
+        items = trimmed.slice(1, -1).split(',').map(s => s.trim().replace(/^["']|["']$/g, ''));
+      }
+    } else {
+      items = trimmed.split(',').map(s => s.trim());
+    }
+  }
+
+  const result: string[] = [];
+  for (const item of items) {
+    if (!item) continue;
+    if (typeof item === 'object') {
+      const roleStr = item.leadershipRole || item.name || item.role || item.title;
+      if (roleStr && typeof roleStr === 'string') {
+        const clean = roleStr.replace(/_/g, ' ').replace(/^["'\[\]]+|["'\[\]]+$/g, '').trim();
+        if (clean && clean !== '[]') {
+          const hostelSuffix = item.hostel?.name ? ` (${item.hostel.name})` : '';
+          result.push(`${clean}${hostelSuffix}`);
+        }
+      }
+    } else if (typeof item === 'string') {
+      let trimmedItem = item.trim();
+      if (!trimmedItem || trimmedItem === '[]' || trimmedItem === 'null') continue;
+      if (trimmedItem.startsWith('[') && trimmedItem.endsWith(']')) {
+        try {
+          const nested = JSON.parse(trimmedItem);
+          if (Array.isArray(nested)) {
+            nested.forEach(n => {
+              const clean = String(n).replace(/_/g, ' ').replace(/^["'\[\]]+|["'\[\]]+$/g, '').trim();
+              if (clean && clean !== '[]') result.push(clean);
+            });
+            continue;
+          }
+        } catch {
+          // ignore parse error
+        }
+      }
+      const clean = trimmedItem.replace(/_/g, ' ').replace(/^["'\[\]]+|["'\[\]]+$/g, '').trim();
+      if (clean && clean !== '[]') result.push(clean);
+    }
+  }
+  return result;
+};

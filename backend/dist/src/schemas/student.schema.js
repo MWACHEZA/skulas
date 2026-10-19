@@ -37,6 +37,8 @@ exports.GenerateReportSchema = zod_1.z.object({
 // Using preprocess to support both stringified JSON or raw objects for answers
 exports.SubmitAssignmentSchema = zod_1.z.object({
     body: zod_1.z.object({
+        submissionText: zod_1.z.string().optional().nullable(),
+        notes: zod_1.z.string().optional().nullable(),
         answers: zod_1.z.preprocess((val) => {
             if (typeof val === 'string') {
                 try {

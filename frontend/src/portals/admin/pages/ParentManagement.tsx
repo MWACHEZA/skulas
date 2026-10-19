@@ -5,7 +5,7 @@ import UserEditModal from '../../../components/shared/UserEditModal';
 import { SearchInput, ExportButton } from '../../../components/shared';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
-import { getAvatarUrl } from '../../../utils/formatters';
+import { getAvatarUrl, parseCleanBadges } from '../../../utils/formatters';
 import '../../../styles/portal.css';
 
 export default function ParentManagement() {
@@ -196,7 +196,7 @@ export default function ParentManagement() {
                           <span className="user-name">{s.name}</span>
                           <div className="role-badges-group">
                             <span className="role-badge role-teacher" style={{ background: 'var(--school-primary, #3182ce)' }}>Parent</span>
-                            {(s.secondaryRoles || []).map((r: string, idx: number) => (
+                            {parseCleanBadges(s.secondaryRoles).map((r: string, idx: number) => (
                               <span key={idx} className="secondary-role-badge">{r}</span>
                             ))}
                           </div>

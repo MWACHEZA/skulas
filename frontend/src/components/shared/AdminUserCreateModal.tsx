@@ -647,6 +647,12 @@ export default function AdminUserCreateModal({
       if (isStaff) {
         const combinedName = `${formData.firstName || ''} ${formData.lastName || ''}`.trim();
         data.append('name', combinedName);
+        if (formData.departmentId) {
+          const matchedDept = departments.find(d => d.id === formData.departmentId);
+          if (matchedDept && !formData.department) {
+            data.append('department', matchedDept.name);
+          }
+        }
         if (formData.nokRelationship) {
           data.append('nokRelation', formData.nokRelationship);
         }
@@ -887,6 +893,11 @@ export default function AdminUserCreateModal({
                         <option value="Ms.">Ms.</option>
                         <option value="Dr.">Dr.</option>
                         <option value="Prof.">Prof.</option>
+                        <option value="Rev.">Rev.</option>
+                        <option value="Fr.">Fr.</option>
+                        <option value="Sr.">Sr.</option>
+                        <option value="Pastor">Pastor</option>
+                        <option value="Eng.">Eng.</option>
                       </select>
                     </div>
 
@@ -1086,7 +1097,14 @@ export default function AdminUserCreateModal({
 
                     <div className="form-group">
                       <label>Job Title / Designation</label>
-                      <input name="designation" value={formData.designation || ''} onChange={handleInputChange} className="form-control" placeholder="e.g. Senior Lecturer / Head of Dept" />
+                      <input 
+                        name="designation" 
+                        value={formData.designation || ''} 
+                        onChange={handleInputChange} 
+                        list="staff-designations-list"
+                        className="form-control" 
+                        placeholder="e.g. Senior Lecturer / Head of Dept" 
+                      />
                     </div>
 
                     <div className="form-group">
@@ -1255,7 +1273,7 @@ export default function AdminUserCreateModal({
                     <div className="form-group" style={{ gridColumn: 'span 3' }}>
                       <label className="font-semibold text-sm text-gray-700 block border-b pb-1 mb-2">💵 USD Banking Details (Nostro / Foreign Currency Account)</label>
                     </div>
-                    <div className="form-group"><label>Bank Name (USD)</label><input name="bankName" value={formData.bankName || ''} onChange={handleInputChange} className="form-control" placeholder="e.g. Stanbic / CABS" /></div>
+                    <div className="form-group"><label>Bank Name (USD)</label><input name="bankName" value={formData.bankName || ''} onChange={handleInputChange} list="zim-banks-list" className="form-control" placeholder="e.g. Stanbic / CABS" /></div>
                     <div className="form-group"><label>Bank Branch (USD)</label><input name="bankBranch" value={formData.bankBranch || ''} onChange={handleInputChange} className="form-control" placeholder="e.g. Samora Machel" /></div>
                     <div className="form-group"><label>Branch Code (USD)</label><input name="branchCode" value={formData.branchCode || ''} onChange={handleInputChange} className="form-control" placeholder="e.g. 02100" /></div>
                     <div className="form-group">
@@ -1275,7 +1293,7 @@ export default function AdminUserCreateModal({
                     <div className="form-group" style={{ gridColumn: 'span 3' }}>
                       <label className="font-semibold text-sm text-gray-700 block border-b pb-1 mt-2 mb-2">🪙 ZiG Banking Details (Local Currency Account)</label>
                     </div>
-                    <div className="form-group"><label>Bank Name (ZiG)</label><input name="bankNameZig" value={formData.bankNameZig || ''} onChange={handleInputChange} className="form-control" placeholder="e.g. CBZ Bank" /></div>
+                    <div className="form-group"><label>Bank Name (ZiG)</label><input name="bankNameZig" value={formData.bankNameZig || ''} onChange={handleInputChange} list="zim-banks-list" className="form-control" placeholder="e.g. CBZ Bank" /></div>
                     <div className="form-group"><label>Bank Branch (ZiG)</label><input name="bankBranchZig" value={formData.bankBranchZig || ''} onChange={handleInputChange} className="form-control" /></div>
                     <div className="form-group"><label>Branch Code (ZiG)</label><input name="branchCodeZig" value={formData.branchCodeZig || ''} onChange={handleInputChange} className="form-control" /></div>
                     <div className="form-group">
@@ -1324,7 +1342,43 @@ export default function AdminUserCreateModal({
                     </div>
                     <div className="form-group">
                       <label>Kin Relationship</label>
-                      <input name="nokRelationship" value={formData.nokRelationship || ''} onChange={handleInputChange} className="form-control" placeholder="e.g. Spouse, Sibling" />
+                      <select
+                        name="nokRelationship"
+                        value={['Spouse', 'Parent', 'Sibling', 'Child', 'Guardian', 'Next of Kin', 'Friend', 'Colleague'].includes(formData.nokRelationship) ? formData.nokRelationship : (formData.nokRelationship ? 'Other' : '')}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === 'Other') {
+                            setFormData(prev => ({ ...prev, nokRelationship: prev.nokRelationshipCustom || 'Other' }));
+                          } else {
+                            setFormData(prev => ({ ...prev, nokRelationship: val }));
+                          }
+                        }}
+                        className="form-control"
+                      >
+                        <option value="">Select Relationship...</option>
+                        <option value="Spouse">Spouse</option>
+                        <option value="Parent">Parent</option>
+                        <option value="Sibling">Sibling</option>
+                        <option value="Child">Child</option>
+                        <option value="Guardian">Guardian</option>
+                        <option value="Next of Kin">Next of Kin</option>
+                        <option value="Friend">Friend</option>
+                        <option value="Colleague">Colleague</option>
+                        <option value="Other">Other</option>
+                      </select>
+                      {(!['Spouse', 'Parent', 'Sibling', 'Child', 'Guardian', 'Next of Kin', 'Friend', 'Colleague', ''].includes(formData.nokRelationship) || formData.nokRelationship === 'Other') && (
+                        <input
+                          name="nokRelationshipCustom"
+                          value={formData.nokRelationshipCustom ?? (['Spouse', 'Parent', 'Sibling', 'Child', 'Guardian', 'Next of Kin', 'Friend', 'Colleague', 'Other'].includes(formData.nokRelationship) ? '' : formData.nokRelationship)}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setFormData(prev => ({ ...prev, nokRelationshipCustom: val, nokRelationship: val || 'Other' }));
+                          }}
+                          className="form-control"
+                          placeholder="Specify relationship..."
+                          style={{ marginTop: 6 }}
+                        />
+                      )}
                     </div>
 
                     <div className="form-group" style={{ gridColumn: 'span 3' }}>
@@ -2117,6 +2171,51 @@ export default function AdminUserCreateModal({
           </div>
         </div>
       </div>
+
+      <datalist id="zim-banks-list">
+        <option value="CBZ Bank" />
+        <option value="CABS" />
+        <option value="Stanbic Bank" />
+        <option value="Standard Chartered Bank" />
+        <option value="Nedbank Zimbabwe" />
+        <option value="FBC Bank" />
+        <option value="BancABC" />
+        <option value="Ecobank Zimbabwe" />
+        <option value="First Capital Bank" />
+        <option value="ZB Bank" />
+        <option value="Steward Bank" />
+        <option value="NMB Bank" />
+        <option value="POSB (People's Own Savings Bank)" />
+        <option value="AFC Commercial Bank" />
+        <option value="EmpowerBank" />
+      </datalist>
+
+      <datalist id="staff-designations-list">
+        <option value="Senior Teacher" />
+        <option value="Lead Teacher" />
+        <option value="Head of Department (HOD)" />
+        <option value="Class Teacher" />
+        <option value="Assistant Teacher" />
+        <option value="Sports Director / Coach" />
+        <option value="Deputy Head / Vice Principal" />
+        <option value="Principal / Headmaster" />
+        <option value="Bursar" />
+        <option value="Chief Accountant" />
+        <option value="Assistant Bursar" />
+        <option value="Accounts Clerk" />
+        <option value="Finance Officer" />
+        <option value="Head Librarian" />
+        <option value="Assistant Librarian" />
+        <option value="Library Assistant" />
+        <option value="Estate Manager" />
+        <option value="Caretaker / Facility Officer" />
+        <option value="Maintenance Technician" />
+        <option value="Security Officer" />
+        <option value="Dining Hall Supervisor" />
+        <option value="Driver" />
+        <option value="Administrative Assistant" />
+        <option value="Academic Registrar" />
+      </datalist>
     </div>
   );
 }

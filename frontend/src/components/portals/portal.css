@@ -157,10 +157,89 @@
   transition: opacity var(--transition);
 }
 
+/* ── Collapsed Sidebar Icon-Only Rail ── */
 .portal-sidebar.collapsed .portal-nav-label,
-.portal-sidebar.collapsed .portal-sidebar-title {
-  opacity: 0;
-  width: 0;
+.portal-sidebar.collapsed .portal-sidebar-title,
+.portal-sidebar.collapsed .portal-sidebar-extra,
+.portal-sidebar.collapsed .portal-nav-search,
+.portal-sidebar.collapsed .portal-nav-group-meta,
+.portal-sidebar.collapsed .portal-nav-group-title span,
+.portal-sidebar.collapsed .portal-badge,
+.portal-sidebar.collapsed .portal-nav-section-title,
+.portal-sidebar.collapsed .portal-user-info,
+.portal-sidebar.collapsed .has-submenu summary i.fa-chevron-down {
+  display: none !important;
+}
+
+.portal-sidebar.collapsed .portal-sidebar-header {
+  padding: 16px 8px;
+  justify-content: center;
+}
+
+.portal-sidebar.collapsed .portal-sidebar-logo {
+  margin: 0 auto;
+}
+
+.portal-sidebar.collapsed .portal-nav-group {
+  margin-bottom: 2px;
+}
+
+.portal-sidebar.collapsed .portal-nav-group-header {
+  justify-content: center;
+  padding: 12px 0;
+  width: 100%;
+}
+
+.portal-sidebar.collapsed .portal-nav-group-title {
+  justify-content: center;
+  width: 100%;
+  gap: 0;
+  margin: 0;
+}
+
+.portal-sidebar.collapsed .portal-nav-group-title i {
+  font-size: 1.15rem;
+  width: 100%;
+  text-align: center;
+}
+
+.portal-sidebar.collapsed .portal-nav-group-items {
+  padding: 4px 0;
+  margin: 0;
+  border-left: none;
+}
+
+.portal-sidebar.collapsed .portal-nav-item a {
+  justify-content: center;
+  padding: 12px 0;
+  width: 100%;
+}
+
+.portal-sidebar.collapsed .portal-nav-item a i {
+  font-size: 1.1rem;
+  width: 100%;
+  text-align: center;
+  margin: 0;
+}
+
+.portal-sidebar.collapsed .portal-user-card {
+  justify-content: center;
+  padding: 8px 4px;
+}
+
+.portal-sidebar.collapsed .portal-user-avatar {
+  margin: 0 auto;
+}
+
+.portal-sidebar.collapsed .portal-nav-item.has-submenu summary {
+  justify-content: center;
+  padding: 12px 0;
+}
+
+.portal-sidebar.collapsed .portal-nav-item.has-submenu summary i:first-child {
+  margin-right: 0 !important;
+  width: 100%;
+  text-align: center;
 }
 
 .portal-nav-section-title {

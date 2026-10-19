@@ -302,7 +302,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
                 className="hidden" 
                 accept="image/*"
               />
-              <p className="help-text">Click to change profile picture (Max 20MB)</p>
+              <p className="help-text">Click to change profile picture (Max 5MB, min 200x200px)</p>
             </div>
             <div className="form-group">
               <label>Full Name</label>

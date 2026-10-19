@@ -483,6 +483,7 @@ export default function DashboardLayout({
                               <li key={item.id} className="portal-nav-item">
                                 <NavLink
                                   to={item.to}
+                                  title={item.label}
                                   data-tour={getTourAttr(item.to)}
                                   className={({ isActive }) => (isActive ? 'active' : '')}
                                   onClick={() => setMobileOpen(false)}
@@ -552,6 +553,7 @@ export default function DashboardLayout({
                       <li className="portal-nav-item">
                         <NavLink
                           to={item.to}
+                          title={item.label}
                           data-tour={getTourAttr(item.to)}
                           className={({ isActive }) => {
                              return isActive ? 'active' : '';
