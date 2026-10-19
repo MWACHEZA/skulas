@@ -222,9 +222,20 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     portalVisibility: ['admin'],
     tabs: [
       { id: 'marks', label: 'Marks Entry' },
-      { id: 'reports', label: 'Academic Reports' }
+      { id: 'reports', label: 'Academic Reports' },
+      { id: 'assignments', label: 'Homework & Assignments' }
     ],
     searchKeywords: ['marks entry', 'report cards', 'scores', 'transcripts', 'terminal reports']
+  },
+  {
+    id: 'admin-assignments',
+    label: 'Homework & Assignments',
+    route: '/admin/assignments',
+    group: 'ACADEMICS',
+    icon: 'fas fa-tasks',
+    permissionKey: PERMISSIONS.ACADEMICS_MARKS_ENTRY,
+    portalVisibility: ['admin'],
+    searchKeywords: ['assignments', 'homework', 'tasks', 'submissions', 'grading', 'classwork', 'projects']
   },
   {
     id: 'admin-academics-timetable',
@@ -862,6 +873,16 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     permissionKey: PERMISSIONS.ACADEMICS_STUDY_MATERIAL,
     portalVisibility: ['teacher'],
     searchKeywords: ['handouts', 'lecture notes', 'slides', 'documents']
+  },
+  {
+    id: 'teacher-assignments',
+    label: 'Homework & Assignments',
+    route: '/teacher/assignments',
+    group: 'ACADEMICS',
+    icon: 'fas fa-tasks',
+    permissionKey: PERMISSIONS.ACADEMICS_MARKS_ENTRY,
+    portalVisibility: ['teacher'],
+    searchKeywords: ['assignments', 'homework', 'tasks', 'submissions', 'grading', 'classwork', 'projects']
   },
   {
     id: 'teacher-grades',

@@ -330,6 +330,32 @@ export default function TeacherDashboard() {
 
           <button 
             type="button"
+            onClick={() => navigate('/teacher/assignments')}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              padding: '16px 12px',
+              borderRadius: 12,
+              border: '1px solid #e2e8f0',
+              background: '#f8fafc',
+              color: '#0f172a',
+              fontWeight: 700,
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.15rem' }}>
+              <i className="fas fa-tasks" />
+            </div>
+            <span>Assignments</span>
+          </button>
+
+          <button 
+            type="button"
             onClick={() => navigate('/teacher/curriculum')}
             style={{
               display: 'flex',

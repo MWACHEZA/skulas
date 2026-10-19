@@ -657,6 +657,8 @@ export default function App() {
               <Route path="academics/setup" element={<AdminAcademicsSetup />} />
               <Route path="academics/marks" element={<AdminAcademicsMarks />} />
               <Route path="academics/timetable" element={<AdminAcademicsTimetable />} />
+              <Route path="assignments" element={<TeacherAssignments />} />
+              <Route path="submissions" element={<TeacherSubmissions />} />
 
               {/* 4. Attendance Module */}
               <Route path="attendance" element={<AdminAttendance />} />

@@ -96,26 +96,48 @@ export default function TeacherGradesUnified() {
           </div>
         </div>
 
-        <button
-          onClick={() => navigate('/teacher/reports')}
-          style={{
-            padding: '10px 20px',
-            borderRadius: '10px',
-            border: 'none',
-            background: '#ffffff',
-            color: '#0369a1',
-            fontWeight: 700,
-            fontSize: '0.9rem',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-          }}
-        >
-          <i className="fas fa-file-invoice" />
-          Generate Report Cards
-        </button>
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <button
+            onClick={() => navigate('/teacher/assignments')}
+            style={{
+              padding: '10px 18px',
+              borderRadius: '10px',
+              border: 'none',
+              background: '#ffffff',
+              color: '#0369a1',
+              fontWeight: 700,
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}
+          >
+            <i className="fas fa-tasks" />
+            Homework &amp; Assignments
+          </button>
+
+          <button
+            onClick={() => navigate('/teacher/reports')}
+            style={{
+              padding: '10px 18px',
+              borderRadius: '10px',
+              border: '1px solid rgba(255, 255, 255, 0.4)',
+              background: 'rgba(255, 255, 255, 0.15)',
+              color: '#ffffff',
+              fontWeight: 700,
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8
+            }}
+          >
+            <i className="fas fa-file-invoice" />
+            Generate Report Cards
+          </button>
+        </div>
       </div>
 
       {/* Tabs */}

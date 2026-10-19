@@ -1,9 +1,10 @@
 import { useSearchParams } from 'react-router-dom';
 import MarksEntryPage from '../../shared/pages/MarksEntryPage';
 import AdminReports from './Reports';
+import TeacherAssignments from '../../teacher/pages/Assignments';
 import '../../../styles/portal.css';
 
-type MarksTab = 'marks' | 'reports';
+type MarksTab = 'marks' | 'reports' | 'assignments';
 
 export default function AcademicsMarks() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -23,10 +24,11 @@ export default function AcademicsMarks() {
       </div>
 
       {/* Tabs */}
-      <div style={{ display: 'flex', gap: 8, borderBottom: '2px solid #e2e8f0', marginBottom: 24 }}>
+      <div style={{ display: 'flex', gap: 8, borderBottom: '2px solid #e2e8f0', marginBottom: 24, overflowX: 'auto' }}>
         {[
           { id: 'marks', label: 'Marks Entry & Grading Grid', icon: 'fas fa-marker' },
-          { id: 'reports', label: 'Academic Reports & Card Generator', icon: 'fas fa-file-pdf' }
+          { id: 'reports', label: 'Academic Reports & Card Generator', icon: 'fas fa-file-pdf' },
+          { id: 'assignments', label: 'Homework & Assignments', icon: 'fas fa-tasks' }
         ].map(t => (
           <button
             key={t.id}
@@ -42,7 +44,8 @@ export default function AcademicsMarks() {
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: 8
+              gap: 8,
+              whiteSpace: 'nowrap'
             }}
           >
             <i className={t.icon}></i>
@@ -55,6 +58,7 @@ export default function AcademicsMarks() {
       <div>
         {activeTab === 'marks' && <MarksEntryPage />}
         {activeTab === 'reports' && <AdminReports />}
+        {activeTab === 'assignments' && <TeacherAssignments />}
       </div>
     </>
   );
