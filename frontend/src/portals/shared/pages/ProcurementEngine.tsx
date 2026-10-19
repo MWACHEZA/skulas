@@ -4,7 +4,7 @@ import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 import type { ExportColumn } from '../../../utils/exportService';
 
 export type ProcurementMode = 'REQUEST_ONLY' | 'ADMIN_APPROVE' | 'BURSAR_APPROVE' | 'STORE_ISSUE' | 'FULL';
@@ -336,9 +336,8 @@ export default function ProcurementEngine({ mode: initialMode }: Props) {
 
       {/* Requisitions Table */}
       {loading ? (
-        <div style={{ padding: 60, textAlign: 'center', background: '#fff', borderRadius: 8 }}>
-          <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--school-primary, #0284c7)' }} />
-          <p style={{ marginTop: 12, color: '#64748b' }}>Loading procurement requisitions...</p>
+        <div style={{ background: '#fff', borderRadius: 8, padding: 24, border: '1px solid #e2e8f0' }}>
+          <SkeletonLoader type="table" rows={6} columns={6} />
         </div>
       ) : filtered.length === 0 ? (
         <div style={{ padding: 60, textAlign: 'center', background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0' }}>

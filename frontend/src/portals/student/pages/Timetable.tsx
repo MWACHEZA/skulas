@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
+import { SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -88,7 +89,7 @@ export default function StudentTimetable() {
         </div>
         <div className="portal-card-body" style={{ padding: 0, overflowX: 'auto' }}>
           {loading ? (
-            <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin"></i> Loading...</div>
+            <div style={{ padding: 20 }}><SkeletonLoader type="table" rows={6} columns={6} /></div>
           ) : slots.length === 0 ? (
             <div style={{ padding: 60, textAlign: 'center' }}>
               <i className="fas fa-clock" style={{ fontSize: '3rem', color: '#cbd5e0', marginBottom: 20 }}></i>

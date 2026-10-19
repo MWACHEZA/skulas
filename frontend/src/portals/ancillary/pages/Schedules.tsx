@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SkeletonLoader } from '../../../components/shared';
 
 interface Shift {
   id: string;
@@ -64,9 +65,8 @@ export default function AncillarySchedules() {
       </div>
 
       {loading ? (
-        <div className="portal-card" style={{ padding: 40, textAlign: 'center' }}>
-          <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--portal-primary)' }}></i>
-          <p style={{ color: '#718096', marginTop: 12 }}>Loading schedule...</p>
+        <div className="portal-card" style={{ padding: 24 }}>
+          {viewMode === 'table' ? <SkeletonLoader type="table" rows={6} columns={5} /> : <SkeletonLoader type="card" count={6} />}
         </div>
       ) : shifts.length === 0 ? (
         <div className="portal-card" style={{ padding: 60, textAlign: 'center' }}>

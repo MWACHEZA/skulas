@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import TabbedPage, { type TabItem } from '../../../components/portals/shared/TabbedPage';
-import { SearchableCombobox, type ComboboxOption } from '../../../components/shared';
+import { SearchableCombobox, type ComboboxOption, SkeletonLoader } from '../../../components/shared';
 
 export default function BoardingManagement() {
   const [hostels, setHostels] = useState<any[]>([]);
@@ -266,7 +266,7 @@ export default function BoardingManagement() {
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
           {loading ? (
-            <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin"></i> Loading...</div>
+            <div style={{ padding: 20 }}><SkeletonLoader type="table" rows={6} columns={6} /></div>
           ) : (
             <table className="portal-table">
               <thead>
@@ -355,9 +355,8 @@ export default function BoardingManagement() {
 
       <div className="portal-card-body p-0">
         {approvalsLoading ? (
-          <div style={{ padding: '3rem', textAlign: 'center' }}>
-            <i className="fas fa-spinner fa-spin fa-2x text-primary mb-2"></i>
-            <p>Loading requisitions...</p>
+          <div style={{ padding: '1.5rem' }}>
+            <SkeletonLoader type="table" rows={5} columns={6} />
           </div>
         ) : approvalsTab === 'STUDENT_LEADER' ? (
           // Sub-tab B: Student Leader Requests

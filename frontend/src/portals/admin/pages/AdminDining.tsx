@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 import '../../../styles/portal.css';
 
 type DiningTab = 'menu' | 'reports';
@@ -174,9 +175,9 @@ export default function AdminDining() {
 
       {/* Tab Panels */}
       {loading ? (
-        <div style={{ padding: 60, textAlign: 'center', background: '#fff', borderRadius: '8px' }}>
-          <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#ea580c' }}></i>
-          <p style={{ marginTop: 12, color: '#64748b' }}>Loading dining schedule...</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <SkeletonLoader type="stats" count={3} />
+          <SkeletonLoader type="card" count={4} />
         </div>
       ) : activeTab === 'menu' ? (
         <div>

@@ -4,6 +4,7 @@ import { useToast } from '../../../context/ToastContext';
 import api, { BASE_URL } from '../../../lib/api';
 import { getAvatarUrl } from '../../../utils/formatters';
 import ActiveSessions from '../../../components/shared/ActiveSessions';
+import { SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 export default function ProfilePage() {
@@ -262,10 +263,8 @@ export default function ProfilePage() {
 
   if (fetchingProfile && !profileData) {
     return (
-      <div className="portal-container" style={{ padding: '80px 20px', textAlign: 'center', color: '#64748b' }}>
-        <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7', marginBottom: '16px' }}></i>
-        <h3 style={{ margin: 0, fontWeight: 800, color: '#0f172a' }}>Loading Staff Profile...</h3>
-        <p style={{ marginTop: '8px', color: '#64748b' }}>Synchronizing credentials and operational assignments from database.</p>
+      <div className="portal-container" style={{ padding: '24px 0' }}>
+        <SkeletonLoader type="profile" />
       </div>
     );
   }

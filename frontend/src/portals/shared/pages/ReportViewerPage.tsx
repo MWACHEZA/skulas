@@ -7,6 +7,7 @@ import html2canvas from 'html2canvas';
 import { createRoot } from 'react-dom/client';
 import { flushSync } from 'react-dom';
 import '../../../styles/portal.css';
+import { SkeletonLoader } from '../../../components/shared';
 import InstitutionalReportDocument from '../../../components/portals/shared/InstitutionalReportDocument';
 
 import { 
@@ -154,8 +155,8 @@ export default function ReportViewerPage() {
   };
 
   if (loading) return (
-    <div className="portal-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '400px' }}>
-      <div className="portal-spinner"></div>
+    <div className="portal-container" style={{ padding: '24px 0' }}>
+      <SkeletonLoader type="card" count={4} />
     </div>
   );
 
@@ -739,7 +740,7 @@ ${summary ? `<table class="summary-table"><tbody>${summary}</tbody></table>` : '
                   const totalPages = Math.ceil(allRecords.length / itemsPerPage);
                   const paginatedRecords = allRecords.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
                   
-                  if (loading) return <tr><td colSpan={10} style={{ textAlign: 'center', padding: '20px' }}>Loading...</td></tr>;
+                  if (loading) return <tr><td colSpan={10} style={{ padding: '24px' }}><SkeletonLoader type="table" rows={6} columns={6} /></td></tr>;
                   if (paginatedRecords.length === 0) return <tr><td colSpan={10} style={{ textAlign: 'center', padding: '20px' }}>No records found.</td></tr>;
 
                   return paginatedRecords.map((item: any, i: number) => (

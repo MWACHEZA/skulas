@@ -4,6 +4,7 @@ import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
 import '../../../styles/portal.css';
 import { useTerminology } from '../../../hooks/useTerminology';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 const exportToCSV = (title: string, headers: string[], dataRows: string[][]) => {
   const content = [
@@ -229,6 +230,11 @@ export default function StudentLedgersPage() {
 
       {/* Main Ledger Table */}
       <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+        {loading ? (
+          <div style={{ padding: '16px' }}>
+            <SkeletonLoader type="table" rows={8} columns={9} />
+          </div>
+        ) : (
         <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
           <thead>
             <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: 600 }}>
@@ -244,13 +250,7 @@ export default function StudentLedgersPage() {
             </tr>
           </thead>
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={9} style={{ textAlign: 'center', padding: 48, color: '#64748b' }}>
-                  <i className="fas fa-spinner fa-spin" style={{ marginRight: 8 }} /> Loading financial ledgers...
-                </td>
-              </tr>
-            ) : filteredLedgers.length === 0 ? (
+            {filteredLedgers.length === 0 ? (
               <tr>
                 <td colSpan={9} style={{ textAlign: 'center', padding: 48, color: '#94a3b8' }}>
                   No student ledger accounts found.
@@ -323,6 +323,7 @@ export default function StudentLedgersPage() {
             )}
           </tbody>
         </table>
+        )}
       </div>
 
       {/* View-Only Statement Modal Drilldown */}

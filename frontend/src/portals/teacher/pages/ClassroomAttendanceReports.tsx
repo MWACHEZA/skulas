@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useNavigate } from 'react-router-dom';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 interface ClassItem {
   id: string;
@@ -343,9 +344,8 @@ export default function ClassroomAttendanceReports() {
 
         <div className="portal-card-body" style={{ padding: 0, overflowX: 'auto' }}>
           {loading ? (
-            <div style={{ textAlign: 'center', padding: 48 }}>
-              <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7', marginBottom: 12 }} />
-              <p style={{ color: '#64748b', fontSize: '0.9rem' }}>Compiling attendance records...</p>
+            <div style={{ padding: '16px' }}>
+              <SkeletonLoader type="table" rows={8} columns={6} />
             </div>
           ) : filteredStudents.length === 0 ? (
             <div style={{ textAlign: 'center', padding: 48, color: '#94a3b8' }}>

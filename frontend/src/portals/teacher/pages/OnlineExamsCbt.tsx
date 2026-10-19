@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 export default function OnlineExamsCbt() {
   const [exams, setExams] = useState<any[]>([]);
@@ -31,7 +32,14 @@ export default function OnlineExamsCbt() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="portal-container" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <SkeletonLoader type="stats" count={3} />
+        <SkeletonLoader type="table" rows={5} columns={4} />
+      </div>
+    );
+  }
 
   return (
     <div className="portal-container">

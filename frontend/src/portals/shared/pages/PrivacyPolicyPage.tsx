@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../../lib/api';
+import { SkeletonLoader } from '../../../components/shared';
 
 export default function PrivacyPolicyPage() {
   const [loading, setLoading] = useState(true);
@@ -110,8 +111,8 @@ export default function PrivacyPolicyPage() {
         </div>
 
         {loading ? (
-          <div style={{ padding: '40px 0', textAlign: 'center', color: '#64748b' }}>
-            <i className="fas fa-spinner fa-spin"></i> Loading policy details...
+          <div style={{ padding: '24px 0' }}>
+            <SkeletonLoader type="text" count={6} />
           </div>
         ) : settings.privacyPolicyOverride ? (
           <div style={{ lineHeight: 1.7, fontSize: '0.95rem', whiteSpace: 'pre-wrap' }}>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 const ACCENT_COLORS = ['#2563eb', '#7c3aed', '#059669', '#d97706', '#dc2626', '#0891b2', '#4f46e5', '#db2777'];
@@ -77,8 +78,8 @@ export default function LibraryResourceCategories() {
 
       {/* Reduced-Size Compact Category Tiles */}
       {loading ? (
-        <div style={{ padding: '60px', textAlign: 'center', color: '#64748b' }}>
-          <i className="fas fa-spinner fa-spin mr-2"></i> Loading category classifications...
+        <div style={{ padding: '24px 0' }}>
+          <SkeletonLoader type="card" count={6} />
         </div>
       ) : categories.length === 0 ? (
         <div className="portal-card" style={{ padding: '60px', textAlign: 'center', color: '#64748b', borderRadius: 16 }}>

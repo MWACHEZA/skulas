@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useToast } from '../../../context/ToastContext';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 interface SupervisionAssignment {
   id: string;
@@ -60,7 +61,14 @@ export default function SupervisorDashboard() {
     }
   };
 
-  if (loading) return <div className="portal-loader">Loading supervision dashboard...</div>;
+  if (loading) {
+    return (
+      <div className="supervisor-portal" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <SkeletonLoader type="stats" count={3} />
+        <SkeletonLoader type="card" count={3} />
+      </div>
+    );
+  }
 
   return (
     <div className="supervisor-portal">

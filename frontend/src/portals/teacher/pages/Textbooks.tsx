@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 interface Book {
   id: string;
@@ -225,9 +226,8 @@ export default function TeacherTextbooks() {
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
           {loading ? (
-            <div style={{ padding: 40, textAlign: 'center' }}>
-              <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#cbd5e0' }}></i>
-              <p style={{ color: '#718096', marginTop: 12 }}>Loading inventory...</p>
+            <div style={{ padding: '16px' }}>
+              <SkeletonLoader type="table" rows={6} columns={6} />
             </div>
           ) : books.length === 0 ? (
             <div style={{ padding: 60, textAlign: 'center', color: '#718096' }}>

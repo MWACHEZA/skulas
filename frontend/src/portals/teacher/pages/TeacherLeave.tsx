@@ -5,6 +5,7 @@ import { useToast } from '../../../context/ToastContext';
 import TabbedPage from '../../../components/portals/shared/TabbedPage';
 import ExportButton from '../../../components/shared/ExportButton';
 import SearchInput from '../../../components/shared/SearchInput';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 interface LeaveTypeItem {
   code: string;
@@ -428,9 +429,8 @@ export default function TeacherLeave() {
       {/* Applications Table */}
       <div style={{ background: '#fff', borderRadius: 10, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
         {loading ? (
-          <div style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>
-            <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7' }} />
-            <p style={{ marginTop: 8 }}>Loading leave records...</p>
+          <div style={{ padding: '16px' }}>
+            <SkeletonLoader type="table" rows={6} columns={6} />
           </div>
         ) : myLeaves.length === 0 ? (
           <div style={{ padding: 48, textAlign: 'center', color: '#64748b' }}>

@@ -3,7 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
-import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption, SkeletonLoader } from '../../../components/shared';
 import type { ExportColumn } from '../../../utils/exportService';
 import '../../../styles/portal.css';
 
@@ -356,9 +356,8 @@ export default function FinanceBilling() {
       {/* Main Tab Content */}
       <div className="portal-card" style={{ padding: 0 }}>
         {loading ? (
-          <div style={{ padding: 60, textAlign: 'center', color: '#64748b' }}>
-            <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#2563eb', marginBottom: 12 }}></i>
-            <p>Loading financial transactions...</p>
+          <div style={{ padding: '16px' }}>
+            <SkeletonLoader type="table" rows={8} columns={7} />
           </div>
         ) : (
           <>

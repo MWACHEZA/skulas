@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 
 interface BookItem {
   id: string;
@@ -240,7 +240,7 @@ export default function StudentLibraryAssistantPage() {
           </div>
           <div className="portal-card-body portal-p-0">
             {loading ? (
-              <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin fa-2x"></i></div>
+              <div style={{ padding: 20 }}><SkeletonLoader type="table" rows={4} columns={5} /></div>
             ) : recentDuties.length === 0 ? (
               <div style={{ padding: 40, textAlign: 'center', color: '#718096' }}>
                 No desk transactions recorded yet today. Use "Shelf Catalog Search" to assist walk-in students with book checkouts.
@@ -314,7 +314,7 @@ export default function StudentLibraryAssistantPage() {
           </div>
           <div className="portal-card-body portal-p-0">
             {loading ? (
-              <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin fa-2x"></i></div>
+              <div style={{ padding: 20 }}><SkeletonLoader type="table" rows={6} columns={5} /></div>
             ) : filteredCatalog.length === 0 ? (
               <div style={{ padding: 40, textAlign: 'center', color: '#718096' }}>
                 No books match your search.

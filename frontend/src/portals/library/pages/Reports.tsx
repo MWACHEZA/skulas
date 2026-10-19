@@ -5,6 +5,7 @@ import {
   LineChart, Line, BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 import '../../../styles/portal.css';
 
 type ReportTab = 'circulation' | 'inventory' | 'users' | 'financial' | 'reservations';
@@ -223,10 +224,10 @@ export default function LibraryReports() {
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: '120px 20px' }}>
-        <div className="portal-spinner" style={{ margin: '0 auto 16px' }}></div>
-        <h3 style={{ color: '#1e293b', fontWeight: 800 }}>Generating Analytics & Visual Reports...</h3>
-        <p style={{ color: '#64748b', fontSize: '0.9rem' }}>Compiling circulation patterns, inventory audits, and financial subsets</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <SkeletonLoader type="stats" count={4} />
+        <SkeletonLoader type="card" count={3} />
+        <SkeletonLoader type="table" rows={6} columns={5} />
       </div>
     );
   }

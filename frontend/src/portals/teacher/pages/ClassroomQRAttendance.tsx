@@ -3,6 +3,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
 import { format } from 'date-fns';
+import { SkeletonLoader } from '../../../components/shared';
 
 interface ClassOption {
   id: string;
@@ -603,8 +604,8 @@ export default function ClassroomQRAttendance() {
                   style={{ width: isFullscreen ? 320 : 240, height: isFullscreen ? 320 : 240, display: 'block', margin: '0 auto' }}
                 />
               ) : (
-                <div style={{ width: 240, height: 240, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7' }} />
+                <div style={{ width: 240, height: 240, margin: '0 auto' }}>
+                  <SkeletonLoader type="custom" height="240px" width="240px" />
                 </div>
               )}
             </div>

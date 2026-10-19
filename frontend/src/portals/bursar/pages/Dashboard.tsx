@@ -1,6 +1,7 @@
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useAccountingQuery } from '../../../hooks/useAccountingQuery';
+import { SkeletonLoader } from '../../../components/shared';
 
 interface DashboardData {
   metrics: {
@@ -37,9 +38,11 @@ export default function BursarDashboard() {
   });
 
   if (isLoading) return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', flexDirection: 'column', gap: 16 }}>
-      <i className="fas fa-spinner fa-spin fa-3x" style={{ color: 'var(--portal-primary)', opacity: 0.6 }}></i>
-      <p style={{ color: '#718096' }}>Loading financial dashboard...</p>
+    <div style={{ padding: '24px' }}>
+      <SkeletonLoader type="stats" />
+      <div style={{ marginTop: '24px' }}>
+        <SkeletonLoader type="table" rows={6} columns={6} />
+      </div>
     </div>
   );
 

@@ -4,6 +4,7 @@ import { useToast } from '../../../../context/ToastContext';
 import { useAuth } from '../../../../contexts/AuthContext';
 import SearchInput from '../../../../components/shared/SearchInput';
 import ExportButton from '../../../../components/shared/ExportButton';
+import { SkeletonLoader } from '../../../../components/shared';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -707,7 +708,7 @@ export default function PayrollList() {
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={11} style={{ textAlign: 'center', padding: 40 }}><i className="fas fa-spinner fa-spin mr-2" /> Loading payroll run...</td></tr>
+                  <tr><td colSpan={11} style={{ padding: 24 }}><SkeletonLoader type="table" rows={6} columns={11} /></td></tr>
                 ) : filteredEntries.length === 0 ? (
                   <tr><td colSpan={11} style={{ textAlign: 'center', padding: 40, color: '#94a3b8' }}>No payroll entries found for this period. Click "Generate Draft Payroll" above.</td></tr>
                 ) : (

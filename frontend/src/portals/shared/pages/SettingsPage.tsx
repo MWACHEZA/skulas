@@ -3,6 +3,7 @@ import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import '../../../styles/portal.css';
+import { SkeletonLoader } from '../../../components/shared';
 
 // Website Settings subcomponents
 import BannerSettings from './website-settings/BannerSettings';
@@ -293,9 +294,8 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
 
   if (loading) {
     return (
-      <div className="portal-container" style={{ padding: '80px', textAlign: 'center' }}>
-        <div className="portal-spinner" style={{ margin: '0 auto 20px' }}></div>
-        <p style={{ fontWeight: 800, color: '#64748b' }}>Synchronizing institutional & accounting registry...</p>
+      <div className="portal-container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px 0' }}>
+        <SkeletonLoader type="form" />
       </div>
     );
   }

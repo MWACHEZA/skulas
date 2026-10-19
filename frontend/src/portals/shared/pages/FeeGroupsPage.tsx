@@ -4,7 +4,7 @@ import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
 import '../../../styles/portal.css';
 import { useTerminology } from '../../../hooks/useTerminology';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 
 interface FeeGroup {
   id: string;
@@ -434,9 +434,8 @@ export default function FeeGroupsPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={7} style={{ padding: '60px 20px', textAlign: 'center', color: '#64748b' }}>
-                    <i className="fas fa-spinner fa-spin" style={{ fontSize: '1.5rem', color: '#0284c7', marginBottom: 8, display: 'block' }} />
-                    Loading fee groups...
+                  <td colSpan={7} style={{ padding: '24px' }}>
+                    <SkeletonLoader type="table" rows={6} columns={7} />
                   </td>
                 </tr>
               ) : filteredGroups.length === 0 ? (

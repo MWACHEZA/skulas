@@ -4,6 +4,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import TabbedPage from '../../../components/portals/shared/TabbedPage';
 import ViewingAsToggle from '../../../components/shared/ViewingAsToggle';
+import { SkeletonLoader } from '../../../components/shared';
 import { useModuleAccess } from '../../../hooks/useModuleAccess';
 
 export default function SportsModule() {
@@ -28,7 +29,11 @@ export default function SportsModule() {
   const fetchHouses = () => api.get('/api/sports-extended/houses').then(res => setHouses(res.data)).catch(console.error);
   const fetchEquipment = () => api.get('/api/sports-extended/equipment').then(res => setEquipment(res.data)).catch(console.error);
 
-  if (!access) return <div>Loading...</div>;
+  if (!access) return (
+    <div className="portal-page" style={{ padding: 24 }}>
+      <SkeletonLoader type="card" count={3} />
+    </div>
+  );
 
   if (access.level === 'none') {
     return (

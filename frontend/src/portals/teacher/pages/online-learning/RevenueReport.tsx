@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../../../lib/api';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { formatCurrency } from '../../../../utils/formatters';
+import { SkeletonLoader } from '../../../../components/shared';
 
 export default function RevenueReport() {
   const [report, setReport] = useState<any>(null);
@@ -21,7 +22,11 @@ export default function RevenueReport() {
   };
 
   if (!report) {
-    return <div>Loading...</div>;
+    return (
+      <div className="portal-container" style={{ padding: 24 }}>
+        <SkeletonLoader type="stats" count={3} />
+      </div>
+    );
   }
 
   return (

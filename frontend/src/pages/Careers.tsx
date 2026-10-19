@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../lib/api';
 import { useToast } from '../context/ToastContext';
+import { SkeletonLoader } from '../components/shared';
 
 export default function Careers() {
   const { schoolCode } = useParams<{ schoolCode: string }>();
@@ -488,9 +489,8 @@ export default function Careers() {
       </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '80px 24px' }}>
-          <div className="portal-spinner" style={{ margin: '0 auto 16px' }}></div>
-          <p style={{ fontWeight: 600, color: '#64748b' }}>Synchronizing vacancy database...</p>
+        <div style={{ padding: '24px 0' }}>
+          <SkeletonLoader type="card" count={4} />
         </div>
       ) : vacancies.length > 0 ? (
         <div className="job-grid">

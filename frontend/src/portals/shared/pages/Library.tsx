@@ -5,6 +5,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useToast } from '../../../context/ToastContext';
 import SearchInput from '../../../components/shared/SearchInput';
+import { SkeletonLoader } from '../../../components/shared';
 
 import { useModuleAccess } from '../../../hooks/useModuleAccess';
 import ViewingAsToggle from '../../../components/shared/ViewingAsToggle';
@@ -390,7 +391,7 @@ export default function Library() {
 
           {/* Catalog Listing */}
           {loadingCatalog ? (
-            <div style={{ padding: 60, textAlign: 'center' }}><i className="fas fa-spinner fa-spin fa-2x"></i></div>
+            <div style={{ padding: '24px 0' }}><SkeletonLoader type="card" count={6} /></div>
           ) : filteredBooks.length === 0 ? (
             <div className="portal-card" style={{ padding: 40, textAlign: 'center', color: '#718096' }}>
               No books found matching your search.
@@ -467,7 +468,7 @@ export default function Library() {
           </div>
           <div className="portal-card-body" style={{ padding: 0 }}>
             {loadingLoans ? (
-              <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin"></i> Loading borrowed books...</div>
+              <div style={{ padding: 20 }}><SkeletonLoader type="table" rows={5} columns={6} /></div>
             ) : myLoans.length === 0 ? (
               <div style={{ padding: 40, textAlign: 'center', color: '#718096' }}>
                 You have no active book loans. Browse the Resource Catalog to borrow books from the library.
@@ -545,7 +546,7 @@ export default function Library() {
           </div>
           <div className="portal-card-body" style={{ padding: 0 }}>
             {loadingReservations ? (
-              <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin"></i> Loading reservations...</div>
+              <div style={{ padding: 20 }}><SkeletonLoader type="table" rows={4} columns={5} /></div>
             ) : myReservations.length === 0 ? (
               <div style={{ padding: 40, textAlign: 'center', color: '#718096' }}>
                 You have no pending book holds. When you find a book you want in the Catalog, click "Reserve" to hold it.

@@ -4,6 +4,7 @@ import { toast } from '../../../context/ToastContext';
 import { format } from "date-fns";
 import { useTerminology } from "../../../hooks/useTerminology";
 import '../../../styles/portal.css';
+import SkeletonLoader from "../../../components/shared/SkeletonLoader";
 
 interface Category {
   id: string;
@@ -206,27 +207,25 @@ const ExpensesPage: React.FC = () => {
           </span>
         </div>
         <div className="table-responsive">
-          <table className="management-table">
-            <thead>
-              <tr>
-                <th style={{ paddingLeft: '32px' }}>Date</th>
-                <th>Expense Detail</th>
-                <th>Transaction Amount</th>
-                <th>Cost Center</th>
-                <th>Mode</th>
-                <th>Currency</th>
-                <th style={{ textAlign: 'right', paddingRight: '32px' }}>Management</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
+          {loading ? (
+            <div style={{ padding: '16px' }}>
+              <SkeletonLoader type="table" rows={8} columns={7} />
+            </div>
+          ) : (
+            <table className="management-table">
+              <thead>
                 <tr>
-                  <td colSpan={7} style={{ textAlign: 'center', padding: '100px' }}>
-                    <div className="portal-spinner" style={{ margin: '0 auto 16px' }}></div>
-                    <p style={{ fontWeight: 800, color: '#64748b' }}>Auditing ledger records...</p>
-                  </td>
+                  <th style={{ paddingLeft: '32px' }}>Date</th>
+                  <th>Expense Detail</th>
+                  <th>Transaction Amount</th>
+                  <th>Cost Center</th>
+                  <th>Mode</th>
+                  <th>Currency</th>
+                  <th style={{ textAlign: 'right', paddingRight: '32px' }}>Management</th>
                 </tr>
-              ) : (Array.isArray(expenses) ? expenses : []).length === 0 ? (
+              </thead>
+              <tbody>
+                {(Array.isArray(expenses) ? expenses : []).length === 0 ? (
                 <tr>
                   <td colSpan={7} style={{ textAlign: 'center', padding: '100px', color: '#94a3b8' }}>
                     <i className="fas fa-receipt" style={{ fontSize: '3.5rem', display: 'block', marginBottom: '24px', opacity: 0.1 }}></i>
@@ -260,6 +259,7 @@ const ExpensesPage: React.FC = () => {
               ))}
             </tbody>
           </table>
+          )}
         </div>
       </div>
 

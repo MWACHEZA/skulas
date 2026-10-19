@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type WalletTab = 'sales' | 'inventory' | 'topups';
@@ -227,9 +227,8 @@ export default function FinanceWallets() {
       {/* Content */}
       <div className="portal-card" style={{ padding: 0 }}>
         {loading ? (
-          <div style={{ padding: 60, textAlign: 'center', color: '#64748b' }}>
-            <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#2563eb', marginBottom: 12 }}></i>
-            <p>Loading records...</p>
+          <div style={{ padding: '16px' }}>
+            <SkeletonLoader type="table" rows={8} columns={6} />
           </div>
         ) : (
           <>

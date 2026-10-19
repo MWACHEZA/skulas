@@ -3,6 +3,7 @@ import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { generateShortCode } from '../../../lib/utils';
 import { useAcademicConfig } from '../../../hooks/useAcademicConfig';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 export interface DepartmentItem {
   id: string;
@@ -171,7 +172,9 @@ export default function AdminSubjects() {
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
           {loading ? (
-             <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin"></i> Loading...</div>
+             <div style={{ padding: '16px' }}>
+               <SkeletonLoader type="table" rows={8} columns={6} />
+             </div>
           ) : (
             <table className="portal-table">
               <thead>

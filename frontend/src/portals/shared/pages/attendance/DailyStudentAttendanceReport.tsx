@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTerminology } from '../../../../hooks/useTerminology';
 import api from '../../../../lib/api';
 import { useToast } from '../../../../context/ToastContext';
+import { SkeletonLoader } from '../../../../components/shared';
 
 interface StudentReport {
   studentId: string;
@@ -170,9 +171,8 @@ export default function DailyStudentAttendanceReport() {
       </div>
 
       {loading && (
-        <div className="portal-card" style={{ textAlign: 'center', padding: 40 }}>
-          <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--portal-primary)', marginBottom: 12 }}></i>
-          <p style={{ color: '#718096' }}>Fetching attendance data for all days in the month...</p>
+        <div className="portal-card" style={{ padding: '24px' }}>
+          <SkeletonLoader type="table" rows={6} columns={6} />
         </div>
       )}
 

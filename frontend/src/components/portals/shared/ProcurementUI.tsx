@@ -6,6 +6,7 @@ import { StockTab, SuppliersTab } from '../../../portals/shared/pages/UniformsPa
 import type { Supplier, UniformItem, StockOrder } from '../../../portals/shared/pages/UniformsPage';
 import { useToast } from '../../../context/ToastContext';
 import { NewRequisitionModal } from './NewRequisitionModal';
+import { SkeletonLoader } from '../../shared';
 
 const exportToCSV = (title: string, headers: string[], dataRows: string[][]) => {
   const content = [
@@ -333,7 +334,9 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
             </div>
             <div className="portal-card-body" style={{ padding: 0 }}>
               {loading ? (
-                <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin"></i> Loading...</div>
+                <div style={{ padding: 24 }}>
+                  <SkeletonLoader type="table" rows={6} columns={6} />
+                </div>
               ) : (
                 <table className="portal-table">
                   <thead>
@@ -508,9 +511,8 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
             </button>
           </div>
           {uniformsLoading ? (
-            <div className="portal-card" style={{ padding: '60px', textAlign: 'center' }}>
-              <div className="portal-spinner" style={{ margin: '0 auto 24px' }}></div>
-              <p style={{ fontWeight: 900, color: '#64748b' }}>Loading stock order registries...</p>
+            <div className="portal-card" style={{ padding: '24px' }}>
+              <SkeletonLoader type="table" rows={6} columns={6} />
             </div>
           ) : (
             <StockTab 
@@ -529,9 +531,8 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
       {activeTab === 'suppliers' && canManageUniforms && (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
           {uniformsLoading ? (
-            <div className="portal-card" style={{ padding: '60px', textAlign: 'center' }}>
-              <div className="portal-spinner" style={{ margin: '0 auto 24px' }}></div>
-              <p style={{ fontWeight: 900, color: '#64748b' }}>Loading supplier registries...</p>
+            <div className="portal-card" style={{ padding: '24px' }}>
+              <SkeletonLoader type="table" rows={6} columns={6} />
             </div>
           ) : (
             <SuppliersTab suppliers={suppliers} onUpdate={fetchUniformsData} canManage={true} />

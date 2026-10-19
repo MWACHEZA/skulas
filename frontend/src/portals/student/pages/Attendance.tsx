@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import api from '../../../lib/api';
+import { SkeletonLoader } from '../../../components/shared';
 
 interface AttendanceRecord {
   date: string;
@@ -62,6 +63,17 @@ export default function StudentAttendance() {
     if (filterStatus === 'ALL') return true;
     return (r.status || '').toLowerCase() === filterStatus.toLowerCase();
   });
+
+  if (loading) {
+    return (
+      <div className="portal-container" style={{ maxWidth: 1200, margin: '0 auto', padding: '24px 0' }}>
+        <SkeletonLoader type="stats" count={4} />
+        <div style={{ marginTop: 24 }}>
+          <SkeletonLoader type="table" rows={6} columns={4} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="portal-container" style={{ maxWidth: 1200, margin: '0 auto', paddingBottom: 40 }}>

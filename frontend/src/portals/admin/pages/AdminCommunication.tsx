@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
-import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption, SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type CommunicationTab = 'messages' | 'announcements' | 'approvals';
@@ -459,9 +459,8 @@ export default function AdminCommunication() {
 
       {/* Tab Content */}
       {loading ? (
-        <div style={{ padding: 60, textAlign: 'center', background: '#fff', borderRadius: '8px' }}>
-          <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7' }}></i>
-          <p style={{ marginTop: 12, color: '#64748b' }}>Loading messages & broadcasts...</p>
+        <div style={{ padding: '16px', background: '#fff', borderRadius: '8px' }}>
+          <SkeletonLoader type="table" rows={8} columns={6} />
         </div>
       ) : activeTab === 'messages' ? (
         /* Messages Table */

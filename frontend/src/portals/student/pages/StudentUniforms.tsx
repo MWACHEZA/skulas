@@ -3,6 +3,7 @@ import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency, getAvatarUrl } from '../../../utils/formatters';
+import { SkeletonLoader } from '../../../components/shared';
 
 interface UniformItem {
   id: string;
@@ -201,9 +202,8 @@ export default function StudentUniforms() {
           </div>
 
           {loading ? (
-            <div style={{ textAlign: 'center', padding: 60, color: '#64748b' }}>
-              <i className="fas fa-spinner fa-spin fa-2x mr-2" style={{ color: '#8b5cf6' }}></i>
-              Loading uniform items...
+            <div style={{ padding: '20px 0' }}>
+              <SkeletonLoader type="card" count={4} />
             </div>
           ) : filteredItems.length === 0 ? (
             <div className="portal-card" style={{ textAlign: 'center', padding: '60px 20px', color: '#64748b' }}>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 
 export type ReportsTab = 'patients' | 'analytics' | 'billing';
 
@@ -266,8 +266,8 @@ export default function ClinicReportsUnifiedPage() {
           {selectedStudentFile && (
             <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', padding: 24 }}>
               {loadingFile ? (
-                <div style={{ textAlign: 'center', padding: '40px 0' }}>
-                  <i className="fas fa-spinner fa-spin fa-2x" />
+                <div style={{ padding: '20px' }}>
+                  <SkeletonLoader type="profile" />
                 </div>
               ) : (
                 <div>
@@ -355,8 +355,11 @@ export default function ClinicReportsUnifiedPage() {
           </div>
 
           {loadingAnalytics ? (
-            <div style={{ textAlign: 'center', padding: '40px 0' }}>
-              <i className="fas fa-spinner fa-spin fa-2x" />
+            <div style={{ padding: '20px' }}>
+              <SkeletonLoader type="stats" />
+              <div style={{ marginTop: '16px' }}>
+                <SkeletonLoader type="table" rows={5} columns={5} />
+              </div>
             </div>
           ) : !analyticsData ? (
             <p>No analytics data available.</p>

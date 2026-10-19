@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface PaymentMethod {
@@ -117,9 +118,8 @@ export default function PaymentMethodsPage() {
       </div>
 
       {loading ? (
-        <div className="portal-card" style={{ padding: '100px 24px', textAlign: 'center' }}>
-          <div className="portal-spinner" style={{ margin: '0 auto 24px' }}></div>
-          <p style={{ color: '#64748b', fontWeight: 800, fontSize: '1.1rem' }}>Synchronizing account registry...</p>
+        <div className="portal-card" style={{ padding: '24px' }}>
+          <SkeletonLoader type="card" count={4} />
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '32px' }}>

@@ -3,6 +3,7 @@ import api from '../../../../lib/api';
 import { useToast } from '../../../../context/ToastContext';
 import { useTerminology } from '../../../../hooks/useTerminology';
 import '../../../../styles/portal.css';
+import { SkeletonLoader } from '../../../../components/shared';
 
 interface Visitor {
   id: string;
@@ -249,7 +250,9 @@ export default function VisitorBookPage() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={8} style={{ textAlign: 'center', padding: '40px' }}>Loading...</td>
+                    <td colSpan={8} style={{ padding: '24px' }}>
+                      <SkeletonLoader type="table" rows={6} columns={8} />
+                    </td>
                   </tr>
                 ) : filteredVisitors.length === 0 ? (
                   <tr>

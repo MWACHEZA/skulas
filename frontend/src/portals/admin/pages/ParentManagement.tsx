@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import api, { BASE_URL } from '../../../lib/api';
 import ManagementDetailPanel from '../../../components/shared/ManagementDetailPanel';
 import UserEditModal from '../../../components/shared/UserEditModal';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl, parseCleanBadges } from '../../../utils/formatters';
@@ -161,9 +161,8 @@ export default function ParentManagement() {
 
         <div className="management-table-card">
           {loading ? (
-            <div style={{ textAlign: 'center', padding: 40 }}>
-              <i className="fas fa-spinner fa-spin" style={{ fontSize: '2rem', color: 'var(--portal-primary)' }}></i>
-              <p>Loading parent records...</p>
+            <div style={{ padding: '16px' }}>
+              <SkeletonLoader type="table" rows={8} columns={6} />
             </div>
           ) : (
             <table className="management-table">

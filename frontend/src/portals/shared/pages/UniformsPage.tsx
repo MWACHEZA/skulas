@@ -7,6 +7,7 @@ import ManagementDetailPanel from "../../../components/shared/ManagementDetailPa
 import '../../../styles/portal.css';
 import { useAccountingQuery, invalidateAllAccountingKeys } from "../../../hooks/useAccountingQuery";
 import { EmptyState } from "../../../components/common/EmptyState";
+import SkeletonLoader from "../../../components/shared/SkeletonLoader";
 
 export interface UniformItem {
   id: string;
@@ -279,9 +280,8 @@ const UniformsPage: React.FC = () => {
       </div>
 
       {loading ? (
-        <div className="portal-card animate-in fade-in duration-500 portal-loading-card-padded">
-          <div className="portal-spinner portal-spinner-centered"></div>
-          <p className="portal-loading-text">Synchronizing institutional registry...</p>
+        <div style={{ padding: '24px', background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+          <SkeletonLoader type="table" rows={8} columns={6} />
         </div>
       ) : (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">

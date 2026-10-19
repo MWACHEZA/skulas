@@ -3,6 +3,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
 import '../../../styles/portal.css';
+import { SkeletonLoader } from '../../../components/shared';
 
 interface WeeklyMenuData {
   breakfast: string;
@@ -496,9 +497,8 @@ export default function DHRepresentative() {
       </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '60px 0' }}>
-          <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#2563eb' }}></i>
-          <p style={{ marginTop: '14px', color: '#64748b', fontWeight: 600 }}>Refreshing live dining hall menu...</p>
+        <div style={{ padding: '24px 0' }}>
+          <SkeletonLoader type="card" count={3} />
         </div>
       ) : (
         <>

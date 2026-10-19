@@ -5,6 +5,7 @@ import api from '../../../../lib/api';
 import { format } from 'date-fns';
 import SearchInput from '../../../../components/shared/SearchInput';
 import ExportButton from '../../../../components/shared/ExportButton';
+import { SkeletonLoader } from '../../../../components/shared';
 import { useModuleAccess } from '../../../../hooks/useModuleAccess';
 import ViewingAsToggle from '../../../../components/shared/ViewingAsToggle';
 
@@ -272,8 +273,8 @@ export default function MyAwards() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={viewMode === 'institutional' ? 5 : 4} style={{ textAlign: 'center', padding: 40, color: '#64748b' }}>
-                    <i className="fas fa-spinner fa-spin mr-2" /> Loading awards registry...
+                  <td colSpan={viewMode === 'institutional' ? 5 : 4} style={{ padding: 24 }}>
+                    <SkeletonLoader type="table" rows={6} columns={viewMode === 'institutional' ? 5 : 4} />
                   </td>
                 </tr>
               ) : paginatedAwards.length === 0 ? (

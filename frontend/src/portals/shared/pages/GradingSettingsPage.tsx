@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface GradeRow {
@@ -85,8 +86,8 @@ export default function GradingSettingsPage() {
       </div>
 
       {loading ? (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '300px' }}>
-          <div className="portal-spinner"></div>
+        <div className="portal-card" style={{ maxWidth: '1000px', margin: '0 auto', padding: '24px' }}>
+          <SkeletonLoader type="table" rows={6} columns={4} />
         </div>
       ) : (
         <div className="portal-card" style={{ maxWidth: '1000px', margin: '0 auto' }}>

@@ -3,7 +3,7 @@ import api, { BASE_URL } from '../../../lib/api';
 import ManagementDetailPanel from '../../../components/shared/ManagementDetailPanel';
 import UserEditModal from '../../../components/shared/UserEditModal';
 import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModal';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl } from '../../../utils/formatters';
@@ -129,9 +129,8 @@ export default function AdminManagement() {
 
       <div className="management-table-card animate-in fade-in slide-in-from-bottom-4 duration-500">
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '120px 24px' }}>
-            <div className="portal-spinner" style={{ margin: '0 auto 24px' }}></div>
-            <p style={{ fontWeight: 900, color: '#64748b', fontSize: '1.2rem' }}>Synchronizing governance registry...</p>
+          <div style={{ padding: '24px' }}>
+            <SkeletonLoader type="table" rows={6} columns={6} />
           </div>
         ) : (
           <div className="table-responsive">

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useToast } from '../../../context/ToastContext';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 interface GradingScaleBand {
   id?: string;
@@ -541,9 +542,8 @@ export default function TeacherGrades() {
         {/* Table Body */}
         <div className="portal-card-body" style={{ padding: 0, overflowX: 'auto' }}>
           {loading ? (
-            <div style={{ textAlign: 'center', padding: 48 }}>
-              <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7', marginBottom: 12 }} />
-              <p style={{ color: '#64748b', fontSize: '0.9rem' }}>Loading student marksheet and active grading scale...</p>
+            <div style={{ padding: '16px' }}>
+              <SkeletonLoader type="table" rows={8} columns={6} />
             </div>
           ) : (
             <table className="portal-table">

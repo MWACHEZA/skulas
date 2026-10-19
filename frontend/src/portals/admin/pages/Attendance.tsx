@@ -4,7 +4,7 @@ import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
-import { ExportButton } from '../../../components/shared';
+import { ExportButton, SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type AttendanceTab = 'daily-roll-call' | 'period' | 'boarding' | 'absentee-report' | 'sms-log' | 'qr-scanner';
@@ -484,9 +484,8 @@ export default function AdminAttendance() {
 
           {/* Roster Table */}
           {loadingRoster ? (
-            <div style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>
-              <i className="fas fa-spinner fa-spin fa-2x"></i>
-              <div style={{ marginTop: 12 }}>Loading class roster...</div>
+            <div style={{ padding: 20 }}>
+              <SkeletonLoader type="table" rows={6} columns={5} />
             </div>
           ) : roster.length === 0 ? (
             <div style={{ padding: 40, textAlign: 'center', color: '#94a3b8' }}>
@@ -631,9 +630,8 @@ export default function AdminAttendance() {
 
           {/* Roster */}
           {loadingRoster ? (
-            <div style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>
-              <i className="fas fa-spinner fa-spin fa-2x"></i>
-              <div style={{ marginTop: 12 }}>Loading boarding roster...</div>
+            <div style={{ padding: 20 }}>
+              <SkeletonLoader type="table" rows={6} columns={5} />
             </div>
           ) : roster.length === 0 ? (
             <div style={{ padding: 40, textAlign: 'center', color: '#94a3b8' }}>
@@ -769,9 +767,11 @@ export default function AdminAttendance() {
           </div>
 
           {loadingReport ? (
-            <div style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>
-              <i className="fas fa-spinner fa-spin fa-2x"></i>
-              <div style={{ marginTop: 12 }}>Generating Absentee Report...</div>
+            <div style={{ padding: 20 }}>
+              <SkeletonLoader type="stats" />
+              <div style={{ marginTop: 16 }}>
+                <SkeletonLoader type="table" rows={6} columns={6} />
+              </div>
             </div>
           ) : absenteeReport ? (
             <>
@@ -873,9 +873,8 @@ export default function AdminAttendance() {
           </div>
 
           {loadingSms ? (
-            <div style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>
-              <i className="fas fa-spinner fa-spin fa-2x"></i>
-              <div style={{ marginTop: 12 }}>Loading SMS dispatch logs...</div>
+            <div style={{ padding: 20 }}>
+              <SkeletonLoader type="table" rows={6} columns={5} />
             </div>
           ) : smsLogs.length === 0 ? (
             <div style={{ padding: 40, textAlign: 'center', color: '#94a3b8' }}>

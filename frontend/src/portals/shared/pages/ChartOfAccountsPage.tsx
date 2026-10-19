@@ -4,7 +4,7 @@ import { useAccountingQuery, useOptimisticAccountingMutation } from '../../../ho
 import toast from '../../../context/ToastContext';
 import { Plus, Shield, CheckCircle, XCircle, Search, RefreshCw, Layers } from 'lucide-react';
 import { EmptyState } from '../../../components/common/EmptyState';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface Account {
@@ -191,7 +191,9 @@ export default function ChartOfAccountsPage() {
       {/* Accounts Table */}
       <div className="portal-coa-table-wrapper">
         {isLoading ? (
-          <div className="portal-coa-loading">Loading Chart of Accounts...</div>
+          <div style={{ padding: '16px' }}>
+            <SkeletonLoader type="table" rows={8} columns={6} />
+          </div>
         ) : filteredAccounts.length === 0 ? (
           <EmptyState
             icon="fas fa-book-journal-whills"

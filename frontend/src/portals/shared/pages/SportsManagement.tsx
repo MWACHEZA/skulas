@@ -3,7 +3,7 @@ import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useAuth } from '../../../contexts/AuthContext';
-import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption, SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface SportsEvent {
@@ -810,8 +810,8 @@ export default function SportsManagement() {
 
             <div style={{ padding: '24px' }}>
               {loadingSports ? (
-                <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
-                  <i className="fas fa-spinner fa-spin mr-2"></i> Loading school sports...
+                <div style={{ padding: '24px 0' }}>
+                  <SkeletonLoader type="card" count={4} />
                 </div>
               ) : filteredSports.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
@@ -918,8 +918,8 @@ export default function SportsManagement() {
 
             <div style={{ padding: '24px' }}>
               {loadingHouses ? (
-                <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
-                  <i className="fas fa-spinner fa-spin mr-2"></i> Loading houses...
+                <div style={{ padding: '24px 0' }}>
+                  <SkeletonLoader type="card" count={4} />
                 </div>
               ) : filteredHouses.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
@@ -1018,7 +1018,7 @@ export default function SportsManagement() {
                   </thead>
                   <tbody>
                     {loadingEquipments ? (
-                      <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}><i className="fas fa-spinner fa-spin mr-2"></i>Loading inventory...</td></tr>
+                      <tr><td colSpan={6} style={{ padding: '24px' }}><SkeletonLoader type="table" rows={6} columns={6} /></td></tr>
                     ) : filteredEquipments.length === 0 ? (
                       <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}>No equipment matching "{searchQuery}" found.</td></tr>
                     ) : (

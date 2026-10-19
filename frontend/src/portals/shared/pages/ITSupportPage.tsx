@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 export default function ITSupportPage() {
@@ -122,9 +123,8 @@ export default function ITSupportPage() {
         
         <div className="table-responsive">
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '100px' }}>
-              <div className="portal-spinner" style={{ margin: '0 auto 16px' }}></div>
-              <p style={{ fontWeight: 800, color: '#64748b' }}>Synchronizing incident registry...</p>
+            <div style={{ padding: '24px' }}>
+              <SkeletonLoader type="table" rows={6} columns={6} />
             </div>
           ) : (Array.isArray(tickets) ? tickets : []).length === 0 ? (
             <div style={{ textAlign: 'center', padding: '120px 24px' }}>

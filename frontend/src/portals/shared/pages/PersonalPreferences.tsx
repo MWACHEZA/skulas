@@ -3,6 +3,7 @@ import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import '../../../styles/portal.css';
+import { SkeletonLoader } from '../../../components/shared';
 
 interface UserPreferences {
   emailAlerts: boolean;
@@ -118,9 +119,8 @@ export default function PersonalPreferences() {
 
   if (fetching) {
     return (
-      <div className="portal-container" style={{ padding: 48, textAlign: 'center', color: '#64748b' }}>
-        <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--school-primary, #0284c7)' }} />
-        <p style={{ marginTop: 12 }}>Loading personal preferences...</p>
+      <div className="portal-container" style={{ padding: '24px', maxWidth: '900px', margin: '0 auto' }}>
+        <SkeletonLoader type="form" />
       </div>
     );
   }

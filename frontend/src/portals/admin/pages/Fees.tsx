@@ -3,6 +3,7 @@ import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { formatCurrency } from '../../../utils/formatters';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 export default function AdminFees() {
   const { t } = useTerminology();
@@ -37,9 +38,9 @@ export default function AdminFees() {
 
   if (loading) {
     return (
-      <div style={{ padding: 80, textAlign: 'center' }}>
-        <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#2b6cb0' }}></i>
-        <p style={{ marginTop: 12, color: '#4a5568', fontWeight: 600 }}>Loading real-time financial registry...</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24, paddingBottom: 40 }}>
+        <SkeletonLoader type="stats" count={4} />
+        <SkeletonLoader type="table" rows={6} columns={5} />
       </div>
     );
   }

@@ -3,7 +3,7 @@ import api, { BASE_URL } from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useToast } from '../../../context/ToastContext';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 
 export default function AdminApplications() {
   const [activeTab, setActiveTab] = useState('all');
@@ -312,7 +312,7 @@ export default function AdminApplications() {
             <div className="portal-card">
               <div className="portal-card-body" style={{ padding: 0 }}>
                 {loading ? (
-                   <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin"></i> Loading...</div>
+                  <div style={{ padding: 20 }}><SkeletonLoader type="table" rows={6} columns={6} /></div>
                 ) : (
                   <>
                   <table className="portal-table">

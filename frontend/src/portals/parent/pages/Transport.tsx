@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 interface ProgressStep {
   id: number;
@@ -204,9 +205,9 @@ export default function ParentTransport() {
 
   if (loading) {
     return (
-      <div style={{ padding: '60px 20px', textAlign: 'center' }}>
-        <i className="fas fa-circle-notch fa-spin" style={{ fontSize: '2rem', color: '#2563eb', marginBottom: 16 }}></i>
-        <div style={{ color: '#64748b', fontWeight: 600 }}>Loading school transport details...</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 1200, margin: '0 auto', padding: '20px 0' }}>
+        <SkeletonLoader type="stats" count={3} />
+        <SkeletonLoader type="card" count={3} />
       </div>
     );
   }

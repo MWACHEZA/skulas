@@ -3,6 +3,7 @@ import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
+import { SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface MessageItem {
@@ -239,8 +240,8 @@ export default function MessagesPage() {
           
           <div style={{ display: 'flex', flexDirection: 'column', padding: '12px' }}>
             {loading ? (
-              <div style={{ textAlign: 'center', padding: '50px', color: '#64748b', fontWeight: 600 }}>
-                <i className="fas fa-spinner fa-spin mr-2"></i> Loading inbox...
+              <div style={{ padding: '16px' }}>
+                <SkeletonLoader type="card" count={4} />
               </div>
             ) : messages.map(m => (
               <div 

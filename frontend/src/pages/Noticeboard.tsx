@@ -15,6 +15,7 @@ import {
   parseISO
 } from 'date-fns';
 import api from '../lib/api';
+import { SkeletonLoader } from '../components/shared';
 
 interface NoticeboardEvent {
   id: string;
@@ -236,9 +237,8 @@ export default function Noticeboard() {
           </div>
 
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '80px' }}>
-              <i className="fas fa-spinner fa-spin fa-3x" style={{ color: 'var(--school-primary, #0056b3)' }}></i>
-              <p style={{ marginTop: '15px', color: '#64748b' }}>Loading noticeboard events...</p>
+            <div style={{ padding: '24px 0' }}>
+              <SkeletonLoader type="card" count={4} />
             </div>
           ) : viewMode === 'calendar' ? (
             <div style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', padding: '24px' }}>

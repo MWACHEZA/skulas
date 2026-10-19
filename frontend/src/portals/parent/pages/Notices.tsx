@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
+import { SkeletonLoader } from '../../../components/shared';
 
 interface NoticeItem {
   id?: string;
@@ -188,8 +189,8 @@ export default function ParentNotices() {
 
       {/* Notices List */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: 48, color: '#64748b' }}>
-          <i className="fas fa-spinner fa-spin fa-2x mr-2"></i> Loading school notices...
+        <div style={{ padding: '24px 0' }}>
+          <SkeletonLoader type="card" count={4} />
         </div>
       ) : displayedNotices.length === 0 ? (
         <div className="portal-card" style={{ textAlign: 'center', padding: 48, background: '#f8fafc' }}>

@@ -5,6 +5,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { formatCurrency, getAvatarUrl } from '../../../utils/formatters';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 import '../../../styles/portal.css';
 
 type TabId = 'profile' | 'academics' | 'fees' | 'attendance' | 'clinic' | 'transport' | 'parents';
@@ -54,9 +55,8 @@ export default function StudentDetail() {
 
   if (loading) {
     return (
-      <div style={{ padding: 60, textAlign: 'center', color: '#64748b' }}>
-        <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#2563eb', marginBottom: 12 }}></i>
-        <p style={{ fontWeight: 600 }}>Loading comprehensive student profile...</p>
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '24px' }}>
+        <SkeletonLoader type="profile" />
       </div>
     );
   }

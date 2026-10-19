@@ -3,6 +3,7 @@ import api from '../../../../lib/api';
 import { useTerminology } from '../../../../hooks/useTerminology';
 import { format } from 'date-fns';
 import { useToast } from '../../../../context/ToastContext';
+import { SkeletonLoader } from '../../../../components/shared';
 
 export default function StudentStudyMaterial() {
   const { showToast } = useToast();
@@ -85,7 +86,7 @@ export default function StudentStudyMaterial() {
       <div className="portal-card" style={{ padding: '24px' }}>
         <div className="portal-card-body">
           {loading ? (
-            <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin"></i> Loading resources...</div>
+            <div style={{ padding: '16px 0' }}><SkeletonLoader type="card" count={6} /></div>
           ) : selectedSubjectId === null ? (
             // Folder Explorer grid
             <div>

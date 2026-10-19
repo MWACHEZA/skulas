@@ -3,6 +3,7 @@ import api from "../../../lib/api";
 import { toast } from '../../../context/ToastContext';
 import { format } from "date-fns";
 import { useTerminology } from "../../../hooks/useTerminology";
+import { SkeletonLoader } from "../../../components/shared";
 import '../../../styles/portal.css';
 
 interface Category {
@@ -224,9 +225,8 @@ const LiabilitiesPage: React.FC = () => {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={8} style={{ textAlign: 'center', padding: '100px' }}>
-                    <div className="portal-spinner" style={{ margin: '0 auto 16px' }}></div>
-                    <p style={{ fontWeight: 800, color: '#64748b' }}>Synchronizing debit ledger...</p>
+                  <td colSpan={8} style={{ padding: '24px' }}>
+                    <SkeletonLoader type="table" rows={6} columns={8} />
                   </td>
                 </tr>
               ) : (Array.isArray(liabilities) ? liabilities : []).length === 0 ? (

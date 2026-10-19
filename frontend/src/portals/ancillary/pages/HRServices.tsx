@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SkeletonLoader } from '../../../components/shared';
 
 interface Leave {
   id: string;
@@ -223,7 +224,7 @@ export default function AncillaryHRServices() {
           </div>
           <div className="portal-card-body" style={{ padding: 0 }}>
             {payslipLoading ? (
-              <div style={{ padding: 30, textAlign: 'center' }}><i className="fas fa-spinner fa-spin"></i> Loading...</div>
+              <div style={{ padding: 20 }}><SkeletonLoader type="table" rows={4} columns={3} /></div>
             ) : payslips.length === 0 ? (
               <div style={{ padding: 30, textAlign: 'center', color: '#718096' }}>No payslips available yet.</div>
             ) : (
@@ -267,7 +268,7 @@ export default function AncillaryHRServices() {
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
           {leaveLoading ? (
-            <div style={{ padding: 30, textAlign: 'center' }}><i className="fas fa-spinner fa-spin"></i> Loading...</div>
+            <div style={{ padding: 20 }}><SkeletonLoader type="table" rows={4} columns={5} /></div>
           ) : leaves.length === 0 ? (
             <div style={{ padding: 30, textAlign: 'center', color: '#718096' }}>No leave applications found.</div>
           ) : (

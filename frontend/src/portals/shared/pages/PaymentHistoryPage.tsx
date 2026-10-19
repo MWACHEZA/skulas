@@ -4,6 +4,7 @@ import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
 import '../../../styles/portal.css';
 import { useTerminology } from '../../../hooks/useTerminology';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 const exportToCSV = (title: string, headers: string[], dataRows: string[][]) => {
   const content = [
@@ -224,26 +225,28 @@ export default function PaymentHistoryPage() {
           </div>
         </div>
         <div className="table-responsive">
-          <table className="management-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>{t('student')}</th>
-                <th>Title / Description</th>
-                <th>Method</th>
-                <th style={{ textAlign: 'right' }}>Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={5} style={{ textAlign: 'center', padding: '40px' }}>Loading...</td>
-                </tr>
-              ) : payments.length === 0 ? (
-                <tr>
-                  <td colSpan={5} style={{ textAlign: 'center', padding: '40px' }}>No payments found matching criteria</td>
-                </tr>
-              ) : (
+          {loading ? (
+            <div style={{ padding: '16px' }}>
+              <SkeletonLoader type="table" rows={8} columns={5} />
+            </div>
+          ) : (
+            <>
+              <table className="management-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>{t('student')}</th>
+                    <th>Title / Description</th>
+                    <th>Method</th>
+                    <th style={{ textAlign: 'right' }}>Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {payments.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} style={{ textAlign: 'center', padding: '40px' }}>No payments found matching criteria</td>
+                    </tr>
+                  ) : (
                 (() => {
                   const totalPages = Math.ceil(payments.length / itemsPerPage);
                   const paginatedPayments = payments.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -295,6 +298,8 @@ export default function PaymentHistoryPage() {
               </div>
             );
           })()}
+          </>
+          )}
         </div>
       </div>
       <style>{`

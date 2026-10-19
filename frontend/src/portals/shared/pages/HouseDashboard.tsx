@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import api from '../../../lib/api';
+import { SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface House {
@@ -157,9 +158,8 @@ export default function HouseDashboard() {
 
   if (loading && houses.length === 0) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '400px', gap: '12px', color: '#64748b' }}>
-        <i className="fas fa-spinner fa-spin fa-2x"></i>
-        <span>Loading House Management...</span>
+      <div style={{ padding: '24px' }}>
+        <SkeletonLoader type="card" count={4} />
       </div>
     );
   }
@@ -267,8 +267,8 @@ export default function HouseDashboard() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={canAssign ? 5 : 4} style={{ textAlign: 'center', padding: '30px' }}>
-                    <i className="fas fa-spinner fa-spin mr-2"></i> Loading roster...
+                  <td colSpan={canAssign ? 5 : 4} style={{ padding: '24px' }}>
+                    <SkeletonLoader type="table" rows={6} columns={canAssign ? 5 : 4} />
                   </td>
                 </tr>
               ) : members.length === 0 ? (

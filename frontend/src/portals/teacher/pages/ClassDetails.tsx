@@ -4,6 +4,7 @@ import api, { BASE_URL } from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl } from '../../../utils/formatters';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 interface StudentRosterItem {
   id: string;
@@ -109,7 +110,14 @@ export default function TeacherClassDetails() {
     navigate(`/admin/discipline?tab=conduct&studentId=${student.id}`);
   };
 
-  if (loading) return <div className="portal-loading"><i className="fas fa-spinner fa-spin"></i> Loading Class...</div>;
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <SkeletonLoader type="stats" count={3} />
+        <SkeletonLoader type="table" rows={6} columns={6} />
+      </div>
+    );
+  }
   if (!classData) return <div className="portal-error">Class not found.</div>;
 
   return (

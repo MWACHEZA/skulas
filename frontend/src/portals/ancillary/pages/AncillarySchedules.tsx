@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
+import { SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -238,9 +239,8 @@ export default function AncillarySchedules() {
         </div>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '60px 0' }}>
-            <i className="fas fa-spinner fa-spin fa-2x" style={{ color: primaryColor }}></i>
-            <p style={{ color: '#64748b', marginTop: '15px' }}>Loading schedule data...</p>
+          <div style={{ padding: '24px' }}>
+            <SkeletonLoader type="table" rows={6} columns={6} />
           </div>
         ) : (
           <div className="portal-card" style={{ 

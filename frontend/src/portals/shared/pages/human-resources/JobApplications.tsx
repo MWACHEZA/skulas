@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../../../lib/api';
 import { useTerminology } from '../../../../hooks/useTerminology';
 import { useToast } from '../../../../context/ToastContext';
+import { SkeletonLoader } from '../../../../components/shared';
 
 interface JobApplication {
   id: string;
@@ -410,7 +411,11 @@ export default function JobApplications() {
                 </thead>
                 <tbody>
                   {loading ? (
-                    <tr><td colSpan={7} style={{ textAlign: 'center', padding: '20px' }}>Loading...</td></tr>
+                    <tr>
+                      <td colSpan={7} style={{ padding: '24px' }}>
+                        <SkeletonLoader type="table" rows={6} columns={7} />
+                      </td>
+                    </tr>
                   ) : paginatedApplications.length === 0 ? (
                     <tr><td colSpan={7} style={{ textAlign: 'center', padding: '20px' }}>No applicants found.</td></tr>
                   ) : (

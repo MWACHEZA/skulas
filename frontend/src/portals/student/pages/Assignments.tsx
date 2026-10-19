@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import api, { BASE_URL } from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
+import { SkeletonLoader } from '../../../components/shared';
 import './assignments.css';
 
 interface Attachment {
@@ -464,9 +465,8 @@ export default function StudentAssignments() {
       {/* Assignments Grid */}
       <div className="assignments-grid">
         {loading ? (
-          <div className="loading-state" style={{ gridColumn: '1 / -1', padding: '3rem', textAlign: 'center' }}>
-            <i className="fas fa-spinner fa-spin fa-2x text-blue-600 mb-2"></i>
-            <p>Loading assignments...</p>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <SkeletonLoader type="card" count={4} />
           </div>
         ) : filteredAssignments.length === 0 ? (
           <div className="empty-state" style={{ gridColumn: '1 / -1', padding: '4rem 1rem', textAlign: 'center' }}>

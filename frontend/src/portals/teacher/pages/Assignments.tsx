@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 interface Assignment {
   id: string;
@@ -259,7 +260,9 @@ export default function TeacherAssignments() {
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
           {loading ? (
-             <div style={{ padding: 40, textAlign: 'center', color: '#64748b' }}><i className="fas fa-spinner fa-spin mr-2"></i> Loading assignments...</div>
+             <div style={{ padding: '16px' }}>
+               <SkeletonLoader type="table" rows={6} columns={7} />
+             </div>
           ) : assignments.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px 20px', color: '#64748b' }}>
               <i className="fas fa-book-open" style={{ fontSize: '3rem', color: '#cbd5e1', marginBottom: 16 }}></i>

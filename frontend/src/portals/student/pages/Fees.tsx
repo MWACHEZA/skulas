@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
+import { SkeletonLoader } from '../../../components/shared';
 
 interface Fee {
   id?: string;
@@ -71,6 +72,17 @@ export default function StudentFees() {
   const outstanding = Math.max(0, totalBilled - totalPaid);
   const isCleared = outstanding <= 0;
   const clearancePct = totalBilled > 0 ? Math.round((totalPaid / totalBilled) * 100) : 100;
+
+  if (loading) {
+    return (
+      <div className="portal-container" style={{ maxWidth: 1250, margin: '0 auto', padding: '24px 0' }}>
+        <SkeletonLoader type="stats" count={3} />
+        <div style={{ marginTop: 24 }}>
+          <SkeletonLoader type="table" rows={4} columns={5} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="portal-container" style={{ maxWidth: 1250, margin: '0 auto', paddingBottom: 40 }}>

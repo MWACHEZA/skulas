@@ -4,6 +4,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import ReportDocument from '../../../components/portals/shared/ReportDocument';
 import '../../../styles/portal.css';
+import { SkeletonLoader } from '../../../components/shared';
 import { useToast } from '../../../context/ToastContext';
 
 export default function ProgressReports() {
@@ -83,8 +84,8 @@ export default function ProgressReports() {
   };
 
   if (loading) return (
-    <div className="portal-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '400px' }}>
-      <div className="portal-spinner"></div>
+    <div className="portal-container" style={{ padding: '24px 0' }}>
+      <SkeletonLoader type="table" rows={6} columns={6} />
     </div>
   );
 
@@ -162,7 +163,7 @@ export default function ProgressReports() {
               <div>
                 <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900 }}>Academic Report Preview</h3>
                 <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>
-                  {selectedReport.term} {selectedReport.year} — {selectedReport.student?.name || 'Student'}
+                  {selectedReport.term} {selectedReport.year} ï¿½ {selectedReport.student?.name || 'Student'}
                 </p>
               </div>
               <div style={{ display: 'flex', gap: '12px' }}>

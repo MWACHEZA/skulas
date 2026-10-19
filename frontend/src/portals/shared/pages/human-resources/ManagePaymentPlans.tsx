@@ -3,7 +3,7 @@ import api from '../../../../lib/api';
 import { useToast } from '../../../../context/ToastContext';
 import { format } from 'date-fns';
 import { useTerminology } from '../../../../hooks/useTerminology';
-import { SearchInput, ExportButton } from '../../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../../components/shared';
 
 interface PaymentPlan {
   id: string;
@@ -258,8 +258,8 @@ export default function ManagePaymentPlans() {
           </div>
           <div className="portal-card-body" style={{ padding: 0 }}>
             {loadingTemplates ? (
-              <div style={{ textAlign: 'center', padding: 60 }}>
-                <i className="fas fa-spinner fa-spin" style={{ fontSize: 32, color: '#2563eb' }}></i>
+              <div style={{ padding: 24 }}>
+                <SkeletonLoader type="table" rows={4} columns={5} />
               </div>
             ) : templates.length === 0 ? (
               <div style={{ textAlign: 'center', padding: 60 }}>
@@ -405,8 +405,8 @@ export default function ManagePaymentPlans() {
             </div>
             <div className="portal-card-body" style={{ padding: 0 }}>
               {loading ? (
-                <div style={{ textAlign: 'center', padding: 60 }}>
-                  <i className="fas fa-spinner fa-spin" style={{ fontSize: 32, color: '#2563eb' }}></i>
+                <div style={{ padding: 24 }}>
+                  <SkeletonLoader type="table" rows={6} columns={6} />
                 </div>
               ) : filtered.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: 60 }}>

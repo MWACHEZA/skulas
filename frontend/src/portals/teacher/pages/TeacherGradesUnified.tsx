@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import TeacherGrades from './Grades';
 import MarksEntryPage from '../../shared/pages/MarksEntryPage';
 import api from '../../../lib/api';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 export type TeacherGradesTab = 'grades' | 'marks-entry' | 'grading-scale';
 
@@ -243,8 +244,8 @@ export default function TeacherGradesUnified() {
 
             <div className="portal-card-body" style={{ padding: 0 }}>
               {loadingScales ? (
-                <div style={{ textAlign: 'center', padding: 40 }}>
-                  <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7' }} />
+                <div style={{ padding: '16px' }}>
+                  <SkeletonLoader type="table" rows={6} columns={4} />
                 </div>
               ) : (
                 <table className="portal-table">

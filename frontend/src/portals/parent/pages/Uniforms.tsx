@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
+import { SkeletonLoader } from '../../../components/shared';
 
 interface RequirementItem {
   id: string;
@@ -178,9 +179,8 @@ export default function ParentUniforms() {
 
   if (loading && !data) {
     return (
-      <div style={{ textAlign: 'center', padding: '60px 24px', background: '#f8fafc', borderRadius: 12 }}>
-        <i className="fas fa-spinner fa-spin fa-2x text-primary" style={{ marginBottom: 12 }}></i>
-        <h3 style={{ margin: 0, color: '#1e293b' }}>Loading Uniform & Bookstore Requirements...</h3>
+      <div style={{ padding: '24px 0' }}>
+        <SkeletonLoader type="card" count={6} />
       </div>
     );
   }

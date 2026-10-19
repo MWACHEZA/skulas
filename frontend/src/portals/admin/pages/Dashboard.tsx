@@ -6,6 +6,7 @@ import { useTerminology } from '../../../hooks/useTerminology';
 import ClockInModal from '../../../components/attendance/ClockInModal';
 import { SetupProgressBanner } from '../../../components/common/SetupProgressBanner';
 import { formatCurrency } from '../../../utils/formatters';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 import '../../../styles/portal.css';
 
 interface DashboardData {
@@ -80,9 +81,10 @@ export default function AdminDashboard() {
   }, []);
 
   if (loading) return (
-    <div className="portal-dashboard-loading">
-      <i className="fas fa-spinner fa-spin fa-3x portal-dashboard-spinner"></i>
-      <p className="portal-dashboard-loading-text">Loading action dashboard...</p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 1400, margin: '0 auto', paddingBottom: 60 }}>
+      <SkeletonLoader type="profile" />
+      <SkeletonLoader type="stats" count={4} />
+      <SkeletonLoader type="card" count={4} />
     </div>
   );
 

@@ -6,6 +6,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import MaintenanceRequestModal from '../../../components/shared/MaintenanceRequestModal';
 import { formatCurrency, getAvatarUrl } from '../../../utils/formatters';
+import { SkeletonLoader } from '../../../components/shared';
 
 interface DashboardData {
   student: { 
@@ -72,9 +73,8 @@ export default function StudentDashboard() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 400, gap: 12 }}>
-        <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#2563eb' }}></i>
-        <span style={{ color: '#64748b', fontSize: '0.95rem', fontWeight: 600 }}>Loading your student command center...</span>
+      <div className="portal-container" style={{ maxWidth: 1400, margin: '0 auto', padding: '24px 0' }}>
+        <SkeletonLoader type="profile" />
       </div>
     );
   }

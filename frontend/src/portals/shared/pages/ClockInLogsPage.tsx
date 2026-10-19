@@ -3,7 +3,7 @@ import api, { BASE_URL } from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface StaffLog {
@@ -299,9 +299,8 @@ export default function ClockInLogsPage() {
       </div>
 
       {loading || checkingHod ? (
-        <div className="portal-card" style={{ padding: '100px', textAlign: 'center' }}>
-          <div className="portal-spinner" style={{ margin: '0 auto 20px' }}></div>
-          <p style={{ fontWeight: 800, color: '#64748b' }}>Retrieving attendance registers...</p>
+        <div className="portal-card" style={{ padding: '24px' }}>
+          <SkeletonLoader type="table" rows={6} columns={6} />
         </div>
       ) : activeTab === 'my' ? (
         <div className="management-table-card">

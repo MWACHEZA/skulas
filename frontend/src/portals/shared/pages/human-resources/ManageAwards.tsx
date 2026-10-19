@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import api from '../../../../lib/api';
 import { useTerminology } from '../../../../hooks/useTerminology';
 import { useToast } from '../../../../context/ToastContext';
+import { SkeletonLoader } from '../../../../components/shared';
 
 interface AwardEntry {
   id: string;
@@ -386,8 +387,8 @@ export default function ManageAwards() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
-                      <i className="fas fa-spinner fa-spin" style={{ marginRight: '8px' }}></i> Loading awards registry...
+                    <td colSpan={8} style={{ padding: '24px' }}>
+                      <SkeletonLoader type="table" rows={6} columns={8} />
                     </td>
                   </tr>
                 ) : paginatedAwards.length === 0 ? (

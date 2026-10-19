@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { formatCurrency } from '../../../utils/formatters';
 import toast from '../../../context/ToastContext';
+import { SkeletonLoader } from '../../../components/shared';
 
 interface MonthRow {
   period: string;
@@ -188,9 +189,8 @@ export default function BursarFinancialReconciliation() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={7} style={{ textAlign: 'center', padding: '80px' }}>
-                    <div className="portal-spinner" style={{ margin: '0 auto 16px' }}></div>
-                    <p style={{ fontWeight: 800, color: '#64748b' }}>Loading reconciliation data...</p>
+                  <td colSpan={7} style={{ padding: '24px' }}>
+                    <SkeletonLoader type="table" rows={5} columns={7} />
                   </td>
                 </tr>
               ) : rows.length === 0 ? (

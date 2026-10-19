@@ -3,7 +3,7 @@ import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useAuth } from '../../../contexts/AuthContext';
-import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption, SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 export default function StudentClub() {
@@ -301,24 +301,25 @@ export default function StudentClub() {
             />
           </div>
           <div style={{ padding: '20px' }}>
-            <table className="portal-table">
-              <thead>
-                <tr>
-                  <th style={{ width: '80px' }}>Logo</th>
-                  <th>{t('club')} Name</th>
-                  <th>Category</th>
-                  <th>Patron</th>
-                  <th>Chairperson</th>
-                  <th>Established</th>
-                  <th style={{ textAlign: 'right' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr><td colSpan={7} style={{ textAlign: 'center', padding: '40px' }}>Loading {t('clubs').toLowerCase()}...</td></tr>
-                ) : filteredClubs.length === 0 ? (
-                  <tr><td colSpan={7} style={{ textAlign: 'center', padding: '40px' }}>No matching {t('clubs').toLowerCase()} found.</td></tr>
-                ) : filteredClubs.map(club => {
+            {loading ? (
+              <SkeletonLoader type="table" rows={6} columns={7} />
+            ) : (
+              <table className="portal-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '80px' }}>Logo</th>
+                    <th>{t('club')} Name</th>
+                    <th>Category</th>
+                    <th>Patron</th>
+                    <th>Chairperson</th>
+                    <th>Established</th>
+                    <th style={{ textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredClubs.length === 0 ? (
+                    <tr><td colSpan={7} style={{ textAlign: 'center', padding: '40px' }}>No matching {t('clubs').toLowerCase()} found.</td></tr>
+                  ) : filteredClubs.map(club => {
                   const logoUrl = club.icon ? `${api.defaults.baseURL}/api/storage/media/${user?.schoolCode}/${club.icon}` : null;
                   return (
                     <tr key={club.id}>
@@ -354,6 +355,7 @@ export default function StudentClub() {
                 })}
               </tbody>
             </table>
+            )}
           </div>
         </div>
       </div>

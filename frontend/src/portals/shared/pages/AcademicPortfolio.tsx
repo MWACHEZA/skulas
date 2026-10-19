@@ -3,6 +3,7 @@ import api from '../../../lib/api';
 import '../../../styles/portal.css';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useToast } from '../../../context/ToastContext';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 interface PortfolioData {
   enrollments: Array<{
@@ -57,8 +58,9 @@ export default function AcademicPortfolio() {
   };
 
   if (loading) return (
-    <div className="portal-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '400px' }}>
-      <div className="portal-spinner"></div>
+    <div className="portal-container" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <SkeletonLoader type="profile" />
+      <SkeletonLoader type="card" count={3} />
     </div>
   );
 

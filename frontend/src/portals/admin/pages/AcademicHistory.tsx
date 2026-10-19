@@ -6,6 +6,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import ReportDocument from '../../../components/portals/shared/ReportDocument';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 export default function AdminAcademicHistory() {
   const [searchParams] = useSearchParams();
@@ -46,9 +47,9 @@ export default function AdminAcademicHistory() {
 
   if (loading) {
     return (
-      <div style={{ textAlign: 'center', padding: 100 }}>
-        <i className="fas fa-spinner fa-spin" style={{ fontSize: '3rem', color: 'var(--portal-primary)' }}></i>
-        <p style={{ marginTop: 20, color: '#718096' }}>Loading academic records...</p>
+      <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <SkeletonLoader type="profile" />
+        <SkeletonLoader type="table" rows={6} columns={5} />
       </div>
     );
   }

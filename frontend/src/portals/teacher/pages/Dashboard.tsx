@@ -8,6 +8,7 @@ import MaintenanceRequestModal from '../../../components/shared/MaintenanceReque
 import ClockInModal from '../../../components/attendance/ClockInModal';
 import UrgentAnnouncementBanner from '../../../components/shared/UrgentAnnouncementBanner';
 import AnnouncementsWidget from '../../../components/shared/AnnouncementsWidget';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 export default function TeacherDashboard() {
   const navigate = useNavigate();
@@ -65,9 +66,10 @@ export default function TeacherDashboard() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', flexDirection: 'column', gap: 16 }}>
-        <i className="fas fa-spinner fa-spin fa-3x" style={{ color: '#0284c7' }} />
-        <p style={{ color: '#64748b', fontWeight: 600 }}>Loading educator dashboard...</p>
+      <div style={{ paddingBottom: '60px', maxWidth: '1400px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <SkeletonLoader type="profile" />
+        <SkeletonLoader type="stats" count={4} />
+        <SkeletonLoader type="card" count={3} />
       </div>
     );
   }

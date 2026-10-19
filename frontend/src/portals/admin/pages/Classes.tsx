@@ -3,6 +3,7 @@ import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTerminology } from '../../../hooks/useTerminology';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 export interface ClassSection {
   id: string;
@@ -295,9 +296,8 @@ export default function AdminClasses() {
 
       <div className="portal-grid" style={{ marginTop: '2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
         {loading ? (
-          <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '4rem' }}>
-            <div className="portal-spinner"></div>
-            <p style={{ marginTop: '1rem', color: 'var(--portal-primary)', fontWeight: 600 }}>Gathering academic cohorts...</p>
+          <div style={{ gridColumn: '1/-1' }}>
+            <SkeletonLoader type="card" count={6} />
           </div>
         ) : (
           <>

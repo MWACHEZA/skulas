@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
+import { SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 export default function SystemConfigCommunication() {
@@ -149,9 +150,8 @@ export default function SystemConfigCommunication() {
 
   if (loading) {
     return (
-      <div style={{ padding: 48, textAlign: 'center', color: '#64748b' }}>
-        <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#4f46e5' }} />
-        <p style={{ marginTop: 12 }}>Loading communication configuration...</p>
+      <div style={{ padding: 24 }}>
+        <SkeletonLoader type="form" />
       </div>
     );
   }

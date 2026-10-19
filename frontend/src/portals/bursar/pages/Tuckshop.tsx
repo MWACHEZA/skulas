@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SkeletonLoader } from '../../../components/shared';
 
 export default function BursarTuckshop() {
   const { showToast } = useToast();
@@ -84,7 +85,9 @@ export default function BursarTuckshop() {
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
           {loading ? (
-            <div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div>
+            <div style={{ padding: '24px' }}>
+              <SkeletonLoader type="table" rows={6} columns={7} />
+            </div>
           ) : (
             <table className="portal-table">
               <thead>

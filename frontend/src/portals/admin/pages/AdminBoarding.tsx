@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SearchableCombobox, type ComboboxOption } from '../../../components/shared';
+import { SearchableCombobox, type ComboboxOption, SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type BoardingTab = 'hostels-rooms' | 'allocations' | 'roll-call' | 'exeats';
@@ -498,6 +498,15 @@ export default function AdminBoarding() {
       s.class?.name?.toLowerCase().includes(term)
     );
   }, [students, studentSearchTerm]);
+
+  if (loading) {
+    return (
+      <div className="portal-container" style={{ padding: '24px', maxWidth: '1440px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <SkeletonLoader type="stats" count={4} />
+        <SkeletonLoader type="table" rows={6} columns={6} />
+      </div>
+    );
+  }
 
   return (
     <div className="portal-container" style={{ padding: '24px', maxWidth: '1440px', margin: '0 auto' }}>
@@ -1208,9 +1217,8 @@ export default function AdminBoarding() {
 
           {/* Students Roll Call Table */}
           {rcLoading ? (
-            <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
-              <i className="fas fa-spinner fa-spin" style={{ fontSize: '2rem' }}></i>
-              <p style={{ marginTop: '10px' }}>Loading boarders for roll call...</p>
+            <div style={{ padding: '16px' }}>
+              <SkeletonLoader type="table" rows={6} columns={6} />
             </div>
           ) : rcStudents.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>

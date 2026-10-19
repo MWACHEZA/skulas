@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 import { useSearchFilter } from '../../../hooks/useSearchFilter';
 import '../../../styles/portal.css';
 
@@ -170,25 +170,23 @@ export default function EmployeeManagementPage() {
 
       <div className="management-table-card animate-in fade-in slide-in-from-bottom-4 duration-500" style={{ padding: 0 }}>
         <div className="table-responsive">
-          <table className="management-table">
-            <thead>
-              <tr>
-                <th style={{ padding: '24px' }}>Employee Identity</th>
-                <th>Strategic Job Title</th>
-                <th>Institutional Hire Date</th>
-                <th style={{ textAlign: 'center' }}>Active Status</th>
-                <th style={{ textAlign: 'right', paddingRight: '40px' }}>Audit Management</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
+          {loading ? (
+            <div style={{ padding: '16px' }}>
+              <SkeletonLoader type="table" rows={8} columns={5} />
+            </div>
+          ) : (
+            <table className="management-table">
+              <thead>
                 <tr>
-                  <td colSpan={5} style={{ textAlign: 'center', padding: '100px' }}>
-                    <div className="portal-spinner" style={{ margin: '0 auto 24px' }}></div>
-                    <p style={{ fontWeight: 900, color: '#64748b' }}>Synchronizing employee registry...</p>
-                  </td>
+                  <th style={{ padding: '24px' }}>Employee Identity</th>
+                  <th>Strategic Job Title</th>
+                  <th>Institutional Hire Date</th>
+                  <th style={{ textAlign: 'center' }}>Active Status</th>
+                  <th style={{ textAlign: 'right', paddingRight: '40px' }}>Audit Management</th>
                 </tr>
-              ) : filteredEmployees.length === 0 ? (
+              </thead>
+              <tbody>
+                {filteredEmployees.length === 0 ? (
                 <tr>
                   <td colSpan={5} style={{ textAlign: 'center', padding: '120px 24px' }}>
                     <div style={{ width: '100px', height: '100px', borderRadius: '50%', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px', border: '1px solid #f1f5f9' }}>
@@ -241,6 +239,7 @@ export default function EmployeeManagementPage() {
               ))}
             </tbody>
           </table>
+          )}
         </div>
         <div style={{ padding: '24px 40px', borderTop: '1px solid #f1f5f9', color: '#64748b', fontSize: '0.9rem', fontWeight: 800, background: '#f8fafc', borderRadius: '0 0 24px 24px' }}>
           Displaying Audit Entities 1 to {Math.min(filteredEmployees.length, entriesLimit)} of {employees.length} Institutional Staff Members

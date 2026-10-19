@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface LivestockBatch {
@@ -521,9 +521,8 @@ export default function FarmManagement() {
 
       {/* Main Content Area */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '80px 0', background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-          <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#059669' }}></i>
-          <p style={{ marginTop: '16px', color: '#64748b', fontWeight: 600 }}>Loading farm records...</p>
+        <div style={{ padding: '24px', background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+          <SkeletonLoader type="table" rows={6} columns={6} />
         </div>
       ) : (
         <>

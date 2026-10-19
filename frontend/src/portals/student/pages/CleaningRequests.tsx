@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
+import { SkeletonLoader } from '../../../components/shared';
 import TabbedPage, { type TabItem } from '../../../components/portals/shared/TabbedPage';
 
 interface LeadershipAssignment {
@@ -212,9 +213,8 @@ export default function CleaningRequests() {
 
   if (loading) {
     return (
-      <div className="portal-container" style={{ padding: '2rem', textAlign: 'center' }}>
-        <i className="fas fa-spinner fa-spin fa-2x text-primary mb-3"></i>
-        <p>Loading leader credentials...</p>
+      <div className="portal-container" style={{ padding: '2rem' }}>
+        <SkeletonLoader type="card" count={4} />
       </div>
     );
   }

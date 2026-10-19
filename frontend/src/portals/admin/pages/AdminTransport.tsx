@@ -5,7 +5,7 @@ import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
 import { useAuth } from '../../../contexts/AuthContext';
 import ErrorBoundary from '../../../components/shared/ErrorBoundary';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 import type { ExportColumn } from '../../../utils/exportService';
 import '../../../styles/portal.css';
 
@@ -548,9 +548,8 @@ function AdminTransportContent() {
 
       {/* Tab Panels */}
       {loading ? (
-        <div style={{ padding: 60, textAlign: 'center', background: '#fff', borderRadius: '8px' }}>
-          <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#d97706' }}></i>
-          <p style={{ marginTop: 12, color: '#64748b' }}>Loading transportation records...</p>
+        <div style={{ padding: '16px', background: '#fff', borderRadius: '8px' }}>
+          <SkeletonLoader type="table" rows={8} columns={6} />
         </div>
       ) : activeTab === 'buses' ? (
         /* Vehicles Table */

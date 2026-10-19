@@ -3,6 +3,7 @@ import { useAuth } from '../../../../contexts/AuthContext';
 import { useToast } from '../../../../context/ToastContext';
 import api from '../../../../lib/api';
 import { format } from 'date-fns';
+import { SkeletonLoader } from '../../../../components/shared';
 
 const exportToCSV = (title: string, headers: string[], dataRows: string[][]) => {
   const content = [
@@ -175,7 +176,11 @@ export default function DailyStaffAttendance() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={7} style={{ textAlign: 'center' }}>Loading...</td></tr>
+                <tr>
+                  <td colSpan={7} style={{ padding: '24px' }}>
+                    <SkeletonLoader type="table" rows={6} columns={7} />
+                  </td>
+                </tr>
               ) : paginatedAttendances.length === 0 ? (
                 <tr><td colSpan={7} style={{ textAlign: 'center' }}>No attendance records found.</td></tr>
               ) : (

@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
 import { SearchInput } from '../../../components/shared/SearchInput';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 interface ClassData {
   id: string;
@@ -335,10 +336,7 @@ export default function TeacherClasses() {
 
       {/* Main Tab Content */}
       {loading ? (
-        <div style={{ padding: 60, textAlign: 'center', color: '#64748b', background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0' }}>
-          <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7' }} />
-          <p style={{ marginTop: 12, fontWeight: 600 }}>Loading records...</p>
-        </div>
+        <SkeletonLoader type="card" count={6} />
       ) : activeTab === 'classes' ? (
         filteredClasses.length === 0 ? (
           <div style={{ padding: 60, textAlign: 'center', color: '#64748b', background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0' }}>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface DigitalResource {
@@ -332,8 +332,8 @@ export default function LibraryDigitalRepository() {
 
       {/* Resource Cards Grid */}
       {loading ? (
-        <div style={{ padding: 60, textAlign: 'center', color: '#64748b' }}>
-          <i className="fas fa-spinner fa-spin mr-2"></i> Loading repository collections...
+        <div style={{ padding: '24px 0' }}>
+          <SkeletonLoader type="card" count={6} />
         </div>
       ) : resources.length === 0 ? (
         <div className="portal-card" style={{ padding: 60, textAlign: 'center', color: '#64748b', borderRadius: 16 }}>

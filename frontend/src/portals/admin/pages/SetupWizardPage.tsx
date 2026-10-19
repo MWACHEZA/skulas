@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useSetup } from '../../../hooks/useSetup';
 import { useToast } from '../../../context/ToastContext';
+import { SkeletonLoader } from '../../../components/shared';
 import api from '../../../lib/api';
 import '../../../styles/portal.css';
 
@@ -220,9 +221,8 @@ export default function SetupWizardPage() {
 
   if (loading) {
     return (
-      <div className="portal-card portal-p-40-center">
-        <i className="fas fa-spinner fa-spin fa-2x portal-icon-primary"></i>
-        <p className="portal-text-muted-sm portal-mt-12">Loading Setup Wizard Status...</p>
+      <div className="portal-card" style={{ padding: '32px' }}>
+        <SkeletonLoader type="form" />
       </div>
     );
   }

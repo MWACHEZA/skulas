@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SkeletonLoader } from '../../../components/shared';
 
 export default function KitchenManagement() {
   const [menu, setMenu] = useState<any>(null);
@@ -89,7 +90,7 @@ export default function KitchenManagement() {
         </div>
         <div className="portal-card-body" style={{ padding: 20 }}>
           {loading ? (
-             <div style={{ textAlign: 'center' }}><i className="fas fa-spinner fa-spin"></i> Loading...</div>
+            <SkeletonLoader type="card" count={7} />
           ) : menu ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 20 }}>
               {days.map(day => (

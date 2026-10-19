@@ -4,7 +4,7 @@ import { useToast } from '../../../context/ToastContext';
 import { generateShortCode } from '../../../lib/utils';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useAuth } from '../../../contexts/AuthContext';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 
 export interface Department {
   id: string;
@@ -268,7 +268,7 @@ export default function AdminDepartments() {
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
           {loading ? (
-             <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin"></i> Loading...</div>
+            <div style={{ padding: 20 }}><SkeletonLoader type="table" rows={6} columns={8} /></div>
           ) : (
             <table className="portal-table">
               <thead>

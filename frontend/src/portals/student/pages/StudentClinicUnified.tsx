@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
+import { SkeletonLoader } from '../../../components/shared';
 
 export default function StudentClinicUnified() {
   const { user } = useAuth();
@@ -144,9 +145,8 @@ export default function StudentClinicUnified() {
       {activeTab === 'visits' && (
         <div style={{ background: '#fff', borderRadius: 10, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
           {loading ? (
-            <div style={{ padding: 48, textAlign: 'center', color: '#64748b' }}>
-              <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7' }} />
-              <p style={{ marginTop: 8 }}>Loading your visits...</p>
+            <div style={{ padding: 24 }}>
+              <SkeletonLoader type="table" rows={5} columns={5} />
             </div>
           ) : visits.length === 0 ? (
             <div style={{ padding: 48, textAlign: 'center', color: '#64748b' }}>

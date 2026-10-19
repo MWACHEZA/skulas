@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface ReservationRecord {
@@ -225,8 +225,8 @@ export default function LibraryReservations() {
       {/* Hold Queue Table */}
       <div className="portal-card" style={{ borderRadius: 16, border: '1px solid #e2e8f0', overflow: 'hidden', background: '#ffffff' }}>
         {loading ? (
-          <div style={{ padding: 60, textAlign: 'center', color: '#64748b' }}>
-            <i className="fas fa-spinner fa-spin mr-2"></i> Loading reservation queue...
+          <div style={{ padding: '24px' }}>
+            <SkeletonLoader type="table" rows={6} columns={6} />
           </div>
         ) : filteredReservations.length === 0 ? (
           <div style={{ padding: 60, textAlign: 'center', color: '#64748b' }}>

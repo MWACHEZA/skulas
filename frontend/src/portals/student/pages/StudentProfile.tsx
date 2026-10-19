@@ -3,6 +3,7 @@ import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl } from '../../../utils/formatters';
+import { SkeletonLoader } from '../../../components/shared';
 
 export default function StudentProfile() {
   const { user, refreshUser } = useAuth();
@@ -83,9 +84,8 @@ export default function StudentProfile() {
 
   if (loading) {
     return (
-      <div className="portal-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 400, gap: 12 }}>
-        <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#2563eb' }}></i>
-        <span style={{ color: '#64748b', fontSize: '0.9rem', fontWeight: 600 }}>Loading your student profile...</span>
+      <div className="portal-container" style={{ maxWidth: 1200, margin: '0 auto', padding: '24px 0' }}>
+        <SkeletonLoader type="profile" />
       </div>
     );
   }

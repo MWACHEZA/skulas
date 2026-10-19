@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SkeletonLoader } from '../../../components/shared';
 
 const exportVisitorsCSV = (visitors: any[]) => {
   const headers = ['Visitor Name', 'Phone', 'Purpose', 'Vehicle Reg', 'Time In', 'Time Out', 'Status'];
@@ -114,7 +115,7 @@ export default function SecurityLog() {
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
           {loading ? (
-             <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin"></i> Loading...</div>
+            <div style={{ padding: 20 }}><SkeletonLoader type="table" rows={6} columns={6} /></div>
           ) : (
             <table className="portal-table">
               <thead>

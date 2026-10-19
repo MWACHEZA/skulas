@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { format } from 'date-fns';
+import { SkeletonLoader } from '../../../components/shared';
 
 export default function ApplicantInterview() {
   const { showToast } = useToast();
@@ -33,9 +34,8 @@ export default function ApplicantInterview() {
 
   if (loading) {
     return (
-      <div style={{ padding: 40, textAlign: 'center' }}>
-        <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--portal-primary)' }}></i>
-        <p style={{ marginTop: 12, color: '#718096' }}>Loading interview details...</p>
+      <div style={{ padding: '24px 0' }}>
+        <SkeletonLoader type="profile" />
       </div>
     );
   }

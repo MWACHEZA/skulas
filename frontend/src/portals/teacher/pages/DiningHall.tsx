@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import DHRepresentative from '../../student/pages/DHRepresentative';
 import api from '../../../lib/api';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 export default function TeacherDiningHall() {
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
@@ -18,7 +19,12 @@ export default function TeacherDiningHall() {
   }, []);
 
   if (hasAccess === null) {
-    return <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin fa-2x"></i></div>;
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <SkeletonLoader type="stats" count={3} />
+        <SkeletonLoader type="card" count={3} />
+      </div>
+    );
   }
 
   if (!hasAccess) {

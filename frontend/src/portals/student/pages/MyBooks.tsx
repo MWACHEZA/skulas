@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import api from '../../../lib/api';
 import '../../../styles/portal.css';
+import { SkeletonLoader } from '../../../components/shared';
 
 interface BookLoan {
   id: string;
@@ -133,8 +134,8 @@ export default function StudentMyBooks() {
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
           {loading ? (
-            <div style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>
-              <i className="fas fa-spinner fa-spin mr-2"></i> Loading curriculum records...
+            <div style={{ padding: '16px' }}>
+              <SkeletonLoader type="table" rows={4} columns={5} />
             </div>
           ) : textbooks.length === 0 ? (
             <div style={{ padding: 40, textAlign: 'center', color: '#94a3b8' }}>No curriculum textbooks currently issued.</div>

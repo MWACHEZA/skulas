@@ -3,6 +3,7 @@ import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import '../../../styles/portal.css';
+import { SkeletonLoader } from '../../../components/shared';
 
 interface AllowanceItem {
   id?: string;
@@ -362,9 +363,8 @@ export default function PayrollSettingsPage({ isEmbedded = false }: { isEmbedded
       </div>
 
       {loading ? (
-        <div style={{ padding: 48, textAlign: 'center', color: '#64748b' }}>
-          <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7' }} />
-          <p style={{ marginTop: 12 }}>Loading {activeTab} settings...</p>
+        <div style={{ padding: '24px 0' }}>
+          <SkeletonLoader type="table" rows={6} columns={4} />
         </div>
       ) : (
         <>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 
 interface StaffMember {
   id: string;
@@ -91,9 +91,8 @@ export default function AncillaryDirectory() {
       </div>
 
       {loading ? (
-        <div style={{ padding: 60, textAlign: 'center' }}>
-          <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--portal-primary)' }}></i>
-          <p style={{ color: '#718096', marginTop: 12 }}>Loading directory...</p>
+        <div style={{ padding: '24px 0' }}>
+          <SkeletonLoader type="card" count={6} />
         </div>
       ) : filtered.length === 0 ? (
         <div className="portal-card" style={{ padding: 60, textAlign: 'center' }}>

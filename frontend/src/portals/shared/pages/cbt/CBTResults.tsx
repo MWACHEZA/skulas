@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../../../lib/api';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useToast } from '../../../../context/ToastContext';
+import { SkeletonLoader } from '../../../../components/shared';
 
 interface LiveStudentSession {
   id: string;
@@ -145,7 +146,11 @@ export default function CBTResults() {
   };
 
   if (loading) {
-    return <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin mr-2"></i> Loading CBT Session...</div>;
+    return (
+      <div className="portal-container" style={{ padding: 24, maxWidth: 1400, margin: '0 auto' }}>
+        <SkeletonLoader type="table" rows={6} columns={6} />
+      </div>
+    );
   }
 
   return (

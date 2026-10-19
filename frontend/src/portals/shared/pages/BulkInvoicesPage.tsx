@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
+import { SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 import { useTerminology } from '../../../hooks/useTerminology';
 
@@ -224,9 +225,8 @@ export default function BulkInvoicesPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '100px' }}>
-                    <div className="portal-spinner" style={{ margin: '0 auto 24px' }}></div>
-                    <p style={{ fontWeight: 900, color: '#64748b' }}>Synchronizing mass billing registry...</p>
+                  <td colSpan={6} style={{ padding: '24px' }}>
+                    <SkeletonLoader type="table" rows={6} columns={6} />
                   </td>
                 </tr>
               ) : (Array.isArray(invoices) ? invoices : []).length === 0 ? (

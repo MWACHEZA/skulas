@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
+import { SkeletonLoader } from '../../../components/shared';
 import TabbedPage, { type TabItem } from '../../../components/portals/shared/TabbedPage';
 
 // ── TYPES ──
@@ -280,9 +281,8 @@ export default function ParentClinic() {
       </div>
 
       {loading ? (
-        <div style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>
-          <i className="fas fa-spinner fa-spin fa-2x"></i>
-          <p style={{ marginTop: 12, fontSize: '0.9rem' }}>Loading health visits...</p>
+        <div style={{ padding: '24px 0' }}>
+          <SkeletonLoader type="table" rows={5} columns={5} />
         </div>
       ) : visits.length === 0 ? (
         <div style={{

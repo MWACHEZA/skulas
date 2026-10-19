@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
+import { SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 export default function GiveStudentAward() {
@@ -77,9 +78,8 @@ export default function GiveStudentAward() {
           )}
 
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '20px' }}>
-              <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--school-primary, #0056b3)' }}></i>
-              <p style={{ marginTop: '10px' }}>Loading {t('students').toLowerCase()}...</p>
+            <div style={{ padding: '20px' }}>
+              <SkeletonLoader type="form" />
             </div>
           ) : (
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>

@@ -6,7 +6,7 @@ import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModa
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl } from '../../../utils/formatters';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 import type { ExportColumn } from '../../../utils/exportService';
 import '../../../styles/portal.css';
 
@@ -841,9 +841,8 @@ export default function AdminSystem() {
 
       {/* Users Table */}
       {loading ? (
-        <div style={{ padding: 60, textAlign: 'center', background: '#fff', borderRadius: '8px' }}>
-          <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#4f46e5' }}></i>
-          <p style={{ marginTop: 12, color: '#64748b' }}>Loading directory...</p>
+        <div style={{ padding: 24, background: '#fff', borderRadius: '8px' }}>
+          <SkeletonLoader type="table" rows={8} columns={6} />
         </div>
       ) : (
         <div style={{ background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
@@ -1044,9 +1043,8 @@ export default function AdminSystem() {
             </div>
             <div className="portal-card-body p-0">
               {leadershipLoading ? (
-                <div style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
-                  <i className="fas fa-spinner fa-spin fa-2x"></i>
-                  <p style={{ marginTop: 8 }}>Loading assignments...</p>
+                <div style={{ padding: '1.5rem' }}>
+                  <SkeletonLoader type="table" rows={4} columns={6} />
                 </div>
               ) : (
                 <div className="table-responsive">
@@ -1263,9 +1261,8 @@ export default function AdminSystem() {
             </div>
             <div className="portal-card-body p-0">
               {allowedSuppliesLoading ? (
-                <div style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
-                  <i className="fas fa-spinner fa-spin fa-2x"></i>
-                  <p style={{ marginTop: 8 }}>Loading catalog...</p>
+                <div style={{ padding: '1.5rem' }}>
+                  <SkeletonLoader type="table" rows={4} columns={6} />
                 </div>
               ) : (
                 <table className="portal-table" style={{ width: '100%' }}>
@@ -1558,8 +1555,8 @@ export default function AdminSystem() {
 
           <div className="portal-card" style={{ background: '#fff', borderRadius: '8px', overflow: 'hidden' }}>
             {auditLoading ? (
-              <div style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
-                <i className="fas fa-spinner fa-spin mr-2"></i> Loading immutable audit logs...
+              <div style={{ padding: '1.5rem' }}>
+                <SkeletonLoader type="table" rows={6} columns={7} />
               </div>
             ) : (
               <div style={{ overflowX: 'auto' }}>

@@ -4,7 +4,7 @@ import api from '../../../lib/api';
 import ManagementDetailPanel from '../../../components/shared/ManagementDetailPanel';
 import UserEditModal from '../../../components/shared/UserEditModal';
 import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModal';
-import { SearchInput, ExportButton, DataImportModal } from '../../../components/shared';
+import { SearchInput, ExportButton, DataImportModal, SkeletonLoader } from '../../../components/shared';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl, parseCleanBadges } from '../../../utils/formatters';
@@ -651,9 +651,8 @@ export default function StaffDirectory() {
         }}
       >
         {loading ? (
-          <div style={{ padding: 60, textAlign: 'center', color: '#64748b' }}>
-            <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7', marginBottom: 12 }}></i>
-            <p style={{ margin: 0, fontWeight: 600 }}>Loading staff directory...</p>
+          <div style={{ padding: '16px' }}>
+            <SkeletonLoader type="table" rows={8} columns={7} />
           </div>
         ) : filteredUsers.length === 0 ? (
           <div style={{ padding: 60, textAlign: 'center', color: '#94a3b8' }}>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
+import { SkeletonLoader } from '../../../components/shared';
 
 export type ClinicDashboardTab = 'active-patients' | 'triage-queue' | 'today-consults' | 'critical-alerts' | 'low-stock';
 
@@ -219,9 +220,8 @@ export default function ClinicDashboardPage() {
 
       {/* Tab Contents */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '60px 0', color: '#64748b' }}>
-          <i className="fas fa-spinner fa-spin fa-2x" style={{ marginBottom: 12 }} />
-          <div>Loading clinical feeds...</div>
+        <div style={{ padding: '24px 0' }}>
+          <SkeletonLoader type="table" rows={5} columns={6} />
         </div>
       ) : (
         <div style={{ background: '#fff', borderRadius: 8, padding: 20, border: '1px solid #e2e8f0' }}>

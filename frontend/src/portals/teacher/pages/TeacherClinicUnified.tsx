@@ -3,6 +3,7 @@ import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { SearchInput } from '../../../components/shared/SearchInput';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 export default function TeacherClinicUnified() {
   const { user } = useAuth();
@@ -269,9 +270,8 @@ export default function TeacherClinicUnified() {
 
         {/* Table Content */}
         {loading ? (
-          <div style={{ padding: 48, textAlign: 'center', color: '#64748b' }}>
-            <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7' }} />
-            <p style={{ marginTop: 10, fontWeight: 600 }}>Loading referrals log...</p>
+          <div style={{ padding: '16px' }}>
+            <SkeletonLoader type="table" rows={6} columns={6} />
           </div>
         ) : displayedReferrals.length === 0 ? (
           <div style={{ padding: 56, textAlign: 'center', color: '#64748b' }}>

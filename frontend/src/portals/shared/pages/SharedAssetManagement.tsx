@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
-import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption, SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface Asset {
@@ -648,9 +648,8 @@ export default function SharedAssetManagement() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={8} style={{ textAlign: 'center', padding: '50px 20px', color: '#64748b' }}>
-                    <div className="portal-spinner" style={{ margin: '0 auto 12px' }}></div>
-                    Loading asset ledger...
+                  <td colSpan={8} style={{ padding: '24px' }}>
+                    <SkeletonLoader type="table" rows={6} columns={8} />
                   </td>
                 </tr>
               ) : filteredAssets.length === 0 ? (

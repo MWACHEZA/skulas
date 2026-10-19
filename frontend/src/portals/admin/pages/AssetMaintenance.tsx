@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface AssetMaintenanceLog {
@@ -422,9 +423,8 @@ export default function AdminAssetMaintenance() {
       {/* Work Orders Table */}
       <div className="portal-card" style={{ padding: 0, overflow: 'hidden' }}>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '60px 0' }}>
-            <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7' }}></i>
-            <p style={{ marginTop: '12px', color: '#64748b', fontWeight: 600 }}>Loading maintenance work orders...</p>
+          <div style={{ padding: '24px' }}>
+            <SkeletonLoader type="table" rows={6} columns={6} />
           </div>
         ) : filteredTasks.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 import '../../../styles/portal.css';
 
 export default function TeacherLoad() {
@@ -78,7 +79,14 @@ export default function TeacherLoad() {
     }
   };
 
-  if (loading) return <div className="portal-loading"><i className="fas fa-spinner fa-spin"></i> Loading Load Data...</div>;
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <SkeletonLoader type="profile" />
+        <SkeletonLoader type="table" rows={6} columns={4} />
+      </div>
+    );
+  }
 
   const homeroomClass = teacher?.classes?.[0];
 

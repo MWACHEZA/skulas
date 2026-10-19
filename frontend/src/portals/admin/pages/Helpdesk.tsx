@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 import '../../../styles/portal.css';
 
 export default function Helpdesk() {
@@ -110,9 +111,8 @@ export default function Helpdesk() {
         
         <div className="table-responsive">
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '100px' }}>
-              <div className="portal-spinner" style={{ margin: '0 auto 16px' }}></div>
-              <p style={{ fontWeight: 800, color: '#64748b' }}>Synchronizing helpdesk audit...</p>
+            <div style={{ padding: '16px' }}>
+              <SkeletonLoader type="table" rows={6} columns={6} />
             </div>
           ) : (Array.isArray(tickets) ? tickets : []).length === 0 ? (
             <div style={{ textAlign: 'center', padding: '120px 24px' }}>

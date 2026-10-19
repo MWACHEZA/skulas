@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { toast } from '../../../context/ToastContext';
+import { SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 import { useTerminology } from '../../../hooks/useTerminology';
 
@@ -245,9 +246,8 @@ export default function FeeReminderLogsPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '100px' }}>
-                    <div className="portal-spinner" style={{ margin: '0 auto 16px' }}></div>
-                    <p style={{ fontWeight: 800, color: '#64748b' }}>Synchronizing audit trail...</p>
+                  <td colSpan={6} style={{ padding: '24px' }}>
+                    <SkeletonLoader type="table" rows={6} columns={6} />
                   </td>
                 </tr>
               ) : (Array.isArray(logs) ? logs : []).length === 0 ? (

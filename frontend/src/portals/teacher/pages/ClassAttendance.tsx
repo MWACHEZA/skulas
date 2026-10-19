@@ -185,9 +185,7 @@ export default function TeacherClassAttendance() {
               <i className="fas fa-chalkboard mr-1" /> Assigned Class
             </label>
             {loadingClasses ? (
-              <span style={{ fontSize: '0.9rem', color: '#64748b' }}>
-                <i className="fas fa-spinner fa-spin mr-1" /> Loading classes...
-              </span>
+              <SkeletonLoader type="text" width="160px" height="38px" />
             ) : classes.length === 0 ? (
               <span style={{ fontSize: '0.9rem', color: '#ef4444', fontWeight: 600 }}>
                 No assigned classes found

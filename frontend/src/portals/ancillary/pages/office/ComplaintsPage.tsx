@@ -3,6 +3,7 @@ import api from '../../../../lib/api';
 import { useToast } from '../../../../context/ToastContext';
 import { useTerminology } from '../../../../hooks/useTerminology';
 import '../../../../styles/portal.css';
+import { SkeletonLoader } from '../../../../components/shared';
 
 interface Complaint {
   id: string;
@@ -248,7 +249,9 @@ export default function ComplaintsPage() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan={8} style={{ textAlign: 'center', padding: '40px' }}>Loading...</td>
+                    <td colSpan={8} style={{ padding: '24px' }}>
+                      <SkeletonLoader type="table" rows={6} columns={8} />
+                    </td>
                   </tr>
                 ) : filteredComplaints.length === 0 ? (
                   <tr>

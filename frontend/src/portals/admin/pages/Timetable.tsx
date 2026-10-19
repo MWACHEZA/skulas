@@ -3,6 +3,7 @@ import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTerminology } from '../../../hooks/useTerminology';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
@@ -266,7 +267,9 @@ export default function AdminTimetable() {
               <h2>{classes.find(c => c.id === selectedClass)?.name} — {term}, {year}</h2>
            </div>
           {loading ? (
-            <div style={{ padding: 40, textAlign: 'center' }}><i className="fas fa-spinner fa-spin"></i> Loading Grid...</div>
+            <div style={{ padding: '16px' }}>
+              <SkeletonLoader type="table" rows={6} columns={6} />
+            </div>
           ) : (
             <table className="timetable-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>

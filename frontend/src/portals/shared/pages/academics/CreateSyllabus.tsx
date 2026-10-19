@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useToast } from '../../../../context/ToastContext';
 import api from '../../../../lib/api';
+import { SkeletonLoader } from '../../../../components/shared';
 import { useAcademicConfig } from '../../../../hooks/useAcademicConfig';
 
 interface WeekItem {
@@ -419,7 +420,9 @@ export default function CreateSyllabus() {
             </div>
 
             {loading ? (
-              <div style={{ textAlign: 'center', padding: 40 }}><i className="fas fa-spinner fa-spin mr-2"></i> Loading...</div>
+              <div style={{ padding: '24px 0' }}>
+                <SkeletonLoader type="table" rows={6} columns={4} />
+              </div>
             ) : syllabuses.length === 0 ? (
               <div style={{ textAlign: 'center', padding: 40, color: '#718096', background: 'white', borderRadius: 8, border: '1px solid #e2e8f0' }}>
                  <i className="fas fa-file-alt fa-3x" style={{ color: '#cbd5e0', marginBottom: 15 }}></i>

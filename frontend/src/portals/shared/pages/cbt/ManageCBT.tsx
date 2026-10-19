@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useToast } from '../../../../context/ToastContext';
 import api from '../../../../lib/api';
+import SkeletonLoader from '../../../../components/shared/SkeletonLoader';
 
 export default function ManageCBT() {
   const { user } = useAuth();
@@ -514,7 +515,9 @@ export default function ManageCBT() {
         </div>
         <div className="portal-card-body">
           {loading ? (
-            <div style={{ padding: 40, textAlign: 'center' }}>Loading exams...</div>
+            <div style={{ padding: '16px' }}>
+              <SkeletonLoader type="table" rows={6} columns={6} />
+            </div>
           ) : filteredExams.length === 0 ? (
             <div style={{ padding: 40, textAlign: 'center', color: '#718096' }}>
               <i className="fas fa-folder-open fa-3x" style={{ color: '#cbd5e0', marginBottom: 15 }}></i>
@@ -783,9 +786,8 @@ export default function ManageCBT() {
 
             <div className="preview-content" style={{ padding: '40px', background: 'white', maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}>
               {loadingPreview ? (
-                <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
-                  <i className="fas fa-spinner fa-spin fa-2x mb-3"></i>
-                  <p>Loading exam content...</p>
+                <div style={{ padding: '20px' }}>
+                  <SkeletonLoader type="profile" />
                 </div>
               ) : previewData ? (
                 <div>

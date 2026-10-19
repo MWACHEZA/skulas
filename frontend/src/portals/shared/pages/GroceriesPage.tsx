@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { toast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
+import { SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 import { useTerminology } from '../../../hooks/useTerminology';
 
@@ -269,9 +270,8 @@ export default function GroceriesPage() {
       </div>
 
       {loading ? (
-        <div className="portal-card" style={{ padding: '120px 24px', textAlign: 'center' }}>
-          <div className="portal-spinner" style={{ margin: '0 auto 24px' }}></div>
-          <p style={{ color: '#64748b', fontWeight: 800, fontSize: '1.1rem' }}>Synchronizing inventory matrix...</p>
+        <div className="portal-card" style={{ padding: '24px' }}>
+          <SkeletonLoader type="table" rows={6} columns={6} />
         </div>
       ) : (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">

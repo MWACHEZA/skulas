@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 export default function QuestionBank() {
   const [questions, setQuestions] = useState<any[]>([]);
@@ -130,8 +131,9 @@ export default function QuestionBank() {
 
   if (loading) {
     return (
-      <div className="portal-container" style={{ padding: 40, textAlign: 'center' }}>
-        <i className="fas fa-spinner fa-spin mr-2" /> Loading Question Bank...
+      <div className="portal-container" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <SkeletonLoader type="stats" count={3} />
+        <SkeletonLoader type="table" rows={6} columns={5} />
       </div>
     );
   }

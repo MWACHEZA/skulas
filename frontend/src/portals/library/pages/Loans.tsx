@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface LoanRecord {
@@ -376,8 +376,8 @@ export default function LibraryLoans() {
 
       {/* 2-Panel Active Loans Display */}
       {loading ? (
-        <div style={{ padding: 60, textAlign: 'center', color: '#64748b' }}>
-          <i className="fas fa-spinner fa-spin mr-2"></i> Loading loan circulation records...
+        <div style={{ padding: '24px 0' }}>
+          <SkeletonLoader type="card" count={6} />
         </div>
       ) : filteredLoans.length === 0 ? (
         <div className="portal-card" style={{ padding: 60, textAlign: 'center', color: '#64748b', borderRadius: 16 }}>

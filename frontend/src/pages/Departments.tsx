@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSchool } from '../components/layout/Layout';
 import api from '../lib/api';
+import { SkeletonLoader } from '../components/shared';
 
 interface Subject {
   subject: {
@@ -119,9 +120,8 @@ export default function Departments() {
 
       <div className="container" style={{ padding: '60px 0' }}>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '60px' }}>
-            <i className="fas fa-spinner fa-spin fa-3x" style={{ color: '#3b82f6' }}></i>
-            <p style={{ marginTop: '15px', color: '#64748b', fontSize: '1.1rem' }}>Loading departments...</p>
+          <div style={{ padding: '24px 0' }}>
+            <SkeletonLoader type="card" count={4} />
           </div>
         ) : departments.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px', background: '#f8fafc', borderRadius: '16px', border: '1px dashed #cbd5e1' }}>

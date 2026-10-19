@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import api, { BASE_URL } from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 interface Attachment {
   name: string;
@@ -298,7 +299,9 @@ export default function TeacherAssignmentSubmissions() {
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
           {loading ? (
-             <div style={{ padding: 40, textAlign: 'center', color: '#64748b' }}><i className="fas fa-spinner fa-spin mr-2"></i> Loading submissions...</div>
+             <div style={{ padding: '16px' }}>
+               <SkeletonLoader type="table" rows={6} columns={7} />
+             </div>
           ) : submissions.length === 0 ? (
             <div style={{ padding: 40, textAlign: 'center', color: '#94a3b8' }}>
               <i className="fas fa-inbox text-3xl mb-2 block"></i>

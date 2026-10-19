@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
-import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption, SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type DisciplineTab = 'conduct' | 'awards' | 'committee' | 'approvals' | 'houses';
@@ -670,9 +670,8 @@ export default function AdminDiscipline() {
 
       {/* Content Table */}
       {loading ? (
-        <div style={{ padding: 60, textAlign: 'center', background: '#fff', borderRadius: '8px' }}>
-          <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#4f46e5' }}></i>
-          <p style={{ marginTop: 12, color: '#64748b' }}>Loading records...</p>
+        <div style={{ padding: '16px', background: '#fff', borderRadius: '8px' }}>
+          <SkeletonLoader type="table" rows={8} columns={7} />
         </div>
       ) : activeTab === 'conduct' ? (
         /* Conduct Table */

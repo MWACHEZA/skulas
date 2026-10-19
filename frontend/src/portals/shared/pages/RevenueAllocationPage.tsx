@@ -3,6 +3,7 @@ import api from '../../../lib/api';
 import { toast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import '../../../styles/portal.css';
+import { SkeletonLoader } from '../../../components/shared';
 
 interface FeeGroup {
   id: string;
@@ -416,9 +417,8 @@ export default function RevenueAllocationPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="portal-table-spinner">
-                    <div className="portal-spinner portal-spinner-center"></div>
-                    <p className="portal-text-bold-slate">Synchronizing strategic schemes...</p>
+                  <td colSpan={6} style={{ padding: '24px' }}>
+                    <SkeletonLoader type="table" rows={6} columns={6} />
                   </td>
                 </tr>
               ) : (Array.isArray(allocations) ? allocations : []).length === 0 ? (

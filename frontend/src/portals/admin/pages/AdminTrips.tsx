@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 import ErrorBoundary from '../../../components/shared/ErrorBoundary';
 import '../../../styles/portal.css';
 
@@ -527,9 +527,8 @@ export default function AdminTrips({ defaultTab }: { defaultTab?: 'all-trips' | 
 
             {/* Trips Grid */}
             {loading ? (
-              <div style={{ textAlign: 'center', padding: '60px 0', color: '#64748b' }}>
-                <i className="fas fa-spinner fa-spin fa-2x" style={{ marginBottom: 12 }}></i>
-                <div>Loading excursions...</div>
+              <div style={{ padding: '24px 0' }}>
+                <SkeletonLoader type="card" count={6} />
               </div>
             ) : filteredTrips.length === 0 ? (
               <div style={{
@@ -736,9 +735,8 @@ export default function AdminTrips({ defaultTab }: { defaultTab?: 'all-trips' | 
         {tab === 'details' && (
           <div>
             {loadingTrip ? (
-              <div style={{ textAlign: 'center', padding: '60px 0', color: '#64748b' }}>
-                <i className="fas fa-spinner fa-spin fa-2x" style={{ marginBottom: 12 }}></i>
-                <div>Loading excursion details & roster...</div>
+              <div style={{ padding: '24px 0' }}>
+                <SkeletonLoader type="profile" />
               </div>
             ) : !selectedTrip ? (
               <div style={{ textAlign: 'center', padding: '50px 20px', background: '#fff', borderRadius: 12 }}>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import '../../../styles/portal.css';
+import { SkeletonLoader } from '../../../components/shared';
 import { useAcademicConfig } from '../../../hooks/useAcademicConfig';
 
 interface Grade {
@@ -202,9 +203,8 @@ export default function PrincipalCommentsPage() {
       </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '120px 24px' }}>
-          <div className="portal-spinner" style={{ margin: '0 auto 24px' }}></div>
-          <p style={{ fontWeight: 900, color: '#64748b', fontSize: '1.2rem' }}>Synchronizing performance repositories...</p>
+        <div style={{ padding: '24px 0' }}>
+          <SkeletonLoader type="card" count={4} />
         </div>
       ) : (Array.isArray(students) ? students : []).length > 0 ? (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '32px' }} className="animate-in fade-in slide-in-from-bottom-4 duration-500">

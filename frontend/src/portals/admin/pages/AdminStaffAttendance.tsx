@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type StaffTab = 'daily-summary' | 'late-comers' | 'raw-logs' | 'leave-cross-check';
@@ -331,9 +332,8 @@ export default function AdminStaffAttendance() {
           {/* Daily Table */}
           <div className="portal-card" style={{ padding: 24 }}>
             {loadingDaily ? (
-              <div style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>
-                <i className="fas fa-spinner fa-spin fa-2x"></i>
-                <div style={{ marginTop: 12 }}>Loading staff daily attendance...</div>
+              <div style={{ padding: 16 }}>
+                <SkeletonLoader type="table" rows={6} columns={6} />
               </div>
             ) : filteredDaily.length === 0 ? (
               <div style={{ padding: 40, textAlign: 'center', color: '#94a3b8' }}>
@@ -441,9 +441,8 @@ export default function AdminStaffAttendance() {
           </div>
 
           {loadingLate ? (
-            <div style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>
-              <i className="fas fa-spinner fa-spin fa-2x"></i>
-              <div style={{ marginTop: 12 }}>Loading tardiness records...</div>
+            <div style={{ padding: 16 }}>
+              <SkeletonLoader type="table" rows={5} columns={6} />
             </div>
           ) : !lateComersData || lateComersData.lateComers.length === 0 ? (
             <div style={{ padding: 40, textAlign: 'center', color: '#10b981' }}>
@@ -594,9 +593,8 @@ export default function AdminStaffAttendance() {
             </div>
 
             {loadingRaw ? (
-              <div style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>
-                <i className="fas fa-spinner fa-spin fa-2x"></i>
-                <div style={{ marginTop: 12 }}>Loading device logs...</div>
+              <div style={{ padding: 16 }}>
+                <SkeletonLoader type="table" rows={6} columns={5} />
               </div>
             ) : rawLogs.length === 0 ? (
               <div style={{ padding: 40, textAlign: 'center', color: '#94a3b8' }}>
@@ -703,9 +701,8 @@ export default function AdminStaffAttendance() {
             </h3>
 
             {loadingLeave ? (
-              <div style={{ padding: 40, textAlign: 'center', color: '#64748b' }}>
-                <i className="fas fa-spinner fa-spin fa-2x"></i>
-                <div style={{ marginTop: 12 }}>Cross-checking leave applications...</div>
+              <div style={{ padding: 16 }}>
+                <SkeletonLoader type="table" rows={5} columns={6} />
               </div>
             ) : !leaveData || leaveData.absentStaff.length === 0 ? (
               <div style={{ padding: 40, textAlign: 'center', color: '#10b981' }}>

@@ -6,7 +6,7 @@ import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModa
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl, parseCleanBadges } from '../../../utils/formatters';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 export default function SupplierManagement() {
@@ -178,9 +178,8 @@ export default function SupplierManagement() {
 
         <div className="management-table-card">
           {loading ? (
-            <div style={{ textAlign: 'center', padding: 40 }}>
-              <i className="fas fa-spinner fa-spin" style={{ fontSize: '2rem', color: 'var(--portal-primary)' }}></i>
-              <p>Loading vendor roster...</p>
+            <div style={{ padding: '16px' }}>
+              <SkeletonLoader type="table" rows={8} columns={7} />
             </div>
           ) : (
             <table className="management-table">
@@ -593,8 +592,8 @@ function ManageCategoriesModal({ isOpen, onClose }: ManageCategoriesModalProps) 
           </form>
 
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '20px' }}>
-              <i className="fas fa-spinner fa-spin" style={{ color: 'var(--portal-primary)' }}></i>
+            <div style={{ padding: '16px' }}>
+              <SkeletonLoader type="text" count={3} />
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '300px', overflowY: 'auto' }}>

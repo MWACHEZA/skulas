@@ -7,7 +7,7 @@ import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModa
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl, formatCurrency, parseCleanBadges } from '../../../utils/formatters';
-import { SearchInput, FilterBar, ExportButton, DataImportModal } from '../../../components/shared';
+import { SearchInput, FilterBar, ExportButton, DataImportModal, SkeletonLoader } from '../../../components/shared';
 import type { ExportColumn } from '../../../utils/exportService';
 import '../../../styles/portal.css';
 
@@ -515,9 +515,8 @@ export default function AdminStudents() {
         {/* Table View */}
         <div className="management-table-card">
           {loading ? (
-            <div style={{ textAlign: 'center', padding: 50 }}>
-              <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--portal-primary)', marginBottom: 12 }}></i>
-              <p style={{ color: '#64748b', fontWeight: 600 }}>Loading students directory...</p>
+            <div style={{ padding: '16px' }}>
+              <SkeletonLoader type="table" rows={8} columns={8} />
             </div>
           ) : (
             <>

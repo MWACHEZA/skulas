@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 
 export type EmergencyTab = 'emergency-log' | 'referrals';
 
@@ -249,9 +249,8 @@ export default function ClinicEmergencyPage() {
           </div>
 
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
-              <i className="fas fa-spinner fa-spin fa-2x" />
-              <p style={{ marginTop: 10 }}>Loading emergency records...</p>
+            <div style={{ padding: '20px' }}>
+              <SkeletonLoader type="table" rows={6} columns={6} />
             </div>
           ) : emergencyLogs.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '40px 0', color: '#166534' }}>

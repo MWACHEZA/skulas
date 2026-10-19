@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
+import { SkeletonLoader } from '../../../components/shared';
 
 export default function CBTExams() {
   const { user } = useAuth();
@@ -58,9 +59,8 @@ export default function CBTExams() {
 
   if (loading) {
     return (
-      <div className="portal-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 350, gap: 12 }}>
-        <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#2563eb' }}></i>
-        <span style={{ color: '#64748b', fontSize: '0.9rem', fontWeight: 600 }}>Loading scheduled CBT exams...</span>
+      <div className="portal-container" style={{ padding: '24px 0' }}>
+        <SkeletonLoader type="card" count={3} />
       </div>
     );
   }

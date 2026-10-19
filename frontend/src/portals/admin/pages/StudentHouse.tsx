@@ -3,7 +3,7 @@ import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useAuth } from '../../../contexts/AuthContext';
-import { SearchableCombobox, type ComboboxOption } from '../../../components/shared';
+import { SearchableCombobox, type ComboboxOption, SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 export interface StudentHouseItem {
@@ -228,23 +228,24 @@ export default function StudentHouse() {
             </div>
           </div>
           <div style={{ padding: '20px' }}>
-            <table className="portal-table">
-              <thead>
-                <tr>
-                  <th style={{ width: '80px' }}>Logo</th>
-                  <th>{t('house')} Name</th>
-                  <th>Description</th>
-                  <th>House Master</th>
-                  <th>House Captain</th>
-                  <th style={{ textAlign: 'right' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}>Loading {t('houses').toLowerCase()}...</td></tr>
-                ) : houses.length === 0 ? (
-                  <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}>No {t('houses').toLowerCase()} found.</td></tr>
-                ) : (() => {
+            {loading ? (
+              <SkeletonLoader type="table" rows={6} columns={6} />
+            ) : (
+              <table className="portal-table">
+                <thead>
+                  <tr>
+                    <th style={{ width: '80px' }}>Logo</th>
+                    <th>{t('house')} Name</th>
+                    <th>Description</th>
+                    <th>House Master</th>
+                    <th>House Captain</th>
+                    <th style={{ textAlign: 'right' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {houses.length === 0 ? (
+                    <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}>No {t('houses').toLowerCase()} found.</td></tr>
+                  ) : (() => {
                   const indexOfLastItem = currentPage * itemsPerPage;
                   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
                   const currentItems = houses.slice(indexOfFirstItem, indexOfLastItem);
@@ -289,6 +290,7 @@ export default function StudentHouse() {
                 })()}
               </tbody>
             </table>
+            )}
             
             {!loading && houses.length > 0 && (
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>

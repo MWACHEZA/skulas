@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import ClockInModal from '../../../components/attendance/ClockInModal';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 import '../../../styles/portal.css';
 
 interface LoanItem {
@@ -326,9 +327,10 @@ export default function LibraryDashboard() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '70vh', flexDirection: 'column', gap: 16 }}>
-        <div className="portal-spinner" style={{ width: 44, height: 44 }}></div>
-        <p style={{ color: 'var(--school-primary, #3182ce)', fontWeight: 700, fontSize: '1rem' }}>Loading live library operations...</p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 1400, margin: '0 auto', paddingBottom: 60 }}>
+        <SkeletonLoader type="profile" />
+        <SkeletonLoader type="stats" count={4} />
+        <SkeletonLoader type="card" count={3} />
       </div>
     );
   }

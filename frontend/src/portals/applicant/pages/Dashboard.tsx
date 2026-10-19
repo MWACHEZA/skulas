@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
+import { SkeletonLoader } from '../../../components/shared';
 
 export default function ApplicantDashboard() {
   const { t, isMedical } = useTerminology();
@@ -24,9 +25,11 @@ export default function ApplicantDashboard() {
   };
 
   if (loading) return (
-    <div style={{ padding: 50, textAlign: 'center' }}>
-      <i className="fas fa-spinner fa-spin fa-2x" style={{ color: 'var(--portal-primary)' }}></i>
-      <p style={{ marginTop: 15, color: '#718096' }}>Updating your status...</p>
+    <div style={{ padding: '24px 0' }}>
+      <SkeletonLoader type="profile" />
+      <div style={{ marginTop: '20px' }}>
+        <SkeletonLoader type="stats" />
+      </div>
     </div>
   );
 

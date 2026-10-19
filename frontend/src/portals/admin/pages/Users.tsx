@@ -6,6 +6,7 @@ import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModa
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl } from '../../../utils/formatters';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 import '../../../styles/portal.css';
 
 export default function AdminUsers() {
@@ -122,9 +123,8 @@ export default function AdminUsers() {
 
       <div className="management-table-card animate-in fade-in slide-in-from-bottom-4 duration-500">
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '120px 24px' }}>
-            <div className="portal-spinner" style={{ margin: '0 auto 24px' }}></div>
-            <p style={{ fontWeight: 900, color: '#64748b', fontSize: '1.2rem' }}>Synchronizing user repositories...</p>
+          <div style={{ padding: '16px' }}>
+            <SkeletonLoader type="table" rows={8} columns={6} />
           </div>
         ) : (
           <div className="table-responsive">

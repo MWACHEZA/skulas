@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
+import { SkeletonLoader } from '../../../components/shared';
 
 export default function StudentEvents() {
   const [events, setEvents] = useState<any[]>([]);
@@ -31,8 +32,8 @@ export default function StudentEvents() {
       </div>
       
       {loading ? (
-        <div style={{ padding: 40, textAlign: 'center' }}>
-          <i className="fas fa-spinner fa-spin"></i> Loading events...
+        <div style={{ padding: '24px 0' }}>
+          <SkeletonLoader type="card" count={6} />
         </div>
       ) : events.length === 0 ? (
         <div className="portal-card" style={{ padding: '40px 20px', textAlign: 'center', color: '#718096' }}>

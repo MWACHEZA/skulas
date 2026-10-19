@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '../../../../context/ToastContext';
 import api from '../../../../lib/api';
+import { SkeletonLoader } from '../../../../components/shared';
 
 export interface Question {
   id: string;
@@ -207,7 +208,11 @@ export default function ManageQuestions() {
     }
   };
 
-  if (loading) return <div style={{ padding: 40, textAlign: 'center' }}>Loading...</div>;
+  if (loading) return (
+    <div className="portal-container" style={{ padding: 24 }}>
+      <SkeletonLoader type="card" count={4} />
+    </div>
+  );
   if (!exam) return null;
 
   return (

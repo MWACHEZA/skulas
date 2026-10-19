@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 import '../../../styles/portal.css';
 
 export default function Holiday() {
@@ -126,37 +127,39 @@ export default function Holiday() {
             <h3><i className="fas fa-calendar-alt mr-2"></i> Holiday List</h3>
           </div>
           <div style={{ padding: '20px' }}>
-            <table className="portal-table">
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Details</th>
-                  <th>Period</th>
-                  <th style={{ textAlign: 'right' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr><td colSpan={4} style={{ textAlign: 'center', padding: '40px' }}>Loading holidays...</td></tr>
-                ) : holidays.length === 0 ? (
-                  <tr><td colSpan={4} style={{ textAlign: 'center', padding: '40px' }}>No holidays scheduled.</td></tr>
-                ) : holidays.map(h => (
-                  <tr key={h.id}>
-                    <td style={{ fontWeight: 800, color: 'var(--portal-primary)' }}>{h.title}</td>
-                    <td style={{ color: '#64748b' }}>{h.content || 'N/A'}</td>
-                    <td>
-                      <div style={{ fontSize: '0.85rem' }}>{new Date(h.startDate).toLocaleDateString()}</div>
-                      <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>to {new Date(h.endDate).toLocaleDateString()}</div>
-                    </td>
-                    <td style={{ textAlign: 'right' }}>
-                      <button onClick={() => handleDelete(h.id)} className="portal-btn-action delete">
-                        <i className="fas fa-trash"></i>
-                      </button>
-                    </td>
+            {loading ? (
+              <SkeletonLoader type="table" rows={5} columns={4} />
+            ) : (
+              <table className="portal-table">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Details</th>
+                    <th>Period</th>
+                    <th style={{ textAlign: 'right' }}>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {holidays.length === 0 ? (
+                    <tr><td colSpan={4} style={{ textAlign: 'center', padding: '40px' }}>No holidays scheduled.</td></tr>
+                  ) : holidays.map(h => (
+                    <tr key={h.id}>
+                      <td style={{ fontWeight: 800, color: 'var(--portal-primary)' }}>{h.title}</td>
+                      <td style={{ color: '#64748b' }}>{h.content || 'N/A'}</td>
+                      <td>
+                        <div style={{ fontSize: '0.85rem' }}>{new Date(h.startDate).toLocaleDateString()}</div>
+                        <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>to {new Date(h.endDate).toLocaleDateString()}</div>
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        <button onClick={() => handleDelete(h.id)} className="portal-btn-action delete">
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       </div>

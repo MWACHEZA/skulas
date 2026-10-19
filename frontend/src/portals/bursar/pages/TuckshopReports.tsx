@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 interface ReportData {
   revenueToday: number;
@@ -34,7 +35,14 @@ export default function TuckshopReports() {
     }
   };
 
-  if (loading) return <div style={{ padding: 20 }}>Loading analytics...</div>;
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <SkeletonLoader type="stats" count={3} />
+        <SkeletonLoader type="table" rows={6} columns={4} />
+      </div>
+    );
+  }
   if (!report) return <div style={{ padding: 20 }}>Failed to load analytics.</div>;
 
   const handleExport = () => {

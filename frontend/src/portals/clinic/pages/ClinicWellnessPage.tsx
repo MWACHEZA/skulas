@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
+import { SkeletonLoader } from '../../../components/shared';
 
 export type WellnessTab = 'appointments' | 'vaccines';
 
@@ -138,9 +139,8 @@ export default function ClinicWellnessPage() {
           </div>
 
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
-              <i className="fas fa-spinner fa-spin fa-2x" />
-              <p style={{ marginTop: 10 }}>Loading appointments...</p>
+            <div style={{ padding: '20px' }}>
+              <SkeletonLoader type="table" rows={5} columns={6} />
             </div>
           ) : filteredAppointments.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '40px 0', color: '#64748b' }}>
@@ -208,9 +208,8 @@ export default function ClinicWellnessPage() {
           </div>
 
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
-              <i className="fas fa-spinner fa-spin fa-2x" />
-              <p style={{ marginTop: 10 }}>Loading immunization register...</p>
+            <div style={{ padding: '20px' }}>
+              <SkeletonLoader type="table" rows={5} columns={6} />
             </div>
           ) : filteredVaccines.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '40px 0', color: '#64748b' }}>

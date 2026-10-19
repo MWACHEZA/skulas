@@ -3,6 +3,7 @@ import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useToast } from '../../../context/ToastContext';
+import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 interface ResearchData {
   student: {
@@ -79,7 +80,14 @@ export default function ResearchDashboard() {
     showToast('Redirecting to new progress report form...', 'info');
   };
 
-  if (loading) return <div className="portal-loader">Loading research details...</div>;
+  if (loading) {
+    return (
+      <div className="research-portal" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <SkeletonLoader type="profile" />
+        <SkeletonLoader type="table" rows={5} columns={4} />
+      </div>
+    );
+  }
   if (!data) return <div className="portal-alert error">Failed to load research data.</div>;
 
   const daysLeft = data.student.maxCompletionDate 
