@@ -11,3 +11,14 @@ export { ExportButton } from './ExportButton';
 export type { ExportButtonProps } from './ExportButton';
 
 export { default as DataImportModal } from './DataImportModal';
+
+export {
+  SkeletonLoader,
+  SkeletonBox,
+  SkeletonText,
+  SkeletonCard,
+  SkeletonTable,
+  SkeletonStats,
+  SkeletonProfile
+} from './SkeletonLoader';
+export type { SkeletonLoaderProps } from './SkeletonLoader';

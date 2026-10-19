@@ -578,6 +578,7 @@ router.get('/:id', requireAuth, async (req: AuthRequest, res: Response) => {
         fees: { orderBy: { term: 'asc' } },
         attendance: { orderBy: { date: 'desc' }, take: 30 },
         bookLoans: { include: { book: { select: { title: true, author: true } } }, orderBy: { borrowedAt: 'desc' } },
+        parents: { include: { parent: { include: { user: true } } } },
       },
     }) as any;
 

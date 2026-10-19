@@ -1228,3 +1228,96 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ========================================================
+   UNIVERSAL BUTTON SIZING & DESIGN STANDARDIZATION
+   ======================================================== */
+.portal-btn,
+.portal-btn-primary,
+.portal-btn-secondary,
+.portal-btn-neutral,
+.portal-btn-danger,
+.portal-btn-ghost,
+.btn-primary,
+.btn-secondary {
+  height: 42px;
+  min-height: 42px;
+  box-sizing: border-box;
+  padding: 0 20px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  line-height: 1;
+}
+
+.portal-btn-sm,
+.btn-sm {
+  height: 34px !important;
+  min-height: 34px !important;
+  padding: 0 14px !important;
+  font-size: 0.8rem !important;
+  border-radius: 8px !important;
+}
+
+.portal-btn-lg,
+.btn-lg {
+  height: 48px !important;
+  min-height: 48px !important;
+  padding: 0 26px !important;
+  font-size: 0.95rem !important;
+  border-radius: 12px !important;
+}
+
+.portal-btn-icon-only {
+  width: 42px;
+  min-width: 42px;
+  padding: 0 !important;
+}
+
+.portal-btn-icon-only.portal-btn-sm {
+  width: 34px !important;
+  min-width: 34px !important;
+  height: 34px !important;
+}
+
+/* ========================================================
+   UNIVERSAL SKELETON SHIMMER LOADER
+   ======================================================== */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-box {
+  display: inline-block;
+  background: #e2e8f0;
+  background: linear-gradient(
+    90deg,
+    #edf2f7 0%,
+    #f8fafc 40%,
+    #e2e8f0 60%,
+    #edf2f7 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+  box-sizing: border-box;
+}
+
+.portal-loading-skeleton {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

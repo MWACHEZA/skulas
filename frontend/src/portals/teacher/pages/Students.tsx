@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { getAvatarUrl } from '../../../utils/formatters';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 
 interface StudentData {
   id: string;
@@ -11,6 +11,7 @@ interface StudentData {
   name?: string;
   gender?: string;
   classId?: string;
+  teacherAssignmentType?: string;
   user: {
     name: string;
     email: string;
@@ -126,18 +127,11 @@ export default function TeacherStudents() {
           <button
             type="button"
             onClick={() => navigate('/teacher/attendance')}
+            className="portal-btn"
             style={{
               background: '#0284c7',
               color: '#fff',
-              fontWeight: 700,
-              fontSize: '0.9rem',
-              padding: '10px 18px',
-              borderRadius: 10,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              border: 'none',
-              cursor: 'pointer'
+              border: 'none'
             }}
           >
             <i className="fas fa-clipboard-check" /> Roll Call
@@ -146,18 +140,11 @@ export default function TeacherStudents() {
           <button
             type="button"
             onClick={() => navigate('/teacher/grades')}
+            className="portal-btn"
             style={{
               background: 'rgba(255,255,255,0.12)',
               color: '#fff',
-              fontWeight: 700,
-              fontSize: '0.9rem',
-              padding: '10px 18px',
-              borderRadius: 10,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              border: '1px solid rgba(255,255,255,0.2)',
-              cursor: 'pointer'
+              border: '1px solid rgba(255,255,255,0.2)'
             }}
           >
             <i className="fas fa-chart-line" /> Grades Entry
@@ -320,10 +307,7 @@ export default function TeacherStudents() {
 
       {/* Directory Content */}
       {loading ? (
-        <div style={{ padding: 60, textAlign: 'center', color: '#64748b', background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0' }}>
-          <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7' }} />
-          <p style={{ marginTop: 12, fontWeight: 600 }}>Loading student profiles...</p>
-        </div>
+        <SkeletonLoader type={viewMode === 'grid' ? 'card' : 'table'} count={6} rows={6} columns={6} />
       ) : filteredStudents.length === 0 ? (
         <div style={{ padding: 60, textAlign: 'center', color: '#64748b', background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0' }}>
           <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#f1f5f9', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: '1.75rem', marginBottom: 14 }}>
@@ -397,17 +381,34 @@ export default function TeacherStudents() {
                   </div>
 
                   {/* Student Details */}
-                  <h3 style={{ margin: '0 0 4px 0', fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>
+                  <h3 style={{ margin: '0 0 6px 0', fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>
                     {displayName}
                   </h3>
 
                   <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap', marginBottom: 12 }}>
-                    <span style={{ fontSize: '0.75rem', background: '#e0f2fe', color: '#0369a1', padding: '2px 8px', borderRadius: 6, fontWeight: 700 }}>
+                    <span style={{ fontSize: '0.75rem', background: '#e0f2fe', color: '#0369a1', padding: '3px 8px', borderRadius: 6, fontWeight: 700 }}>
                       <i className="fas fa-chalkboard mr-1" /> {className}
                     </span>
 
+                    {student.teacherAssignmentType && (
+                      <span
+                        style={{
+                          fontSize: '0.72rem',
+                          fontWeight: 700,
+                          padding: '3px 8px',
+                          borderRadius: 6,
+                          background: student.teacherAssignmentType.includes('Class Teacher') ? '#dcfce7' : '#ede9fe',
+                          color: student.teacherAssignmentType.includes('Class Teacher') ? '#166534' : '#5b21b6',
+                          border: `1px solid ${student.teacherAssignmentType.includes('Class Teacher') ? '#bbf7d0' : '#ddd6fe'}`
+                        }}
+                      >
+                        <i className={`fas ${student.teacherAssignmentType.includes('Class Teacher') ? 'fa-id-badge' : 'fa-book-open'} mr-1`} />
+                        {student.teacherAssignmentType}
+                      </span>
+                    )}
+
                     {student.gender && (
-                      <span style={{ fontSize: '0.75rem', background: '#f8fafc', color: '#64748b', padding: '2px 8px', borderRadius: 6, fontWeight: 600, border: '1px solid #e2e8f0' }}>
+                      <span style={{ fontSize: '0.75rem', background: '#f8fafc', color: '#64748b', padding: '3px 8px', borderRadius: 6, fontWeight: 600, border: '1px solid #e2e8f0' }}>
                         {student.gender}
                       </span>
                     )}
@@ -424,20 +425,18 @@ export default function TeacherStudents() {
                   <button
                     type="button"
                     onClick={() => navigate(`/teacher/student-profile?id=${student.id}`)}
+                    className="portal-btn"
                     style={{
                       flex: 1,
-                      padding: '8px 12px',
+                      height: '36px',
+                      minHeight: '36px',
+                      padding: '0 14px',
                       borderRadius: 8,
                       border: '1px solid #cbd5e1',
                       background: '#f8fafc',
                       color: '#0f172a',
                       fontWeight: 700,
-                      fontSize: '0.82rem',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 6
+                      fontSize: '0.82rem'
                     }}
                   >
                     <i className="fas fa-user-circle" /> View Profile
@@ -447,18 +446,17 @@ export default function TeacherStudents() {
                     type="button"
                     onClick={() => navigate(`/teacher/clinic`)}
                     title="Send to Sick Bay"
+                    className="portal-btn"
                     style={{
-                      padding: '8px 12px',
+                      height: '36px',
+                      minHeight: '36px',
+                      padding: '0 12px',
                       borderRadius: 8,
                       border: '1px solid #fecaca',
                       background: '#fef2f2',
                       color: '#dc2626',
                       fontWeight: 700,
-                      fontSize: '0.82rem',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 4
+                      fontSize: '0.82rem'
                     }}
                   >
                     <i className="fas fa-ambulance" />
@@ -475,12 +473,13 @@ export default function TeacherStudents() {
             <table className="portal-table" style={{ width: '100%' }}>
               <thead>
                 <tr>
-                  <th style={{ width: '150px' }}>Student ID</th>
+                  <th style={{ width: '140px' }}>Student ID</th>
                   <th>Full Name</th>
-                  <th style={{ width: '160px' }}>Assigned Class</th>
+                  <th style={{ width: '140px' }}>Class</th>
+                  <th style={{ width: '220px' }}>Assignment Role</th>
                   <th>Email Address</th>
-                  <th style={{ width: '100px' }}>Gender</th>
-                  <th style={{ width: '160px', textAlign: 'right' }}>Actions</th>
+                  <th style={{ width: '90px' }}>Gender</th>
+                  <th style={{ width: '130px', textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -506,6 +505,22 @@ export default function TeacherStudents() {
                         {s.class?.name || 'Unassigned'}
                       </span>
                     </td>
+                    <td>
+                      <span
+                        style={{
+                          fontSize: '0.74rem',
+                          fontWeight: 700,
+                          padding: '3px 8px',
+                          borderRadius: 6,
+                          background: s.teacherAssignmentType?.includes('Class Teacher') ? '#dcfce7' : '#ede9fe',
+                          color: s.teacherAssignmentType?.includes('Class Teacher') ? '#166534' : '#5b21b6',
+                          border: `1px solid ${s.teacherAssignmentType?.includes('Class Teacher') ? '#bbf7d0' : '#ddd6fe'}`,
+                          display: 'inline-block'
+                        }}
+                      >
+                        {s.teacherAssignmentType || 'Assigned Student'}
+                      </span>
+                    </td>
                     <td style={{ color: '#475569', fontSize: '0.85rem' }}>
                       {s.user?.email || '—'}
                     </td>
@@ -516,15 +531,17 @@ export default function TeacherStudents() {
                       <button 
                         type="button"
                         onClick={() => navigate(`/teacher/student-profile?id=${s.id}`)}
+                        className="portal-btn"
                         style={{ 
-                          padding: '5px 12px',
+                          height: '32px',
+                          minHeight: '32px',
+                          padding: '0 12px',
                           borderRadius: 6,
                           border: '1px solid #cbd5e1',
                           background: '#f8fafc',
                           color: '#0284c7',
                           fontWeight: 700,
-                          fontSize: '0.8rem',
-                          cursor: 'pointer'
+                          fontSize: '0.8rem'
                         }}
                       >
                         Profile

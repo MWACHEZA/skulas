@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useSearchParams } from 'react-router-dom';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 
 interface Student {
   id: string;
@@ -245,18 +245,18 @@ export default function TeacherClassAttendance() {
             type="button"
             onClick={() => markAll('Present')}
             disabled={students.length === 0}
+            className="portal-btn"
             style={{
-              padding: '8px 14px',
+              height: '36px',
+              minHeight: '36px',
+              padding: '0 16px',
               borderRadius: 8,
               border: '1px solid #bbf7d0',
               background: '#f0fdf4',
               color: '#166534',
               fontWeight: 700,
               fontSize: '0.85rem',
-              cursor: students.length === 0 ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6
+              cursor: students.length === 0 ? 'not-allowed' : 'pointer'
             }}
           >
             <i className="fas fa-check-double" /> Mark All Present
@@ -266,18 +266,18 @@ export default function TeacherClassAttendance() {
             type="button"
             onClick={() => markAll('Absent')}
             disabled={students.length === 0}
+            className="portal-btn"
             style={{
-              padding: '8px 14px',
+              height: '36px',
+              minHeight: '36px',
+              padding: '0 16px',
               borderRadius: 8,
               border: '1px solid #fecaca',
               background: '#fef2f2',
               color: '#991b1b',
               fontWeight: 700,
               fontSize: '0.85rem',
-              cursor: students.length === 0 ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6
+              cursor: students.length === 0 ? 'not-allowed' : 'pointer'
             }}
           >
             <i className="fas fa-user-slash" /> Mark All Absent
@@ -370,9 +370,8 @@ export default function TeacherClassAttendance() {
         {/* Students Table */}
         <div style={{ overflowX: 'auto' }}>
           {loading ? (
-            <div style={{ padding: 48, textAlign: 'center', color: '#64748b' }}>
-              <i className="fas fa-spinner fa-spin fa-2x" style={{ color: '#0284c7' }} />
-              <p style={{ marginTop: 10, fontWeight: 600 }}>Loading class roster...</p>
+            <div style={{ padding: '20px' }}>
+              <SkeletonLoader type="table" rows={6} columns={4} />
             </div>
           ) : classes.length === 0 ? (
             <div style={{ padding: 48, textAlign: 'center', color: '#64748b' }}>
@@ -516,11 +515,6 @@ export default function TeacherClassAttendance() {
             disabled={students.length === 0 || saving}
             className="portal-btn-primary"
             style={{
-              padding: '10px 24px',
-              fontWeight: 700,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
               opacity: students.length === 0 ? 0.6 : 1,
               cursor: students.length === 0 ? 'not-allowed' : 'pointer'
             }}

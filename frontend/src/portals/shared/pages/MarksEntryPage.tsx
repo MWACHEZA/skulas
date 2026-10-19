@@ -3,6 +3,7 @@ import api from '../../../lib/api';
 import { toast } from '../../../context/ToastContext';
 import '../../../styles/portal.css';
 import { useAcademicConfig } from '../../../hooks/useAcademicConfig';
+import { SkeletonLoader } from '../../../components/shared';
 
 interface AssessmentColumn {
   id: string;
@@ -775,67 +776,99 @@ export default function MarksEntryPage() {
             </button>
           </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', alignItems: 'end', padding: '8px' }}>
-          <div className="form-group">
-            <label className="portal-label">Academic Cycle (Year)</label>
-            <input
-              type="number"
-              value={year}
-              onChange={e => setYear(parseInt(e.target.value))}
-              className="portal-input"
-              style={{ fontWeight: 800 }}
-            />
-          </div>
-          <div className="form-group">
-            <label className="portal-label">Assessment {academicPeriodLabel}</label>
-            <select
-              value={term}
-              onChange={e => setTerm(e.target.value)}
-              className="portal-input"
-              style={{ fontWeight: 800 }}
-            >
-              {registeredTerms.map(t => (
-                <option key={t} value={t}>{t}</option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <label className="portal-label">{classLabel}</label>
-            <select
-              value={selectedClassId}
-              onChange={e => setSelectedClassId(e.target.value)}
-              className="portal-input"
-              style={{ fontWeight: 800 }}
-            >
-              <option value="">-- Select {classLabel} --</option>
-              {(Array.isArray(classes) ? classes : []).map(c => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
-          </div>
-          <div className="form-group">
-            <label className="portal-label">{subjectLabel} Discipline</label>
-            <select
-              value={selectedSubjectId}
-              onChange={e => setSelectedSubjectId(e.target.value)}
-              className="portal-input"
-              style={{ fontWeight: 800 }}
-            >
-              <option value="">-- Select {subjectLabel} --</option>
-              {(Array.isArray(subjects) ? subjects : []).map(s => (
-                <option key={s.id} value={s.id}>{s.name} {s.code ? `(${s.code})` : ''}</option>
-              ))}
-            </select>
-          </div>
-          <button
-            onClick={loadStudents}
-            disabled={loading || !selectedClassId || !selectedSubjectId}
-            className="portal-btn-primary"
-            style={{ height: '52px', padding: '0 32px', fontWeight: 900 }}
+        <div style={{ padding: '20px 24px' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: '18px',
+              alignItems: 'flex-end'
+            }}
           >
-            {loading ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-sync-alt mr-2"></i>}
-            Authorize Roster Synchronization
-          </button>
+            <div className="form-group" style={{ margin: 0 }}>
+              <label className="portal-label" style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Academic Cycle (Year)
+              </label>
+              <input
+                type="number"
+                value={year}
+                onChange={e => setYear(parseInt(e.target.value))}
+                className="portal-input"
+                style={{ fontWeight: 800, height: '42px', borderRadius: '10px', width: '100%' }}
+              />
+            </div>
+            <div className="form-group" style={{ margin: 0 }}>
+              <label className="portal-label" style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Assessment {academicPeriodLabel}
+              </label>
+              <select
+                value={term}
+                onChange={e => setTerm(e.target.value)}
+                className="portal-input"
+                style={{ fontWeight: 800, height: '42px', borderRadius: '10px', width: '100%' }}
+              >
+                {registeredTerms.map(t => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group" style={{ margin: 0 }}>
+              <label className="portal-label" style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                {classLabel}
+              </label>
+              <select
+                value={selectedClassId}
+                onChange={e => setSelectedClassId(e.target.value)}
+                className="portal-input"
+                style={{ fontWeight: 800, height: '42px', borderRadius: '10px', width: '100%' }}
+              >
+                <option value="">-- Select {classLabel} --</option>
+                {(Array.isArray(classes) ? classes : []).map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group" style={{ margin: 0 }}>
+              <label className="portal-label" style={{ fontSize: '0.8rem', fontWeight: 800, color: '#475569', marginBottom: '6px', display: 'block', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                {subjectLabel} Discipline
+              </label>
+              <select
+                value={selectedSubjectId}
+                onChange={e => setSelectedSubjectId(e.target.value)}
+                className="portal-input"
+                style={{ fontWeight: 800, height: '42px', borderRadius: '10px', width: '100%' }}
+              >
+                <option value="">-- Select {subjectLabel} --</option>
+                {(Array.isArray(subjects) ? subjects : []).map(s => (
+                  <option key={s.id} value={s.id}>{s.name} {s.code ? `(${s.code})` : ''}</option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group" style={{ margin: 0, minWidth: '220px' }}>
+              <button
+                onClick={loadStudents}
+                disabled={loading || !selectedClassId || !selectedSubjectId}
+                className="portal-btn-primary"
+                style={{
+                  width: '100%',
+                  height: '42px',
+                  padding: '0 20px',
+                  fontWeight: 800,
+                  fontSize: '0.88rem',
+                  borderRadius: '10px',
+                  whiteSpace: 'nowrap',
+                  background: (!selectedClassId || !selectedSubjectId) ? '#94a3b8' : 'var(--portal-primary, #4338ca)',
+                  cursor: (!selectedClassId || !selectedSubjectId || loading) ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {loading ? (
+                  <><i className="fas fa-spinner fa-spin mr-2"></i> Loading Marksheet...</>
+                ) : (
+                  <><i className="fas fa-sync-alt mr-2"></i> Load Marksheet & Roster</>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -887,10 +920,8 @@ export default function MarksEntryPage() {
 
       {/* TABLE / ROSTER CONTENT */}
       {loading ? (
-        <div className="portal-card animate-in fade-in duration-500" style={{ padding: '120px 24px', textAlign: 'center' }}>
-          <div className="portal-spinner" style={{ margin: '0 auto 24px' }}></div>
-          <p style={{ color: '#64748b', fontWeight: 900, fontSize: '1.25rem' }}>Synchronizing performance records...</p>
-          <p style={{ color: '#94a3b8', fontWeight: 700, margin: 0 }}>Compiling continuous assessments and grades.</p>
+        <div style={{ padding: '8px 0' }}>
+          <SkeletonLoader type="table" rows={6} columns={6} />
         </div>
       ) : students.length > 0 ? (
         <div className="management-table-card animate-in fade-in slide-in-from-bottom-4 duration-500">

@@ -776,11 +776,12 @@ router.get('/textbooks', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'), as
  */
 router.get('/my-classes', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
+    const schoolId = req.user!.schoolId!;
     const teacher = await prisma.teacher.findFirst({ where: { userId: req.user!.id } });
     if (!teacher) {
       if (['ADMIN', 'SCHOOL_ADMIN', 'SUPER_ADMIN'].includes(req.user!.role)) {
         const allClasses = await prisma.schoolClass.findMany({
-          where: { schoolId: req.user!.schoolId! },
+          where: { schoolId },
           include: { _count: { select: { students: true } } },
           orderBy: { name: 'asc' }
         });
@@ -791,7 +792,7 @@ router.get('/my-classes', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'A
 
     // Classes where they are the Class Teacher
     const homeroomClasses = await prisma.schoolClass.findMany({
-      where: { teacherId: teacher.id },
+      where: { teacherId: teacher.id, schoolId },
       include: { _count: { select: { students: true } } }
     });
 
@@ -815,42 +816,123 @@ router.get('/my-classes', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'A
 
     // Merge and unique
     const classMap = new Map();
-    homeroomClasses.forEach(c => classMap.set(c.id, { ...c, role: 'Class Teacher' }));
+    homeroomClasses.forEach(c => {
+      if (c && c.id) {
+        classMap.set(c.id, { ...c, role: 'Class Teacher' });
+      }
+    });
+
     subjectAssignments.forEach(sa => {
+      if (!sa || !sa.class || !sa.class.id) return;
+      const subjName = sa.subject?.name || 'Assigned Subject';
       if (!classMap.has(sa.classId)) {
-        classMap.set(sa.classId, { ...sa.class, role: `Subject Teacher (${sa.subject.name})` });
+        classMap.set(sa.classId, { ...sa.class, role: `Subject Teacher (${subjName})` });
       } else {
         const existing = classMap.get(sa.classId);
-        existing.role += `, Subject Teacher (${sa.subject.name})`;
+        existing.role += `, Subject Teacher (${subjName})`;
       }
     });
 
     res.json(Array.from(classMap.values()));
   } catch (error) {
+    console.error('Error fetching my-classes:', error);
     res.status(500).json({ error: 'Failed to fetch your classes' });
   }
 });
 
 /**
  * @route   GET /api/teachers/my-students
- * @desc    [TEACHER] Get students in a specific class assigned to the teacher
+ * @desc    [TEACHER] Get students in classes assigned to teacher (as class teacher or subject teacher)
  */
 router.get('/my-students', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res: Response) => {
   const { classId } = req.query;
+  const schoolId = req.user!.schoolId!;
   try {
+    const isTeacher = req.user!.role === 'TEACHER';
+    let allowedClassIds: string[] = [];
+    const teacherRoleMap = new Map<string, string>();
+
+    if (isTeacher) {
+      const teacher = await prisma.teacher.findFirst({ where: { userId: req.user!.id } });
+      if (!teacher) {
+        return res.status(404).json({ error: 'Teacher record not found' });
+      }
+
+      // 1. Homeroom classes (Class Teacher)
+      const homeroomClasses = await prisma.schoolClass.findMany({
+        where: { teacherId: teacher.id, schoolId },
+        select: { id: true, name: true }
+      });
+      homeroomClasses.forEach(c => {
+        allowedClassIds.push(c.id);
+        teacherRoleMap.set(c.id, 'Class Teacher');
+      });
+
+      // 2. Subject assignments (Subject Teacher)
+      const subjectAssignments = await prisma.classSubjectTeacher.findMany({
+        where: { teacherId: teacher.id },
+        include: { subject: { select: { name: true } } }
+      });
+      subjectAssignments.forEach(sa => {
+        if (!sa.classId) return;
+        allowedClassIds.push(sa.classId);
+        const subjName = sa.subject?.name || 'Subject';
+        if (teacherRoleMap.has(sa.classId)) {
+          teacherRoleMap.set(sa.classId, `${teacherRoleMap.get(sa.classId)} & Subject Teacher (${subjName})`);
+        } else {
+          teacherRoleMap.set(sa.classId, `Subject Teacher (${subjName})`);
+        }
+      });
+
+      allowedClassIds = Array.from(new Set(allowedClassIds));
+
+      // If teacher has no assigned classes, they teach 0 students
+      if (allowedClassIds.length === 0) {
+        return res.json([]);
+      }
+    }
+
+    // Determine target classes filter
+    let targetClassFilter: any = undefined;
+    if (classId) {
+      if (isTeacher && !allowedClassIds.includes(classId as string)) {
+        return res.json([]);
+      }
+      targetClassFilter = classId as string;
+    } else if (isTeacher) {
+      targetClassFilter = { in: allowedClassIds };
+    }
+
     const students = await prisma.student.findMany({
       where: { 
-        schoolId: req.user!.schoolId!,
-        classId: classId as string || undefined
+        schoolId,
+        ...(targetClassFilter ? { classId: targetClassFilter } : {})
       },
       include: { 
-        user: { select: { name: true, email: true, avatar: true } },
-        class: { select: { name: true } }
+        user: { select: { name: true, email: true, avatar: true, phone: true } },
+        class: { select: { id: true, name: true } },
+        parents: {
+          include: {
+            parent: {
+              include: {
+                user: { select: { name: true, phone: true, email: true } }
+              }
+            }
+          }
+        }
       },
       orderBy: { user: { name: 'asc' } }
     });
-    res.json(students);
+
+    const enriched = students.map((s: any) => ({
+      ...s,
+      teacherAssignmentType: s.classId ? (teacherRoleMap.get(s.classId) || 'Assigned Student') : 'Unassigned',
+      parent: s.parents?.[0]?.parent || null
+    }));
+
+    res.json(enriched);
   } catch (error) {
+    console.error('Error fetching my-students:', error);
     res.status(500).json({ error: 'Failed to fetch students' });
   }
 });

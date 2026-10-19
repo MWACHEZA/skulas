@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useToast } from '../../../../context/ToastContext';
 import api from '../../../../lib/api';
 import { useTerminology } from '../../../../hooks/useTerminology';
 import { format } from 'date-fns';
 import { useAuth } from '../../../../contexts/AuthContext';
+import { SkeletonLoader, SearchInput } from '../../../../components/shared';
 
 export default function StudyMaterial() {
   const { showToast } = useToast();
@@ -12,16 +13,18 @@ export default function StudyMaterial() {
   const [materials, setMaterials] = useState<any[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
   const [subjects, setSubjects] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+  const [searchTerm, setSearchTerm] = useState('');
+
   // Folder Explorer State
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
   const [previewMaterial, setPreviewMaterial] = useState<any | null>(null);
 
   const [formData, setFormData] = useState({
     title: '',
-    date: '',
+    date: new Date().toISOString().split('T')[0],
     classIds: [] as string[],
     subjectId: '',
     description: '',
@@ -30,10 +33,17 @@ export default function StudyMaterial() {
   });
 
   useEffect(() => {
-    fetchMaterials();
-    fetchClasses();
-    fetchSubjects();
+    loadAllData();
   }, []);
+
+  const loadAllData = async () => {
+    setLoading(true);
+    try {
+      await Promise.all([fetchMaterials(), fetchClasses(), fetchSubjects()]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getAuthenticatedUrl = (url: string) => {
     if (!url) return '';
@@ -45,20 +55,18 @@ export default function StudyMaterial() {
   const fetchMaterials = async () => {
     try {
       const res = await api.get('/api/study-materials');
-      setMaterials(res.data);
+      setMaterials(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
       console.error('Error fetching materials', error);
-    
     }
   };
 
   const fetchClasses = async () => {
     try {
       const res = await api.get('/api/classes');
-      setClasses(res.data);
+      setClasses(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
       console.error('Error fetching classes', error);
-    
     }
   };
 
@@ -105,11 +113,11 @@ export default function StudyMaterial() {
 
   const handleSave = async () => {
     if (!formData.title || !formData.date || formData.classIds.length === 0 || !formData.subjectId) {
-      showToast('Please fill all required fields', 'error');
+      showToast('Please fill all required fields (title, date, subject, and at least one class)', 'error');
       return;
     }
 
-    setLoading(true);
+    setSaving(true);
     try {
       await api.post('/api/study-materials', {
         title: formData.title,
@@ -120,33 +128,36 @@ export default function StudyMaterial() {
         documentBase64: formData.documentBase64,
         videoUrl: formData.videoUrl
       });
-      showToast('Study material added successfully', 'success');
+      showToast('Study material published successfully', 'success');
       fetchMaterials();
       setFormData({
-        title: '', date: '', classIds: [], subjectId: '', description: '', documentBase64: '', videoUrl: ''
+        title: '',
+        date: new Date().toISOString().split('T')[0],
+        classIds: [],
+        subjectId: '',
+        description: '',
+        documentBase64: '',
+        videoUrl: ''
       });
       setIsModalOpen(false);
     } catch (error) {
-      showToast('Failed to add study material', 'error');
-    
+      showToast('Failed to save study material', 'error');
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!(await toastConfirm('Are you sure you want to delete this material?'))) return;
+    if (!window.confirm('Are you sure you want to delete this study material?')) return;
     try {
       await api.delete(`/api/study-materials/${id}`);
-      showToast('Deleted successfully', 'success');
+      showToast('Study material deleted successfully', 'success');
       fetchMaterials();
     } catch (error) {
-      showToast('Failed to delete material', 'error');
-    
+      showToast('Failed to delete study material', 'error');
     }
   };
 
-  // Helper to resolve YouTube embed URL
   const getYoutubeEmbedUrl = (url: string) => {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -157,20 +168,7 @@ export default function StudyMaterial() {
     return null;
   };
 
-  // Group materials by subject for folder explorer
-  const groupedMaterials: Record<string, any[]> = {};
-  materials.forEach(m => {
-    const subId = m.subjectId || 'Unassigned';
-    if (!groupedMaterials[subId]) {
-      groupedMaterials[subId] = [];
-    }
-    groupedMaterials[subId].push(m);
-  });
-
-  const selectedSubject = subjects.find(s => s.id === selectedSubjectId);
-  const folderMaterials = selectedSubjectId ? (groupedMaterials[selectedSubjectId] || []) : [];
-
-  const eligibleSubjects = React.useMemo(() => {
+  const eligibleSubjects = useMemo(() => {
     if (user?.role === 'SCHOOL_ADMIN' || user?.role === 'SUPER_ADMIN') {
       return subjects;
     }
@@ -181,281 +179,580 @@ export default function StudyMaterial() {
     return subjects;
   }, [subjects, user]);
 
+  // Group materials by subject
+  const groupedMaterials = useMemo(() => {
+    const groups: Record<string, any[]> = {};
+    materials.forEach(m => {
+      const subId = m.subjectId || 'Unassigned';
+      if (!groups[subId]) groups[subId] = [];
+      groups[subId].push(m);
+    });
+    return groups;
+  }, [materials]);
+
+  const selectedSubject = subjects.find(s => s.id === selectedSubjectId);
+  const folderMaterials = selectedSubjectId ? (groupedMaterials[selectedSubjectId] || []) : [];
+
+  const filteredSubjects = useMemo(() => {
+    if (!searchTerm.trim()) return eligibleSubjects;
+    const q = searchTerm.toLowerCase().trim();
+    return eligibleSubjects.filter(s => (s.name || '').toLowerCase().includes(q) || (s.code || '').toLowerCase().includes(q));
+  }, [eligibleSubjects, searchTerm]);
+
+  const filteredFolderMaterials = useMemo(() => {
+    if (!searchTerm.trim()) return folderMaterials;
+    const q = searchTerm.toLowerCase().trim();
+    return folderMaterials.filter(m => (m.title || '').toLowerCase().includes(q) || (m.description || '').toLowerCase().includes(q));
+  }, [folderMaterials, searchTerm]);
+
+  const getFileBadge = (url: string) => {
+    if (!url) return { label: 'Resource', icon: 'fa-file', color: '#64748b', bg: '#f1f5f9' };
+    const lower = url.toLowerCase();
+    if (lower.includes('youtube') || lower.includes('youtu.be') || lower.endsWith('.mp4') || lower.endsWith('.webm')) {
+      return { label: 'Video Lecture', icon: 'fa-play-circle', color: '#dc2626', bg: '#fee2e2' };
+    }
+    if (lower.endsWith('.pdf')) {
+      return { label: 'PDF Document', icon: 'fa-file-pdf', color: '#b91c1c', bg: '#fee2e2' };
+    }
+    if (lower.endsWith('.doc') || lower.endsWith('.docx')) {
+      return { label: 'Word Document', icon: 'fa-file-word', color: '#1d4ed8', bg: '#dbeafe' };
+    }
+    if (lower.endsWith('.ppt') || lower.endsWith('.pptx')) {
+      return { label: 'Slides / Presentation', icon: 'fa-file-powerpoint', color: '#c2410c', bg: '#ffedd5' };
+    }
+    return { label: 'Attachment', icon: 'fa-paperclip', color: '#475569', bg: '#f1f5f9' };
+  };
+
   return (
-    <>
-      <div className="portal-page-header" style={{ display: 'flex', justifyItems: 'center', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div className="portal-container" style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
+      {/* Hero Header */}
+      <div
+        style={{
+          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+          borderRadius: 16,
+          padding: '28px 32px',
+          color: '#ffffff',
+          marginBottom: 24,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 20,
+          boxShadow: '0 4px 16px rgba(0,0,0,0.06)'
+        }}
+      >
         <div>
-          <h1>Study Material Explorer</h1>
-          <p>Organize, manage, and share subject-based resources with your classes.</p>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 12px', borderRadius: 20, background: 'rgba(56, 189, 248, 0.16)', color: '#7dd3fc', fontSize: '0.8rem', fontWeight: 700, marginBottom: 10 }}>
+            <i className="fas fa-book-open" /> Academic Curriculum & Content Repository
+          </div>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, margin: '0 0 8px 0', letterSpacing: '-0.02em', color: '#fff' }}>
+            Study Material Explorer
+          </h1>
+          <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.95rem', maxWidth: 640 }}>
+            Distribute class notes, syllabus guides, reading assignments, and multimedia resources across assigned classes.
+          </p>
         </div>
-        <button className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }} onClick={() => setIsModalOpen(true)}>
-          <i className="fas fa-plus-circle"></i> ADD STUDY MATERIAL
+
+        <button
+          type="button"
+          onClick={() => setIsModalOpen(true)}
+          className="portal-btn"
+          style={{
+            background: '#0284c7',
+            color: '#fff',
+            border: 'none'
+          }}
+        >
+          <i className="fas fa-plus-circle" /> Add Study Material
         </button>
       </div>
 
-      {isModalOpen && (
-        <div className="portal-modal-overlay">
-          <div className="portal-modal-card" style={{ maxWidth: '650px' }}>
-            <div className="portal-modal-header">
-              <div className="header-titles">
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0 }}>Add Study Material</h2>
-                <p style={{ margin: 0, fontSize: '0.85rem', color: '#718096' }}>Upload files or attach videos for target classes</p>
-              </div>
-              <button className="close-panel" onClick={() => setIsModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#a0aec0' }}>&times;</button>
+      {/* Control Bar: Search & Counts */}
+      <div
+        style={{
+          background: '#ffffff',
+          borderRadius: 12,
+          padding: '16px 20px',
+          border: '1px solid #e2e8f0',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+          marginBottom: 24,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: 14
+        }}
+      >
+        <div style={{ flex: 1, minWidth: 260, maxWidth: 400 }}>
+          <SearchInput
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder={selectedSubjectId ? "Search files in folder..." : "Search subject folders..."}
+          />
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {selectedSubjectId ? (
+            <button
+              type="button"
+              onClick={() => { setSelectedSubjectId(null); setSearchTerm(''); }}
+              className="portal-btn portal-btn-secondary"
+            >
+              <i className="fas fa-arrow-left" /> Back to Subject Folders
+            </button>
+          ) : (
+            <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 700 }}>
+              {filteredSubjects.length} Subject {filteredSubjects.length === 1 ? 'Folder' : 'Folders'} Available
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      {loading ? (
+        <SkeletonLoader type="card" count={6} />
+      ) : selectedSubjectId === null ? (
+        /* SUBJECT FOLDERS GRID */
+        filteredSubjects.length === 0 ? (
+          <div style={{ padding: 60, textAlign: 'center', color: '#64748b', background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0' }}>
+            <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#f1f5f9', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', fontSize: '1.75rem', marginBottom: 14 }}>
+              <i className="fas fa-folder-open" />
             </div>
-            <div className="portal-modal-body">
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-                <div className="portal-form-group">
-                  <label className="portal-label">Title <span style={{ color: 'red' }}>*</span></label>
-                  <input type="text" className="portal-input" placeholder="Title" value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
-                </div>
-                <div className="portal-form-group">
-                  <label className="portal-label">Select date <span style={{ color: 'red' }}>*</span></label>
-                  <input type="date" className="portal-input" value={formData.date} onChange={e => setFormData({ ...formData, date: e.target.value })} />
-                </div>
+            <h3 style={{ fontSize: '1.2rem', color: '#1e293b', fontWeight: 700, margin: '0 0 6px 0' }}>
+              No Subject Folders Found
+            </h3>
+            <p style={{ fontSize: '0.9rem', color: '#64748b', maxWidth: 400, margin: '0 auto' }}>
+              {searchTerm ? 'No subjects matched your filter criteria.' : 'No academic disciplines have been assigned yet.'}
+            </p>
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
+            {filteredSubjects.map(s => {
+              const fileCount = (groupedMaterials[s.id] || []).length;
+              return (
+                <div
+                  key={s.id}
+                  onClick={() => { setSelectedSubjectId(s.id); setSearchTerm(''); }}
+                  style={{
+                    background: '#ffffff',
+                    borderRadius: 14,
+                    border: '1px solid #e2e8f0',
+                    padding: '22px',
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    gap: 16,
+                    transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                    position: 'relative'
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.transform = 'translateY(-3px)';
+                    e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.06)';
+                    e.currentTarget.style.borderColor = '#0284c7';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.02)';
+                    e.currentTarget.style.borderColor = '#e2e8f0';
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div
+                      style={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: 12,
+                        background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+                        color: '#d97706',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '1.4rem'
+                      }}
+                    >
+                      <i className="fas fa-folder" />
+                    </div>
 
-                <div className="portal-form-group">
-                  <label className="portal-label">{t('subject')} <span style={{ color: 'red' }}>*</span></label>
-                  <select className="portal-input" value={formData.subjectId} onChange={e => setFormData({ ...formData, subjectId: e.target.value })}>
-                    <option value="">Select subject</option>
-                    {eligibleSubjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                  </select>
-                </div>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '3px 10px', borderRadius: 20, background: fileCount > 0 ? '#e0f2fe' : '#f1f5f9', color: fileCount > 0 ? '#0369a1' : '#64748b' }}>
+                      {fileCount} {fileCount === 1 ? 'file' : 'files'}
+                    </span>
+                  </div>
 
-                <div className="portal-form-group">
-                  <label className="portal-label">Attach File</label>
-                  <input type="file" className="portal-input" style={{ padding: '5px' }} onChange={handleFileChange} />
-                </div>
+                  <div>
+                    <h3 style={{ margin: '0 0 6px 0', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
+                      {s.name}
+                    </h3>
+                    {s.code && (
+                      <span style={{ fontSize: '0.78rem', fontFamily: 'monospace', color: '#64748b', background: '#f8fafc', padding: '2px 6px', borderRadius: 4, border: '1px solid #e2e8f0' }}>
+                        {s.code}
+                      </span>
+                    )}
+                  </div>
 
-                <div className="portal-form-group" style={{ gridColumn: 'span 2' }}>
-                  <label className="portal-label">Video URL (Optional - e.g. YouTube or direct MP4 link)</label>
-                  <input type="text" className="portal-input" placeholder="https://www.youtube.com/watch?v=..." value={formData.videoUrl} onChange={e => setFormData({ ...formData, videoUrl: e.target.value })} />
-                </div>
-
-                <div className="portal-form-group" style={{ gridColumn: 'span 2' }}>
-                  <label className="portal-label">Classes to open for <span style={{ color: 'red' }}>*</span></label>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '10px', maxHeight: '120px', overflowY: 'auto', padding: '12px', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-                    {classes.map(c => (
-                      <label key={c.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', cursor: 'pointer', fontWeight: 600, color: '#334155' }}>
-                        <input
-                          type="checkbox"
-                          checked={formData.classIds.includes(c.id)}
-                          onChange={(e) => {
-                            const checked = e.target.checked;
-                            setFormData(prev => ({
-                              ...prev,
-                              classIds: checked 
-                                ? [...prev.classIds, c.id] 
-                                : prev.classIds.filter(id => id !== c.id)
-                            }));
-                          }}
-                          style={{ width: '16px', height: '16px' }}
-                        />
-                        {c.name}
-                      </label>
-                    ))}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f1f5f9', paddingTop: 12, marginTop: 4 }}>
+                    <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>Explore Resources</span>
+                    <i className="fas fa-chevron-right" style={{ fontSize: '0.8rem', color: '#94a3b8' }} />
                   </div>
                 </div>
-
-                <div className="portal-form-group" style={{ gridColumn: 'span 2' }}>
-                  <label className="portal-label">Description</label>
-                  <textarea className="portal-input" rows={3} placeholder="Description details..." value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })}></textarea>
-                </div>
+              );
+            })}
+          </div>
+        )
+      ) : (
+        /* FILES WITHIN SUBJECT FOLDER VIEW */
+        <div style={{ background: '#ffffff', borderRadius: 14, border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>
+          <div style={{ padding: '20px 24px', borderBottom: '1px solid #edf2f7', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: '#fef3c7', color: '#d97706', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
+                <i className="fas fa-folder-open" />
               </div>
-
-              <div style={{ display: 'flex', gap: 15, marginTop: 25 }}>
-                <button className="portal-btn-ghost" style={{ flex: 1, padding: '10px' }} onClick={() => setIsModalOpen(false)}>Cancel</button>
-                <button className="portal-btn-primary" style={{ flex: 1, background: 'var(--portal-success)', borderColor: 'var(--portal-success)', padding: '10px' }} onClick={handleSave} disabled={loading}>
-                  {loading ? 'Saving...' : <><i className="fas fa-save"></i> Save</>}
-                </button>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800, color: '#0f172a' }}>
+                  {selectedSubject?.name} Repository
+                </h3>
+                <p style={{ margin: '2px 0 0', color: '#64748b', fontSize: '0.85rem' }}>
+                  {folderMaterials.length} study items and downloadable documents uploaded.
+                </p>
               </div>
             </div>
-          </div>
-        </div>
-      )}
 
-      {/* Main Study Material Section */}
-      <div className="portal-card" style={{ padding: '24px' }}>
-        <div className="portal-card-body">
-          {selectedSubjectId === null ? (
-            // Folder Explorer grid
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <h3 style={{ margin: 0, fontWeight: 900, color: '#1e293b' }}><i className="fas fa-folder-open text-warning mr-2" style={{ marginRight: 8, color: '#ecc94b' }}></i>Subject Folders</h3>
-                <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 700 }}>Total folders: {eligibleSubjects.length}</span>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '24px' }}>
-                {eligibleSubjects.map(s => {
-                  const fileCount = (groupedMaterials[s.id] || []).length;
-                  return (
-                    <div 
-                      key={s.id}
-                      className="folder-item" 
-                      style={{ 
-                        padding: '24px', 
-                        background: '#fff', 
-                        borderRadius: '16px', 
-                        border: '1px solid #edf2f7', 
-                        cursor: 'pointer', 
-                        display: 'flex', 
-                        flexDirection: 'column', 
-                        alignItems: 'center', 
-                        gap: '12px',
-                        boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)',
-                        transition: 'all 0.2s',
-                        position: 'relative'
-                      }}
-                      onClick={() => setSelectedSubjectId(s.id)}
-                    >
-                      <i className="fas fa-folder fa-4x" style={{ color: '#ecc94b' }}></i>
-                      <div style={{ fontWeight: 800, color: '#1e293b', textAlign: 'center', fontSize: '0.95rem' }}>{s.name}</div>
-                      <div style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 700 }}>{fileCount} {fileCount === 1 ? 'file' : 'files'}</div>
-                    </div>
-                  );
-                })}
-              </div>
+            <button
+              type="button"
+              onClick={() => {
+                setFormData(prev => ({ ...prev, subjectId: selectedSubjectId || '' }));
+                setIsModalOpen(true);
+              }}
+              className="portal-btn"
+              style={{ background: '#0284c7', color: '#fff', border: 'none' }}
+            >
+              <i className="fas fa-upload mr-1" /> Upload to this Subject
+            </button>
+          </div>
+
+          {filteredFolderMaterials.length === 0 ? (
+            <div style={{ padding: 60, textAlign: 'center', color: '#64748b' }}>
+              <i className="fas fa-folder-empty fa-3x" style={{ color: '#cbd5e1', marginBottom: 12 }} />
+              <h4 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#334155', margin: '0 0 6px 0' }}>No Study Materials in this Folder</h4>
+              <p style={{ fontSize: '0.9rem', maxWidth: 460, margin: '0 auto 20px' }}>
+                Upload notes, textbook chapters, past exam papers, or video lecture links for your students.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData(prev => ({ ...prev, subjectId: selectedSubjectId || '' }));
+                  setIsModalOpen(true);
+                }}
+                className="portal-btn portal-btn-primary"
+              >
+                <i className="fas fa-plus mr-1" /> Add First Document
+              </button>
             </div>
           ) : (
-            // Files within subject folder
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <button className="portal-btn-ghost" onClick={() => setSelectedSubjectId(null)} style={{ padding: '6px 12px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <i className="fas fa-arrow-left"></i> Back to Folders
-                  </button>
-                  <span style={{ color: '#cbd5e1', fontSize: '1.25rem' }}>/</span>
-                  <h3 style={{ margin: 0, fontWeight: 900, color: '#1e293b' }}>
-                    {selectedSubject?.name} Folder
-                  </h3>
-                </div>
-                <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 700 }}>{folderMaterials.length} materials uploaded</span>
-              </div>
-
-              <table className="portal-table">
+            <div style={{ overflowX: 'auto' }}>
+              <table className="portal-table" style={{ width: '100%' }}>
                 <thead>
                   <tr>
-                    <th>DATE UPLOADED</th>
-                    <th>TITLE</th>
-                    <th>CLASS</th>
-                    <th>TEACHER</th>
-                    <th>DESCRIPTION</th>
-                    <th>PREVIEW / DOWNLOAD</th>
-                    <th>ACTIONS</th>
+                    <th style={{ width: '130px' }}>Upload Date</th>
+                    <th>Material Title & Description</th>
+                    <th style={{ width: '160px' }}>Type</th>
+                    <th style={{ width: '160px' }}>Target Class</th>
+                    <th style={{ width: '150px' }}>Uploaded By</th>
+                    <th style={{ width: '160px', textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {folderMaterials.length === 0 ? (
-                    <tr><td colSpan={7} style={{ textAlign: 'center', padding: 50, color: '#a0aec0' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <i className="fas fa-folder-open fa-3x" style={{ color: '#cbd5e0', marginBottom: 15 }}></i>
-                        <span>No materials uploaded in this folder</span>
-                      </div>
-                    </td></tr>
-                  ) : (
-                    folderMaterials.map((m) => (
+                  {filteredFolderMaterials.map(m => {
+                    const badge = getFileBadge(m.documentUrl || m.videoUrl || '');
+                    return (
                       <tr key={m.id}>
-                        <td>{m.date ? (isNaN(new Date(m.date).getTime()) ? 'N/A' : format(new Date(m.date), 'yyyy-MM-dd')) : 'N/A'}</td>
-                        <td style={{ fontWeight: 700 }}>{m.title}</td>
-                        <td style={{ fontWeight: 600 }}>{m.class?.name}</td>
-                        <td>{m.teacher?.name}</td>
-                        <td style={{ fontSize: '0.85rem', color: '#64748b' }}>{m.description}</td>
-                        <td style={{ textAlign: 'center' }}>
-                          {m.documentUrl ? (
-                            <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }} onClick={() => setPreviewMaterial(m)} title={m.documentUrl.includes('youtube') || m.documentUrl.includes('youtu.be') || m.documentUrl.endsWith('.mp4') ? 'Play Media' : 'Open Document'}>
-                              <i className={m.documentUrl.includes('youtube') || m.documentUrl.includes('youtu.be') || m.documentUrl.endsWith('.mp4') ? 'fas fa-play' : 'fas fa-eye'}></i>
-                            </button>
-                          ) : (
-                            <span style={{ color: '#cbd5e1', fontSize: '0.85rem' }}>No file</span>
-                          )}
+                        <td style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>
+                          {m.date ? (isNaN(new Date(m.date).getTime()) ? '—' : format(new Date(m.date), 'dd MMM yyyy')) : '—'}
                         </td>
-                        <td style={{ textAlign: 'center' }}>
-                          <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }} onClick={() => handleDelete(m.id)} title="Delete">
-                            <i className="fas fa-trash"></i>
-                          </button>
+                        <td>
+                          <div>
+                            <span style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.95rem' }}>{m.title}</span>
+                            {m.description && (
+                              <p style={{ margin: '3px 0 0', fontSize: '0.82rem', color: '#64748b', maxWidth: 420 }}>
+                                {m.description}
+                              </p>
+                            )}
+                          </div>
+                        </td>
+                        <td>
+                          <span
+                            style={{
+                              fontSize: '0.75rem',
+                              fontWeight: 700,
+                              padding: '3px 10px',
+                              borderRadius: 6,
+                              background: badge.bg,
+                              color: badge.color,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 6
+                            }}
+                          >
+                            <i className={`fas ${badge.icon}`} /> {badge.label}
+                          </span>
+                        </td>
+                        <td>
+                          <span style={{ fontSize: '0.8rem', background: '#f1f5f9', color: '#334155', padding: '3px 8px', borderRadius: 6, fontWeight: 700 }}>
+                            {m.class?.name || 'All Enrolled'}
+                          </span>
+                        </td>
+                        <td style={{ fontSize: '0.85rem', color: '#475569', fontWeight: 600 }}>
+                          {m.teacher?.name || m.teacher?.user?.name || 'Teacher'}
+                        </td>
+                        <td style={{ textAlign: 'right' }}>
+                          <div style={{ display: 'inline-flex', gap: 6 }}>
+                            {m.documentUrl && (
+                              <button
+                                type="button"
+                                onClick={() => setPreviewMaterial(m)}
+                                className="portal-btn"
+                                style={{
+                                  height: '32px',
+                                  minHeight: '32px',
+                                  padding: '0 10px',
+                                  borderRadius: 6,
+                                  background: '#f0f9ff',
+                                  color: '#0284c7',
+                                  border: '1px solid #bae6fd',
+                                  fontSize: '0.8rem'
+                                }}
+                                title="Preview or Download"
+                              >
+                                <i className="fas fa-eye mr-1" /> View
+                              </button>
+                            )}
+
+                            {(user?.role === 'SCHOOL_ADMIN' || user?.role === 'SUPER_ADMIN' || m.teacherId === user?.teacher?.id) && (
+                              <button
+                                type="button"
+                                onClick={() => handleDelete(m.id)}
+                                className="portal-btn"
+                                style={{
+                                  height: '32px',
+                                  minHeight: '32px',
+                                  padding: '0 10px',
+                                  borderRadius: 6,
+                                  background: '#fef2f2',
+                                  color: '#dc2626',
+                                  border: '1px solid #fecaca',
+                                  fontSize: '0.8rem'
+                                }}
+                                title="Delete Document"
+                              >
+                                <i className="fas fa-trash" />
+                              </button>
+                            )}
+                          </div>
                         </td>
                       </tr>
-                    ))
-                  )}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           )}
         </div>
-      </div>
+      )}
 
-      {/* IN-APP MEDIA PLAYER & DOCUMENT VIEWER MODAL */}
-      {previewMaterial && (
-        <div className="portal-modal-overlay" style={{ zIndex: 3000 }}>
-          <div className="portal-modal-card" style={{ maxWidth: '800px', width: '90%' }}>
-            <div className="portal-modal-header" style={{ background: '#1e293b', color: 'white' }}>
-              <div className="header-titles">
-                <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0, color: 'white' }}>{previewMaterial.title}</h2>
-                <p style={{ margin: 0, fontSize: '0.85rem', color: '#94a3b8' }}>
-                  Uploaded by {previewMaterial.teacher?.name} on {previewMaterial.date ? format(new Date(previewMaterial.date), 'yyyy-MM-dd') : 'N/A'}
-                </p>
-              </div>
-              <button className="close-panel" onClick={() => setPreviewMaterial(null)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#94a3b8' }}>&times;</button>
+      {/* ADD STUDY MATERIAL MODAL */}
+      {isModalOpen && (
+        <div className="portal-modal-overlay">
+          <div className="portal-modal" style={{ maxWidth: '640px' }}>
+            <div className="portal-modal-header">
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 800 }}>Publish Study Material</h3>
+              <button className="portal-btn-ghost" onClick={() => setIsModalOpen(false)}>
+                <i className="fas fa-times" />
+              </button>
             </div>
-            <div className="portal-modal-body" style={{ background: '#0f172a', padding: '0px', overflow: 'hidden' }}>
-              <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                
-                {/* YOUTUBE EMBED PLAYER */}
-                {getYoutubeEmbedUrl(previewMaterial.documentUrl) ? (
-                  <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', height: 0 }}>
-                    <iframe
-                      src={getYoutubeEmbedUrl(previewMaterial.documentUrl) || ''}
-                      title="YouTube video player"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-                    ></iframe>
-                  </div>
-                ) : /* MP4 DIRECT VIDEO PLAYER */
-                previewMaterial.documentUrl?.endsWith('.mp4') || previewMaterial.documentUrl?.endsWith('.webm') ? (
-                  <video 
-                    controls 
-                    src={getAuthenticatedUrl(previewMaterial.documentUrl)} 
-                    style={{ width: '100%', maxHeight: '450px', background: '#000' }}
-                  />
-                ) : /* PDF EMBED VIEWER */
-                previewMaterial.documentUrl?.endsWith('.pdf') ? (
-                  <iframe 
-                    src={getAuthenticatedUrl(previewMaterial.documentUrl)}
-                    style={{ width: '100%', height: '500px', border: 'none' }}
-                  />
-                ) : /* STANDARD DOCUMENT DOWNLOAD CARD */
-                (
-                  <div style={{ padding: '60px 24px', textAlign: 'center', width: '100%', color: '#94a3b8' }}>
-                    <i className="fas fa-file-alt fa-4x" style={{ marginBottom: '20px', color: '#38bdf8' }}></i>
-                    <h3>General Study Material Resource</h3>
-                    <p style={{ fontSize: '0.9rem', maxWidth: '500px', margin: '10px auto 20px', lineHeight: 1.6 }}>
-                      {previewMaterial.description || 'This file cannot be previewed in-app. Please use the button below to download the material.'}
-                    </p>
-                    <a 
-                      href={getAuthenticatedUrl(previewMaterial.documentUrl)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="portal-btn-primary"
-                      style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '12px 24px' }}
-                    >
-                      <i className="fas fa-download"></i> Download Document
-                    </a>
-                  </div>
-                )}
+            <div className="portal-modal-body" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                <label className="portal-label">Document Title <span style={{ color: '#ef4444' }}>*</span></label>
+                <input
+                  type="text"
+                  className="portal-input"
+                  placeholder="e.g. Unit 3 Revision Notes & Exercises"
+                  value={formData.title}
+                  onChange={e => setFormData({ ...formData, title: e.target.value })}
+                  required
+                />
+              </div>
 
+              <div className="form-group">
+                <label className="portal-label">Publication Date <span style={{ color: '#ef4444' }}>*</span></label>
+                <input
+                  type="date"
+                  className="portal-input"
+                  value={formData.date}
+                  onChange={e => setFormData({ ...formData, date: e.target.value })}
+                  required
+                />
               </div>
-            </div>
-            {previewMaterial.description && !previewMaterial.documentUrl?.endsWith('.pdf') && !getYoutubeEmbedUrl(previewMaterial.documentUrl) && !previewMaterial.documentUrl?.endsWith('.mp4') && (
-              <div className="portal-modal-footer" style={{ background: '#1e293b', borderTop: '1px solid #334155', color: '#cbd5e1', padding: '16px 24px' }}>
-                <div style={{ fontSize: '0.9rem', width: '100%' }}>
-                  <strong>Description:</strong> {previewMaterial.description}
+
+              <div className="form-group">
+                <label className="portal-label">{t('subject')} Discipline <span style={{ color: '#ef4444' }}>*</span></label>
+                <select
+                  className="portal-input"
+                  value={formData.subjectId}
+                  onChange={e => setFormData({ ...formData, subjectId: e.target.value })}
+                  required
+                >
+                  <option value="">-- Select Subject --</option>
+                  {eligibleSubjects.map(s => (
+                    <option key={s.id} value={s.id}>{s.name} {s.code ? `(${s.code})` : ''}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                <label className="portal-label">Attach Resource File (PDF, DOCX, PPT)</label>
+                <input
+                  type="file"
+                  className="portal-input"
+                  style={{ padding: '8px' }}
+                  onChange={handleFileChange}
+                />
+              </div>
+
+              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                <label className="portal-label">Online Video URL (Optional YouTube or MP4 link)</label>
+                <input
+                  type="text"
+                  className="portal-input"
+                  placeholder="https://www.youtube.com/watch?v=..."
+                  value={formData.videoUrl}
+                  onChange={e => setFormData({ ...formData, videoUrl: e.target.value })}
+                />
+              </div>
+
+              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                <label className="portal-label">Classes to open for <span style={{ color: '#ef4444' }}>*</span></label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 8, maxHeight: '130px', overflowY: 'auto', padding: '12px', background: '#f8fafc', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+                  {classes.map(c => (
+                    <label key={c.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem', cursor: 'pointer', fontWeight: 600, color: '#334155' }}>
+                      <input
+                        type="checkbox"
+                        checked={formData.classIds.includes(c.id)}
+                        onChange={(e) => {
+                          const checked = e.target.checked;
+                          setFormData(prev => ({
+                            ...prev,
+                            classIds: checked
+                              ? [...prev.classIds, c.id]
+                              : prev.classIds.filter(id => id !== c.id)
+                          }));
+                        }}
+                        style={{ width: 16, height: 16 }}
+                      />
+                      {c.name}
+                    </label>
+                  ))}
                 </div>
               </div>
-            )}
+
+              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                <label className="portal-label">Instructions / Description</label>
+                <textarea
+                  className="portal-input"
+                  rows={3}
+                  placeholder="Explain the required reading or how students should use this material..."
+                  value={formData.description}
+                  onChange={e => setFormData({ ...formData, description: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="portal-modal-footer">
+              <button type="button" className="portal-btn-secondary" onClick={() => setIsModalOpen(false)}>
+                Cancel
+              </button>
+              <button type="button" className="portal-btn-primary" onClick={handleSave} disabled={saving}>
+                {saving ? (
+                  <><i className="fas fa-spinner fa-spin mr-2" /> Publishing...</>
+                ) : (
+                  <><i className="fas fa-upload mr-2" /> Publish Resource</>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
-    </>
+
+      {/* PREVIEW MODAL */}
+      {previewMaterial && (
+        <div className="portal-modal-overlay" style={{ zIndex: 3000 }}>
+          <div className="portal-modal" style={{ maxWidth: '840px', width: '90%' }}>
+            <div className="portal-modal-header" style={{ background: '#0f172a', color: '#fff' }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#fff', fontWeight: 800 }}>{previewMaterial.title}</h3>
+                <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: '#94a3b8' }}>
+                  Uploaded by {previewMaterial.teacher?.name || 'Teacher'} on {previewMaterial.date ? format(new Date(previewMaterial.date), 'dd MMM yyyy') : '—'}
+                </p>
+              </div>
+              <button className="portal-btn-ghost" onClick={() => setPreviewMaterial(null)} style={{ color: '#fff' }}>
+                <i className="fas fa-times" />
+              </button>
+            </div>
+
+            <div className="portal-modal-body" style={{ background: '#020617', padding: 0, overflow: 'hidden' }}>
+              {getYoutubeEmbedUrl(previewMaterial.documentUrl || previewMaterial.videoUrl) ? (
+                <div style={{ position: 'relative', width: '100%', paddingBottom: '56.25%', height: 0 }}>
+                  <iframe
+                    src={getYoutubeEmbedUrl(previewMaterial.documentUrl || previewMaterial.videoUrl) || ''}
+                    title="YouTube video player"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+                  />
+                </div>
+              ) : (previewMaterial.documentUrl?.endsWith('.mp4') || previewMaterial.documentUrl?.endsWith('.webm')) ? (
+                <video
+                  controls
+                  src={getAuthenticatedUrl(previewMaterial.documentUrl)}
+                  style={{ width: '100%', maxHeight: '460px', background: '#000' }}
+                />
+              ) : previewMaterial.documentUrl?.endsWith('.pdf') ? (
+                <iframe
+                  src={getAuthenticatedUrl(previewMaterial.documentUrl)}
+                  style={{ width: '100%', height: '520px', border: 'none' }}
+                />
+              ) : (
+                <div style={{ padding: '60px 24px', textAlign: 'center', color: '#94a3b8' }}>
+                  <i className="fas fa-file-alt fa-4x" style={{ marginBottom: 16, color: '#38bdf8' }} />
+                  <h3 style={{ color: '#f8fafc', margin: '0 0 8px 0' }}>Downloadable Study Resource</h3>
+                  <p style={{ fontSize: '0.9rem', maxWidth: 440, margin: '0 auto 20px', color: '#94a3b8' }}>
+                    {previewMaterial.description || 'This file cannot be previewed in-app. Click below to download directly to your computer.'}
+                  </p>
+                  <a
+                    href={getAuthenticatedUrl(previewMaterial.documentUrl)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="portal-btn portal-btn-primary"
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <i className="fas fa-download mr-1" /> Download Resource File
+                  </a>
+                </div>
+              )}
+            </div>
+
+            <div className="portal-modal-footer" style={{ background: '#0f172a', borderTop: '1px solid #1e293b', color: '#cbd5e1' }}>
+              <div style={{ fontSize: '0.85rem', width: '100%' }}>
+                {previewMaterial.description && <span><strong>Notes:</strong> {previewMaterial.description}</span>}
+              </div>
+              <button type="button" className="portal-btn-secondary" onClick={() => setPreviewMaterial(null)}>
+                Close Viewer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
