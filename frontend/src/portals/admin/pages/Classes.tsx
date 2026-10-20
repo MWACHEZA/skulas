@@ -686,7 +686,7 @@ export default function AdminClasses() {
             </div>
           </>
         )}
-      </div>      </div>
+      </div>
 
       {isModalOpen && (
         <div className="portal-modal-overlay">

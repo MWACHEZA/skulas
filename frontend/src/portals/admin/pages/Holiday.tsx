@@ -492,7 +492,7 @@ export default function Holiday() {
                             alignItems: 'center',
                             gap: 4
                           }}
-                          title={`${ev.title}${ev.content ? ` - ${ev.content}` : ''} (Click to edit)`
+                          title={`${ev.title}${ev.content ? ` - ${ev.content}` : ''} (Click to edit)`}
                         >
                           <i className={`fas ${cat.icon}`} style={{ fontSize: '0.65rem' }} />
                           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{ev.title}</span>
