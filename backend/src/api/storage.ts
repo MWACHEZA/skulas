@@ -181,7 +181,8 @@ router.get(/\/media\/([^\/]+)\/(.*)/, (req, res) => {
         return res.status(400).json({ error: 'Illegal characters in path' });
     }
 
-    // 2. Normalize path: Remove schoolCode prefix if it exists (handles both "AX-E/..." and "images/AX-E/...")
+    // 2. Normalize path: Remove schoolCode prefix if it exists (handles both "AX-E/..." and "images/AX-E/...")
+    filePath = filePath.replace(/^submissions\/(students\/|[A-Za-z0-9_-]+\/students\/)/i, "$1");
     const escapedCode = schoolCode.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape for regex
     filePath = filePath.replace(new RegExp(`^${escapedCode}/`), '');
     filePath = filePath.replace(new RegExp(`^([^/]+)/${escapedCode}/`), '$1/');
@@ -189,11 +190,15 @@ router.get(/\/media\/([^\/]+)\/(.*)/, (req, res) => {
     // Collapse duplicate adjacent folders
     filePath = collapseDuplicateFolders(filePath);
 
-    // 2. Extension Check: Only allow images to be served publicly
+    // 2. Extension Check: Allow images, safe educational documents, and media to be served
     const ext = path.extname(filePath).toLowerCase();
-    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp', '.svg', '.gif'];
+    const allowedExtensions = [
+        '.jpg', '.jpeg', '.png', '.webp', '.svg', '.gif', '.ico',
+        '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt', '.csv',
+        '.mp4', '.mp3', '.webm', '.wav', '.ogg', '.zip'
+    ];
     if (!allowedExtensions.includes(ext)) {
-        return res.status(403).json({ error: 'Access denied: Targeted resource type is not public' });
+        return res.status(403).json({ error: 'Access denied: Targeted resource type is not allowed' });
     }
 
     // Helper to find file by exact filename within a directory (max depth 4)

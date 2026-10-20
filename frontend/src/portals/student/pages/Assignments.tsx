@@ -121,13 +121,15 @@ export default function StudentAssignments() {
     if (!url) return null;
     let fullUrl = url;
     if (!url.startsWith('http')) {
-      if (url.startsWith('/api/storage/media/')) {
+      if (url.startsWith('/api/storage/')) {
         fullUrl = `${BASE_URL}${url}`;
+      } else if (url.startsWith('api/storage/')) {
+        fullUrl = `${BASE_URL}/${url}`;
       } else if (url.includes('/')) {
-        fullUrl = `${BASE_URL}/api/storage/media/${url}`;
+        fullUrl = `${BASE_URL}/api/storage/media/${url.replace(/^\/+/, '')}`;
       } else {
         const subFolder = type === 'assignment' ? 'assignments/' : 'submissions/';
-        fullUrl = `${BASE_URL}/api/storage/media/${user?.schoolCode}/${subFolder}${url}`;
+        fullUrl = `${BASE_URL}/api/storage/media/${user?.schoolCode || 'global'}/${subFolder}${url}`;
       }
     }
     const ext = url.split('.').pop()?.toLowerCase();

@@ -144,9 +144,17 @@ export default function TeacherAssignmentSubmissions() {
     }
   };
 
+  const resolveFileUrl = (url: string) => {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    const clean = url.replace(/\\/g, '/').replace(/^\/+/, '');
+    if (clean.startsWith('api/storage/')) return `${BASE_URL}/${clean}`;
+    if (clean.includes('/')) return `${BASE_URL}/api/storage/media/${clean}`;
+    return `${BASE_URL}/api/storage/media/${user?.schoolCode || 'global'}/${clean}`;
+  };
+
   const renderFilePreview = (url: string, name: string) => {
-    const baseUrl = `${BASE_URL}/api/storage/media/${user?.schoolCode}/`;
-    const fullUrl = url.startsWith('http') ? url : baseUrl + (url.startsWith('file-') ? 'images/' : 'submissions/') + url;
+    const fullUrl = resolveFileUrl(url);
     const ext = url.split('.').pop()?.toLowerCase();
     const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(ext || '');
     const isPDF = ext === 'pdf';
@@ -357,7 +365,7 @@ export default function TeacherAssignmentSubmissions() {
                             s.attachments.map((file: Attachment, idx: number) => (
                               <a 
                                 key={idx} 
-                                href={`${BASE_URL}/api/storage/media/${user?.schoolCode}/submissions/${file.url}`} 
+                                href={resolveFileUrl(file.url)} 
                                 target="_blank" 
                                 rel="noreferrer" 
                                 style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 500, fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '4px' }}
@@ -569,9 +577,15 @@ export default function TeacherAssignmentSubmissions() {
                       {h.files && h.files.length > 0 && (
                         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                           {h.files.map((f: any, fIdx: number) => (
-                            <span key={fIdx} style={{ fontSize: '0.72rem', background: '#e2e8f0', padding: '2px 6px', borderRadius: 4 }}>
-                              <i className="fas fa-paperclip mr-1"></i>{f.name}
-                            </span>
+                            <a 
+                              key={fIdx} 
+                              href={resolveFileUrl(f.url)} 
+                              target="_blank" 
+                              rel="noreferrer" 
+                              style={{ fontSize: '0.72rem', background: '#e2e8f0', color: '#1e293b', padding: '2px 6px', borderRadius: 4, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 4 }}
+                            >
+                              <i className="fas fa-paperclip"></i>{f.name}
+                            </a>
                           ))}
                         </div>
                       )}

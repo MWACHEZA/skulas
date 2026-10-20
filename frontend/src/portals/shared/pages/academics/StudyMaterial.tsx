@@ -74,27 +74,7 @@ export default function StudyMaterial() {
     try {
       const res = await api.get('/api/subjects');
       const allSubjects = Array.isArray(res.data) ? res.data : (res.data?.subjects || []);
-      if (user?.role === 'TEACHER') {
-        const assignedIds = new Set(
-          (user.teacher?.subjects || [])
-            .map((s: any) => s.subjectId || s.subject?.id || s.id)
-            .filter(Boolean)
-        );
-        const filtered = allSubjects.filter((s: any) => {
-          if (assignedIds.size > 0 && assignedIds.has(s.id)) return true;
-          if (s.teachers && Array.isArray(s.teachers)) {
-            return s.teachers.some((t: any) =>
-              t.teacher?.user?.id === user.id ||
-              t.teacherId === user.teacher?.id ||
-              t.teacher?.id === user.teacher?.id
-            );
-          }
-          return false;
-        });
-        setSubjects(filtered.length > 0 ? filtered : allSubjects);
-      } else {
-        setSubjects(allSubjects);
-      }
+      setSubjects(allSubjects);
     } catch (error) {
       console.error('Error fetching subjects', error);
     }
@@ -173,8 +153,35 @@ export default function StudyMaterial() {
       return subjects;
     }
     if (user?.role === 'TEACHER') {
-      const assignedIds = user.teacher?.subjects?.map((ts: any) => ts.subjectId) || [];
-      return subjects.filter(s => assignedIds.includes(s.id));
+      // 1. Collect teacher's directly assigned subject IDs
+      const assignedIds = new Set<string>();
+      (user.teacher?.subjects || []).forEach((ts: any) => {
+        const id = ts.subjectId || ts.subject?.id || ts.id;
+        if (id) assignedIds.add(id);
+      });
+      // 2. Collect class subject teacher allocations
+      (user.teacher?.subjectClasses || []).forEach((sc: any) => {
+        const id = sc.subjectId || sc.subject?.id || sc.id;
+        if (id) assignedIds.add(id);
+      });
+
+      const filtered = subjects.filter((s: any) => {
+        if (assignedIds.has(s.id)) return true;
+        if (s.isAssignedToCaller) return true;
+        if (s.activeTeachers && Array.isArray(s.activeTeachers)) {
+          if (s.activeTeachers.some((t: any) => t.id === user.teacher?.id || t.id === user.id)) return true;
+        }
+        if (s.teachers && Array.isArray(s.teachers)) {
+          if (s.teachers.some((t: any) => t.teacherId === user.teacher?.id || t.teacher?.userId === user.id || t.teacher?.id === user.teacher?.id)) return true;
+        }
+        if (s.classTeachers && Array.isArray(s.classTeachers)) {
+          if (s.classTeachers.some((ct: any) => ct.teacherId === user.teacher?.id || ct.teacher?.userId === user.id)) return true;
+        }
+        return false;
+      });
+
+      // If the teacher has assignments, show their assigned subjects; otherwise fallback to all subjects
+      return filtered.length > 0 ? filtered : subjects;
     }
     return subjects;
   }, [subjects, user]);

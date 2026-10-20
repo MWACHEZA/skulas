@@ -53,6 +53,43 @@ export default function StudentProfile() {
     return `Year ${part}`;
   };
 
+  const getStudentGradeLevel = (studentObj: any, typeStr: string) => {
+    if (!studentObj) return '—';
+
+    // 1. If assigned class has an explicit level (e.g. "Grade 7", "Form 4")
+    if (studentObj.class?.level) {
+      return studentObj.class.level;
+    }
+
+    // 2. Parse from class name (e.g. "GRADE 7 A" -> "Grade 7", "Form 2B" -> "Form 2", "7A" -> "Grade 7")
+    const cName = (studentObj.class?.name || '').trim();
+    if (cName) {
+      const match = cName.match(/^(Grade|Form|Year|Standard|Class|Part)\s*(\d+[A-Za-z]?|\w+)/i);
+      if (match) {
+        const prefix = match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase();
+        return `${prefix} ${match[2]}`.trim();
+      }
+      const numMatch = cName.match(/^(\d+)[A-Za-z]?\b/);
+      if (numMatch) {
+        const prefix = (typeStr || '').toLowerCase().includes('primary') ? 'Grade' : 'Form';
+        return `${prefix} ${numMatch[1]}`;
+      }
+    }
+
+    // 3. Direct student grade field if present
+    if (studentObj.grade) {
+      const gStr = String(studentObj.grade);
+      if (gStr.toLowerCase().startsWith('grade') || gStr.toLowerCase().startsWith('form') || gStr.toLowerCase().startsWith('year') || gStr.toLowerCase().startsWith('part')) {
+        return gStr;
+      }
+      const prefix = (typeStr || '').toLowerCase().includes('primary') ? 'Grade' : 'Form';
+      return `${prefix} ${gStr}`;
+    }
+
+    // 4. Fallback to student.part
+    return getYearValueLabel(typeStr, studentObj.part);
+  };
+
   const schoolType = currentUser?.schoolType || 'Secondary';
 
   useEffect(() => {
@@ -291,7 +328,7 @@ export default function StudentProfile() {
                 <i className="fas fa-chalkboard mr-1 text-sky-400" style={{ color: '#38bdf8' }} /> {className}
               </span>
               <span>
-                <i className="fas fa-graduation-cap mr-1 text-sky-400" style={{ color: '#38bdf8' }} /> {getYearValueLabel(schoolType, student.part)}
+                <i className="fas fa-graduation-cap mr-1 text-sky-400" style={{ color: '#38bdf8' }} /> {getStudentGradeLevel(student, schoolType)}
               </span>
               <span>
                 <i className="fas fa-building mr-1 text-sky-400" style={{ color: '#38bdf8' }} /> {student.boardingStatus === 'Boarder' ? 'Boarder (Hostel)' : 'Day Scholar'}
@@ -601,7 +638,7 @@ export default function StudentProfile() {
               </div>
               <div>
                 <p style={{ margin: '0 0 4px', color: '#64748b', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase' }}>{getYearLabel(schoolType)}</p>
-                <p style={{ margin: 0, fontWeight: 700, color: '#0f172a' }}>{getYearValueLabel(schoolType, student.part)}</p>
+                <p style={{ margin: 0, fontWeight: 700, color: '#0f172a' }}>{getStudentGradeLevel(student, schoolType)}</p>
               </div>
               <div>
                 <p style={{ margin: '0 0 4px', color: '#64748b', fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase' }}>Boarding Status</p>

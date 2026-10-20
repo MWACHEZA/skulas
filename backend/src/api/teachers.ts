@@ -490,27 +490,31 @@ router.post('/assignments/:id/release-grades', requireAuth, requireRole('TEACHER
       }
       assessmentRecordId = assessment.id;
 
-      // Upsert individual student scores into Continuous Assessment ledger
-      for (const sub of gradedSubmissions) {
-        await prisma.studentAssessment.upsert({
-          where: {
-            assessmentId_studentId: {
+      try {
+        // Upsert individual student scores into Continuous Assessment ledger
+        for (const sub of gradedSubmissions) {
+          await prisma.studentAssessment.upsert({
+            where: {
+              assessmentId_studentId: {
+                assessmentId: assessment.id,
+                studentId: sub.studentId
+              }
+            },
+            update: {
+              marksObtained: sub.grade,
+              comment: sub.feedback
+            },
+            create: {
+              schoolId,
               assessmentId: assessment.id,
-              studentId: sub.studentId
+              studentId: sub.studentId,
+              marksObtained: sub.grade,
+              comment: sub.feedback
             }
-          },
-          update: {
-            marksObtained: sub.grade,
-            feedback: sub.feedback
-          },
-          create: {
-            schoolId,
-            assessmentId: assessment.id,
-            studentId: sub.studentId,
-            marksObtained: sub.grade,
-            feedback: sub.feedback
-          }
-        });
+          });
+        }
+      } catch (caError) {
+        console.warn('[Release Grades] Non-fatal continuous assessment sync warning:', caError);
       }
     }
 
