@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
+import { getAvatarUrl } from '../../../utils/formatters';
 import '../../../styles/portal.css';
 import { SkeletonLoader } from '../../../components/shared';
 
@@ -30,6 +31,8 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
   const [saving, setSaving] = useState(false);
   const [coaAccounts, setCoaAccounts] = useState<any[]>([]);
   const [activeCmsSection, setActiveCmsSection] = useState<'banner' | 'about' | 'inquiry' | 'news' | 'gallery' | 'noticeboard'>('banner');
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [faviconUploading, setFaviconUploading] = useState(false);
 
   // Settings State
   const [settings, setSettings] = useState<any>({
@@ -206,6 +209,59 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
       showToast('Failed to load settings from server', 'error');
     } finally {
       setLoading(false);
+    }
+  };
+
+    const handleUploadLogo = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('logo', file);
+    setLogoUploading(true);
+    try {
+      const res = await api.patch('/api/schools/branding', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      const logoPath = res.data?.branding?.logo;
+      setSettings((prev: any) => ({ ...prev, logo: logoPath }));
+      await refreshUser();
+      showToast('Official School Crest / Logo updated successfully!', 'success');
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to upload school logo', 'error');
+    } finally {
+      setLogoUploading(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleUploadFavicon = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('favicon', file);
+    setFaviconUploading(true);
+    try {
+      const res = await api.patch('/api/schools/favicon', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      const faviconPath = res.data?.favicon;
+      setSettings((prev: any) => ({ ...prev, favicon: faviconPath }));
+      
+      const fullFaviconUrl = getAvatarUrl(faviconPath, user?.schoolCode);
+      if (fullFaviconUrl) {
+        const link: HTMLLinkElement | null = document.querySelector("link[rel*='icon']");
+        if (link) {
+          link.href = fullFaviconUrl;
+        }
+      }
+      
+      await refreshUser();
+      showToast('Browser tab favicon updated successfully!', 'success');
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to upload favicon', 'error');
+    } finally {
+      setFaviconUploading(false);
+      e.target.value = '';
     }
   };
 
@@ -430,6 +486,11 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
         <span style={{ fontSize: '0.75rem', fontWeight: 900, color: '#94a3b8', textTransform: 'uppercase', marginRight: '8px' }}>
           Quick Jump:
         </span>
+        {isSchoolAdmin && (
+          <button type="button" onClick={() => scrollToSection('sec-branding')} className="portal-btn-ghost" style={{ fontSize: '0.85rem', fontWeight: 800, padding: '8px 14px' }}>
+            <i className="fas fa-palette mr-2" style={{ color: '#ec4899' }}></i>Branding & Favicon
+          </button>
+        )}
         {(isSchoolAdmin || isBursar) && (
           <button type="button" onClick={() => scrollToSection('sec-financial')} className="portal-btn-ghost" style={{ fontSize: '0.85rem', fontWeight: 800, padding: '8px 14px' }}>
             <i className="fas fa-balance-scale mr-2" style={{ color: '#2563eb' }}></i>Financial & Accounting
@@ -476,6 +537,181 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '36px' }}>
+
+                {/* SECTION 0: INSTITUTIONAL BRANDING, LOGO & FAVICON */}
+        {isSchoolAdmin && (
+          <div id="sec-branding" className="portal-card" style={{ padding: '32px', borderLeft: '4px solid #ec4899', marginBottom: '32px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', flexWrap: 'wrap', gap: 12 }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#fdf2f8', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ec4899', fontSize: '1.2rem' }}>
+                    <i className="fas fa-palette"></i>
+                  </div>
+                  <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, color: '#1e293b' }}>
+                    Institutional Branding, Official Crest & Browser Favicon
+                  </h3>
+                </div>
+                <p style={{ margin: '6px 0 0 46px', color: '#64748b', fontSize: '0.9rem' }}>
+                  Customize your institution's digital identity: official crest, browser tab favicon, system titles, and primary institutional colors.
+                </p>
+              </div>
+            </div>
+
+            {/* Logo & Favicon Upload Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px', marginBottom: '28px' }}>
+              
+              {/* Card 1: Official Crest / School Logo */}
+              <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                    <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <i className="fas fa-shield-alt" style={{ color: '#ec4899' }}></i> Official School Crest / Logo
+                    </div>
+                    <span style={{ fontSize: '0.72rem', background: '#ecfdf5', color: '#047857', padding: '3px 8px', borderRadius: '6px', fontWeight: 700 }}>
+                      Public & Portals
+                    </span>
+                  </div>
+
+                  <p style={{ fontSize: '0.82rem', color: '#64748b', margin: '0 0 16px' }}>
+                    Appears in portal headers, report cards, fee receipts, and digital student ID passes.
+                  </p>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '16px' }}>
+                    <div style={{ width: '90px', height: '90px', borderRadius: '14px', border: '2px dashed #cbd5e1', background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: 6, flexShrink: 0 }}>
+                      {currentLogo ? (
+                        <img src={currentLogo} alt="School Logo" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                      ) : (
+                        <i className="fas fa-school fa-2x" style={{ color: '#cbd5e1' }}></i>
+                      )}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#334155' }}>
+                        {currentLogo ? 'Custom Logo Active' : 'Default System Logo'}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '4px' }}>
+                        Recommended format: PNG or SVG with transparent background (Min. 512x512px).
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="portal-btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, height: 40, padding: '0 18px', borderRadius: 10, cursor: logoUploading ? 'not-allowed' : 'pointer', opacity: logoUploading ? 0.7 : 1 }}>
+                    <i className={`fas ${logoUploading ? 'fa-spinner fa-spin' : 'fa-upload'}`}></i>
+                    {logoUploading ? 'Uploading Crest...' : 'Upload School Crest'}
+                    <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={handleUploadLogo} disabled={logoUploading} style={{ display: 'none' }} />
+                  </label>
+                </div>
+              </div>
+
+              {/* Card 2: Browser Tab Favicon */}
+              <div style={{ background: '#f8fafc', padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                    <div style={{ fontWeight: 800, fontSize: '0.95rem', color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <i className="fas fa-window-maximize" style={{ color: '#2563eb' }}></i> Browser Tab Favicon
+                    </div>
+                    <span style={{ fontSize: '0.72rem', background: '#eff6ff', color: '#1d4ed8', padding: '3px 8px', borderRadius: '6px', fontWeight: 700 }}>
+                      Tab Icon (.ico / .png)
+                    </span>
+                  </div>
+
+                  <p style={{ fontSize: '0.82rem', color: '#64748b', margin: '0 0 16px' }}>
+                    Small icon displayed on browser tabs, bookmarks, and mobile home screen shortcuts.
+                  </p>
+
+                  {/* Browser Tab Preview Mockup */}
+                  <div style={{ background: '#e2e8f0', borderRadius: '8px 8px 0 0', padding: '8px 12px 0 12px', marginBottom: '16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
+                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444' }}></div>
+                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#f59e0b' }}></div>
+                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#10b981' }}></div>
+                    </div>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#ffffff', padding: '6px 14px', borderRadius: '8px 8px 0 0', border: '1px solid #cbd5e1', borderBottom: 'none' }}>
+                      <div style={{ width: '20px', height: '20px', borderRadius: '4px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                        {currentFavicon ? (
+                          <img src={currentFavicon} alt="Favicon" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                        ) : (
+                          <i className="fas fa-graduation-cap" style={{ fontSize: '0.7rem', color: '#2563eb' }}></i>
+                        )}
+                      </div>
+                      <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#1e293b', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {settings.systemTitle || settings.systemName || user?.schoolName || 'ACADEX'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="portal-btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, height: 40, padding: '0 18px', borderRadius: 10, cursor: faviconUploading ? 'not-allowed' : 'pointer', background: '#2563eb', borderColor: '#2563eb', opacity: faviconUploading ? 0.7 : 1 }}>
+                    <i className={`fas ${faviconUploading ? 'fa-spinner fa-spin' : 'fa-upload'}`}></i>
+                    {faviconUploading ? 'Uploading Favicon...' : 'Upload Favicon (.ico / .png)'}
+                    <input type="file" accept="image/x-icon,image/vnd.microsoft.icon,image/ico,image/png,image/svg+xml,image/webp" onChange={handleUploadFavicon} disabled={faviconUploading} style={{ display: 'none' }} />
+                  </label>
+                </div>
+              </div>
+
+            </div>
+
+            {/* School Identity & Color Theme Inputs */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+              <div className="form-group">
+                <label className="portal-label">System Title / School Name</label>
+                <input
+                  type="text"
+                  className="portal-input"
+                  placeholder="e.g. Lobengula Primary School"
+                  value={settings.systemTitle || settings.systemName || ''}
+                  onChange={e => {
+                    updateSetting('systemTitle', e.target.value);
+                    updateSetting('systemName', e.target.value);
+                  }}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="portal-label">Short Name / Acronym</label>
+                <input
+                  type="text"
+                  className="portal-input"
+                  placeholder="e.g. LPS"
+                  value={settings.shortSystemName || ''}
+                  onChange={e => updateSetting('shortSystemName', e.target.value)}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="portal-label">Motto / Slogan</label>
+                <input
+                  type="text"
+                  className="portal-input"
+                  placeholder="e.g. Excellence Through Dedication"
+                  value={settings.motto || ''}
+                  onChange={e => updateSetting('motto', e.target.value)}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="portal-label">Primary Theme Color</label>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <input
+                    type="color"
+                    value={settings.themeColour || '#2563eb'}
+                    onChange={e => updateSetting('themeColour', e.target.value)}
+                    style={{ width: '42px', height: '42px', borderRadius: '8px', border: '1px solid #cbd5e1', cursor: 'pointer', padding: 2 }}
+                  />
+                  <input
+                    type="text"
+                    className="portal-input"
+                    value={settings.themeColour || '#2563eb'}
+                    onChange={e => updateSetting('themeColour', e.target.value)}
+                    style={{ flex: 1 }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* SECTION 1: FINANCIAL & GENERAL LEDGER ACCOUNTING SETTINGS */}
         {(isSchoolAdmin || isBursar) && (

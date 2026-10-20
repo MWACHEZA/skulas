@@ -4,6 +4,7 @@ import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import SystemConfigCommunication from './SystemConfigCommunication';
+import { getAvatarUrl } from '../../../utils/formatters';
 import '../../../styles/portal.css';
 
 type ConfigTab = 'branding' | 'gateways' | 'notifications' | 'backup' | 'modules';
@@ -16,6 +17,10 @@ export default function AdminSystemConfig() {
 
   const [saving, setSaving] = useState(false);
   const [backingUp, setBackingUp] = useState(false);
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [faviconUploading, setFaviconUploading] = useState(false);
+  const [currentLogo, setCurrentLogo] = useState<string | null>(null);
+  const [currentFavicon, setCurrentFavicon] = useState<string | null>(null);
 
   // Modules & Features state
   const [modules, setModules] = useState<Record<string, boolean>>({
@@ -32,7 +37,83 @@ export default function AdminSystemConfig() {
 
   useEffect(() => {
     fetchModules();
+    fetchSchoolSettings();
   }, []);
+
+  const fetchSchoolSettings = async () => {
+    try {
+      const { data } = await api.get('/api/schools/settings');
+      if (data) {
+        setProfile(prev => ({
+          ...prev,
+          schoolName: data.systemName || data.systemTitle || user?.schoolName || prev.schoolName,
+          schoolCode: user?.schoolCode || prev.schoolCode,
+          motto: data.motto || prev.motto,
+          address: data.address || prev.address,
+          phone: data.phone || prev.phone,
+          email: data.systemEmail || prev.email,
+          baseCurrency: data.baseCurrency || prev.baseCurrency,
+          receiptHeader: data.receiptHeader || prev.receiptHeader,
+          receiptFooter: data.footer || prev.receiptFooter
+        }));
+        if (data.logo || user?.school?.branding?.logo) {
+          setCurrentLogo(getAvatarUrl(data.logo || user?.school?.branding?.logo, user?.schoolCode));
+        }
+        if (data.favicon) {
+          setCurrentFavicon(getAvatarUrl(data.favicon, user?.schoolCode));
+        }
+      }
+    } catch (err) {
+      console.warn('Could not load school settings for AdminSystemConfig', err);
+    }
+  };
+
+  const handleUploadLogo = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('logo', file);
+    setLogoUploading(true);
+    try {
+      const res = await api.patch('/api/schools/branding', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      const logoPath = res.data?.branding?.logo;
+      setCurrentLogo(getAvatarUrl(logoPath, user?.schoolCode));
+      showToast('Official School Crest / Logo updated successfully!', 'success');
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to upload logo', 'error');
+    } finally {
+      setLogoUploading(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleUploadFavicon = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('favicon', file);
+    setFaviconUploading(true);
+    try {
+      const res = await api.patch('/api/schools/favicon', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      const faviconPath = res.data?.favicon;
+      const fullUrl = getAvatarUrl(faviconPath, user?.schoolCode);
+      setCurrentFavicon(fullUrl);
+      if (fullUrl) {
+        const link = document.querySelector("link[rel*='icon']");
+        if (link) link.href = fullUrl;
+      }
+      showToast('Browser tab favicon updated successfully!', 'success');
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to upload favicon', 'error');
+    } finally {
+      setFaviconUploading(false);
+      e.target.value = '';
+    }
+  };
 
   const fetchModules = async () => {
     setModulesLoading(true);
@@ -118,13 +199,26 @@ export default function AdminSystemConfig() {
     setSearchParams({ tab });
   };
 
-  const handleSaveProfile = (e: React.FormEvent) => {
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    setTimeout(() => {
-      setSaving(false);
+    try {
+      await api.patch('/api/schools/settings', {
+        systemName: profile.schoolName,
+        systemTitle: profile.schoolName,
+        motto: profile.motto,
+        address: profile.address,
+        phone: profile.phone,
+        systemEmail: profile.email,
+        baseCurrency: profile.baseCurrency,
+        footer: profile.receiptFooter
+      });
       showToast('School profile, branding, and fiscal receipt details updated successfully!', 'success');
-    }, 600);
+    } catch (err: any) {
+      showToast(err.response?.data?.error || 'Failed to update settings', 'error');
+    } finally {
+      setSaving(false);
+    }
   };
 
 
@@ -226,6 +320,51 @@ export default function AdminSystemConfig() {
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
             {/* Left Column: Form Details */}
             <div className="portal-card" style={{ background: '#fff', borderRadius: 8, padding: 24 }}>
+              {/* Logo & Favicon Management Bar */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginBottom: '24px', paddingBottom: '20px', borderBottom: '1px solid #f1f5f9' }}>
+                
+                {/* Official Crest Uploader */}
+                <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <div style={{ width: '64px', height: '64px', borderRadius: '10px', border: '2px dashed #cbd5e1', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: 4, flexShrink: 0 }}>
+                    {currentLogo ? (
+                      <img src={currentLogo} alt="Logo" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                    ) : (
+                      <i className="fas fa-school" style={{ color: '#cbd5e1', fontSize: '1.5rem' }}></i>
+                    )}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#1e293b' }}>Official Crest / Logo</div>
+                    <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '6px' }}>PNG, SVG, or JPG (Min. 512px)</div>
+                    <label className="portal-btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', fontSize: '0.75rem', borderRadius: 6, cursor: logoUploading ? 'not-allowed' : 'pointer' }}>
+                      <i className={`fas ${logoUploading ? 'fa-spinner fa-spin' : 'fa-upload'}`}></i>
+                      {logoUploading ? 'Uploading...' : 'Upload Logo'}
+                      <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={handleUploadLogo} disabled={logoUploading} style={{ display: 'none' }} />
+                    </label>
+                  </div>
+                </div>
+
+                {/* Favicon Uploader */}
+                <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <div style={{ width: '64px', height: '64px', borderRadius: '10px', border: '2px dashed #cbd5e1', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: 4, flexShrink: 0 }}>
+                    {currentFavicon ? (
+                      <img src={currentFavicon} alt="Favicon" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
+                    ) : (
+                      <i className="fas fa-window-maximize" style={{ color: '#cbd5e1', fontSize: '1.5rem' }}></i>
+                    )}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#1e293b' }}>Browser Tab Favicon</div>
+                    <div style={{ fontSize: '0.72rem', color: '#64748b', marginBottom: '6px' }}>.ico, .png, or .svg (32x32px)</div>
+                    <label className="portal-btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', fontSize: '0.75rem', borderRadius: 6, cursor: faviconUploading ? 'not-allowed' : 'pointer', background: '#2563eb', borderColor: '#2563eb' }}>
+                      <i className={`fas ${faviconUploading ? 'fa-spinner fa-spin' : 'fa-upload'}`}></i>
+                      {faviconUploading ? 'Uploading...' : 'Upload Favicon'}
+                      <input type="file" accept="image/x-icon,image/vnd.microsoft.icon,image/ico,image/png,image/svg+xml,image/webp" onChange={handleUploadFavicon} disabled={faviconUploading} style={{ display: 'none' }} />
+                    </label>
+                  </div>
+                </div>
+
+              </div>
+
               <h3 style={{ margin: '0 0 16px', fontSize: '1.1rem', fontWeight: 700, color: '#1e293b' }}>
                 Institutional Identification & Contact
               </h3>

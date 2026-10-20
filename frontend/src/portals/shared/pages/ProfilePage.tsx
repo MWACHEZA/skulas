@@ -274,6 +274,51 @@ export default function ProfilePage() {
   const departmentName = pData?.dept?.name || pData?.teacher?.department || (pData?.employeeProfile?.department) || 'Institutional Services';
   const jobTitle = pData?.employeeProfile?.jobTitle || pData?.employeeProfile?.designation || pData?.role;
 
+  const teacherDirectSubjects = pData?.teacher?.subjects || [];
+  const teacherClassSubjects = pData?.teacher?.subjectClasses || [];
+
+  const assignedTeachingSubjects = useMemo(() => {
+    const map = new Map<string, { id: string; name: string; code?: string; classes: string[] }>();
+
+    teacherDirectSubjects.forEach((s: any) => {
+      const sub = s.subject || s;
+      if (sub && (sub.id || sub.name)) {
+        const key = sub.id || sub.name;
+        if (!map.has(key)) {
+          map.set(key, {
+            id: key,
+            name: sub.name || 'Subject',
+            code: sub.code || '',
+            classes: []
+          });
+        }
+      }
+    });
+
+    teacherClassSubjects.forEach((cs: any) => {
+      const sub = cs.subject;
+      const clsName = cs.class?.name;
+      if (sub && (sub.id || sub.name)) {
+        const key = sub.id || sub.name;
+        if (map.has(key)) {
+          const item = map.get(key)!;
+          if (clsName && !item.classes.includes(clsName)) {
+            item.classes.push(clsName);
+          }
+        } else {
+          map.set(key, {
+            id: key,
+            name: sub.name || 'Subject',
+            code: sub.code || '',
+            classes: clsName ? [clsName] : []
+          });
+        }
+      }
+    });
+
+    return Array.from(map.values());
+  }, [teacherDirectSubjects, teacherClassSubjects]);
+
   return (
     <div className="portal-container" style={{ paddingBottom: '60px' }}>
       {/* Print target style */}
@@ -723,21 +768,33 @@ export default function ProfilePage() {
               <div className="portal-card" style={{ padding: '24px' }}>
                 <h3 style={{ margin: '0 0 16px 0', fontSize: '1.2rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <i className="fas fa-book-reader" style={{ color: '#2563eb' }}></i>
-                  Assigned Teaching Subjects ({pData?.teacher?.subjects?.length || 0})
+                  Assigned Teaching Subjects ({assignedTeachingSubjects.length})
                 </h3>
 
-                {pData?.teacher?.subjects?.length > 0 ? (
+                {assignedTeachingSubjects.length > 0 ? (
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
-                    {pData.teacher.subjects.map((s: any, idx: number) => (
+                    {assignedTeachingSubjects.map((s: any, idx: number) => (
                       <div key={idx} style={{ padding: '16px', background: '#eff6ff', borderRadius: '14px', border: '1px solid #bfdbfe' }}>
-                        <div style={{ fontSize: '0.78rem', fontWeight: 800, color: '#1d4ed8' }}>SUBJECT #{idx + 1}</div>
-                        <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#1e3a8a', marginTop: '4px' }}>
-                          {s.subject?.name}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                          <span style={{ fontSize: '0.78rem', fontWeight: 800, color: '#1d4ed8' }}>SUBJECT #{idx + 1}</span>
+                          {s.code && (
+                            <span style={{ fontSize: '0.75rem', background: '#dbeafe', color: '#1e40af', padding: '2px 8px', borderRadius: '4px', fontWeight: 700, fontFamily: 'monospace' }}>
+                              {s.code}
+                            </span>
+                          )}
                         </div>
-                        {s.subject?.code && (
-                          <span style={{ fontSize: '0.75rem', background: '#dbeafe', color: '#1e40af', padding: '2px 8px', borderRadius: '4px', fontWeight: 700, fontFamily: 'monospace' }}>
-                            {s.subject.code}
-                          </span>
+                        <div style={{ fontSize: '1.15rem', fontWeight: 900, color: '#1e3a8a', marginTop: '4px' }}>
+                          {s.name}
+                        </div>
+                        {s.classes && s.classes.length > 0 && (
+                          <div style={{ marginTop: '8px', display: 'flex', gap: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
+                            <span style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700 }}>Classes:</span>
+                            {s.classes.map((cName: string, cIdx: number) => (
+                              <span key={cIdx} style={{ fontSize: '0.72rem', background: '#ffffff', border: '1px solid #bfdbfe', color: '#1e40af', padding: '1px 6px', borderRadius: '4px', fontWeight: 700 }}>
+                                {cName}
+                              </span>
+                            ))}
+                          </div>
                         )}
                       </div>
                     ))}

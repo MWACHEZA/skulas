@@ -14,7 +14,8 @@ const ensureDir = (dir: string) => {
 // Base config for allowed types
 const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
     const allowedTypes = [
-        'image/jpeg', 'image/png', 'image/webp',
+        'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml',
+        'image/x-icon', 'image/vnd.microsoft.icon', 'image/ico',
         'application/pdf', 
         'application/msword', 
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -78,6 +79,11 @@ const createStorage = (entityType: 'staff' | 'students' | 'general' | 'library' 
                 'image/jpeg': '.jpg',
                 'image/png': '.png',
                 'image/webp': '.webp',
+                'image/gif': '.gif',
+                'image/svg+xml': '.svg',
+                'image/x-icon': '.ico',
+                'image/vnd.microsoft.icon': '.ico',
+                'image/ico': '.ico',
                 'application/pdf': '.pdf',
                 'application/msword': '.doc',
                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
