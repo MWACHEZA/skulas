@@ -800,7 +800,8 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
         {/* SECTION 1: FINANCIAL & GENERAL LEDGER ACCOUNTING SETTINGS */}
         {(isSchoolAdmin || isBursar) && (
