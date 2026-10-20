@@ -129,6 +129,9 @@ export default function SystemColorsConfig({ onSaved }: SystemColorsConfigProps)
         });
       }
 
+      await api.put('/api/website-settings', { schoolPrimaryColor: primaryColor }).catch(() => {});
+      window.dispatchEvent(new CustomEvent('school-settings-updated', { detail: { type: 'colors', primaryColor, accentColor } }));
+      localStorage.setItem('school_settings_updated', Date.now().toString());
       showToast('System color palette and visual themes saved successfully!', 'success');
       if (onSaved) onSaved();
     } catch (err: any) {

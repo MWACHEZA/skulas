@@ -574,6 +574,14 @@ router.patch('/branding', requireAuth, requireRole('SCHOOL_ADMIN'), upload.singl
       data:  { branding: updatedBranding }
     });
 
+    if (primaryColor) {
+      await prisma.websiteSettings.upsert({
+        where: { schoolId: req.user!.schoolId! },
+        update: { schoolPrimaryColor: primaryColor },
+        create: { schoolId: req.user!.schoolId!, schoolPrimaryColor: primaryColor }
+      }).catch(e => console.warn('Could not sync schoolPrimaryColor to websiteSettings', e));
+    }
+
     res.json({ success: true, branding: school.branding });
   } catch (error) {
     console.error('Branding update error:', error);
@@ -1635,6 +1643,10 @@ router.get('/:code', async (req, res) => {
       : new Date(school.createdAt).getFullYear();
     const currentYear = new Date().getFullYear();
     const yearsOfExcellence = Math.max(0, currentYear - firstAttendedYear);
+
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
 
     res.json({
       ...school,

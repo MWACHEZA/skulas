@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
+import { getPublicMediaUrl } from '../../../utils/formatters';
 
 interface BannerConfigItem {
   id: string;
@@ -157,11 +158,7 @@ export default function SystemPublicImagesConfig() {
 
   const getMediaUrl = (filename?: string | null) => {
     if (!filename) return null;
-    if (filename.startsWith('http://') || filename.startsWith('https://') || filename.startsWith('data:')) {
-      return filename;
-    }
-    const code = user?.schoolCode || 'global';
-    return `${api.defaults.baseURL}/api/storage/media/${code}/${filename}`;
+    return getPublicMediaUrl(filename, schoolCode, settings?.updatedAt || Date.now());
   };
 
   const handleUpload = async (field: string, e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,16 +183,24 @@ export default function SystemPublicImagesConfig() {
       const filename = uploadRes.data?.filename;
       if (!filename) throw new Error('No filename returned');
 
-      // 2. Persist field in WebsiteSettings
-      await api.put('/api/website-settings', {
-        [field]: filename
-      });
+      // 2. Persist field in WebsiteSettings (sync heroBg & bannerImage)
+      const updateData: Record<string, any> = { [field]: filename };
+      if (field === 'bannerImage') updateData.heroBg = filename;
+      if (field === 'heroBg') updateData.bannerImage = filename;
+
+      await api.put('/api/website-settings', updateData);
 
       // 3. Update local state
       setSettings(prev => ({
         ...prev,
-        [field]: filename
+        [field]: filename,
+        ...(field === 'bannerImage' ? { heroBg: filename } : {}),
+        updatedAt: new Date().toISOString()
       }));
+
+      // 4. Notify all open tabs & public layout
+      window.dispatchEvent(new CustomEvent('school-settings-updated', { detail: { field, filename } }));
+      localStorage.setItem('school_settings_updated', Date.now().toString());
 
       showToast(`Image uploaded and published successfully!`, 'success');
     } catch (err: any) {
@@ -213,13 +218,21 @@ export default function SystemPublicImagesConfig() {
     }
 
     try {
-      await api.put('/api/website-settings', {
-        [field]: null
-      });
+      const updateData: Record<string, any> = { [field]: null };
+      if (field === 'bannerImage') updateData.heroBg = null;
+      if (field === 'heroBg') updateData.bannerImage = null;
+
+      await api.put('/api/website-settings', updateData);
+
       setSettings(prev => ({
         ...prev,
-        [field]: null
+        [field]: null,
+        ...(field === 'bannerImage' ? { heroBg: null } : {}),
+        updatedAt: new Date().toISOString()
       }));
+
+      window.dispatchEvent(new CustomEvent('school-settings-updated', { detail: { field, filename: null } }));
+      localStorage.setItem('school_settings_updated', Date.now().toString());
       showToast(`Restored default banner for ${title}`, 'info');
     } catch (err: any) {
       showToast(err.response?.data?.error || 'Failed to remove image', 'error');

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSchool } from '../components/layout/Layout';
 import api from '../lib/api';
+import { getPublicMediaUrl } from '../utils/formatters';
 import { SkeletonLoader } from '../components/shared';
 
 interface GalleryItem {
@@ -43,8 +44,9 @@ export default function Gallery() {
 
   const settings = (school as any)?.websiteSettings;
   const bannerImage = settings?.galleryBanner || settings?.bannerImage;
-  const bannerStyle = bannerImage 
-    ? { backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${api.defaults.baseURL}/api/storage/media/${code}/${bannerImage})`, backgroundSize: 'cover', backgroundPosition: 'center', padding: '80px 0', color: 'white', textAlign: 'center' as const }
+  const bannerUrl = getPublicMediaUrl(bannerImage, (schoolCode || (school as any)?.code || '').toUpperCase(), settings?.updatedAt);
+  const bannerStyle = bannerUrl 
+    ? { backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${bannerUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', padding: '80px 0', color: 'white', textAlign: 'center' as const }
     : { background: 'linear-gradient(135deg, var(--school-primary, #1e3a8a) 0%, var(--school-accent, #3b82f6) 100%)', padding: '80px 0', color: 'white', textAlign: 'center' as const };
 
   return (
@@ -59,7 +61,7 @@ export default function Gallery() {
             <button onClick={() => setLightbox(null)} style={{ position: 'absolute', top: '15px', right: '15px', background: 'rgba(255,255,255,0.15)', border: 'none', width: '35px', height: '35px', borderRadius: '50%', color: 'white', fontSize: '18px', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>&times;</button>
             {lightbox.coverImage && (
               <img
-                src={`${api.defaults.baseURL}/api/storage/media/${code}/${lightbox.coverImage}`}
+                src={getPublicMediaUrl(lightbox.coverImage, code, settings?.updatedAt) || ''}
                 alt={lightbox.title}
                 style={{ width: '100%', maxHeight: '600px', objectFit: 'contain', display: 'block' }}
               />
@@ -124,9 +126,7 @@ export default function Gallery() {
         ) : (
           <div style={{ columns: '4 200px', columnGap: '16px' }}>
             {filteredItems.map(item => {
-              const imgUrl = item.coverImage
-                ? `${api.defaults.baseURL}/api/storage/media/${code}/${item.coverImage}`
-                : 'https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=400';
+              const imgUrl = getPublicMediaUrl(item.coverImage, code, settings?.updatedAt) || 'https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=400';
               return (
                 <div
                   key={item.id}

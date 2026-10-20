@@ -1,5 +1,6 @@
 import { Outlet, useParams } from 'react-router-dom';
-import { useEffect, useState, createContext, useContext } from 'react';
+import { useEffect, useState, createContext, useContext, useCallback } from 'react';
+import { getPublicMediaUrl } from '../../utils/formatters';
 import api from '../../lib/api';
 import TopBar from './TopBar';
 import Header from './Header';

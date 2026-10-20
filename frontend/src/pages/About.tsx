@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useSchool } from '../components/layout/Layout';
 import api from '../lib/api';
+import { getPublicMediaUrl } from '../utils/formatters';
 
 export default function About() {
   const school = useSchool();
@@ -29,8 +30,9 @@ export default function About() {
   const aboutFeatures = settings?.aboutFeatures || [];
 
   const bannerImage = settings?.aboutBanner || settings?.bannerImage;
-  const bannerStyle = bannerImage
-    ? { backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${api.defaults.baseURL}/api/storage/media/${code}/${bannerImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+  const bannerUrl = getPublicMediaUrl(bannerImage, code, settings?.updatedAt);
+  const bannerStyle = bannerUrl
+    ? { backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${bannerUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
     : {};
 
   return (
@@ -120,7 +122,7 @@ export default function About() {
               {directorImage && (
                 <div style={{ width: '150px', height: '150px', borderRadius: '50%', overflow: 'hidden', border: '4px solid #fff', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', flexShrink: 0, margin: '0 auto' }}>
                   <img
-                    src={`${api.defaults.baseURL}/api/storage/media/${code}/${directorImage}`}
+                    src={getPublicMediaUrl(directorImage, code, settings?.updatedAt) || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2'}
                     alt={directorName || leaderLabel}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     onError={(e) => {

@@ -42,6 +42,8 @@ export const getAvatarUrl = (avatar?: string | null, schoolCode?: string | null,
     url = avatar;
   } else {
     let clean = avatar.replace(/\\/g, '/').replace(/^\/+/, '');
+    // Strip redundant storage/media/ prefixes if present
+    clean = clean.replace(/^(api\/)?storage\/media\//, '');
     // If it starts with images/ followed by a path or filename, remove the redundant images/ prefix
     clean = clean.replace(/^images\//, '');
     const code = schoolCode || 'global';
@@ -60,6 +62,18 @@ export const getAvatarUrl = (avatar?: string | null, schoolCode?: string | null,
     return `${url}${separator}t=${buster}`;
   }
   return url;
+};
+
+/**
+ * Standardized helper to resolve public website banners, headmaster/director portraits, and media assets.
+ * Always returns a clean, fully-qualified URL with cache-busting support.
+ */
+export const getPublicMediaUrl = (
+  media?: string | null,
+  schoolCode?: string | null,
+  cacheBuster?: string | number
+): string | null => {
+  return getAvatarUrl(media, schoolCode, cacheBuster);
 };
 
 /**

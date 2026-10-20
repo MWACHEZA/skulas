@@ -137,7 +137,7 @@ router.get(/\/file\/(.*)/, requireAuth, (req: AuthRequest, res: Response) => {
     // 5. Caching Strategy for Branding
     const isBranding = filePath.includes('/images/') || filePath.includes('/logo.');
     if (isBranding) {
-        res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
+        res.setHeader('Cache-Control', 'no-cache, must-revalidate'); // Cache for 1 hour
     } else {
         res.setHeader('Cache-Control', 'no-cache');
     }
@@ -163,7 +163,7 @@ router.get(/\/public\/(.*)/, (req, res) => {
         return res.status(404).send('Not Found');
     }
 
-    res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 24h
+    res.setHeader('Cache-Control', 'no-cache, must-revalidate'); // Cache for 24h
     res.sendFile(fullPath);
 });
 
@@ -245,7 +245,7 @@ router.get(/\/media\/([^\/]+)\/(.*)/, (req, res) => {
 
     for (const cp of candidatePaths) {
         if (fs.existsSync(cp) && !fs.lstatSync(cp).isDirectory()) {
-            res.setHeader('Cache-Control', 'public, max-age=3600');
+            res.setHeader('Cache-Control', 'no-cache, must-revalidate');
             return res.sendFile(cp);
         }
     }
@@ -267,7 +267,7 @@ router.get(/\/media\/([^\/]+)\/(.*)/, (req, res) => {
 
     for (const fallbackPath of fallbacks) {
         if (fs.existsSync(fallbackPath) && !fs.lstatSync(fallbackPath).isDirectory()) {
-            res.setHeader('Cache-Control', 'public, max-age=3600');
+            res.setHeader('Cache-Control', 'no-cache, must-revalidate');
             return res.sendFile(fallbackPath);
         }
     }
@@ -275,14 +275,14 @@ router.get(/\/media\/([^\/]+)\/(.*)/, (req, res) => {
     // Dynamic search within school directory
     const schoolMatch = findFileInDir(path.join(STORAGE_ROOT, schoolCode), filename);
     if (schoolMatch) {
-        res.setHeader('Cache-Control', 'public, max-age=3600');
+        res.setHeader('Cache-Control', 'no-cache, must-revalidate');
         return res.sendFile(schoolMatch);
     }
 
     // Dynamic search within global directory
     const globalMatch = findFileInDir(path.join(STORAGE_ROOT, 'global'), filename);
     if (globalMatch) {
-        res.setHeader('Cache-Control', 'public, max-age=3600');
+        res.setHeader('Cache-Control', 'no-cache, must-revalidate');
         return res.sendFile(globalMatch);
     }
 
@@ -301,7 +301,7 @@ router.get(/\/media\/([^\/]+)\/(.*)/, (req, res) => {
                 if (matchingFile) {
                     const matchedPath = path.join(dir, matchingFile);
                     if (!fs.lstatSync(matchedPath).isDirectory()) {
-                        res.setHeader('Cache-Control', 'public, max-age=3600');
+                        res.setHeader('Cache-Control', 'no-cache, must-revalidate');
                         return res.sendFile(matchedPath);
                     }
                 }

@@ -117,6 +117,8 @@ export default function BannerSettings() {
       toast.loading('Uploading favicon...', { id: 'favicon-upload' });
       const res = await api.patch('/api/schools/favicon', formData);
       setValue('favicon', res.data.favicon);
+      window.dispatchEvent(new CustomEvent('school-settings-updated', { detail: { type: 'favicon' } }));
+      localStorage.setItem('school_settings_updated', Date.now().toString());
       toast.success('Favicon updated successfully', { id: 'favicon-upload' });
     } catch (err) {
       toast.error('Favicon upload failed', { id: 'favicon-upload' });
@@ -138,7 +140,8 @@ export default function BannerSettings() {
         applyContent: data.applyContent,
         bannerTitleColor: data.bannerTitleColor,
         schoolPrimaryColor: data.primaryColor || data.schoolPrimaryColor,
-        bannerImage: data.bannerImage
+        bannerImage: data.bannerImage,
+        heroBg: data.bannerImage
       };
       await api.put('/api/website-settings', websiteData);
 
@@ -155,6 +158,8 @@ export default function BannerSettings() {
       });
 
       await refreshUser();
+      window.dispatchEvent(new CustomEvent('school-settings-updated', { detail: { type: 'banner' } }));
+      localStorage.setItem('school_settings_updated', Date.now().toString());
       toast.success('Banner & Branding settings saved successfully!');
     } catch (error) {
       console.error(error);

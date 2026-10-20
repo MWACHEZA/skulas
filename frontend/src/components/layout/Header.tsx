@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, useParams, useLocation } from 'react-router-dom';
 import { BASE_URL } from '../../lib/api';
+import { getPublicMediaUrl } from '../../utils/formatters';
 import { t } from '../../utils/translate';
 
 interface Props {
@@ -37,20 +38,7 @@ export default function Header({ school }: Props) {
 
   const getLogoUrl = () => {
     if (!logo) return null;
-    if (logo.startsWith('http://') || logo.startsWith('https://')) return logo;
-    let cleanLogo = logo;
-    const storagePrefix = `/storage/${code}/`;
-    if (cleanLogo.startsWith(storagePrefix)) {
-      cleanLogo = cleanLogo.substring(storagePrefix.length);
-    } else if (cleanLogo.startsWith('/storage/')) {
-      const parts = cleanLogo.split('/').filter(Boolean);
-      if (parts[0] === 'storage') cleanLogo = parts.slice(2).join('/');
-    } else if (cleanLogo.startsWith('storage/')) {
-      const parts = cleanLogo.split('/').filter(Boolean);
-      cleanLogo = parts.slice(2).join('/');
-    }
-    if (cleanLogo.startsWith('/')) cleanLogo = cleanLogo.substring(1);
-    return `${BASE_URL}/api/storage/media/${code}/${cleanLogo}`;
+    return getPublicMediaUrl(logo, code, (school as any)?.branding?.updatedAt || Date.now());
   };
 
   return (

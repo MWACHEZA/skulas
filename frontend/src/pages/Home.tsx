@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useSchool } from '../components/layout/Layout';
 import api from '../lib/api';
+import { getPublicMediaUrl } from '../utils/formatters';
 
 // ── Hero Section ──────────────────────────────────────────────────────────────
 function Hero() {
@@ -18,9 +19,9 @@ function Hero() {
   // Banner details from settings
   const heroTitle = websiteSettings?.bannerTitle || (name ? `Welcome to ${name}` : 'Welcome');
   const heroTitleColor = websiteSettings?.bannerTitleColor || '#ffffff';
-  const heroBg = (websiteSettings?.heroBg || websiteSettings?.bannerImage) 
-    ? `url(${api.defaults.baseURL}/api/storage/media/${code}/${websiteSettings.bannerImage})`
-    : undefined;
+  const activeHero = websiteSettings?.heroBg || websiteSettings?.bannerImage;
+  const heroMediaUrl = getPublicMediaUrl(activeHero, code, websiteSettings?.updatedAt);
+  const heroBg = heroMediaUrl ? `url(${heroMediaUrl})` : undefined;
 
   // Calculate Years of Excellence dynamically from the current year and establishment year
   const estYear = parseInt(websiteSettings?.yearOfEstablishment || '', 10);
@@ -514,7 +515,7 @@ function CampusSection() {
         {galleryImages.length > 0 && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '24px', marginTop: '40px' }}>
             {galleryImages.map((imgName: string, idx: number) => {
-              const imgUrl = `${api.defaults.baseURL}/api/storage/media/${code}/${imgName}`;
+              const imgUrl = getPublicMediaUrl(imgName, code, settings?.updatedAt) || imgName;
               return (
                 <div key={idx} className="campus-img-card" style={{ height: '280px', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05)', transition: 'transform 0.3s' }}>
                   <img src={imgUrl} alt={`Campus ${idx + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -615,8 +616,13 @@ function CTA() {
   const ctaTitle = websiteSettings?.applyTitle || `Join the ${school?.name || 'School'} Family`;
   const ctaContent = websiteSettings?.applyContent || "Applications for the upcoming academic term are open. Step into a world of qualitative transformation.";
 
+  const ctaMediaUrl = getPublicMediaUrl(websiteSettings?.ctaBanner, code, websiteSettings?.updatedAt);
+  const ctaBg = ctaMediaUrl
+    ? `linear-gradient(rgba(15, 23, 42, 0.82), rgba(15, 23, 42, 0.82)), url(${ctaMediaUrl}) center/cover`
+    : 'linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%)';
+
   return (
-    <section className="cta" style={{ background: websiteSettings?.ctaBanner ? `linear-gradient(rgba(15, 23, 42, 0.82), rgba(15, 23, 42, 0.82)), url(${api.defaults.baseURL}/api/storage/media/${code}/${websiteSettings.ctaBanner}) center/cover` : 'linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%)', color: 'white', padding: '80px 0', textAlign: 'center' }}>
+    <section className="cta" style={{ background: ctaBg, color: 'white', padding: '80px 0', textAlign: 'center' }}>
       <div className="container">
         <div className="cta-content" style={{ maxWidth: '750px', margin: '0 auto' }}>
           <h2 style={{ fontSize: '2.25rem', fontWeight: 700, marginBottom: '20px' }}>{ctaTitle}</h2>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSchool } from '../components/layout/Layout';
 import api from '../lib/api';
+import { getPublicMediaUrl } from '../utils/formatters';
 import { SkeletonLoader } from '../components/shared';
 
 interface Subject {
@@ -103,8 +104,9 @@ export default function Departments() {
 
   const settings = (school as any)?.websiteSettings;
   const bannerImage = settings?.departmentsBanner || settings?.bannerImage;
-  const bannerStyle = bannerImage 
-    ? { backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${api.defaults.baseURL}/api/storage/media/${code}/${bannerImage})`, backgroundSize: 'cover', backgroundPosition: 'center', padding: '80px 0', color: 'white', textAlign: 'center' as const }
+  const bannerUrl = getPublicMediaUrl(bannerImage, (schoolCode || (school as any)?.code || '').toUpperCase(), settings?.updatedAt);
+  const bannerStyle = bannerUrl 
+    ? { backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${bannerUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', padding: '80px 0', color: 'white', textAlign: 'center' as const }
     : { background: 'linear-gradient(135deg, var(--school-primary, #1e3a8a) 0%, var(--school-accent, #3b82f6) 100%)', padding: '80px 0', color: 'white', textAlign: 'center' as const };
 
   return (

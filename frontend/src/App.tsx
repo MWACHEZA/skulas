@@ -337,70 +337,94 @@ function SchoolCodeRedirect() {
 }
 
 import { useAuth } from './contexts/AuthContext';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import i18n from './i18n';
 import api from './lib/api';
+import { getPublicMediaUrl } from './utils/formatters';
 
 function SiteConfigHandler() {
   const { user } = useAuth();
   const [favicon, setFavicon] = useState<string | null>(null);
   const [schoolCode, setSchoolCode] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchFaviconAndCode = async () => {
-      // 1. Logged-in Portal User
-      if (user?.schoolId) {
-        if (user.schoolCode) {
-          setSchoolCode(user.schoolCode);
+  const fetchFaviconAndCode = useCallback(async () => {
+    // 1. Logged-in Portal User
+    if (user?.schoolId) {
+      if (user.schoolCode) {
+        setSchoolCode(user.schoolCode);
+      }
+      try {
+        const res = await api.get(`/api/schools/settings?_t=${Date.now()}`);
+        if (res.data?.favicon) setFavicon(res.data.favicon);
+
+        // Apply language: Personal Prefs -> School Settings
+        const localPrefs = localStorage.getItem('personal_prefs');
+        let prefLang = null;
+        if (localPrefs) {
+          prefLang = JSON.parse(localPrefs).preferredLanguage;
         }
+        const langToSet = prefLang || res.data?.language;
+        if (langToSet) i18n.changeLanguage(langToSet);
+
+      } catch (err) {
+        console.error('Favicon fetch error', err);
+      }
+    } else {
+      // 2. Public Website Visitor
+      const match = window.location.pathname.match(/\/school\/([^/]+)/i);
+      if (match && match[1]) {
+        const sCode = match[1].toUpperCase();
+        setSchoolCode(sCode);
         try {
-          const res = await api.get('/api/schools/settings');
-          if (res.data?.favicon) setFavicon(res.data.favicon);
-
-          // Apply language: Personal Prefs -> School Settings
-          const localPrefs = localStorage.getItem('personal_prefs');
-          let prefLang = null;
-          if (localPrefs) {
-            prefLang = JSON.parse(localPrefs).preferredLanguage;
+          const res = await api.get(`/api/schools/${sCode}?_t=${Date.now()}`);
+          if (res.data?.schoolSetting?.favicon) {
+            setFavicon(res.data.schoolSetting.favicon);
           }
-          const langToSet = prefLang || res.data?.language;
-          if (langToSet) i18n.changeLanguage(langToSet);
-
+          if (res.data?.schoolSetting?.language) {
+            i18n.changeLanguage(res.data.schoolSetting.language);
+          }
         } catch (err) {
-          console.error('Favicon fetch error', err);
-        }
-      } else {
-        // 2. Public Website Visitor
-        const match = window.location.pathname.match(/\/school\/([^/]+)/i);
-        if (match && match[1]) {
-          const sCode = match[1].toUpperCase();
-          setSchoolCode(sCode);
-          try {
-            const res = await api.get(`/api/schools/${sCode}`);
-            if (res.data?.schoolSetting?.favicon) {
-              setFavicon(res.data.schoolSetting.favicon);
-            }
-            if (res.data?.schoolSetting?.language) {
-              i18n.changeLanguage(res.data.schoolSetting.language);
-            }
-          } catch (err) {
-            console.error('Public favicon fetch error', err);
-          }
+          console.error('Public favicon fetch error', err);
         }
       }
-    };
-    fetchFaviconAndCode();
+    }
   }, [user]);
+
+  useEffect(() => {
+    fetchFaviconAndCode();
+  }, [fetchFaviconAndCode]);
+
+  useEffect(() => {
+    const handleRevalidate = () => {
+      fetchFaviconAndCode();
+    };
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'school_settings_updated') {
+        fetchFaviconAndCode();
+      }
+    };
+
+    window.addEventListener('focus', handleRevalidate);
+    window.addEventListener('school-settings-updated', handleRevalidate);
+    window.addEventListener('storage', handleStorage);
+
+    return () => {
+      window.removeEventListener('focus', handleRevalidate);
+      window.removeEventListener('school-settings-updated', handleRevalidate);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, [fetchFaviconAndCode]);
 
   useEffect(() => {
     if (favicon && schoolCode) {
       const link = (document.querySelector("link[rel*='icon']") as HTMLLinkElement) || document.createElement('link');
       link.type = 'image/x-icon';
       link.rel = 'shortcut icon';
-      // Strip schoolCode prefix from favicon path if present (media route handles it dynamically)
-      const cleanedFavicon = favicon.replace(new RegExp(`^${schoolCode}/`), '');
-      link.href = `${api.defaults.baseURL}/api/storage/media/${schoolCode}/${cleanedFavicon}`;
-      document.getElementsByTagName('head')[0].appendChild(link);
+      const iconUrl = getPublicMediaUrl(favicon, schoolCode, Date.now());
+      if (iconUrl) {
+        link.href = iconUrl;
+        document.getElementsByTagName('head')[0].appendChild(link);
+      }
     }
   }, [favicon, schoolCode]);
 

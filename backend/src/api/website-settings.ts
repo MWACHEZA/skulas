@@ -24,7 +24,14 @@ router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (re
 router.put('/', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId;
-    const updateData = req.body;
+    const updateData = { ...req.body };
+
+    // Keep bannerImage and heroBg strictly unified
+    if (updateData.bannerImage !== undefined && updateData.heroBg === undefined) {
+      updateData.heroBg = updateData.bannerImage;
+    } else if (updateData.heroBg !== undefined && updateData.bannerImage === undefined) {
+      updateData.bannerImage = updateData.heroBg;
+    }
     
     const settings = await prisma.websiteSettings.upsert({
       where: { schoolId },

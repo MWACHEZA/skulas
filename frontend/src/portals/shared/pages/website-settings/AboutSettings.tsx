@@ -205,6 +205,8 @@ export default function AboutSettings() {
       });
 
       await refreshUser();
+      window.dispatchEvent(new CustomEvent('school-settings-updated', { detail: { type: 'about' } }));
+      localStorage.setItem('school_settings_updated', Date.now().toString());
       toast.success('About us settings saved successfully!');
     } catch (error) {
       console.error(error);

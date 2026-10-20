@@ -88,6 +88,8 @@ export default function AdminSystemConfig() {
       });
       const logoPath = res.data?.branding?.logo;
       setCurrentLogo(getAvatarUrl(logoPath, user?.schoolCode));
+      window.dispatchEvent(new CustomEvent('school-settings-updated', { detail: { type: 'logo' } }));
+      localStorage.setItem('school_settings_updated', Date.now().toString());
       showToast('Official School Crest / Logo updated successfully!', 'success');
     } catch (err: any) {
       showToast(err.response?.data?.error || 'Failed to upload logo', 'error');
@@ -114,6 +116,8 @@ export default function AdminSystemConfig() {
         const link = document.querySelector("link[rel*='icon']");
         if (link) link.href = fullUrl;
       }
+      window.dispatchEvent(new CustomEvent('school-settings-updated', { detail: { type: 'favicon' } }));
+      localStorage.setItem('school_settings_updated', Date.now().toString());
       showToast('Browser tab favicon updated successfully!', 'success');
     } catch (err: any) {
       showToast(err.response?.data?.error || 'Failed to upload favicon', 'error');
@@ -233,6 +237,8 @@ export default function AdminSystemConfig() {
         youtube: profile.youtube,
         tiktok: profile.tiktok
       });
+      window.dispatchEvent(new CustomEvent('school-settings-updated', { detail: { type: 'profile' } }));
+      localStorage.setItem('school_settings_updated', Date.now().toString());
       showToast('School profile, branding, and fiscal receipt details updated successfully!', 'success');
     } catch (err: any) {
       showToast(err.response?.data?.error || 'Failed to update settings', 'error');
