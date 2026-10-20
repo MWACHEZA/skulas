@@ -5,7 +5,7 @@ import UserEditModal from '../../../components/shared/UserEditModal';
 import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModal';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
-import { getAvatarUrl } from '../../../utils/formatters';
+import { getAvatarUrl, parseCleanBadges } from '../../../utils/formatters';
 import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
 import type { ExportColumn } from '../../../utils/exportService';
 import '../../../styles/portal.css';
@@ -576,10 +576,11 @@ export default function AdminSystem() {
       (u.staffId || '').toLowerCase().includes(q) ||
       (u.studentId || '').toLowerCase().includes(q);
 
+    const cleanSecRoles = parseCleanBadges(u.secondaryRoles);
     const matchesRole =
       roleFilter === 'ALL' ||
       u.role === roleFilter ||
-      (u.secondaryRoles && u.secondaryRoles.includes(roleFilter));
+      cleanSecRoles.includes(roleFilter);
 
     const matchesStatus =
       statusFilter === 'ALL' ||
@@ -594,7 +595,7 @@ export default function AdminSystem() {
     { header: 'Email Address', key: 'email' },
     { header: 'Staff / Student ID', formatter: u => u.staffId || u.studentId || '—' },
     { header: 'Primary Role', formatter: u => (u.role || '').replace(/_/g, ' ') },
-    { header: 'Secondary Roles', formatter: u => Array.isArray(u.secondaryRoles) ? u.secondaryRoles.join(', ') : 'None' },
+    { header: 'Secondary Roles', formatter: u => parseCleanBadges(u.secondaryRoles).join(', ') || 'None' },
     { header: 'Phone / Contact', formatter: u => u.phone || u.phoneNumber || '—' },
     { header: 'Account Status', formatter: u => u.isLocked ? 'Locked' : 'Active' },
     { header: 'Created Date', formatter: u => u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '—' },
@@ -908,17 +909,20 @@ export default function AdminSystem() {
                       </span>
                     </td>
                     <td style={{ padding: '12px 16px' }}>
-                      {u.secondaryRoles && u.secondaryRoles.length > 0 ? (
-                        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                          {u.secondaryRoles.map((sr: string) => (
-                            <span key={sr} style={{ background: '#f3e8ff', color: '#6b21a8', padding: '2px 6px', borderRadius: '3px', fontSize: '0.75rem', fontWeight: 500 }}>
-                              {sr}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <span style={{ color: '#94a3b8', fontSize: '0.8rem' }}>None</span>
-                      )}
+                      {(() => {
+                        const cleanRoles = parseCleanBadges(u.secondaryRoles);
+                        return cleanRoles.length > 0 ? (
+                          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                            {cleanRoles.map((sr: string) => (
+                              <span key={sr} style={{ background: '#f3e8ff', color: '#6b21a8', padding: '2px 6px', borderRadius: '3px', fontSize: '0.75rem', fontWeight: 500 }}>
+                                {sr}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <span style={{ color: '#94a3b8', fontSize: '0.8rem' }}>None</span>
+                        );
+                      })()}
                     </td>
                     <td style={{ padding: '12px 16px', color: '#475569', fontSize: '0.85rem' }}>
                       {u.staffId || u.studentId || '—'}

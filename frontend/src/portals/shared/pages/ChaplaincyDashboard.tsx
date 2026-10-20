@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import api from '../../../lib/api';
+import { SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface ChurchEvent {
@@ -202,9 +203,8 @@ export default function ChaplaincyDashboard() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '14px', color: '#64748b' }}>
-        <i className="fas fa-dove fa-spin fa-3x" style={{ color: '#3b82f6' }}></i>
-        <span style={{ fontSize: '1rem', fontWeight: 600 }}>Loading Chaplaincy &amp; Spiritual Services...</span>
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '24px 20px', minHeight: '100vh', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <SkeletonLoader type="dashboard" />
       </div>
     );
   }

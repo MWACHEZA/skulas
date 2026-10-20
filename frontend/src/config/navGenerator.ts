@@ -252,6 +252,13 @@ function generateStudentPortalNavigation(user: UserContext | null | undefined, c
             { id: 'reservations', label: 'Reserve' }
           ],
           searchKeywords: ['search books', 'catalog', 'reservations', 'my books', 'borrowed'] 
+        },
+        {
+          id: 'student-textbooks',
+          label: 'My Textbooks & Loans',
+          to: '/student/textbooks',
+          icon: 'fas fa-book-reader',
+          searchKeywords: ['textbooks', 'curriculum books', 'my books', 'borrowed', 'loans tracker']
         }
       ]
     },

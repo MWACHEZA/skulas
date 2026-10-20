@@ -215,7 +215,10 @@ export default function AdminBoarding() {
       if (statsRes?.data) setStats(statsRes.data);
 
       // 2. Fetch hostels with rooms
-      const hostelsRes = await api.get('/api/ancillary/hostels');
+      const hostelsRes = await api.get('/api/ancillary/hostels').catch((err) => {
+        console.error('Failed to load hostels:', err);
+        return { data: [] };
+      });
       const loadedHostels = Array.isArray(hostelsRes.data) ? hostelsRes.data : [];
       setHostels(loadedHostels);
       if (loadedHostels.length > 0 && !rcHostelId) {
@@ -225,7 +228,10 @@ export default function AdminBoarding() {
 
       // 3. Fetch allocations
       if (activeTab === 'allocations' || activeTab === 'hostels-rooms') {
-        const allocRes = await api.get('/api/ancillary/boarding/allocations');
+        const allocRes = await api.get('/api/ancillary/boarding/allocations').catch((err) => {
+          console.error('Failed to load allocations:', err);
+          return { data: [] };
+        });
         setAllocations(Array.isArray(allocRes.data) ? allocRes.data : []);
       }
 
@@ -239,7 +245,10 @@ export default function AdminBoarding() {
 
       // 5. Fetch exeats
       if (activeTab === 'exeats') {
-        const exeatsRes = await api.get('/api/ancillary/boarding/exeats');
+        const exeatsRes = await api.get('/api/ancillary/boarding/exeats').catch((err) => {
+          console.error('Failed to load exeats:', err);
+          return { data: [] };
+        });
         setExeats(Array.isArray(exeatsRes.data) ? exeatsRes.data : []);
       }
     } catch (err) {

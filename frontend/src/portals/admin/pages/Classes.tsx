@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -106,7 +106,12 @@ export default function AdminClasses() {
   const [newSectionName, setNewSectionName] = useState('');
   const [isAddingSection, setIsAddingSection] = useState(false);
 
-  const { showToast } = useToast();
+  // Search & Filters
+  const [searchTerm, setSearchTerm] = useState('');
+  const [levelFilter, setLevelFilter] = useState('ALL');
+  const [sectionFilter, setSectionFilter] = useState('ALL');
+
+  const { showToast, toastConfirm } = useToast();
   const { t } = useTerminology();
 
   const fetchData = useCallback(async () => {
@@ -276,132 +281,412 @@ export default function AdminClasses() {
     }
   };
 
+  const filteredClasses = useMemo(() => {
+    return (Array.isArray(classes) ? classes : []).filter(c => {
+      const matchesSearch = !searchTerm.trim() || c.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesLevel = levelFilter === 'ALL' || c.level === levelFilter;
+      const matchesSection = sectionFilter === 'ALL' || c.sectionId === sectionFilter;
+      return matchesSearch && matchesLevel && matchesSection;
+    });
+  }, [classes, searchTerm, levelFilter, sectionFilter]);
+
+  const classStats = useMemo(() => {
+    const list = Array.isArray(classes) ? classes : [];
+    const totalClasses = list.length;
+    const totalStudents = list.reduce((sum, c) => sum + (c._count?.students || c.students?.length || 0), 0);
+    const avgSize = totalClasses > 0 ? Math.round(totalStudents / totalClasses) : 0;
+    const withTeacher = list.filter(c => c.teacherId).length;
+    return { totalClasses, totalStudents, avgSize, withTeacher };
+  }, [classes]);
+
+  const schoolLevels = getLevelsForSchool();
+
   return (
-    <div className="portal-content">
-      <div className="portal-header">
-        <div className="header-title">
-          <h1>Classes Management</h1>
-          <p>Organize your institution into manageable academic cohorts.</p>
+    <div style={{ maxWidth: 1400, margin: '0 auto' }}>
+      {/* Page Header */}
+      <div className="portal-page-header" style={{ marginBottom: 20 }}>
+        <div>
+          <h1 style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <i className="fas fa-chalkboard" style={{ color: '#4f46e5' }} />
+            Classes &amp; Cohorts
+          </h1>
+          <p>Organize your institution into structured grade levels, class streams, and assigned class tutors.</p>
         </div>
-        <div className="header-actions" style={{ display: 'flex', gap: '10px' }}>
-          <button className="portal-btn-primary" style={{ background: '#6366f1', padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }} onClick={() => setIsSectionModalOpen(true)}>
-            <i className="fas fa-layer-group"></i> MANAGE SECTIONS
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+          <button 
+            className="portal-btn-primary" 
+            style={{ 
+              height: 42, 
+              padding: '0 20px', 
+              borderRadius: 10, 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 8, 
+              fontWeight: 700, 
+              fontSize: '0.9rem' 
+            }} 
+            onClick={() => handleOpenModal()}
+          >
+            <i className="fas fa-plus" /> Add Class
           </button>
-          <label className="portal-btn-primary" style={{ background: '#059669', cursor: 'pointer', padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <i className="fas fa-file-excel"></i> {uploading ? 'UPLOADING...' : 'BULK UPLOAD'}
+          <button 
+            className="portal-btn-ghost" 
+            style={{ 
+              height: 42, 
+              padding: '0 16px', 
+              borderRadius: 10, 
+              border: '1px solid #cbd5e1', 
+              background: '#ffffff',
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 8, 
+              fontWeight: 600, 
+              fontSize: '0.9rem' 
+            }} 
+            onClick={() => setIsSectionModalOpen(true)}
+          >
+            <i className="fas fa-layer-group" style={{ color: '#6366f1' }} /> Manage Sections
+          </button>
+          <label 
+            className="portal-btn-ghost" 
+            style={{ 
+              height: 42, 
+              padding: '0 16px', 
+              borderRadius: 10, 
+              border: '1px solid #cbd5e1', 
+              background: '#ffffff',
+              cursor: 'pointer', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 8, 
+              fontWeight: 600, 
+              fontSize: '0.9rem' 
+            }}
+          >
+            <i className="fas fa-file-excel" style={{ color: '#16a34a' }} /> {uploading ? 'Uploading...' : 'Bulk Upload'}
             <input type="file" accept=".xlsx, .xls" style={{ display: 'none' }} onChange={handleBulkUpload} disabled={uploading} />
           </label>
         </div>
       </div>
 
-      <div className="portal-grid" style={{ marginTop: '2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
+      {/* KPI Stats Overview */}
+      <div 
+        style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
+          gap: 16, 
+          marginBottom: 20 
+        }}
+      >
+        <div className="portal-card" style={{ padding: '16px 20px', borderRadius: 12, border: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Active Classes</div>
+              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#1e293b', marginTop: 4 }}>{classStats.totalClasses}</div>
+            </div>
+            <div style={{ width: 44, height: 44, borderRadius: 10, background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4f46e5', fontSize: '1.2rem' }}>
+              <i className="fas fa-chalkboard" />
+            </div>
+          </div>
+        </div>
+
+        <div className="portal-card" style={{ padding: '16px 20px', borderRadius: 12, border: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Enrolled Students</div>
+              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0284c7', marginTop: 4 }}>{classStats.totalStudents}</div>
+            </div>
+            <div style={{ width: 44, height: 44, borderRadius: 10, background: '#f0f9ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0284c7', fontSize: '1.2rem' }}>
+              <i className="fas fa-user-graduate" />
+            </div>
+          </div>
+        </div>
+
+        <div className="portal-card" style={{ padding: '16px 20px', borderRadius: 12, border: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Average Class Size</div>
+              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#16a34a', marginTop: 4 }}>{classStats.avgSize}</div>
+            </div>
+            <div style={{ width: 44, height: 44, borderRadius: 10, background: '#f0fdf4', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#16a34a', fontSize: '1.2rem' }}>
+              <i className="fas fa-users" />
+            </div>
+          </div>
+        </div>
+
+        <div className="portal-card" style={{ padding: '16px 20px', borderRadius: 12, border: '1px solid #e2e8f0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ fontSize: '0.8rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>Assigned Tutors</div>
+              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: classStats.withTeacher === classStats.totalClasses ? '#16a34a' : '#d97706', marginTop: 4 }}>
+                {classStats.withTeacher} / {classStats.totalClasses}
+              </div>
+            </div>
+            <div style={{ width: 44, height: 44, borderRadius: 10, background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706', fontSize: '1.2rem' }}>
+              <i className="fas fa-chalkboard-teacher" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filter and Search Bar */}
+      <div 
+        className="portal-card" 
+        style={{ 
+          padding: '14px 20px', 
+          borderRadius: 12, 
+          border: '1px solid #e2e8f0', 
+          marginBottom: 20,
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 12,
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
+      >
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', flex: 1, minWidth: 280 }}>
+          {/* Search */}
+          <div style={{ position: 'relative', minWidth: 240, flex: 1 }}>
+            <i className="fas fa-search" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+            <input
+              type="text"
+              placeholder="Search classes by name..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="portal-input"
+              style={{ width: '100%', paddingLeft: 34, height: 40, borderRadius: 8, fontSize: '0.88rem' }}
+            />
+          </div>
+
+          {/* Level Filter */}
+          <select
+            value={levelFilter}
+            onChange={e => setLevelFilter(e.target.value)}
+            className="portal-select"
+            style={{ minWidth: 160, height: 40, borderRadius: 8, fontSize: '0.88rem' }}
+          >
+            <option value="ALL">All Levels / Grades</option>
+            {schoolLevels.map(lvl => (
+              <option key={lvl} value={lvl}>{lvl}</option>
+            ))}
+          </select>
+
+          {/* Section Filter */}
+          {sections.length > 0 && (
+            <select
+              value={sectionFilter}
+              onChange={e => setSectionFilter(e.target.value)}
+              className="portal-select"
+              style={{ minWidth: 160, height: 40, borderRadius: 8, fontSize: '0.88rem' }}
+            >
+              <option value="ALL">All Sessions / Sections</option>
+              {sections.map(sec => (
+                <option key={sec.id} value={sec.id}>{sec.name}</option>
+              ))}
+            </select>
+          )}
+        </div>
+      </div>
+
+      {/* Grid of Class Cards */}
+      <div 
+        style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', 
+          gap: 20,
+          marginBottom: 32
+        }}
+      >
         {loading ? (
           <div style={{ gridColumn: '1/-1' }}>
             <SkeletonLoader type="card" count={6} />
           </div>
         ) : (
           <>
-            {(Array.isArray(classes) ? classes : []).map(c => {
+            {filteredClasses.map(c => {
               const stats = calculateGenderStats(c.students || []);
+              const studentCount = c._count?.students || c.students?.length || 0;
+              const capNum = c.capacity ? Number(c.capacity) : 0;
+              const percentFilled = capNum > 0 ? Math.min(100, Math.round((studentCount / capNum) * 100)) : null;
+
               return (
-                <div key={c.id} className="portal-card animate-in" style={{
-                  aspectRatio: '1 / 1',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  padding: '24px',
-                  boxSizing: 'border-box'
-                }}>
-                  <div className="portal-card-header" style={{ border: 'none', padding: 0, marginBottom: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div>
-                      <h3 style={{ fontSize: '1.25rem', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '160px' }} title={c.name}>{c.name}</h3>
-                      <div className="portal-badge" style={{ background: 'var(--portal-bg)', color: 'var(--portal-primary)', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 700, display: 'inline-block' }}>Level: {c.level}</div>
-                    </div>
-                    <div className="action-buttons" style={{ display: 'flex', gap: '8px' }}>
-                      <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleOpenMigrateModal(c)} title={t('migration')}><i className="fas fa-random"></i></button>
-                      <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#eab308', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => handleOpenModal(c)} title="Edit Class"><i className="fas fa-edit"></i></button>
-                      <button className="portal-btn-ghost" style={{ padding: '8px', width: '36px', height: '36px', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Delete Class" onClick={async () => {
-                          if (await toastConfirm(`Delete class ${c.name}?`)) {
-                            try {
-                              await api.delete(`/api/classes/${c.id}`);
-                              showToast('Class deleted successfully', 'success');
-                              fetchData();
-                            } catch (err) {
-                              console.error('Failed to delete class:', err);
-                              showToast('Failed to delete class', 'error');
+                <div 
+                  key={c.id} 
+                  className="portal-card animate-in" 
+                  style={{
+                    borderRadius: 14,
+                    border: '1px solid #e2e8f0',
+                    padding: '20px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
+                    background: '#ffffff'
+                  }}
+                >
+                  <div>
+                    {/* Card Top: Name, Level, Actions */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                      <div>
+                        <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: '#1e293b', margin: '0 0 6px' }}>
+                          {c.name}
+                        </h3>
+                        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                          <span 
+                            style={{ 
+                              background: '#eff6ff', 
+                              color: '#2563eb', 
+                              padding: '2px 10px', 
+                              borderRadius: 12, 
+                              fontSize: '0.75rem', 
+                              fontWeight: 700 
+                            }}
+                          >
+                            {c.level}
+                          </span>
+                          {c.section && (
+                            <span 
+                              style={{ 
+                                background: '#f8fafc', 
+                                color: '#475569', 
+                                border: '1px solid #e2e8f0', 
+                                padding: '2px 8px', 
+                                borderRadius: 12, 
+                                fontSize: '0.72rem', 
+                                fontWeight: 600 
+                              }}
+                            >
+                              <i className="fas fa-clock mr-1" /> {c.section.name}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', gap: 6 }}>
+                        <button 
+                          className="portal-btn-ghost" 
+                          style={{ width: 32, height: 32, padding: 0, color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, border: '1px solid #d1fae5', background: '#ecfdf5' }} 
+                          onClick={() => handleOpenMigrateModal(c)} 
+                          title="Migrate Cohort Students"
+                        >
+                          <i className="fas fa-random" style={{ fontSize: '0.8rem' }} />
+                        </button>
+                        <button 
+                          className="portal-btn-ghost" 
+                          style={{ width: 32, height: 32, padding: 0, color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, border: '1px solid #e0f2fe', background: '#f0f9ff' }} 
+                          onClick={() => handleOpenModal(c)} 
+                          title="Edit Class Details"
+                        >
+                          <i className="fas fa-edit" style={{ fontSize: '0.8rem' }} />
+                        </button>
+                        <button 
+                          className="portal-btn-ghost" 
+                          style={{ width: 32, height: 32, padding: 0, color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 8, border: '1px solid #fee2e2', background: '#fef2f2' }} 
+                          title="Delete Class" 
+                          onClick={async () => {
+                            if (toastConfirm && await toastConfirm(`Delete class "${c.name}"?`)) {
+                              try {
+                                await api.delete(`/api/classes/${c.id}`);
+                                showToast('Class deleted successfully', 'success');
+                                fetchData();
+                              } catch (err) {
+                                console.error('Failed to delete class:', err);
+                                showToast('Failed to delete class', 'error');
+                              }
                             }
-                          }
-                        }}>
-                        <i className="fas fa-trash"></i>
-                      </button>
+                          }}
+                        >
+                          <i className="fas fa-trash" style={{ fontSize: '0.8rem' }} />
+                        </button>
+                      </div>
                     </div>
-                  </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '0.75rem', padding: '4px 0' }}>
-                    <div style={{ fontSize: '2.5rem', fontWeight: 950, color: 'var(--portal-primary)', lineHeight: 1 }}>{c._count?.students || 0}</div>
-                    <div>
-                      <div style={{ textTransform: 'uppercase', fontSize: '0.65rem', fontWeight: 800, letterSpacing: '1px', color: '#64748b' }}>Students</div>
-                      <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8' }}>Enrolled</div>
+                    {/* Capacity & Count Bar */}
+                    <div style={{ background: '#f8fafc', borderRadius: 10, padding: '12px 14px', marginBottom: 14 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                        <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase' }}>
+                          Enrollment
+                        </span>
+                        <span style={{ fontSize: '0.88rem', fontWeight: 800, color: '#1e293b' }}>
+                          {studentCount} <span style={{ color: '#94a3b8', fontWeight: 500 }}>/ {c.capacity || '∞'} Seats</span>
+                        </span>
+                      </div>
+                      {percentFilled !== null && (
+                        <div style={{ width: '100%', height: 6, background: '#e2e8f0', borderRadius: 99, overflow: 'hidden' }}>
+                          <div 
+                            style={{ 
+                              width: `${percentFilled}%`, 
+                              height: '100%', 
+                              background: percentFilled > 90 ? '#ef4444' : percentFilled > 70 ? '#f59e0b' : '#3b82f6',
+                              borderRadius: 99 
+                            }} 
+                          />
+                        </div>
+                      )}
                     </div>
-                    <div style={{ flex: 1 }} />
-                    <div style={{ textAlign: 'right' }}>
-                       <div style={{ fontSize: '1.1rem', fontWeight: 900, color: '#1e293b' }}>{c.capacity || '∞'}</div>
-                       <div style={{ fontSize: '0.6rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Capacity</div>
-                    </div>
-                    <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(0, 86, 179, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <i className="fas fa-graduation-cap" style={{ fontSize: '1.25rem', color: 'var(--portal-primary)' }}></i>
-                    </div>
-                  </div>
-                  {c.section && (
-                    <div style={{ marginBottom: '0.75rem', padding: '6px 12px', background: '#f8fafc', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <i className="fas fa-clock" style={{ color: '#64748b', fontSize: '0.8rem' }}></i>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569' }}>Session: {c.section.name}</span>
-                    </div>
-                  )}
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', paddingTop: '0.75rem', borderTop: '1px solid #f1f5f9' }}>
-                    <div style={{ textAlign: 'center' }}>
-                      <div className="stat-circle" style={{ borderColor: '#3b82f6', color: '#3b82f6', width: '45px', height: '45px', fontSize: '0.8rem', borderWidth: '3px', margin: '0 auto 4px' }}>{stats.boys}%</div>
-                      <div className="stat-label" style={{ fontSize: '0.6rem' }}>Boys</div>
-                      <div style={{ fontWeight: 800, fontSize: '0.85rem' }}>{stats.counts?.boys || 0}</div>
+                    {/* Class Teacher Allocation */}
+                    <div style={{ marginBottom: 14, fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <i className="fas fa-user-tie" style={{ color: c.teacherId ? '#4f46e5' : '#94a3b8' }} />
+                      <span style={{ color: '#64748b' }}>Class Tutor:</span>
+                      {(() => {
+                        const tObj = teachers.find(t => t.id === c.teacherId);
+                        return tObj?.user?.name ? (
+                          <span style={{ fontWeight: 700, color: '#1e293b' }}>{tObj.user.name}</span>
+                        ) : (
+                          <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>Unassigned</span>
+                        );
+                      })()}
                     </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <div className="stat-circle" style={{ borderColor: '#ec4899', color: '#ec4899', width: '45px', height: '45px', fontSize: '0.8rem', borderWidth: '3px', margin: '0 auto 4px' }}>{stats.girls}%</div>
-                      <div className="stat-label" style={{ fontSize: '0.6rem' }}>Girls</div>
-                      <div style={{ fontWeight: 800, fontSize: '0.85rem' }}>{stats.counts?.girls || 0}</div>
-                    </div>
-                    <div style={{ textAlign: 'center' }}>
-                      <div className="stat-circle" style={{ borderColor: '#94a3b8', color: '#64748b', width: '45px', height: '45px', fontSize: '0.8rem', borderWidth: '3px', margin: '0 auto 4px' }}>{stats.na}%</div>
-                      <div className="stat-label" style={{ fontSize: '0.6rem' }}>N/A</div>
-                      <div style={{ fontWeight: 800, fontSize: '0.85rem' }}>{stats.counts?.na || 0}</div>
+
+                    {/* Gender Breakdown Pills */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, paddingTop: 12, borderTop: '1px solid #f1f5f9' }}>
+                      <div style={{ textAlign: 'center', background: '#f0f9ff', borderRadius: 8, padding: '6px 4px' }}>
+                        <div style={{ fontSize: '0.72rem', color: '#0369a1', fontWeight: 600 }}>Boys</div>
+                        <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#0284c7' }}>{stats.counts?.boys || 0} ({stats.boys}%)</div>
+                      </div>
+                      <div style={{ textAlign: 'center', background: '#fdf2f8', borderRadius: 8, padding: '6px 4px' }}>
+                        <div style={{ fontSize: '0.72rem', color: '#be185d', fontWeight: 600 }}>Girls</div>
+                        <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#ec4899' }}>{stats.counts?.girls || 0} ({stats.girls}%)</div>
+                      </div>
+                      <div style={{ textAlign: 'center', background: '#f8fafc', borderRadius: 8, padding: '6px 4px' }}>
+                        <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 600 }}>Other</div>
+                        <div style={{ fontWeight: 800, fontSize: '0.92rem', color: '#475569' }}>{stats.counts?.na || 0}</div>
+                      </div>
                     </div>
                   </div>
                 </div>
               );
             })}
 
-            <div className="portal-card animate-in" onClick={() => handleOpenModal()} style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              aspectRatio: '1 / 1',
-              border: '2px dashed #e2e8f0',
-              background: 'transparent',
-              cursor: 'pointer',
-              boxShadow: 'none',
-              padding: '24px',
-              boxSizing: 'border-box'
-            }}>
-              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(0, 86, 179, 0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '1rem' }}>
-                <i className="fas fa-plus" style={{ fontSize: '1.2rem', color: 'var(--portal-primary)' }}></i>
+            {/* Add New Class Tile */}
+            <div 
+              className="portal-card animate-in" 
+              onClick={() => handleOpenModal()} 
+              style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                minHeight: 240,
+                border: '2px dashed #cbd5e1',
+                background: '#fafbfc',
+                cursor: 'pointer', 
+                boxShadow: 'none',
+                padding: '24px',
+                borderRadius: 14,
+                transition: 'all 0.2s ease'
+              }}
+            >
+              <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                <i className="fas fa-plus" style={{ fontSize: '1.2rem', color: '#4f46e5' }} />
               </div>
-              <span style={{ fontWeight: 800, fontSize: '1.1rem', color: '#1e293b' }}>Add New Class</span>
-              <p style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '6px', textAlign: 'center' }}>Create a new academic group</p>
+              <span style={{ fontWeight: 700, fontSize: '1rem', color: '#1e293b' }}>Add New Class</span>
+              <p style={{ fontSize: '0.8rem', color: '#64748b', margin: '4px 0 0', textAlign: 'center' }}>Configure a new academic stream</p>
             </div>
           </>
         )}
-      </div>
+      </div>      </div>
 
       {isModalOpen && (
         <div className="portal-modal-overlay">

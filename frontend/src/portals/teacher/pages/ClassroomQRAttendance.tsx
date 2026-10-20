@@ -133,8 +133,15 @@ export default function ClassroomQRAttendance() {
 
   const stopCameraScanner = async () => {
     try {
-      if (scannerRef.current?.isScanning) {
-        await scannerRef.current.stop();
+      if (scannerRef.current) {
+        if (scannerRef.current.isScanning) {
+          await scannerRef.current.stop();
+        }
+        try {
+          scannerRef.current.clear();
+        } catch (e) {
+          // ignore clear errors if already stopped
+        }
       }
     } catch (err) {
       console.error('Error stopping camera:', err);
@@ -459,27 +466,39 @@ export default function ClassroomQRAttendance() {
                   margin: '0 auto',
                   borderRadius: 12,
                   overflow: 'hidden',
-                  background: '#f8fafc',
-                  minHeight: '260px',
-                  border: isScanning ? '2px solid #0284c7' : '2px dashed #cbd5e1',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexDirection: 'column'
+                  background: isScanning ? '#000000' : '#f8fafc',
+                  minHeight: isScanning ? '260px' : '0px',
+                  border: isScanning ? '2px solid #0284c7' : 'none',
+                  display: isScanning ? 'block' : 'none'
                 }}
-              >
-                {!isScanning && (
-                  <div style={{ padding: 30, color: '#64748b' }}>
-                    <div style={{ fontSize: '2.5rem', color: '#94a3b8', marginBottom: 12 }}>
-                      <i className="fas fa-qrcode" />
-                    </div>
-                    <p style={{ margin: 0, fontWeight: 600 }}>Scanner is idle.</p>
-                    <p style={{ margin: '4px 0 0', fontSize: '0.82rem' }}>
-                      Click "Start Scanner" to use your webcam or phone camera to scan student cards.
-                    </p>
+              />
+              {!isScanning && (
+                <div
+                  style={{
+                    width: '100%',
+                    maxWidth: '360px',
+                    margin: '0 auto',
+                    borderRadius: 12,
+                    background: '#f8fafc',
+                    minHeight: '260px',
+                    border: '2px dashed #cbd5e1',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexDirection: 'column',
+                    padding: 30,
+                    color: '#64748b'
+                  }}
+                >
+                  <div style={{ fontSize: '2.5rem', color: '#94a3b8', marginBottom: 12 }}>
+                    <i className="fas fa-qrcode" />
                   </div>
-                )}
-              </div>
+                  <p style={{ margin: 0, fontWeight: 600 }}>Scanner is idle.</p>
+                  <p style={{ margin: '4px 0 0', fontSize: '0.82rem' }}>
+                    Click "Start Scanner" to use your webcam or phone camera to scan student cards.
+                  </p>
+                </div>
+              )}
 
               {/* Instant Scan Confirmation Toast */}
               {lastScanned && (

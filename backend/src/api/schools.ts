@@ -1416,25 +1416,78 @@ router.get('/holidays', requireAuth, async (req: AuthRequest, res) => {
   }
 });
 
-router.post('/holidays', requireAuth, requireRole('SCHOOL_ADMIN'), validate(HolidaySchema), async (req: AuthRequest, res) => {
+router.post('/holidays', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), validate(HolidaySchema), async (req: AuthRequest, res) => {
   try {
-    const { title, content, startDate, endDate } = req.body;
+    const { title, content, startDate, endDate, publishNoticeboard } = req.body;
+    const schoolId = req.user!.schoolId!;
+    const start = new Date(startDate);
+    const end = endDate ? new Date(endDate) : start;
+
     const holiday = await prisma.holiday.create({
       data: { 
         title, 
-        content, 
-        startDate: new Date(startDate), 
-        endDate: new Date(endDate), 
-        schoolId: req.user!.schoolId! 
+        content: content || null, 
+        startDate: start, 
+        endDate: end, 
+        schoolId 
       }
     });
+
+    if (publishNoticeboard !== false) {
+      await prisma.noticeboard.create({
+        data: {
+          title,
+          content: content || `Campus Event scheduled for ${start.toLocaleDateString()}`,
+          date: start,
+          schoolId
+        }
+      }).catch(err => console.error('Failed to sync noticeboard event:', err));
+    }
+
     res.json(holiday);
   } catch (error) {
+    console.error('Failed to create holiday:', error);
     res.status(500).json({ error: 'Failed to create holiday' });
   }
 });
 
-router.delete('/holidays/:id', requireAuth, requireRole('SCHOOL_ADMIN'), async (req: AuthRequest, res) => {
+router.put('/holidays/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req: AuthRequest, res) => {
+  try {
+    const { id } = req.params;
+    const { title, content, startDate, endDate, publishNoticeboard } = req.body;
+    const schoolId = req.user!.schoolId!;
+    const start = startDate ? new Date(startDate) : undefined;
+    const end = endDate ? new Date(endDate) : start;
+
+    const updated = await prisma.holiday.update({
+      where: { id: id as string },
+      data: {
+        title,
+        content: content !== undefined ? content : undefined,
+        startDate: start,
+        endDate: end
+      }
+    });
+
+    if (publishNoticeboard && title && start) {
+      await prisma.noticeboard.create({
+        data: {
+          title,
+          content: content || `Updated Campus Event scheduled for ${start.toLocaleDateString()}`,
+          date: start,
+          schoolId
+        }
+      }).catch(err => console.error('Failed to sync noticeboard event:', err));
+    }
+
+    res.json(updated);
+  } catch (error) {
+    console.error('Failed to update holiday:', error);
+    res.status(500).json({ error: 'Failed to update holiday' });
+  }
+});
+
+router.delete('/holidays/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY'), async (req: AuthRequest, res) => {
   try {
     await prisma.holiday.delete({ where: { id: req.params.id as string } });
     res.json({ success: true });

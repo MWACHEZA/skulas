@@ -136,8 +136,13 @@ export default function TeacherTextbooks() {
 
   const fetchClasses = async () => {
     try {
-      const { data } = await api.get('/api/teachers/my-classes');
-      setClasses(Array.isArray(data) ? data : []);
+      const res = await api.get('/api/teachers/my-classes').catch(() => null);
+      let list = Array.isArray(res?.data) ? res.data : [];
+      if (list.length === 0) {
+        const adminRes = await api.get('/api/classes').catch(() => null);
+        list = Array.isArray(adminRes?.data) ? adminRes.data : [];
+      }
+      setClasses(list);
     } catch {
       console.error('Failed to fetch classes');
     }

@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { useAuth } from '../../../contexts/AuthContext';
 import SkeletonLoader from '../../../components/shared/SkeletonLoader';
 
 interface Assignment {
@@ -20,6 +21,8 @@ interface Assignment {
   term?: string;
   gradesReleased?: boolean;
   gradesReleasedAt?: string | null;
+  teacherId?: string;
+  teacher?: { id: string; user?: { name: string } };
   class: { id: string; name: string; _count?: { students: number } };
   subject: { id: string; name: string };
   totalTargetCount?: number;
@@ -45,11 +48,16 @@ interface StudentOption {
 }
 
 export default function TeacherAssignments() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'SCHOOL_ADMIN' || user?.role === 'SUPER_ADMIN';
+
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [classes, setClasses] = useState<any[]>([]);
   const [subjects, setSubjects] = useState<any[]>([]);
+  const [teachers, setTeachers] = useState<any[]>([]);
+  const [selectedTeacherFilter, setSelectedTeacherFilter] = useState('ALL');
   const [classStudents, setClassStudents] = useState<StudentOption[]>([]);
   const [loadingStudents, setLoadingStudents] = useState(false);
 
@@ -105,12 +113,20 @@ export default function TeacherAssignments() {
 
   const fetchMetadata = async () => {
     try {
-      const [clsRes, subRes] = await Promise.all([
-        api.get('/api/teachers/my-classes').catch(() => ({ data: [] })),
-        api.get('/api/subjects').catch(() => ({ data: [] }))
-      ]);
-      setClasses(Array.isArray(clsRes.data) ? clsRes.data : []);
+      const myClassesRes = await api.get('/api/teachers/my-classes').catch(() => ({ data: [] }));
+      let classList = Array.isArray(myClassesRes.data) ? myClassesRes.data : [];
+      if (classList.length === 0) {
+        const allClsRes = await api.get('/api/classes').catch(() => ({ data: [] }));
+        classList = Array.isArray(allClsRes.data) ? allClsRes.data : [];
+      }
+      setClasses(classList);
+
+      const subRes = await api.get('/api/subjects').catch(() => ({ data: [] }));
       setSubjects(Array.isArray(subRes.data) ? subRes.data : []);
+
+      const teaRes = await api.get('/api/teachers').catch(() => ({ data: { teachers: [] } }));
+      const teacherList = teaRes.data?.teachers || (Array.isArray(teaRes.data) ? teaRes.data : []);
+      setTeachers(teacherList);
     } catch (err) {
       console.error('Failed to fetch metadata', err);
     }
@@ -238,37 +254,71 @@ export default function TeacherAssignments() {
     setQuestions([...questions, newQ]);
   };
 
+  const filteredAssignments = useMemo(() => {
+    if (!isAdmin || selectedTeacherFilter === 'ALL') return assignments;
+    return assignments.filter(a => a.teacherId === selectedTeacherFilter || a.teacher?.id === selectedTeacherFilter);
+  }, [assignments, isAdmin, selectedTeacherFilter]);
+
   return (
     <>
-      <div className="portal-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="portal-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <h1>Homework &amp; Assignments</h1>
-          <p>Assign tasks, review student submissions, hold and release grades, and sync with Continuous Assessment.</p>
+          <h1 style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <i className="fas fa-tasks" style={{ color: '#2563eb' }} />
+            Homework &amp; Assignments {isAdmin ? 'Audit' : ''}
+          </h1>
+          <p>
+            {isAdmin 
+              ? 'Campus-wide administrative oversight of teacher assignments, class compliance, submission auditing, and grading.'
+              : 'Assign tasks, review student submissions, hold and release grades, and sync with Continuous Assessment.'}
+          </p>
         </div>
         <button 
           onClick={() => setShowModal(true)}
           className="portal-btn-primary"
-          style={{ padding: '9px 18px', background: '#2563eb', color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+          style={{ height: 42, padding: '0 20px', borderRadius: 10, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}
         >
           <i className="fas fa-plus"></i> Create Assignment
         </button>
       </div>
 
       <div className="portal-card">
-        <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2><i className="fas fa-tasks mr-2 text-blue-600"></i>Assignment Register ({assignments.length})</h2>
+        <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+          <h2>
+            <i className="fas fa-tasks mr-2" style={{ color: '#2563eb' }}></i>
+            Assignment Register ({filteredAssignments.length})
+          </h2>
+
+          {isAdmin && teachers.length > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#475569' }}>Filter by Teacher:</label>
+              <select
+                value={selectedTeacherFilter}
+                onChange={e => setSelectedTeacherFilter(e.target.value)}
+                className="portal-select"
+                style={{ height: 38, padding: '4px 12px', fontSize: '0.85rem', borderRadius: 8 }}
+              >
+                <option value="ALL">All Faculty Teachers</option>
+                {teachers.map(t => (
+                  <option key={t.id} value={t.id}>{t.user?.name || 'Teacher'}</option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
           {loading ? (
              <div style={{ padding: '16px' }}>
-               <SkeletonLoader type="table" rows={6} columns={7} />
+               <SkeletonLoader type="table" rows={6} columns={isAdmin ? 8 : 7} />
              </div>
-          ) : assignments.length === 0 ? (
+          ) : filteredAssignments.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px 20px', color: '#64748b' }}>
               <i className="fas fa-book-open" style={{ fontSize: '3rem', color: '#cbd5e1', marginBottom: 16 }}></i>
-              <h3 style={{ color: '#1e293b', marginBottom: 6 }}>No Assignments Created Yet</h3>
-              <p style={{ maxWidth: 420, margin: '0 auto 20px' }}>Create homework, class projects, or quizzes to assign work to your learners.</p>
-              <button onClick={() => setShowModal(true)} className="portal-btn-primary" style={{ padding: '8px 16px', background: '#2563eb' }}>
+              <h3 style={{ color: '#1e293b', marginBottom: 6 }}>No Assignments Found</h3>
+              <p style={{ maxWidth: 420, margin: '0 auto 20px' }}>
+                {selectedTeacherFilter !== 'ALL' ? 'No assignments created by this teacher.' : 'Create homework, class projects, or quizzes to assign work to learners.'}
+              </p>
+              <button onClick={() => setShowModal(true)} className="portal-btn-primary" style={{ height: 42, padding: '0 20px', borderRadius: 10 }}>
                 + Hand Out First Assignment
               </button>
             </div>
@@ -277,6 +327,7 @@ export default function TeacherAssignments() {
               <thead>
                 <tr>
                   <th>Type &amp; Title</th>
+                  {isAdmin && <th>Teacher</th>}
                   <th>Subject &amp; Class</th>
                   <th>Target Scope</th>
                   <th>Due Date</th>
@@ -286,7 +337,7 @@ export default function TeacherAssignments() {
                 </tr>
               </thead>
               <tbody>
-                {assignments.map(a => {
+                {filteredAssignments.map(a => {
                   const isOverdue = a.dueDate ? new Date(a.dueDate) < new Date() : false;
                   const targetCount = a.totalTargetCount || a.class?._count?.students || 0;
                   const submittedCount = a.submittedCount ?? a._count?.submissions ?? 0;
@@ -324,6 +375,16 @@ export default function TeacherAssignments() {
                           </div>
                         )}
                       </td>
+                      {isAdmin && (
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <i className="fas fa-chalkboard-teacher" style={{ color: '#6366f1', fontSize: '0.8rem' }} />
+                            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#334155' }}>
+                              {a.teacher?.user?.name || 'Faculty Teacher'}
+                            </span>
+                          </div>
+                        </td>
+                      )}
                       <td>
                         <div style={{ fontWeight: 600, color: '#1e293b' }}>{a.subject?.name || 'Subject'}</div>
                         <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{a.class?.name || 'All Classes'}</div>

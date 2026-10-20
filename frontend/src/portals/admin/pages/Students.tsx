@@ -203,6 +203,16 @@ export default function AdminStudents() {
     return 'OWING_30';
   };
 
+  const getStudentLeaderBadges = (s: any): string[] => {
+    const cleanAssigned = parseCleanBadges(s.leadershipAssignments);
+    const cleanSec = parseCleanBadges(s.user?.secondaryRoles || s.secondaryRoles);
+    const secLeaders = cleanSec.filter(r => 
+      /prefect|monitor|head boy|head girl|captain|leader|council|representative/i.test(r)
+    );
+    const direct = parseCleanBadges(s.leaderRole || s.leadershipRole || s.user?.leaderRole);
+    return Array.from(new Set([...cleanAssigned, ...secLeaders, ...direct]));
+  };
+
   // Combined client-side filtering (handles local fee aging, route, and search guarantees)
   const filteredStudents = useMemo(() => {
     const q = debouncedSearch.trim().toLowerCase();
@@ -264,7 +274,7 @@ export default function AdminStudents() {
       }
 
       // 9. Leaders Only
-      if (leadersOnly && (!Array.isArray(s.leadershipAssignments) || s.leadershipAssignments.length === 0)) {
+      if (leadersOnly && getStudentLeaderBadges(s).length === 0) {
         return false;
       }
 
@@ -303,7 +313,7 @@ export default function AdminStudents() {
     { header: 'Hostel / Dorm', formatter: s => s.hostel?.name || '—' },
     { header: 'Transport Route', formatter: s => s.route?.name || '—' },
     { header: 'Fee Status', formatter: s => getStudentFeeAging(s) },
-    { header: 'Leadership', formatter: s => s.leadershipAssignments?.[0]?.leadershipRole?.replace(/_/g, ' ') || 'None' },
+    { header: 'Leadership', formatter: s => getStudentLeaderBadges(s).join(', ') || 'None' },
     { header: 'Phone / Contact', formatter: s => s.phone || s.emergencyContact || '—' },
   ], []);
 
@@ -555,8 +565,9 @@ export default function AdminStudents() {
                   
                   return currentItems.map(s => {
                     const name = s.user?.name || s.name;
-                    const cleanLeaderBadges = parseCleanBadges(s.leadershipAssignments);
+                    const leaderBadges = getStudentLeaderBadges(s);
                     const cleanSecRoles = parseCleanBadges(s.user?.secondaryRoles || s.secondaryRoles);
+                    const nonLeaderSecRoles = cleanSecRoles.filter(r => !leaderBadges.includes(r));
                     const aging = getStudentFeeAging(s);
 
                     return (
@@ -585,7 +596,7 @@ export default function AdminStudents() {
                                 {s.gender && (
                                   <span style={{ fontSize: '0.75rem', color: '#64748b', fontWeight: 600 }}>({s.gender.charAt(0)})</span>
                                 )}
-                                {cleanSecRoles.map((r: string, idx: number) => (
+                                {nonLeaderSecRoles.map((r: string, idx: number) => (
                                   <span key={idx} className="secondary-role-badge">{r}</span>
                                 ))}
                               </div>
@@ -603,9 +614,9 @@ export default function AdminStudents() {
 
                         {showLeaderColumn && (
                           <td>
-                            {cleanLeaderBadges.length > 0 ? (
+                            {leaderBadges.length > 0 ? (
                               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                                {cleanLeaderBadges.map((badge, bIdx) => (
+                                {leaderBadges.map((badge, bIdx) => (
                                   <span key={bIdx} className="badge bg-primary" style={{ padding: '4px 8px', borderRadius: '6px', fontSize: '0.8rem', background: '#2563eb', color: '#fff', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                     <i className="fas fa-award"></i>
                                     {badge}

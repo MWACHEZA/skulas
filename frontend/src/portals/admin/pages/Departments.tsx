@@ -104,7 +104,7 @@ export default function AdminDepartments() {
         name: dept.name, 
         code: dept.code || '', 
         headId: dept.headId || '',
-        deptCode: dept.deptCode || '',
+        deptCode: dept.deptCode || (dept.code ? dept.code.substring(0, 3) : '') || '',
         duration: dept.duration?.toString() || '4',
         services: dept.services || '',
         facilities: dept.facilities || '',
@@ -226,7 +226,7 @@ export default function AdminDepartments() {
 
         const exportData = filtered.map(d => ({
           code: d.code,
-          deptCode: d.deptCode || '---',
+          deptCode: d.deptCode || (d.code ? d.code.substring(0, 3) : '') || '---',
           name: d.name,
           duration: `${d.duration || '---'} Years`,
           headName: d.head?.name || 'Unassigned',
@@ -303,7 +303,7 @@ export default function AdminDepartments() {
                   return filtered.length > 0 ? currentItems.map(d => (
                   <tr key={d.id}>
                     <td style={{ fontFamily: 'monospace', color: '#718096' }}>{d.code}</td>
-                    <td style={{ fontWeight: 700, color: 'var(--portal-primary)' }}>{d.deptCode || '---'}</td>
+                    <td style={{ fontWeight: 700, color: 'var(--portal-primary)' }}>{d.deptCode || (d.code ? d.code.substring(0, 3) : '') || '---'}</td>
                     <td>{d.duration} Years</td>
                     <td style={{ fontWeight: 600 }}>{d.name}</td>
                     <td>
@@ -491,10 +491,10 @@ export default function AdminDepartments() {
                     </label>
                     <input 
                       className="portal-input" 
-                      style={{ width: '100%', textTransform: 'uppercase', background: '#f8fafc', color: '#64748b', cursor: 'not-allowed' }}
+                      style={{ width: '100%', textTransform: 'uppercase' }}
                       value={formData.deptCode}
-                      readOnly
-                      placeholder="Auto-generated"
+                      onChange={e => setFormData({ ...formData, deptCode: e.target.value.toUpperCase() })}
+                      placeholder="e.g. ADM, FIN, SCI"
                     />
                   </div>
 

@@ -83,7 +83,7 @@ router.get('/hostels', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'TE
             _count: { select: { bedAllocations: true, students: true } },
             bedAllocations: {
               where: { status: 'ACTIVE' },
-              include: { student: { select: { id: true, name: true, studentId: true, avatar: true, class: { select: { name: true } } } } }
+              include: { student: { select: { id: true, name: true, studentId: true, user: { select: { avatar: true } }, class: { select: { name: true } } } } }
             }
           },
           orderBy: { name: 'asc' }

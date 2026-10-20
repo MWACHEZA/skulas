@@ -72,6 +72,8 @@ import CBTResults from './portals/shared/pages/cbt/CBTResults';
 import CleaningRequests from './portals/student/pages/CleaningRequests';
 import StudentOwnProfile from './portals/student/pages/StudentProfile';
 import StudentUniforms from './portals/student/pages/StudentUniforms';
+import StudentMyBooks from './portals/student/pages/MyBooks';
+import TeacherTextbooks from './portals/teacher/pages/Textbooks';
 import LeaderGuard from './components/auth/LeaderGuard';
 import StudentClinicUnified from './portals/student/pages/StudentClinicUnified';
 import TeacherAttendanceUnified from './portals/teacher/pages/TeacherAttendanceUnified';
@@ -487,6 +489,7 @@ export default function App() {
               <Route path="fees" element={<StudentFees />} />
               <Route path="study-materials" element={<StudentStudyMaterial />} />
               <Route path="awards" element={<MyAwards />} />
+              <Route path="textbooks" element={<StudentMyBooks />} />
               <Route path="library" element={<Library />} />
               <Route path="events" element={<StudentEvents />} />
               <Route path="prefects" element={<PrefectCouncil />} />
@@ -513,7 +516,7 @@ export default function App() {
               } />
 
               {/* Backward Compatibility Redirects */}
-              <Route path="my-books" element={<Navigate to="/student/library?tab=loans" replace />} />
+              <Route path="my-books" element={<StudentMyBooks />} />
               <Route path="library-staff" element={<Navigate to="/student/library?tab=duty-desk" replace />} />
               <Route path="requests" element={<Navigate to="/student/cleaning-requests" replace />} />
               <Route path="house" element={<Navigate to="/student/dashboard" replace />} />
@@ -550,6 +553,7 @@ export default function App() {
               <Route path="library" element={<Library />} />
 
               <Route path="study-materials" element={<StudyMaterial />} />
+              <Route path="textbooks" element={<TeacherTextbooks />} />
               <Route path="leave" element={<TeacherLeave />} />
               <Route path="awards" element={<MyAwards />} />
               <Route path="payslips" element={<MyPaymentSlip />} />
@@ -711,6 +715,7 @@ export default function App() {
               <Route path="branding" element={<AdminDocumentTemplates />} />
               <Route path="website-settings" element={<SettingsPage defaultTab="banner" />} />
               <Route path="departments" element={<AdminDepartments />} />
+              <Route path="textbooks" element={<TeacherTextbooks />} />
               <Route path="clubs" element={<StudentClub />} />
               <Route path="student-club" element={<Navigate to="/admin/clubs" replace />} />
               <Route path="student-house" element={<Navigate to="/admin/boarding" replace />} />

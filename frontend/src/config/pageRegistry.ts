@@ -238,6 +238,16 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     searchKeywords: ['assignments', 'homework', 'tasks', 'submissions', 'grading', 'classwork', 'projects']
   },
   {
+    id: 'admin-textbooks',
+    label: 'Textbooks Management',
+    route: '/admin/textbooks',
+    group: 'ACADEMICS',
+    icon: 'fas fa-book-open',
+    permissionKey: PERMISSIONS.ACADEMICS_SUBJECTS_VIEW,
+    portalVisibility: ['admin'],
+    searchKeywords: ['textbooks', 'books', 'issue books', 'class issuance', 'curriculum books']
+  },
+  {
     id: 'admin-academics-timetable',
     label: 'Timetable & Calendar',
     route: '/admin/academics/timetable',
@@ -883,6 +893,16 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     permissionKey: PERMISSIONS.ACADEMICS_MARKS_ENTRY,
     portalVisibility: ['teacher'],
     searchKeywords: ['assignments', 'homework', 'tasks', 'submissions', 'grading', 'classwork', 'projects']
+  },
+  {
+    id: 'teacher-textbooks',
+    label: 'Textbooks',
+    route: '/teacher/textbooks',
+    group: 'ACADEMICS',
+    icon: 'fas fa-book-open',
+    permissionKey: PERMISSIONS.ACADEMICS_SUBJECTS_VIEW,
+    portalVisibility: ['teacher'],
+    searchKeywords: ['textbooks', 'books', 'issue books', 'class issuance', 'curriculum books']
   },
   {
     id: 'teacher-grades',
