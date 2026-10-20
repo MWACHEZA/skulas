@@ -4,10 +4,12 @@ import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import SystemConfigCommunication from './SystemConfigCommunication';
+import SystemColorsConfig from './SystemColorsConfig';
+import SystemPublicImagesConfig from './SystemPublicImagesConfig';
 import { getAvatarUrl } from '../../../utils/formatters';
 import '../../../styles/portal.css';
 
-type ConfigTab = 'branding' | 'gateways' | 'notifications' | 'backup' | 'modules';
+type ConfigTab = 'branding' | 'colors' | 'public-images' | 'gateways' | 'notifications' | 'backup' | 'modules';
 
 export default function AdminSystemConfig() {
   const { user, updateUser } = useAuth();
@@ -282,10 +284,12 @@ export default function AdminSystemConfig() {
       >
         {[
           { id: 'branding', label: '1. School Profile & Receipts', icon: 'fas fa-school' },
-          { id: 'gateways', label: '2. SMS & Email Gateways', icon: 'fas fa-broadcast-tower' },
-          { id: 'notifications', label: '3. Notification Triggers', icon: 'fas fa-bell' },
-          { id: 'backup', label: '4. Backup & Data Exports', icon: 'fas fa-database' },
-          { id: 'modules', label: '5. Modules & Modular Tenancy', icon: 'fas fa-cubes' }
+          { id: 'colors', label: '2. System Colors & Theme', icon: 'fas fa-palette' },
+          { id: 'public-images', label: '3. Public Website Media & Banners', icon: 'fas fa-images' },
+          { id: 'gateways', label: '4. SMS & Email Gateways', icon: 'fas fa-broadcast-tower' },
+          { id: 'notifications', label: '5. Notification Triggers', icon: 'fas fa-bell' },
+          { id: 'backup', label: '6. Backup & Data Exports', icon: 'fas fa-database' },
+          { id: 'modules', label: '7. Modules & Modular Tenancy', icon: 'fas fa-cubes' }
         ].map(tab => (
           <button
             key={tab.id}
@@ -576,6 +580,17 @@ export default function AdminSystemConfig() {
       )}
 
       {/* ───────────────────────────────────────────────────────────── */}
+      {activeTab === 'colors' && (
+        <SystemColorsConfig onSaved={fetchSchoolSettings} />
+      )}
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* TAB 3: PUBLIC WEBSITE MEDIA & BANNERS */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      {activeTab === 'public-images' && (
+        <SystemPublicImagesConfig />
+      )}
+
       {/* TAB 2: SMS & EMAIL GATEWAYS */}
       {/* ───────────────────────────────────────────────────────────── */}
       {activeTab === 'gateways' && (

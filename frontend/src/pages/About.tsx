@@ -28,7 +28,7 @@ export default function About() {
   const countryOfEstablishment = settings?.countryOfEstablishment;
   const aboutFeatures = settings?.aboutFeatures || [];
 
-  const bannerImage = settings?.bannerImage;
+  const bannerImage = settings?.aboutBanner || settings?.bannerImage;
   const bannerStyle = bannerImage
     ? { backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${api.defaults.baseURL}/api/storage/media/${code}/${bannerImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }
     : {};

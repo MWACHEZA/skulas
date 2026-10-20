@@ -41,7 +41,6 @@ export default function SystemConfigCommunication() {
 
     // Optional Integrations
     liveChatEnabled: false,
-    tawktoPropertyId: '',
 
     // Advanced / Canonical URL
     systemUrl: '',
@@ -78,8 +77,7 @@ export default function SystemConfigCommunication() {
         paynowMerchantId: data.paynowMerchantId || '',
         paynowMerchantKey: '',
 
-        liveChatEnabled: data.liveChatEnabled || !!data.tawktoPropertyId,
-        tawktoPropertyId: data.tawktoPropertyId || '',
+        liveChatEnabled: !!data.liveChatEnabled,
 
         systemUrl: data.systemUrl || autoCanonical,
         shortCode: school.code || user?.schoolCode || 'school'
@@ -112,7 +110,6 @@ export default function SystemConfigCommunication() {
         whatsappApiUrl: config.whatsappApiUrl,
         paynowMerchantId: config.paynowMerchantId,
         liveChatEnabled: config.liveChatEnabled,
-        tawktoPropertyId: config.liveChatEnabled ? config.tawktoPropertyId : ''
       };
 
       if (resetSmtpPass && config.smtpPassword) {
@@ -489,65 +486,25 @@ export default function SystemConfigCommunication() {
         {/* SUBTAB 3: OPTIONAL INTEGRATIONS */}
         {activeSubTab === 'integrations' && (
           <div className="portal-card" style={{ background: '#fff', borderRadius: 10, padding: 24, border: '1px solid #e2e8f0' }}>
-            <h3 style={{ margin: '0 0 16px', fontSize: '1.1rem', fontWeight: 700, color: '#1e293b' }}>
-              Optional External Integrations
+            <h3 style={{ margin: '0 0 16px', fontSize: '1.1rem', fontWeight: 700, color: '#1e293b', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <i className="fas fa-plug" style={{ color: '#4f46e5' }} /> Webhooks & Institutional API Access
             </h3>
             <p style={{ color: '#64748b', fontSize: '0.85rem', marginTop: -8, marginBottom: 20 }}>
-              Non-core modular services. These are collapsed and disabled by default until explicitly enabled by your institution.
+              Connect third-party accounting software, custom LMS, or school biometric attendance turnstiles with tenant webhook dispatches.
             </p>
 
-            <div style={{ padding: '16px 20px', borderRadius: 8, border: '1px solid #e2e8f0', background: '#f8fafc' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '20px', borderRadius: 8, border: '1px solid #e2e8f0', background: '#f8fafc' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                <div style={{ width: 44, height: 44, borderRadius: 10, background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb', flexShrink: 0 }}>
+                  <i className="fas fa-network-wired fa-lg" />
+                </div>
                 <div>
-                  <div style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <i className="fas fa-comments" style={{ color: '#0284c7' }} /> Tawk.to Live Admissions Chat
-                  </div>
-                  <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: 3 }}>
-                    Live visitor chat widget. <strong style={{ color: '#059669' }}>Renders strictly on the public admissions site</strong>, never inside logged-in student, parent, or staff portals.
+                  <div style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.95rem' }}>External Webhook Event Dispatcher</div>
+                  <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: 4 }}>
+                    Dispatches cryptographically signed JSON payloads upon attendance check-in, fee settlement, and grade submission events. Configured via custom tenant API integrations.
                   </div>
                 </div>
-                <label style={{ position: 'relative', display: 'inline-block', width: 46, height: 24, cursor: isBursar ? 'default' : 'pointer' }}>
-                  <input
-                    type="checkbox"
-                    disabled={isBursar}
-                    checked={config.liveChatEnabled}
-                    onChange={e => setConfig({ ...config, liveChatEnabled: e.target.checked })}
-                    style={{ opacity: 0, width: 0, height: 0 }}
-                  />
-                  <span style={{
-                    position: 'absolute', inset: 0, borderRadius: 24,
-                    background: config.liveChatEnabled ? '#4f46e5' : '#cbd5e1',
-                    transition: '0.2s'
-                  }}>
-                    <span style={{
-                      position: 'absolute', left: config.liveChatEnabled ? 24 : 3, top: 3,
-                      width: 18, height: 18, borderRadius: '50%', background: '#fff',
-                      transition: '0.2s'
-                    }} />
-                  </span>
-                </label>
               </div>
-
-              {config.liveChatEnabled && (
-                <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #e2e8f0' }}>
-                  <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem' }}>
-                    Tawk.to Property ID / Direct Widget ID *
-                  </label>
-                  <input
-                    type="text"
-                    required={config.liveChatEnabled}
-                    disabled={isBursar}
-                    placeholder="e.g. 648a1234bc9876543210abcd/1h2j3k4l5"
-                    className="portal-input"
-                    value={config.tawktoPropertyId}
-                    onChange={e => setConfig({ ...config, tawktoPropertyId: e.target.value })}
-                    style={{ maxWidth: 440 }}
-                  />
-                  <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: 4 }}>
-                    Obtain this from your Tawk.to dashboard under Administration &gt; Channels &gt; Chat Widget.
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         )}

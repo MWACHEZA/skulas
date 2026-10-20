@@ -95415,7 +95415,6 @@ export namespace Prisma {
     nextTermBegin: Date | null
     language: string | null
     timezone: string | null
-    tawktoPropertyId: string | null
     theme: string | null
     textAlignment: string | null
     themeColour: string | null
@@ -95498,7 +95497,6 @@ export namespace Prisma {
     nextTermBegin: Date | null
     language: string | null
     timezone: string | null
-    tawktoPropertyId: string | null
     theme: string | null
     textAlignment: string | null
     themeColour: string | null
@@ -95582,7 +95580,6 @@ export namespace Prisma {
     nextTermBegin: number
     language: number
     timezone: number
-    tawktoPropertyId: number
     theme: number
     textAlignment: number
     themeColour: number
@@ -95698,7 +95695,6 @@ export namespace Prisma {
     nextTermBegin?: true
     language?: true
     timezone?: true
-    tawktoPropertyId?: true
     theme?: true
     textAlignment?: true
     themeColour?: true
@@ -95781,7 +95777,6 @@ export namespace Prisma {
     nextTermBegin?: true
     language?: true
     timezone?: true
-    tawktoPropertyId?: true
     theme?: true
     textAlignment?: true
     themeColour?: true
@@ -95865,7 +95860,6 @@ export namespace Prisma {
     nextTermBegin?: true
     language?: true
     timezone?: true
-    tawktoPropertyId?: true
     theme?: true
     textAlignment?: true
     themeColour?: true
@@ -96037,7 +96031,6 @@ export namespace Prisma {
     nextTermBegin: Date | null
     language: string | null
     timezone: string | null
-    tawktoPropertyId: string | null
     theme: string | null
     textAlignment: string | null
     themeColour: string | null
@@ -96141,7 +96134,6 @@ export namespace Prisma {
     nextTermBegin?: boolean
     language?: boolean
     timezone?: boolean
-    tawktoPropertyId?: boolean
     theme?: boolean
     textAlignment?: boolean
     themeColour?: boolean
@@ -96227,7 +96219,6 @@ export namespace Prisma {
     nextTermBegin?: boolean
     language?: boolean
     timezone?: boolean
-    tawktoPropertyId?: boolean
     theme?: boolean
     textAlignment?: boolean
     themeColour?: boolean
@@ -96313,7 +96304,6 @@ export namespace Prisma {
     nextTermBegin?: boolean
     language?: boolean
     timezone?: boolean
-    tawktoPropertyId?: boolean
     theme?: boolean
     textAlignment?: boolean
     themeColour?: boolean
@@ -96410,7 +96400,6 @@ export namespace Prisma {
       nextTermBegin: Date | null
       language: string | null
       timezone: string | null
-      tawktoPropertyId: string | null
       theme: string | null
       textAlignment: string | null
       themeColour: string | null
@@ -96886,7 +96875,6 @@ export namespace Prisma {
     readonly nextTermBegin: FieldRef<"SchoolSetting", 'DateTime'>
     readonly language: FieldRef<"SchoolSetting", 'String'>
     readonly timezone: FieldRef<"SchoolSetting", 'String'>
-    readonly tawktoPropertyId: FieldRef<"SchoolSetting", 'String'>
     readonly theme: FieldRef<"SchoolSetting", 'String'>
     readonly textAlignment: FieldRef<"SchoolSetting", 'String'>
     readonly themeColour: FieldRef<"SchoolSetting", 'String'>
@@ -176054,6 +176042,16 @@ export namespace Prisma {
     bannerTitleColor: string | null
     schoolPrimaryColor: string | null
     bannerImage: string | null
+    heroBg: string | null
+    ctaBanner: string | null
+    aboutBanner: string | null
+    departmentsBanner: string | null
+    sportsBanner: string | null
+    clubsBanner: string | null
+    newsBanner: string | null
+    galleryBanner: string | null
+    contactBanner: string | null
+    noticeboardBanner: string | null
     aboutTitle: string | null
     youtubeLink: string | null
     directorName: string | null
@@ -176083,6 +176081,16 @@ export namespace Prisma {
     bannerTitleColor: string | null
     schoolPrimaryColor: string | null
     bannerImage: string | null
+    heroBg: string | null
+    ctaBanner: string | null
+    aboutBanner: string | null
+    departmentsBanner: string | null
+    sportsBanner: string | null
+    clubsBanner: string | null
+    newsBanner: string | null
+    galleryBanner: string | null
+    contactBanner: string | null
+    noticeboardBanner: string | null
     aboutTitle: string | null
     youtubeLink: string | null
     directorName: string | null
@@ -176112,6 +176120,16 @@ export namespace Prisma {
     bannerTitleColor: number
     schoolPrimaryColor: number
     bannerImage: number
+    heroBg: number
+    ctaBanner: number
+    aboutBanner: number
+    departmentsBanner: number
+    sportsBanner: number
+    clubsBanner: number
+    newsBanner: number
+    galleryBanner: number
+    contactBanner: number
+    noticeboardBanner: number
     aboutTitle: number
     youtubeLink: number
     directorName: number
@@ -176145,6 +176163,16 @@ export namespace Prisma {
     bannerTitleColor?: true
     schoolPrimaryColor?: true
     bannerImage?: true
+    heroBg?: true
+    ctaBanner?: true
+    aboutBanner?: true
+    departmentsBanner?: true
+    sportsBanner?: true
+    clubsBanner?: true
+    newsBanner?: true
+    galleryBanner?: true
+    contactBanner?: true
+    noticeboardBanner?: true
     aboutTitle?: true
     youtubeLink?: true
     directorName?: true
@@ -176174,6 +176202,16 @@ export namespace Prisma {
     bannerTitleColor?: true
     schoolPrimaryColor?: true
     bannerImage?: true
+    heroBg?: true
+    ctaBanner?: true
+    aboutBanner?: true
+    departmentsBanner?: true
+    sportsBanner?: true
+    clubsBanner?: true
+    newsBanner?: true
+    galleryBanner?: true
+    contactBanner?: true
+    noticeboardBanner?: true
     aboutTitle?: true
     youtubeLink?: true
     directorName?: true
@@ -176203,6 +176241,16 @@ export namespace Prisma {
     bannerTitleColor?: true
     schoolPrimaryColor?: true
     bannerImage?: true
+    heroBg?: true
+    ctaBanner?: true
+    aboutBanner?: true
+    departmentsBanner?: true
+    sportsBanner?: true
+    clubsBanner?: true
+    newsBanner?: true
+    galleryBanner?: true
+    contactBanner?: true
+    noticeboardBanner?: true
     aboutTitle?: true
     youtubeLink?: true
     directorName?: true
@@ -176307,6 +176355,16 @@ export namespace Prisma {
     bannerTitleColor: string | null
     schoolPrimaryColor: string | null
     bannerImage: string | null
+    heroBg: string | null
+    ctaBanner: string | null
+    aboutBanner: string | null
+    departmentsBanner: string | null
+    sportsBanner: string | null
+    clubsBanner: string | null
+    newsBanner: string | null
+    galleryBanner: string | null
+    contactBanner: string | null
+    noticeboardBanner: string | null
     aboutTitle: string | null
     youtubeLink: string | null
     directorName: string | null
@@ -176355,6 +176413,16 @@ export namespace Prisma {
     bannerTitleColor?: boolean
     schoolPrimaryColor?: boolean
     bannerImage?: boolean
+    heroBg?: boolean
+    ctaBanner?: boolean
+    aboutBanner?: boolean
+    departmentsBanner?: boolean
+    sportsBanner?: boolean
+    clubsBanner?: boolean
+    newsBanner?: boolean
+    galleryBanner?: boolean
+    contactBanner?: boolean
+    noticeboardBanner?: boolean
     aboutTitle?: boolean
     youtubeLink?: boolean
     directorName?: boolean
@@ -176387,6 +176455,16 @@ export namespace Prisma {
     bannerTitleColor?: boolean
     schoolPrimaryColor?: boolean
     bannerImage?: boolean
+    heroBg?: boolean
+    ctaBanner?: boolean
+    aboutBanner?: boolean
+    departmentsBanner?: boolean
+    sportsBanner?: boolean
+    clubsBanner?: boolean
+    newsBanner?: boolean
+    galleryBanner?: boolean
+    contactBanner?: boolean
+    noticeboardBanner?: boolean
     aboutTitle?: boolean
     youtubeLink?: boolean
     directorName?: boolean
@@ -176419,6 +176497,16 @@ export namespace Prisma {
     bannerTitleColor?: boolean
     schoolPrimaryColor?: boolean
     bannerImage?: boolean
+    heroBg?: boolean
+    ctaBanner?: boolean
+    aboutBanner?: boolean
+    departmentsBanner?: boolean
+    sportsBanner?: boolean
+    clubsBanner?: boolean
+    newsBanner?: boolean
+    galleryBanner?: boolean
+    contactBanner?: boolean
+    noticeboardBanner?: boolean
     aboutTitle?: boolean
     youtubeLink?: boolean
     directorName?: boolean
@@ -176462,6 +176550,16 @@ export namespace Prisma {
       bannerTitleColor: string | null
       schoolPrimaryColor: string | null
       bannerImage: string | null
+      heroBg: string | null
+      ctaBanner: string | null
+      aboutBanner: string | null
+      departmentsBanner: string | null
+      sportsBanner: string | null
+      clubsBanner: string | null
+      newsBanner: string | null
+      galleryBanner: string | null
+      contactBanner: string | null
+      noticeboardBanner: string | null
       aboutTitle: string | null
       youtubeLink: string | null
       directorName: string | null
@@ -176884,6 +176982,16 @@ export namespace Prisma {
     readonly bannerTitleColor: FieldRef<"WebsiteSettings", 'String'>
     readonly schoolPrimaryColor: FieldRef<"WebsiteSettings", 'String'>
     readonly bannerImage: FieldRef<"WebsiteSettings", 'String'>
+    readonly heroBg: FieldRef<"WebsiteSettings", 'String'>
+    readonly ctaBanner: FieldRef<"WebsiteSettings", 'String'>
+    readonly aboutBanner: FieldRef<"WebsiteSettings", 'String'>
+    readonly departmentsBanner: FieldRef<"WebsiteSettings", 'String'>
+    readonly sportsBanner: FieldRef<"WebsiteSettings", 'String'>
+    readonly clubsBanner: FieldRef<"WebsiteSettings", 'String'>
+    readonly newsBanner: FieldRef<"WebsiteSettings", 'String'>
+    readonly galleryBanner: FieldRef<"WebsiteSettings", 'String'>
+    readonly contactBanner: FieldRef<"WebsiteSettings", 'String'>
+    readonly noticeboardBanner: FieldRef<"WebsiteSettings", 'String'>
     readonly aboutTitle: FieldRef<"WebsiteSettings", 'String'>
     readonly youtubeLink: FieldRef<"WebsiteSettings", 'String'>
     readonly directorName: FieldRef<"WebsiteSettings", 'String'>
@@ -305353,7 +305461,6 @@ export namespace Prisma {
     nextTermBegin: 'nextTermBegin',
     language: 'language',
     timezone: 'timezone',
-    tawktoPropertyId: 'tawktoPropertyId',
     theme: 'theme',
     textAlignment: 'textAlignment',
     themeColour: 'themeColour',
@@ -306712,6 +306819,16 @@ export namespace Prisma {
     bannerTitleColor: 'bannerTitleColor',
     schoolPrimaryColor: 'schoolPrimaryColor',
     bannerImage: 'bannerImage',
+    heroBg: 'heroBg',
+    ctaBanner: 'ctaBanner',
+    aboutBanner: 'aboutBanner',
+    departmentsBanner: 'departmentsBanner',
+    sportsBanner: 'sportsBanner',
+    clubsBanner: 'clubsBanner',
+    newsBanner: 'newsBanner',
+    galleryBanner: 'galleryBanner',
+    contactBanner: 'contactBanner',
+    noticeboardBanner: 'noticeboardBanner',
     aboutTitle: 'aboutTitle',
     youtubeLink: 'youtubeLink',
     directorName: 'directorName',
@@ -315485,7 +315602,6 @@ export namespace Prisma {
     nextTermBegin?: DateTimeNullableFilter<"SchoolSetting"> | Date | string | null
     language?: StringNullableFilter<"SchoolSetting"> | string | null
     timezone?: StringNullableFilter<"SchoolSetting"> | string | null
-    tawktoPropertyId?: StringNullableFilter<"SchoolSetting"> | string | null
     theme?: StringNullableFilter<"SchoolSetting"> | string | null
     textAlignment?: StringNullableFilter<"SchoolSetting"> | string | null
     themeColour?: StringNullableFilter<"SchoolSetting"> | string | null
@@ -315571,7 +315687,6 @@ export namespace Prisma {
     nextTermBegin?: SortOrderInput | SortOrder
     language?: SortOrderInput | SortOrder
     timezone?: SortOrderInput | SortOrder
-    tawktoPropertyId?: SortOrderInput | SortOrder
     theme?: SortOrderInput | SortOrder
     textAlignment?: SortOrderInput | SortOrder
     themeColour?: SortOrderInput | SortOrder
@@ -315660,7 +315775,6 @@ export namespace Prisma {
     nextTermBegin?: DateTimeNullableFilter<"SchoolSetting"> | Date | string | null
     language?: StringNullableFilter<"SchoolSetting"> | string | null
     timezone?: StringNullableFilter<"SchoolSetting"> | string | null
-    tawktoPropertyId?: StringNullableFilter<"SchoolSetting"> | string | null
     theme?: StringNullableFilter<"SchoolSetting"> | string | null
     textAlignment?: StringNullableFilter<"SchoolSetting"> | string | null
     themeColour?: StringNullableFilter<"SchoolSetting"> | string | null
@@ -315746,7 +315860,6 @@ export namespace Prisma {
     nextTermBegin?: SortOrderInput | SortOrder
     language?: SortOrderInput | SortOrder
     timezone?: SortOrderInput | SortOrder
-    tawktoPropertyId?: SortOrderInput | SortOrder
     theme?: SortOrderInput | SortOrder
     textAlignment?: SortOrderInput | SortOrder
     themeColour?: SortOrderInput | SortOrder
@@ -315839,7 +315952,6 @@ export namespace Prisma {
     nextTermBegin?: DateTimeNullableWithAggregatesFilter<"SchoolSetting"> | Date | string | null
     language?: StringNullableWithAggregatesFilter<"SchoolSetting"> | string | null
     timezone?: StringNullableWithAggregatesFilter<"SchoolSetting"> | string | null
-    tawktoPropertyId?: StringNullableWithAggregatesFilter<"SchoolSetting"> | string | null
     theme?: StringNullableWithAggregatesFilter<"SchoolSetting"> | string | null
     textAlignment?: StringNullableWithAggregatesFilter<"SchoolSetting"> | string | null
     themeColour?: StringNullableWithAggregatesFilter<"SchoolSetting"> | string | null
@@ -322805,6 +322917,16 @@ export namespace Prisma {
     bannerTitleColor?: StringNullableFilter<"WebsiteSettings"> | string | null
     schoolPrimaryColor?: StringNullableFilter<"WebsiteSettings"> | string | null
     bannerImage?: StringNullableFilter<"WebsiteSettings"> | string | null
+    heroBg?: StringNullableFilter<"WebsiteSettings"> | string | null
+    ctaBanner?: StringNullableFilter<"WebsiteSettings"> | string | null
+    aboutBanner?: StringNullableFilter<"WebsiteSettings"> | string | null
+    departmentsBanner?: StringNullableFilter<"WebsiteSettings"> | string | null
+    sportsBanner?: StringNullableFilter<"WebsiteSettings"> | string | null
+    clubsBanner?: StringNullableFilter<"WebsiteSettings"> | string | null
+    newsBanner?: StringNullableFilter<"WebsiteSettings"> | string | null
+    galleryBanner?: StringNullableFilter<"WebsiteSettings"> | string | null
+    contactBanner?: StringNullableFilter<"WebsiteSettings"> | string | null
+    noticeboardBanner?: StringNullableFilter<"WebsiteSettings"> | string | null
     aboutTitle?: StringNullableFilter<"WebsiteSettings"> | string | null
     youtubeLink?: StringNullableFilter<"WebsiteSettings"> | string | null
     directorName?: StringNullableFilter<"WebsiteSettings"> | string | null
@@ -322837,6 +322959,16 @@ export namespace Prisma {
     bannerTitleColor?: SortOrderInput | SortOrder
     schoolPrimaryColor?: SortOrderInput | SortOrder
     bannerImage?: SortOrderInput | SortOrder
+    heroBg?: SortOrderInput | SortOrder
+    ctaBanner?: SortOrderInput | SortOrder
+    aboutBanner?: SortOrderInput | SortOrder
+    departmentsBanner?: SortOrderInput | SortOrder
+    sportsBanner?: SortOrderInput | SortOrder
+    clubsBanner?: SortOrderInput | SortOrder
+    newsBanner?: SortOrderInput | SortOrder
+    galleryBanner?: SortOrderInput | SortOrder
+    contactBanner?: SortOrderInput | SortOrder
+    noticeboardBanner?: SortOrderInput | SortOrder
     aboutTitle?: SortOrderInput | SortOrder
     youtubeLink?: SortOrderInput | SortOrder
     directorName?: SortOrderInput | SortOrder
@@ -322872,6 +323004,16 @@ export namespace Prisma {
     bannerTitleColor?: StringNullableFilter<"WebsiteSettings"> | string | null
     schoolPrimaryColor?: StringNullableFilter<"WebsiteSettings"> | string | null
     bannerImage?: StringNullableFilter<"WebsiteSettings"> | string | null
+    heroBg?: StringNullableFilter<"WebsiteSettings"> | string | null
+    ctaBanner?: StringNullableFilter<"WebsiteSettings"> | string | null
+    aboutBanner?: StringNullableFilter<"WebsiteSettings"> | string | null
+    departmentsBanner?: StringNullableFilter<"WebsiteSettings"> | string | null
+    sportsBanner?: StringNullableFilter<"WebsiteSettings"> | string | null
+    clubsBanner?: StringNullableFilter<"WebsiteSettings"> | string | null
+    newsBanner?: StringNullableFilter<"WebsiteSettings"> | string | null
+    galleryBanner?: StringNullableFilter<"WebsiteSettings"> | string | null
+    contactBanner?: StringNullableFilter<"WebsiteSettings"> | string | null
+    noticeboardBanner?: StringNullableFilter<"WebsiteSettings"> | string | null
     aboutTitle?: StringNullableFilter<"WebsiteSettings"> | string | null
     youtubeLink?: StringNullableFilter<"WebsiteSettings"> | string | null
     directorName?: StringNullableFilter<"WebsiteSettings"> | string | null
@@ -322904,6 +323046,16 @@ export namespace Prisma {
     bannerTitleColor?: SortOrderInput | SortOrder
     schoolPrimaryColor?: SortOrderInput | SortOrder
     bannerImage?: SortOrderInput | SortOrder
+    heroBg?: SortOrderInput | SortOrder
+    ctaBanner?: SortOrderInput | SortOrder
+    aboutBanner?: SortOrderInput | SortOrder
+    departmentsBanner?: SortOrderInput | SortOrder
+    sportsBanner?: SortOrderInput | SortOrder
+    clubsBanner?: SortOrderInput | SortOrder
+    newsBanner?: SortOrderInput | SortOrder
+    galleryBanner?: SortOrderInput | SortOrder
+    contactBanner?: SortOrderInput | SortOrder
+    noticeboardBanner?: SortOrderInput | SortOrder
     aboutTitle?: SortOrderInput | SortOrder
     youtubeLink?: SortOrderInput | SortOrder
     directorName?: SortOrderInput | SortOrder
@@ -322941,6 +323093,16 @@ export namespace Prisma {
     bannerTitleColor?: StringNullableWithAggregatesFilter<"WebsiteSettings"> | string | null
     schoolPrimaryColor?: StringNullableWithAggregatesFilter<"WebsiteSettings"> | string | null
     bannerImage?: StringNullableWithAggregatesFilter<"WebsiteSettings"> | string | null
+    heroBg?: StringNullableWithAggregatesFilter<"WebsiteSettings"> | string | null
+    ctaBanner?: StringNullableWithAggregatesFilter<"WebsiteSettings"> | string | null
+    aboutBanner?: StringNullableWithAggregatesFilter<"WebsiteSettings"> | string | null
+    departmentsBanner?: StringNullableWithAggregatesFilter<"WebsiteSettings"> | string | null
+    sportsBanner?: StringNullableWithAggregatesFilter<"WebsiteSettings"> | string | null
+    clubsBanner?: StringNullableWithAggregatesFilter<"WebsiteSettings"> | string | null
+    newsBanner?: StringNullableWithAggregatesFilter<"WebsiteSettings"> | string | null
+    galleryBanner?: StringNullableWithAggregatesFilter<"WebsiteSettings"> | string | null
+    contactBanner?: StringNullableWithAggregatesFilter<"WebsiteSettings"> | string | null
+    noticeboardBanner?: StringNullableWithAggregatesFilter<"WebsiteSettings"> | string | null
     aboutTitle?: StringNullableWithAggregatesFilter<"WebsiteSettings"> | string | null
     youtubeLink?: StringNullableWithAggregatesFilter<"WebsiteSettings"> | string | null
     directorName?: StringNullableWithAggregatesFilter<"WebsiteSettings"> | string | null
@@ -341669,7 +341831,6 @@ export namespace Prisma {
     nextTermBegin?: Date | string | null
     language?: string | null
     timezone?: string | null
-    tawktoPropertyId?: string | null
     theme?: string | null
     textAlignment?: string | null
     themeColour?: string | null
@@ -341755,7 +341916,6 @@ export namespace Prisma {
     nextTermBegin?: Date | string | null
     language?: string | null
     timezone?: string | null
-    tawktoPropertyId?: string | null
     theme?: string | null
     textAlignment?: string | null
     themeColour?: string | null
@@ -341839,7 +341999,6 @@ export namespace Prisma {
     nextTermBegin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     language?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
-    tawktoPropertyId?: NullableStringFieldUpdateOperationsInput | string | null
     theme?: NullableStringFieldUpdateOperationsInput | string | null
     textAlignment?: NullableStringFieldUpdateOperationsInput | string | null
     themeColour?: NullableStringFieldUpdateOperationsInput | string | null
@@ -341925,7 +342084,6 @@ export namespace Prisma {
     nextTermBegin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     language?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
-    tawktoPropertyId?: NullableStringFieldUpdateOperationsInput | string | null
     theme?: NullableStringFieldUpdateOperationsInput | string | null
     textAlignment?: NullableStringFieldUpdateOperationsInput | string | null
     themeColour?: NullableStringFieldUpdateOperationsInput | string | null
@@ -342010,7 +342168,6 @@ export namespace Prisma {
     nextTermBegin?: Date | string | null
     language?: string | null
     timezone?: string | null
-    tawktoPropertyId?: string | null
     theme?: string | null
     textAlignment?: string | null
     themeColour?: string | null
@@ -342094,7 +342251,6 @@ export namespace Prisma {
     nextTermBegin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     language?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
-    tawktoPropertyId?: NullableStringFieldUpdateOperationsInput | string | null
     theme?: NullableStringFieldUpdateOperationsInput | string | null
     textAlignment?: NullableStringFieldUpdateOperationsInput | string | null
     themeColour?: NullableStringFieldUpdateOperationsInput | string | null
@@ -342179,7 +342335,6 @@ export namespace Prisma {
     nextTermBegin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     language?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
-    tawktoPropertyId?: NullableStringFieldUpdateOperationsInput | string | null
     theme?: NullableStringFieldUpdateOperationsInput | string | null
     textAlignment?: NullableStringFieldUpdateOperationsInput | string | null
     themeColour?: NullableStringFieldUpdateOperationsInput | string | null
@@ -349836,6 +349991,16 @@ export namespace Prisma {
     bannerTitleColor?: string | null
     schoolPrimaryColor?: string | null
     bannerImage?: string | null
+    heroBg?: string | null
+    ctaBanner?: string | null
+    aboutBanner?: string | null
+    departmentsBanner?: string | null
+    sportsBanner?: string | null
+    clubsBanner?: string | null
+    newsBanner?: string | null
+    galleryBanner?: string | null
+    contactBanner?: string | null
+    noticeboardBanner?: string | null
     aboutTitle?: string | null
     youtubeLink?: string | null
     directorName?: string | null
@@ -349868,6 +350033,16 @@ export namespace Prisma {
     bannerTitleColor?: string | null
     schoolPrimaryColor?: string | null
     bannerImage?: string | null
+    heroBg?: string | null
+    ctaBanner?: string | null
+    aboutBanner?: string | null
+    departmentsBanner?: string | null
+    sportsBanner?: string | null
+    clubsBanner?: string | null
+    newsBanner?: string | null
+    galleryBanner?: string | null
+    contactBanner?: string | null
+    noticeboardBanner?: string | null
     aboutTitle?: string | null
     youtubeLink?: string | null
     directorName?: string | null
@@ -349898,6 +350073,16 @@ export namespace Prisma {
     bannerTitleColor?: NullableStringFieldUpdateOperationsInput | string | null
     schoolPrimaryColor?: NullableStringFieldUpdateOperationsInput | string | null
     bannerImage?: NullableStringFieldUpdateOperationsInput | string | null
+    heroBg?: NullableStringFieldUpdateOperationsInput | string | null
+    ctaBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    aboutBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    departmentsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    sportsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    clubsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    newsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    contactBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    noticeboardBanner?: NullableStringFieldUpdateOperationsInput | string | null
     aboutTitle?: NullableStringFieldUpdateOperationsInput | string | null
     youtubeLink?: NullableStringFieldUpdateOperationsInput | string | null
     directorName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -349930,6 +350115,16 @@ export namespace Prisma {
     bannerTitleColor?: NullableStringFieldUpdateOperationsInput | string | null
     schoolPrimaryColor?: NullableStringFieldUpdateOperationsInput | string | null
     bannerImage?: NullableStringFieldUpdateOperationsInput | string | null
+    heroBg?: NullableStringFieldUpdateOperationsInput | string | null
+    ctaBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    aboutBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    departmentsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    sportsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    clubsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    newsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    contactBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    noticeboardBanner?: NullableStringFieldUpdateOperationsInput | string | null
     aboutTitle?: NullableStringFieldUpdateOperationsInput | string | null
     youtubeLink?: NullableStringFieldUpdateOperationsInput | string | null
     directorName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -349961,6 +350156,16 @@ export namespace Prisma {
     bannerTitleColor?: string | null
     schoolPrimaryColor?: string | null
     bannerImage?: string | null
+    heroBg?: string | null
+    ctaBanner?: string | null
+    aboutBanner?: string | null
+    departmentsBanner?: string | null
+    sportsBanner?: string | null
+    clubsBanner?: string | null
+    newsBanner?: string | null
+    galleryBanner?: string | null
+    contactBanner?: string | null
+    noticeboardBanner?: string | null
     aboutTitle?: string | null
     youtubeLink?: string | null
     directorName?: string | null
@@ -349991,6 +350196,16 @@ export namespace Prisma {
     bannerTitleColor?: NullableStringFieldUpdateOperationsInput | string | null
     schoolPrimaryColor?: NullableStringFieldUpdateOperationsInput | string | null
     bannerImage?: NullableStringFieldUpdateOperationsInput | string | null
+    heroBg?: NullableStringFieldUpdateOperationsInput | string | null
+    ctaBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    aboutBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    departmentsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    sportsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    clubsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    newsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    contactBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    noticeboardBanner?: NullableStringFieldUpdateOperationsInput | string | null
     aboutTitle?: NullableStringFieldUpdateOperationsInput | string | null
     youtubeLink?: NullableStringFieldUpdateOperationsInput | string | null
     directorName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -350022,6 +350237,16 @@ export namespace Prisma {
     bannerTitleColor?: NullableStringFieldUpdateOperationsInput | string | null
     schoolPrimaryColor?: NullableStringFieldUpdateOperationsInput | string | null
     bannerImage?: NullableStringFieldUpdateOperationsInput | string | null
+    heroBg?: NullableStringFieldUpdateOperationsInput | string | null
+    ctaBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    aboutBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    departmentsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    sportsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    clubsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    newsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    contactBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    noticeboardBanner?: NullableStringFieldUpdateOperationsInput | string | null
     aboutTitle?: NullableStringFieldUpdateOperationsInput | string | null
     youtubeLink?: NullableStringFieldUpdateOperationsInput | string | null
     directorName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -368099,7 +368324,6 @@ export namespace Prisma {
     nextTermBegin?: SortOrder
     language?: SortOrder
     timezone?: SortOrder
-    tawktoPropertyId?: SortOrder
     theme?: SortOrder
     textAlignment?: SortOrder
     themeColour?: SortOrder
@@ -368198,7 +368422,6 @@ export namespace Prisma {
     nextTermBegin?: SortOrder
     language?: SortOrder
     timezone?: SortOrder
-    tawktoPropertyId?: SortOrder
     theme?: SortOrder
     textAlignment?: SortOrder
     themeColour?: SortOrder
@@ -368281,7 +368504,6 @@ export namespace Prisma {
     nextTermBegin?: SortOrder
     language?: SortOrder
     timezone?: SortOrder
-    tawktoPropertyId?: SortOrder
     theme?: SortOrder
     textAlignment?: SortOrder
     themeColour?: SortOrder
@@ -372319,6 +372541,16 @@ export namespace Prisma {
     bannerTitleColor?: SortOrder
     schoolPrimaryColor?: SortOrder
     bannerImage?: SortOrder
+    heroBg?: SortOrder
+    ctaBanner?: SortOrder
+    aboutBanner?: SortOrder
+    departmentsBanner?: SortOrder
+    sportsBanner?: SortOrder
+    clubsBanner?: SortOrder
+    newsBanner?: SortOrder
+    galleryBanner?: SortOrder
+    contactBanner?: SortOrder
+    noticeboardBanner?: SortOrder
     aboutTitle?: SortOrder
     youtubeLink?: SortOrder
     directorName?: SortOrder
@@ -372350,6 +372582,16 @@ export namespace Prisma {
     bannerTitleColor?: SortOrder
     schoolPrimaryColor?: SortOrder
     bannerImage?: SortOrder
+    heroBg?: SortOrder
+    ctaBanner?: SortOrder
+    aboutBanner?: SortOrder
+    departmentsBanner?: SortOrder
+    sportsBanner?: SortOrder
+    clubsBanner?: SortOrder
+    newsBanner?: SortOrder
+    galleryBanner?: SortOrder
+    contactBanner?: SortOrder
+    noticeboardBanner?: SortOrder
     aboutTitle?: SortOrder
     youtubeLink?: SortOrder
     directorName?: SortOrder
@@ -372379,6 +372621,16 @@ export namespace Prisma {
     bannerTitleColor?: SortOrder
     schoolPrimaryColor?: SortOrder
     bannerImage?: SortOrder
+    heroBg?: SortOrder
+    ctaBanner?: SortOrder
+    aboutBanner?: SortOrder
+    departmentsBanner?: SortOrder
+    sportsBanner?: SortOrder
+    clubsBanner?: SortOrder
+    newsBanner?: SortOrder
+    galleryBanner?: SortOrder
+    contactBanner?: SortOrder
+    noticeboardBanner?: SortOrder
     aboutTitle?: SortOrder
     youtubeLink?: SortOrder
     directorName?: SortOrder
@@ -411152,6 +411404,16 @@ export namespace Prisma {
     bannerTitleColor?: string | null
     schoolPrimaryColor?: string | null
     bannerImage?: string | null
+    heroBg?: string | null
+    ctaBanner?: string | null
+    aboutBanner?: string | null
+    departmentsBanner?: string | null
+    sportsBanner?: string | null
+    clubsBanner?: string | null
+    newsBanner?: string | null
+    galleryBanner?: string | null
+    contactBanner?: string | null
+    noticeboardBanner?: string | null
     aboutTitle?: string | null
     youtubeLink?: string | null
     directorName?: string | null
@@ -411182,6 +411444,16 @@ export namespace Prisma {
     bannerTitleColor?: string | null
     schoolPrimaryColor?: string | null
     bannerImage?: string | null
+    heroBg?: string | null
+    ctaBanner?: string | null
+    aboutBanner?: string | null
+    departmentsBanner?: string | null
+    sportsBanner?: string | null
+    clubsBanner?: string | null
+    newsBanner?: string | null
+    galleryBanner?: string | null
+    contactBanner?: string | null
+    noticeboardBanner?: string | null
     aboutTitle?: string | null
     youtubeLink?: string | null
     directorName?: string | null
@@ -413093,7 +413365,6 @@ export namespace Prisma {
     nextTermBegin?: Date | string | null
     language?: string | null
     timezone?: string | null
-    tawktoPropertyId?: string | null
     theme?: string | null
     textAlignment?: string | null
     themeColour?: string | null
@@ -413177,7 +413448,6 @@ export namespace Prisma {
     nextTermBegin?: Date | string | null
     language?: string | null
     timezone?: string | null
-    tawktoPropertyId?: string | null
     theme?: string | null
     textAlignment?: string | null
     themeColour?: string | null
@@ -418152,6 +418422,16 @@ export namespace Prisma {
     bannerTitleColor?: NullableStringFieldUpdateOperationsInput | string | null
     schoolPrimaryColor?: NullableStringFieldUpdateOperationsInput | string | null
     bannerImage?: NullableStringFieldUpdateOperationsInput | string | null
+    heroBg?: NullableStringFieldUpdateOperationsInput | string | null
+    ctaBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    aboutBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    departmentsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    sportsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    clubsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    newsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    contactBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    noticeboardBanner?: NullableStringFieldUpdateOperationsInput | string | null
     aboutTitle?: NullableStringFieldUpdateOperationsInput | string | null
     youtubeLink?: NullableStringFieldUpdateOperationsInput | string | null
     directorName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -418182,6 +418462,16 @@ export namespace Prisma {
     bannerTitleColor?: NullableStringFieldUpdateOperationsInput | string | null
     schoolPrimaryColor?: NullableStringFieldUpdateOperationsInput | string | null
     bannerImage?: NullableStringFieldUpdateOperationsInput | string | null
+    heroBg?: NullableStringFieldUpdateOperationsInput | string | null
+    ctaBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    aboutBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    departmentsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    sportsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    clubsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    newsBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    galleryBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    contactBanner?: NullableStringFieldUpdateOperationsInput | string | null
+    noticeboardBanner?: NullableStringFieldUpdateOperationsInput | string | null
     aboutTitle?: NullableStringFieldUpdateOperationsInput | string | null
     youtubeLink?: NullableStringFieldUpdateOperationsInput | string | null
     directorName?: NullableStringFieldUpdateOperationsInput | string | null
@@ -419893,7 +420183,6 @@ export namespace Prisma {
     nextTermBegin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     language?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
-    tawktoPropertyId?: NullableStringFieldUpdateOperationsInput | string | null
     theme?: NullableStringFieldUpdateOperationsInput | string | null
     textAlignment?: NullableStringFieldUpdateOperationsInput | string | null
     themeColour?: NullableStringFieldUpdateOperationsInput | string | null
@@ -419977,7 +420266,6 @@ export namespace Prisma {
     nextTermBegin?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     language?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
-    tawktoPropertyId?: NullableStringFieldUpdateOperationsInput | string | null
     theme?: NullableStringFieldUpdateOperationsInput | string | null
     textAlignment?: NullableStringFieldUpdateOperationsInput | string | null
     themeColour?: NullableStringFieldUpdateOperationsInput | string | null

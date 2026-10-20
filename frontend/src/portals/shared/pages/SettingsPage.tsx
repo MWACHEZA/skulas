@@ -14,6 +14,7 @@ import InquirySettings from './website-settings/InquirySettings';
 import NewsSettings from './website-settings/NewsSettings';
 import GallerySettings from './website-settings/GallerySettings';
 import NoticeboardSettings from './website-settings/NoticeboardSettings';
+import SystemPublicImagesConfig from '../../admin/pages/SystemPublicImagesConfig';
 
 // Payroll Settings component
 import PayrollSettingsPage from './PayrollSettingsPage';
@@ -30,7 +31,7 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [coaAccounts, setCoaAccounts] = useState<any[]>([]);
-  const [activeCmsSection, setActiveCmsSection] = useState<'banner' | 'about' | 'inquiry' | 'news' | 'gallery' | 'noticeboard'>('banner');
+  const [activeCmsSection, setActiveCmsSection] = useState<'all-banners' | 'banner' | 'about' | 'inquiry' | 'news' | 'gallery' | 'noticeboard'>('all-banners');
   const [logoUploading, setLogoUploading] = useState(false);
   const [faviconUploading, setFaviconUploading] = useState(false);
 
@@ -55,7 +56,6 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
     nextTermBegin: '',
     language: 'en',
     timezone: 'UTC',
-    tawktoPropertyId: '',
     theme: 'Blue',
     textAlignment: 'Left-to-right',
     themeColour: 'All white',
@@ -691,22 +691,74 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
                 />
               </div>
 
-              <div className="form-group">
-                <label className="portal-label">Primary Theme Color</label>
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <div className="form-group" style={{ gridColumn: 'span 2' }}>
+                <label className="portal-label">Primary Brand Color &amp; Palette Preset</label>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: 10, flexWrap: 'wrap' }}>
                   <input
                     type="color"
                     value={settings.themeColour || '#2563eb'}
                     onChange={e => updateSetting('themeColour', e.target.value)}
-                    style={{ width: '42px', height: '42px', borderRadius: '8px', border: '1px solid #cbd5e1', cursor: 'pointer', padding: 2 }}
+                    style={{ width: '44px', height: '44px', borderRadius: '8px', border: '1px solid #cbd5e1', cursor: 'pointer', padding: 2 }}
                   />
                   <input
                     type="text"
                     className="portal-input"
                     value={settings.themeColour || '#2563eb'}
                     onChange={e => updateSetting('themeColour', e.target.value)}
-                    style={{ flex: 1 }}
+                    style={{ width: '140px', fontWeight: 700, fontFamily: 'monospace' }}
                   />
+                  {/* Quick palette swatches */}
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    {[
+                      { hex: '#2563eb', label: 'Royal Blue' },
+                      { hex: '#1e3a8a', label: 'Classic Navy' },
+                      { hex: '#059669', label: 'Emerald' },
+                      { hex: '#dc2626', label: 'Crimson' },
+                      { hex: '#7c3aed', label: 'Purple' },
+                      { hex: '#4f46e5', label: 'Indigo' },
+                      { hex: '#d97706', label: 'Amber' },
+                      { hex: '#0f172a', label: 'Slate' }
+                    ].map(p => (
+                      <button
+                        key={p.hex}
+                        type="button"
+                        onClick={() => updateSetting('themeColour', p.hex)}
+                        title={p.label}
+                        style={{
+                          width: 26,
+                          height: 26,
+                          borderRadius: 6,
+                          background: p.hex,
+                          border: settings.themeColour === p.hex ? '2px solid #000' : '1px solid #cbd5e1',
+                          cursor: 'pointer'
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const el = document.getElementById('sec-cms');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    style={{
+                      background: '#f0fdf4',
+                      border: '1px solid #bbf7d0',
+                      color: '#166534',
+                      padding: '6px 14px',
+                      borderRadius: 8,
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6
+                    }}
+                  >
+                    <i className="fas fa-images" /> Manage Public Website Banners &darr;
+                  </button>
                 </div>
               </div>
             </div>
@@ -1381,7 +1433,8 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
               {/* Sub-selector pills for CMS sections without leaving the page */}
               <div style={{ display: 'flex', gap: '6px', background: '#f1f5f9', padding: '4px', borderRadius: '12px' }}>
                 {[
-                  { id: 'banner', label: 'Banners' },
+                  { id: 'all-banners', label: 'All Page Banners & Images' },
+                  { id: 'banner', label: 'Hero Banners' },
                   { id: 'about', label: 'About Us' },
                   { id: 'inquiry', label: 'Inquiries' },
                   { id: 'news', label: 'News' },
@@ -1411,6 +1464,7 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
             </div>
 
             <div style={{ minHeight: '280px' }}>
+              {activeCmsSection === 'all-banners' && <SystemPublicImagesConfig />}
               {activeCmsSection === 'banner' && <BannerSettings />}
               {activeCmsSection === 'about' && <AboutSettings />}
               {activeCmsSection === 'inquiry' && <InquirySettings />}
@@ -1529,11 +1583,7 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
                 <label className="portal-label">WhatsApp Permanent Access Token</label>
                 <input className="portal-input" type="password" value={settings.whatsappAccessToken || ''} onChange={e => updateSetting('whatsappAccessToken', e.target.value)} placeholder="EAA..." />
               </div>
-              <div className="form-group">
-                <label className="portal-label">Tawk.to Property ID</label>
-                <input className="portal-input" type="text" value={settings.tawktoPropertyId || ''} onChange={e => updateSetting('tawktoPropertyId', e.target.value)} placeholder="tawk_property_id" />
-              </div>
-              <div className="form-group">
+                            <div className="form-group">
                 <label className="portal-label">Canonical System URL</label>
                 <input className="portal-input" type="url" value={settings.systemUrl || ''} onChange={e => updateSetting('systemUrl', e.target.value)} placeholder="https://portal.acadex.com" />
               </div>

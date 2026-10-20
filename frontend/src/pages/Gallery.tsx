@@ -42,7 +42,7 @@ export default function Gallery() {
   });
 
   const settings = (school as any)?.websiteSettings;
-  const bannerImage = settings?.bannerImage;
+  const bannerImage = settings?.galleryBanner || settings?.bannerImage;
   const bannerStyle = bannerImage 
     ? { backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(${api.defaults.baseURL}/api/storage/media/${code}/${bannerImage})`, backgroundSize: 'cover', backgroundPosition: 'center', padding: '80px 0', color: 'white', textAlign: 'center' as const }
     : { background: 'linear-gradient(135deg, var(--school-primary, #1e3a8a) 0%, var(--school-accent, #3b82f6) 100%)', padding: '80px 0', color: 'white', textAlign: 'center' as const };

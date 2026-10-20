@@ -44,6 +44,9 @@ export const UpdateBrandingSchema = z.object({
   body: z.object({
     primaryColor: z.string().optional().nullable(),
     accentColor: z.string().optional().nullable(),
+    sidebarTheme: z.string().optional().nullable(),
+    headerTheme: z.string().optional().nullable(),
+    mode: z.string().optional().nullable(),
     motto: z.string().optional().nullable(),
   }),
 });

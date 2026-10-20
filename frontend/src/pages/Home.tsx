@@ -18,7 +18,7 @@ function Hero() {
   // Banner details from settings
   const heroTitle = websiteSettings?.bannerTitle || (name ? `Welcome to ${name}` : 'Welcome');
   const heroTitleColor = websiteSettings?.bannerTitleColor || '#ffffff';
-  const heroBg = websiteSettings?.bannerImage 
+  const heroBg = (websiteSettings?.heroBg || websiteSettings?.bannerImage) 
     ? `url(${api.defaults.baseURL}/api/storage/media/${code}/${websiteSettings.bannerImage})`
     : undefined;
 
@@ -616,7 +616,7 @@ function CTA() {
   const ctaContent = websiteSettings?.applyContent || "Applications for the upcoming academic term are open. Step into a world of qualitative transformation.";
 
   return (
-    <section className="cta" style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%)', color: 'white', padding: '80px 0', textAlign: 'center' }}>
+    <section className="cta" style={{ background: websiteSettings?.ctaBanner ? `linear-gradient(rgba(15, 23, 42, 0.82), rgba(15, 23, 42, 0.82)), url(${api.defaults.baseURL}/api/storage/media/${code}/${websiteSettings.ctaBanner}) center/cover` : 'linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%)', color: 'white', padding: '80px 0', textAlign: 'center' }}>
       <div className="container">
         <div className="cta-content" style={{ maxWidth: '750px', margin: '0 auto' }}>
           <h2 style={{ fontSize: '2.25rem', fontWeight: 700, marginBottom: '20px' }}>{ctaTitle}</h2>

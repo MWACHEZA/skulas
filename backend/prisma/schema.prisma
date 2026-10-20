@@ -1650,7 +1650,6 @@ model SchoolSetting {
   nextTermBegin                   DateTime?
   language                        String?   @default("English")
   timezone                        String?   @default("UTC")
-  tawktoPropertyId                String?
   theme                           String?   @default("Blue")
   textAlignment                   String?   @default("Left-to-right")
   themeColour                     String?   @default("All white")
@@ -3312,6 +3311,16 @@ model WebsiteSettings {
   bannerTitleColor      String?
   schoolPrimaryColor    String?
   bannerImage           String?
+  heroBg                String?
+  ctaBanner             String?
+  aboutBanner           String?
+  departmentsBanner     String?
+  sportsBanner          String?
+  clubsBanner           String?
+  newsBanner            String?
+  galleryBanner         String?
+  contactBanner         String?
+  noticeboardBanner     String?
 
   // About Us Settings
   aboutTitle             String?

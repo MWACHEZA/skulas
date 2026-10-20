@@ -66,7 +66,7 @@ router.patch('/settings', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), va
       'smtpSsl', 'systemUrl', 'whatsappApiUrl', 'whatsappAccessToken', 'countryPhoneCode',
       'systemName', 'systemTitle', 'shortSystemName', 'systemEmail', 'phone',
       'address', 'paypalEmail', 'systemCurrency', 'runningSession', 'weekends',
-      'currentTerm', 'nextTermBegin', 'language', 'timezone', 'tawktoPropertyId',
+      'currentTerm', 'nextTermBegin', 'language', 'timezone',
       'theme', 'textAlignment', 'themeColour', 'enableParentMarketplace',
       'deletePaymentHistoryWithPartial', 'footer', 'country', 'state', 'city',
       'facebook', 'twitter', 'youtube', 'instagram', 'linkedin', 'tiktok',
@@ -551,7 +551,7 @@ router.patch('/me/plan', requireAuth, requireRole('SCHOOL_ADMIN'), validate(Upda
  */
 router.patch('/branding', requireAuth, requireRole('SCHOOL_ADMIN'), upload.single('logo'), validate(UpdateBrandingSchema), async (req: AuthRequest, res: Response) => {
   try {
-    const { primaryColor, accentColor, motto } = req.body;
+    const { primaryColor, accentColor, sidebarTheme, headerTheme, mode, motto } = req.body;
     const logoFilename = req.file ? req.file.filename : undefined;
 
     const existing = await prisma.school.findUnique({ where: { id: req.user!.schoolId! } });
@@ -562,6 +562,9 @@ router.patch('/branding', requireAuth, requireRole('SCHOOL_ADMIN'), upload.singl
       ...currentBranding,
       primaryColor: primaryColor || currentBranding.primaryColor,
       accentColor:  accentColor  || currentBranding.accentColor,
+      sidebarTheme: sidebarTheme !== undefined ? sidebarTheme : currentBranding.sidebarTheme,
+      headerTheme:  headerTheme  !== undefined ? headerTheme : currentBranding.headerTheme,
+      mode:         mode         !== undefined ? mode : currentBranding.mode,
       motto:        motto        !== undefined ? motto : currentBranding.motto,
       logo:         logoFilename || currentBranding.logo,
     };
