@@ -775,6 +775,51 @@ router.get('/textbooks', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN'), as
 });
 
 /**
+ * @route   POST /api/teachers/textbooks
+ * @desc    [TEACHER / ADMIN] Register a curriculum textbook linked to teacher/class/subject
+ */
+router.post('/textbooks', requireAuth, requireRole('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { title, author, isbn, totalCopies, subjectId, classId, description } = req.body;
+
+    if (!title || !author) {
+      return res.status(400).json({ error: 'Title and Author are required' });
+    }
+
+    let teacherId: string | null = null;
+    const teacher = await prisma.teacher.findFirst({ where: { userId: req.user!.id } });
+    if (teacher) {
+      teacherId = teacher.id;
+    }
+
+    const copiesCount = Math.max(1, parseInt(String(totalCopies || '1'), 10) || 1);
+
+    const book = await prisma.book.create({
+      data: {
+        title: String(title).trim(),
+        author: String(author).trim(),
+        isbn: isbn ? String(isbn).trim() : null,
+        description: description ? String(description).trim() : null,
+        copies: copiesCount,
+        available: copiesCount,
+        schoolId,
+        teacherId,
+        subjectId: subjectId || null,
+        classId: classId || null,
+        status: 'Available',
+        source: 'Curriculum'
+      }
+    });
+
+    res.status(201).json(book);
+  } catch (error: any) {
+    console.error('Error creating textbook:', error);
+    res.status(500).json({ error: error.message || 'Failed to add textbook' });
+  }
+});
+
+/**
  * @route   GET /api/teachers/my-classes
  * @desc    [TEACHER] Get classes assigned to teacher (as class teacher or subject teacher)
  */

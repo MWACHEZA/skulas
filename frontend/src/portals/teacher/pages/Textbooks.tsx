@@ -186,7 +186,7 @@ export default function TeacherTextbooks() {
     }
     try {
       setSubmitting(true);
-      await api.post('/api/library/books', newBook);
+      await api.post('/api/teachers/textbooks', newBook);
       showToast('Textbook added successfully', 'success');
       setShowAddModal(false);
       setNewBook({ title: '', author: '', isbn: '', totalCopies: '1', subjectId: '', classId: '', description: '' });
