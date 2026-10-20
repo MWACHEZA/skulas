@@ -56,7 +56,13 @@ export default function AdminSystemConfig() {
           email: data.systemEmail || prev.email,
           baseCurrency: data.baseCurrency || prev.baseCurrency,
           receiptHeader: data.receiptHeader || prev.receiptHeader,
-          receiptFooter: data.footer || prev.receiptFooter
+          receiptFooter: data.footer || prev.receiptFooter,
+          facebook: data.facebook || (data.school?.branding?.facebook) || prev.facebook || '',
+          twitter: data.twitter || (data.school?.branding?.twitter) || prev.twitter || '',
+          instagram: data.instagram || (data.school?.branding?.instagram) || prev.instagram || '',
+          linkedin: data.linkedin || (data.school?.branding?.linkedin) || prev.linkedin || '',
+          youtube: data.youtube || (data.school?.branding?.youtube) || prev.youtube || '',
+          tiktok: data.tiktok || (data.school?.branding?.tiktok) || prev.tiktok || ''
         }));
         if (data.logo || user?.school?.branding?.logo) {
           setCurrentLogo(getAvatarUrl(data.logo || user?.school?.branding?.logo, user?.schoolCode));
@@ -169,6 +175,12 @@ export default function AdminSystemConfig() {
     postalBox: 'P.O. Box 1890, Harare',
     phone: '+263 242 704123',
     email: 'admissions@stgeorges.ac.zw',
+    facebook: '',
+    twitter: '',
+    instagram: '',
+    linkedin: '',
+    youtube: '',
+    tiktok: '',
     taxNumber: 'ZIMRA-BP-20048192',
     baseCurrency: 'USD',
     bankName: 'Stanbic Bank Zimbabwe',
@@ -213,7 +225,13 @@ export default function AdminSystemConfig() {
         phone: profile.phone,
         systemEmail: profile.email,
         baseCurrency: profile.baseCurrency,
-        footer: profile.receiptFooter
+        footer: profile.receiptFooter,
+        facebook: profile.facebook,
+        twitter: profile.twitter,
+        instagram: profile.instagram,
+        linkedin: profile.linkedin,
+        youtube: profile.youtube,
+        tiktok: profile.tiktok
       });
       showToast('School profile, branding, and fiscal receipt details updated successfully!', 'success');
     } catch (err: any) {
@@ -443,6 +461,94 @@ export default function AdminSystemConfig() {
                     className="portal-input"
                     value={profile.email}
                     onChange={e => setProfile({ ...profile, email: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              {/* Official Social Media Channels */}
+              <h3 style={{ margin: '24px 0 6px', fontSize: '1.1rem', fontWeight: 700, color: '#1e293b', borderTop: '1px solid #f1f5f9', paddingTop: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <i className="fas fa-share-alt" style={{ color: '#4f46e5' }} /> Official Social Media & Public Channels
+              </h3>
+              <p style={{ margin: '0 0 16px', color: '#64748b', fontSize: '0.82rem' }}>
+                Direct links to your institution's verified social media pages. These appear on the public website header, footer, and inquiry directories.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14, marginBottom: 20 }}>
+                <div>
+                  <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <i className="fab fa-facebook-f" style={{ color: '#1877f2' }} /> Facebook Page URL
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://facebook.com/yourschool"
+                    className="portal-input"
+                    value={profile.facebook || ''}
+                    onChange={e => setProfile({ ...profile, facebook: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <i className="fab fa-twitter" style={{ color: '#0284c7' }} /> Twitter / X Profile URL
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://x.com/yourschool"
+                    className="portal-input"
+                    value={profile.twitter || ''}
+                    onChange={e => setProfile({ ...profile, twitter: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <i className="fab fa-instagram" style={{ color: '#e1306c' }} /> Instagram Profile URL
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://instagram.com/yourschool"
+                    className="portal-input"
+                    value={profile.instagram || ''}
+                    onChange={e => setProfile({ ...profile, instagram: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <i className="fab fa-linkedin-in" style={{ color: '#0a66c2' }} /> LinkedIn Institutional Page
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://linkedin.com/school/yourschool"
+                    className="portal-input"
+                    value={profile.linkedin || ''}
+                    onChange={e => setProfile({ ...profile, linkedin: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <i className="fab fa-youtube" style={{ color: '#ef4444' }} /> YouTube Channel URL
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://youtube.com/@yourschool"
+                    className="portal-input"
+                    value={profile.youtube || ''}
+                    onChange={e => setProfile({ ...profile, youtube: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="form-label" style={{ fontWeight: 600, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <i className="fab fa-tiktok" style={{ color: '#111827' }} /> TikTok Handle / URL
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://tiktok.com/@yourschool"
+                    className="portal-input"
+                    value={profile.tiktok || ''}
+                    onChange={e => setProfile({ ...profile, tiktok: e.target.value })}
                   />
                 </div>
               </div>

@@ -65,6 +65,8 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
     twitter: '',
     youtube: '',
     instagram: '',
+    linkedin: '',
+    tiktok: '',
     reportCardTemplate: 'Report card three',
     allowTeacherEnterScores: false,
     scoreClosingDate: '',
@@ -759,6 +761,41 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
                   >
                     <i className="fas fa-images" /> Manage Public Website Banners &darr;
                   </button>
+                </div>
+              </div>
+            {/* School Social Media Links */}
+            <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid #f1f5f9' }}>
+              <h4 style={{ margin: '0 0 6px', fontSize: '1.05rem', fontWeight: 800, color: '#1e293b', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <i className="fas fa-share-alt" style={{ color: '#0284c7' }} /> School Social Media Channels
+              </h4>
+              <p style={{ margin: '0 0 16px', color: '#64748b', fontSize: '0.85rem' }}>
+                Official social channels displayed in the public website navigation bar, footer, and inquiry directories.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
+                <div className="form-group">
+                  <label className="portal-label"><i className="fab fa-facebook-f mr-1" style={{ color: '#1877f2' }} /> Facebook Page URL</label>
+                  <input className="portal-input" type="url" placeholder="https://facebook.com/myschool" value={settings.facebook || ''} onChange={e => updateSetting('facebook', e.target.value)} />
+                </div>
+                <div className="form-group">
+                  <label className="portal-label"><i className="fab fa-twitter mr-1" style={{ color: '#0284c7' }} /> Twitter / X URL</label>
+                  <input className="portal-input" type="url" placeholder="https://x.com/myschool" value={settings.twitter || ''} onChange={e => updateSetting('twitter', e.target.value)} />
+                </div>
+                <div className="form-group">
+                  <label className="portal-label"><i className="fab fa-instagram mr-1" style={{ color: '#e1306c' }} /> Instagram URL</label>
+                  <input className="portal-input" type="url" placeholder="https://instagram.com/myschool" value={settings.instagram || ''} onChange={e => updateSetting('instagram', e.target.value)} />
+                </div>
+                <div className="form-group">
+                  <label className="portal-label"><i className="fab fa-linkedin-in mr-1" style={{ color: '#0a66c2' }} /> LinkedIn URL</label>
+                  <input className="portal-input" type="url" placeholder="https://linkedin.com/school/myschool" value={settings.linkedin || ''} onChange={e => updateSetting('linkedin', e.target.value)} />
+                </div>
+                <div className="form-group">
+                  <label className="portal-label"><i className="fab fa-youtube mr-1" style={{ color: '#ef4444' }} /> YouTube Channel URL</label>
+                  <input className="portal-input" type="url" placeholder="https://youtube.com/@myschool" value={settings.youtube || ''} onChange={e => updateSetting('youtube', e.target.value)} />
+                </div>
+                <div className="form-group">
+                  <label className="portal-label"><i className="fab fa-tiktok mr-1" style={{ color: '#111827' }} /> TikTok URL</label>
+                  <input className="portal-input" type="url" placeholder="https://tiktok.com/@myschool" value={settings.tiktok || ''} onChange={e => updateSetting('tiktok', e.target.value)} />
                 </div>
               </div>
             </div>
