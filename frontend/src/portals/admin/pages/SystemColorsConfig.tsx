@@ -124,7 +124,7 @@ export default function SystemColorsConfig({ onSaved }: SystemColorsConfigProps)
             sidebarTheme,
             headerTheme,
             mode
-          }
+          } as any
         });
       }
 

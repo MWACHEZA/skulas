@@ -113,7 +113,7 @@ export default function AdminSystemConfig() {
       const fullUrl = getAvatarUrl(faviconPath, user?.schoolCode);
       setCurrentFavicon(fullUrl);
       if (fullUrl) {
-        const link = document.querySelector("link[rel*='icon']");
+        const link = document.querySelector<HTMLLinkElement>("link[rel*='icon']");
         if (link) link.href = fullUrl;
       }
       window.dispatchEvent(new CustomEvent('school-settings-updated', { detail: { type: 'favicon' } }));

@@ -160,7 +160,7 @@ export default function StudyMaterial() {
         if (id) assignedIds.add(id);
       });
       // 2. Collect class subject teacher allocations
-      (user.teacher?.subjectClasses || []).forEach((sc: any) => {
+      ((user.teacher as any)?.subjectClasses || []).forEach((sc: any) => {
         const id = sc.subjectId || sc.subject?.id || sc.id;
         if (id) assignedIds.add(id);
       });

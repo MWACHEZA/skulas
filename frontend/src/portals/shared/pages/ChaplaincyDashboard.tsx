@@ -204,7 +204,7 @@ export default function ChaplaincyDashboard() {
   if (loading) {
     return (
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '24px 20px', minHeight: '100vh', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        <SkeletonLoader type="dashboard" />
+        <SkeletonLoader type="stats" />
       </div>
     );
   }

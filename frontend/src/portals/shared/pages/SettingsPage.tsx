@@ -350,6 +350,15 @@ export default function SettingsPage({ defaultTab: _defaultTab }: SettingsPagePr
   const receivableAccounts = coaAccounts.filter(a => a.type === 'ASSET' && (/receivable|debtor|student/i.test(a.name) || a.code.startsWith('12')));
   const expenseAccounts = coaAccounts.filter(a => a.type === 'EXPENSE' || a.type === 'COST_OF_GOODS_SOLD');
 
+  const userSchoolLogo = user?.schoolBranding?.logo || (user as any)?.schoolLogo || user?.school?.logo || null;
+  const currentLogo = settings.logo
+    ? getAvatarUrl(settings.logo, user?.schoolCode)
+    : (userSchoolLogo ? getAvatarUrl(userSchoolLogo, user?.schoolCode) : null);
+
+  const currentFavicon = settings.favicon
+    ? getAvatarUrl(settings.favicon, user?.schoolCode)
+    : null;
+
   if (loading) {
     return (
       <div className="portal-container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px 0' }}>

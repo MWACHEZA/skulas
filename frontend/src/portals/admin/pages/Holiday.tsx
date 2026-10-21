@@ -429,7 +429,6 @@ export default function Holiday() {
                       style={{ 
                         fontWeight: isToday ? 900 : 700, 
                         fontSize: '0.88rem', 
-                        color: isToday ? '#0284c7' : '#1e293b',
                         width: 24,
                         height: 24,
                         borderRadius: '50%',
