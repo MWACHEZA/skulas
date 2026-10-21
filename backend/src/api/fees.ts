@@ -1117,7 +1117,7 @@ router.get('/parent-summary', requireAuth, async (req: AuthRequest, res: Respons
 
       if (!studentId) {
         const firstLink = await prisma.parentStudent.findFirst({
-          where: { parentId: parent.id, status: 'APPROVED' },
+          where: { parentId: parent.id, status: { in: ['APPROVED', 'PENDING'] } },
           select: { studentId: true }
         });
         if (!firstLink) {
@@ -1126,7 +1126,7 @@ router.get('/parent-summary', requireAuth, async (req: AuthRequest, res: Respons
         studentId = firstLink.studentId;
       } else {
         const link = await prisma.parentStudent.findFirst({
-          where: { parentId: parent.id, studentId, status: 'APPROVED' }
+          where: { parentId: parent.id, studentId, status: { in: ['APPROVED', 'PENDING'] } }
         });
         if (!link) {
           return res.status(403).json({ error: 'Unauthorized: You are not authorized to view finances for this student' });
@@ -1181,6 +1181,8 @@ router.get('/parent-summary', requireAuth, async (req: AuthRequest, res: Respons
     };
 
     // 2. Fetch Invoices / Fees
+    const studentInvoices = await prisma.studentInvoice.findMany({ where: { studentId: student.id, schoolId }, include: { items: true, allocations: true }, orderBy: { dueDate: 'asc' } });
+    const receipts = await prisma.receipt.findMany({ where: { studentId: student.id, schoolId }, orderBy: { createdAt: 'desc' } });
     const fees = await prisma.fee.findMany({
       where: { studentId: student.id, schoolId },
       include: { feeGroup: true },
@@ -1214,9 +1216,12 @@ router.get('/parent-summary', requireAuth, async (req: AuthRequest, res: Respons
     });
 
     // Compute Totals
-    const totalBilled = Math.round(fees.reduce((sum, f) => sum + f.amount, 0) * 100) / 100;
-    const totalPaid = Math.round(fees.reduce((sum, f) => sum + f.paid, 0) * 100) / 100;
-    const totalBalanceDue = Math.round(fees.reduce((sum, f) => sum + Math.max(0, f.amount - f.paid), 0) * 100) / 100;
+    const invBilled = studentInvoices.reduce((sum, inv) => sum + inv.totalAmount, 0);
+    const invPaid = studentInvoices.reduce((sum, inv) => sum + inv.allocations.reduce((rSum, r) => rSum + r.allocatedAmount, 0), 0);
+    const directReceiptsPaid = receipts.filter(r => !studentInvoices.some(inv => inv.allocations.some(ir => ir.receiptId === r.id))).reduce((sum, r) => sum + r.amount, 0);
+    const totalBilled = Math.round((fees.reduce((sum, f) => sum + f.amount, 0) + invBilled) * 100) / 100;
+    const totalPaid = Math.round((fees.reduce((sum, f) => sum + f.paid, 0) + invPaid + directReceiptsPaid) * 100) / 100;
+    const totalBalanceDue = Math.max(0, Math.round((totalBilled - totalPaid) * 100) / 100);
     const zigBalanceDue = Math.round(totalBalanceDue * exchangeRate * 100) / 100;
 
     // Due Date Warning Threshold (green > 14 days, amber 7-14 days, red < 7 days / overdue)
@@ -1314,6 +1319,32 @@ router.get('/parent-summary', requireAuth, async (req: AuthRequest, res: Respons
       };
     }).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
+    const mappedStudentInvoices = studentInvoices.map(inv => {
+      const paid = inv.allocations.reduce((sum, al) => sum + al.allocatedAmount, 0);
+      const bal = Math.max(0, Math.round((inv.totalAmount - paid) * 100) / 100);
+      let status = inv.status;
+      if (bal <= 0) status = 'paid';
+      else if (paid > 0) status = 'partial';
+      else if (inv.dueDate && new Date(inv.dueDate) < now) status = 'overdue';
+      else status = 'unpaid';
+
+      return {
+        id: inv.id,
+        invoiceNumber: inv.invoiceNumber || `INV-${inv.id.slice(-6).toUpperCase()}`,
+        description: (inv.items && inv.items.length > 0) ? inv.items.map((it: any) => it.description).join(', ') : `${inv.term || 'Term 1'} ${inv.sourceModule ? inv.sourceModule.toUpperCase() : 'Tuition'} Fees`,
+        amount: inv.totalAmount,
+        paid,
+        balance: bal,
+        dueDate: inv.dueDate,
+        status,
+        term: inv.term || 'Term 1',
+        year: inv.year || 2026,
+        createdAt: inv.createdAt
+      };
+    });
+
+    const allInvoices = [...formattedInvoices, ...mappedStudentInvoices].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
     // Tab 2: Receipts (sorted newest first)
     const formattedReceipts = payments.map(p => ({
       id: p.id,
@@ -1326,6 +1357,20 @@ router.get('/parent-summary', requireAuth, async (req: AuthRequest, res: Respons
       isPending: p.status === 'Pending',
       createdAt: p.createdAt
     })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    const mappedReceipts = receipts.map(r => ({
+      id: r.id,
+      receiptNumber: r.receiptNumber || `RCP-${r.id.slice(-6).toUpperCase()}`,
+      date: r.createdAt.toISOString(),
+      amount: r.amount,
+      paymentMode: r.paymentMethod || 'Official School Receipt',
+      description: 'Official Fee Receipt',
+      status: 'Verified',
+      isPending: false,
+      createdAt: r.createdAt.toISOString()
+    }));
+
+    const allReceipts = [...formattedReceipts, ...mappedReceipts].sort((a, b) => new Date(b.date || b.createdAt).getTime() - new Date(a.date || a.createdAt).getTime());
 
     // Tab 3: Full Statement (Student Ledger - read-only, strict plain English)
     const arAccount = await prisma.chartOfAccount.findFirst({
@@ -1465,8 +1510,8 @@ router.get('/parent-summary', requireAuth, async (req: AuthRequest, res: Respons
       },
       categories: categoriesList,
       tuckshopCrossReference,
-      invoices: formattedInvoices,
-      receipts: formattedReceipts,
+      invoices: allInvoices,
+      receipts: allReceipts,
       statement: statementEntries,
       activePaymentPlan: activePaymentPlanData
     });
@@ -1499,7 +1544,7 @@ router.post('/upload-proof', requireAuth, upload.single('document'), async (req:
       const parent = await prisma.parent.findUnique({ where: { userId: req.user.id } });
       if (!parent) return res.status(403).json({ error: 'Parent record not found' });
       const link = await prisma.parentStudent.findFirst({
-        where: { parentId: parent.id, studentId, status: 'APPROVED' }
+        where: { parentId: parent.id, studentId, status: { in: ['APPROVED', 'PENDING'] } }
       });
       if (!link) return res.status(403).json({ error: 'You are not authorized for this student' });
     }

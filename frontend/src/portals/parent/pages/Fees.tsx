@@ -121,7 +121,8 @@ interface FeeSummaryData {
 }
 
 export default function ParentFees() {
-  const { activeEntity } = useAuth();
+  const { user, activeEntity } = useAuth();
+  const currentChild = activeEntity || user?.linkedEntities?.[0];
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -162,10 +163,11 @@ export default function ParentFees() {
 
   // Fetch summary
   const fetchSummary = useCallback(async () => {
-    if (!activeEntity?.id) return;
+    const studentId = currentChild?.id;
+    if (!studentId) return;
     setLoading(true);
     try {
-      const res = await api.get(`/api/fees/parent-summary?studentId=${activeEntity.id}`);
+      const res = await api.get(`/api/fees/parent-summary?studentId=${studentId}`);
       setData(res.data);
     } catch (err: any) {
       console.error('Error fetching parent fees summary:', err);
@@ -173,7 +175,7 @@ export default function ParentFees() {
     } finally {
       setLoading(false);
     }
-  }, [activeEntity?.id, showToast]);
+  }, [currentChild?.id, showToast]);
 
   useEffect(() => {
     fetchSummary();
@@ -298,7 +300,7 @@ export default function ParentFees() {
     }
   };
 
-  if (!activeEntity) {
+  if (!currentChild) {
     return (
       <div className="portal-container" style={{ padding: 40, textAlign: 'center' }}>
         <EmptyState

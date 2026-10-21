@@ -216,7 +216,7 @@ export default function AdminDining() {
                   </label>
                   <input
                     type="text"
-                    value={weeklyMenu[day]?.breakfast || ''}
+                    value={weeklyMenu[day]?.breakfast || weeklyMenu[day.toLowerCase()]?.breakfast || ''}
                     onChange={e => handleMealChange(day, 'breakfast', e.target.value)}
                     style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
                   />
@@ -228,7 +228,7 @@ export default function AdminDining() {
                   </label>
                   <input
                     type="text"
-                    value={weeklyMenu[day]?.lunch || ''}
+                    value={weeklyMenu[day]?.lunch || weeklyMenu[day.toLowerCase()]?.lunch || ''}
                     onChange={e => handleMealChange(day, 'lunch', e.target.value)}
                     style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
                   />
@@ -240,7 +240,7 @@ export default function AdminDining() {
                   </label>
                   <input
                     type="text"
-                    value={weeklyMenu[day]?.dinner || ''}
+                    value={weeklyMenu[day]?.dinner || weeklyMenu[day.toLowerCase()]?.dinner || ''}
                     onChange={e => handleMealChange(day, 'dinner', e.target.value)}
                     style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
                   />

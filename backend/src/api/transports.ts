@@ -367,6 +367,9 @@ router.get('/parent-summary', requireAuth, async (req: AuthRequest, res: Respons
     const todayStatus = schoolSetting?.transportTodayStatus || 'Bus departed school 15:32 ✓';
 
     // 2. Fetch routes and transports in this school
+    const vehicles = await prisma.schoolVehicle.findMany({ where: { schoolId: effectiveSchoolId }, orderBy: { createdAt: 'asc' } });
+    const allocation = await prisma.studentTransportAllocation.findFirst({ where: { studentId: student.id }, include: { route: true, transport: { include: { vehicle: true, route: true } } } });
+    const requests = await prisma.transportRequest.findMany({ where: { schoolId: effectiveSchoolId }, orderBy: { createdAt: 'desc' } });
     const routes = await prisma.transportRoute.findMany({
       where: { schoolId: effectiveSchoolId },
       orderBy: { createdAt: 'asc' }
@@ -384,17 +387,20 @@ router.get('/parent-summary', requireAuth, async (req: AuthRequest, res: Respons
     const primaryTransport = transports[0];
     const primaryRoute = routes[0];
 
-    const routeName = primaryTransport?.route?.name || primaryRoute?.name || 'Route Alpha (CBD & Northern Suburbs)';
-    const vehicle = primaryTransport?.vehicle;
+    const isEnrolled = !!allocation;
+    const activeRoute = allocation?.route || allocation?.transport?.route || routes[0] || null;
+    const activeVehicle = allocation?.transport?.vehicle || vehicles[0] || null;
+    const routeName = activeRoute?.name || primaryTransport?.route?.name || 'School Bus Route';
+    const vehicle = activeVehicle || primaryTransport?.vehicle;
     const vehicleReg = vehicle?.number
       ? `${vehicle.model || 'Bus'} (${vehicle.number})`
-      : (primaryRoute?.vehicle || 'Bus 03 (Reg: AEK 1234)');
-    const driverName = vehicle?.driverName || primaryRoute?.driverName || 'Mr. S. Moyo';
-    const driverPhone = vehicle?.driverContact || primaryRoute?.driverPhone || '+263 77 234 5678';
+      : (primaryRoute?.name || 'School Transport Service');
+    const driverName = vehicle?.driverName || 'Designated Driver';
+    const driverPhone = vehicle?.driverContact || '+263 77 000 0000';
     const coordinatorContact = '+263 71 999 8888';
 
     // Stop configuration for the child
-    const childStopName = 'Ascot Shopping Centre';
+    const childStopName = (allocation as any)?.stopName || student.address || 'Designated Campus Stop';
     const pickupTime = '06:45 AM';
     const dropoffTime = '16:15 PM';
 
@@ -444,8 +450,18 @@ router.get('/parent-summary', requireAuth, async (req: AuthRequest, res: Respons
         id: student.id,
         name: student.name,
         studentId: student.studentId,
-        gradeLevel: student.class?.name || 'Form 3'
+        gradeLevel: student.class?.name || 'Primary School'
       },
+      isEnrolled,
+      allocation: allocation || null,
+      availableVehicles: vehicles.map(v => ({
+        id: v.id,
+        name: v.name,
+        number: v.number,
+        model: v.model,
+        driverName: v.driverName,
+        driverContact: v.driverContact
+      })),
       gpsEnabled,
       todayStatus,
       route: {
@@ -683,6 +699,52 @@ router.post('/change-route-request', requireAuth, async (req: AuthRequest, res: 
   } catch (error: any) {
     console.error('Error submitting change route request:', error);
     res.status(500).json({ error: 'Failed to submit route request: ' + error.message });
+  }
+});
+
+/**
+ * @route   POST /api/transports/enroll-request
+ * @desc    Submit an enrolment request for transport from the Parent Portal
+ */
+router.post('/enroll-request', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const { studentId, routeId, pickupPoint, notes } = req.body;
+    if (!studentId || !routeId) {
+      return res.status(400).json({ error: 'studentId and routeId are required.' });
+    }
+
+    const student = await prisma.student.findUnique({
+      where: { id: studentId }
+    });
+    if (!student) {
+      return res.status(404).json({ error: 'Student not found.' });
+    }
+
+    const requestRecord = await prisma.transportRequest.create({
+      data: {
+        eventId: `ENROLL_${studentId}_${routeId}`,
+        schoolId: student.schoolId,
+        status: 'PENDING',
+        details: JSON.stringify({
+          type: 'PARENT_ENROLLMENT_REQUEST',
+          studentId,
+          studentName: student.name,
+          routeId,
+          pickupPoint: pickupPoint || student.address || 'Designated Stop',
+          dropoffPoint: 'School Campus',
+          notes: notes || `Requested route: ${routeId}`
+        })
+      }
+    });
+
+    res.json({
+      success: true,
+      message: 'Transport enrolment request successfully submitted to the school transport office.',
+      request: requestRecord
+    });
+  } catch (error: any) {
+    console.error('Error submitting transport enrolment request:', error);
+    res.status(500).json({ error: 'Failed to submit enrolment request: ' + error.message });
   }
 });
 

@@ -32,7 +32,16 @@ function paymentAccountCode(paymentMethod: string): string {
 // ─────────────────────────────────────────────────────────────────────────────
 router.get('/items', async (req: AuthRequest, res) => {
   try {
-    const schoolId = req.user?.schoolId;
+    let schoolId = req.user?.schoolId || (req.headers['x-school-id'] as string);
+    if (!schoolId && req.user?.role === 'PARENT') {
+      const parent = await prisma.parent.findUnique({
+        where: { userId: req.user.id },
+        include: { students: { include: { student: true } } }
+      });
+      if (parent && parent.students.length > 0) {
+        schoolId = parent.students[0].student.schoolId;
+      }
+    }
     if (!schoolId) return res.status(400).json({ error: 'Missing schoolId' });
 
     const items = await prisma.tuckshopItem.findMany({
@@ -51,7 +60,16 @@ router.get('/items', async (req: AuthRequest, res) => {
 // ─────────────────────────────────────────────────────────────────────────────
 router.post('/items', async (req: AuthRequest, res) => {
   try {
-    const schoolId = req.user?.schoolId;
+    let schoolId = req.user?.schoolId || (req.headers['x-school-id'] as string);
+    if (!schoolId && req.user?.role === 'PARENT') {
+      const parent = await prisma.parent.findUnique({
+        where: { userId: req.user.id },
+        include: { students: { include: { student: true } } }
+      });
+      if (parent && parent.students.length > 0) {
+        schoolId = parent.students[0].student.schoolId;
+      }
+    }
     if (!schoolId) return res.status(400).json({ error: 'Missing schoolId' });
 
     const { name, category, price, stock } = req.body;
@@ -126,7 +144,16 @@ router.put('/items/:id', async (req, res) => {
 // ─────────────────────────────────────────────────────────────────────────────
 router.post('/sales', async (req: AuthRequest, res) => {
   try {
-    const schoolId = req.user?.schoolId;
+    let schoolId = req.user?.schoolId || (req.headers['x-school-id'] as string);
+    if (!schoolId && req.user?.role === 'PARENT') {
+      const parent = await prisma.parent.findUnique({
+        where: { userId: req.user.id },
+        include: { students: { include: { student: true } } }
+      });
+      if (parent && parent.students.length > 0) {
+        schoolId = parent.students[0].student.schoolId;
+      }
+    }
     if (!schoolId) return res.status(400).json({ error: 'Missing schoolId' });
 
     const { items, paymentMethod, studentId } = req.body;

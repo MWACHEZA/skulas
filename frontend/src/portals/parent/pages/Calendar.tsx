@@ -40,17 +40,18 @@ export default function ParentCalendar() {
         const holidayRes = await api.get('/api/schools/holidays');
         if (Array.isArray(holidayRes.data)) {
           holidayRes.data.forEach((h: any) => {
-            if (h.date) {
-              const d = new Date(h.date);
+            const rawDate = h.startDate || h.date || h.createdAt;
+            if (rawDate) {
+              const d = new Date(rawDate);
               mergedEvents.push({
                 id: `hol-${h.id || Math.random()}`,
-                title: h.name || h.title || 'School Holiday',
+                title: h.title || h.name || 'School Holiday',
                 dateStr: d.toISOString().slice(0, 10),
                 rawDate: d,
                 time: 'All Day',
                 category: 'Holiday',
                 location: 'Campus Wide',
-                description: h.description || 'Official school holiday / break',
+                description: h.content || h.description || 'Official school holiday / break',
                 isImportant: true
               });
             }
@@ -92,38 +93,43 @@ export default function ParentCalendar() {
         console.warn('Could not load announcements:', e);
       }
 
-      // 3. Fallback high-value school events if database has few events
-      if (mergedEvents.length === 0) {
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = now.getMonth();
-
-        const defaultMockDates = [
-          { day: 25, title: 'Parent-Teacher Consultations & Academic Review', time: '08:30 - 16:30', category: 'Academic' as const, location: 'Great Hall' },
-          { day: 28, title: 'Inter-House Swimming Gala & Athletics Meet', time: '09:00 - 13:00', category: 'Sports' as const, location: 'Aquatics Complex' },
-          { day: 5, title: 'Term Opening Assembly & Roll Call', time: '08:00 - 09:30', category: 'Event' as const, location: 'Main Quad' },
-          { day: 15, title: 'Continuous Assessment & Mid-Term Exams', time: '08:30 - 14:00', category: 'Exam' as const, location: 'Examination Hall' },
-          { day: 18, title: 'Start of Half-Term Break', time: 'All Day', category: 'Holiday' as const, location: 'All Campuses' }
-        ];
-
-        defaultMockDates.forEach((mock, idx) => {
-          const d = new Date(year, month, mock.day);
-          mergedEvents.push({
-            id: `def-${idx}`,
-            title: mock.title,
-            dateStr: d.toISOString().slice(0, 10),
-            rawDate: d,
-            time: mock.time,
-            category: mock.category,
-            location: mock.location,
-            description: 'Official school calendar activity for enrolled students and parents.',
-            isImportant: mock.category === 'Holiday' || mock.category === 'Exam'
+      // 3. Fetch noticeboard items from /api/website-settings/noticeboard
+      try {
+        const nbRes = await api.get('/api/website-settings/noticeboard');
+        if (Array.isArray(nbRes.data)) {
+          nbRes.data.forEach((nb: any) => {
+            const rawDate = nb.date || nb.createdAt;
+            if (rawDate) {
+              const d = new Date(rawDate);
+              mergedEvents.push({
+                id: `nb-${nb.id || Math.random()}`,
+                title: nb.title,
+                dateStr: d.toISOString().slice(0, 10),
+                rawDate: d,
+                time: 'Campus Scheduled',
+                category: 'Event',
+                location: 'Campus Wide',
+                description: nb.content || 'School Noticeboard bulletin',
+                isImportant: false
+              });
+            }
           });
-        });
+        }
+      } catch (e) {
+        console.warn('Could not load noticeboard:', e);
       }
 
-      mergedEvents.sort((a, b) => a.rawDate.getTime() - b.rawDate.getTime());
-      setEvents(mergedEvents);
+      // Deduplicate events by title + dateStr
+      const seen = new Set<string>();
+      const dedupedEvents = mergedEvents.filter(ev => {
+        const key = `${ev.title}-${ev.dateStr}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+
+      dedupedEvents.sort((a, b) => a.rawDate.getTime() - b.rawDate.getTime());
+      setEvents(dedupedEvents);
     } catch (err) {
       console.error('Failed to load calendar events:', err);
       showToast('Could not load some calendar events.', 'info');

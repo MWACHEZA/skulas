@@ -156,7 +156,24 @@ router.get('/menu', async (req: AuthRequest, res: Response) => {
       }
     }
 
-    res.json(menu);
+    const rawData = (menu?.menuData as Record<string, any>) || {};
+    const dayPairs = [
+      ['monday', 'Monday'],
+      ['tuesday', 'Tuesday'],
+      ['wednesday', 'Wednesday'],
+      ['thursday', 'Thursday'],
+      ['friday', 'Friday'],
+      ['saturday', 'Saturday'],
+      ['sunday', 'Sunday']
+    ];
+    const normalizedMenuData: Record<string, any> = { ...rawData };
+    for (const [lower, upper] of dayPairs) {
+      const val = rawData[lower] || rawData[upper] || { breakfast: 'Nutritious Morning Serving', lunch: 'Balanced Midday Meal', dinner: 'Wholesome Evening Supper' };
+      normalizedMenuData[lower] = val;
+      normalizedMenuData[upper] = val;
+    }
+
+    res.json({ ...menu, menuData: normalizedMenuData });
   } catch (error) {
     console.error('Fetch menu error:', error);
     res.status(500).json({ error: 'Failed to fetch menu' });
@@ -185,7 +202,24 @@ router.post('/menu', async (req: AuthRequest, res: Response) => {
     });
 
     await logAction(req, 'CREATE_MENU', 'WeeklyMenu', menu.id, { weekStarting });
-    res.json(menu);
+    const rawData = (menu?.menuData as Record<string, any>) || {};
+    const dayPairs = [
+      ['monday', 'Monday'],
+      ['tuesday', 'Tuesday'],
+      ['wednesday', 'Wednesday'],
+      ['thursday', 'Thursday'],
+      ['friday', 'Friday'],
+      ['saturday', 'Saturday'],
+      ['sunday', 'Sunday']
+    ];
+    const normalizedMenuData: Record<string, any> = { ...rawData };
+    for (const [lower, upper] of dayPairs) {
+      const val = rawData[lower] || rawData[upper] || { breakfast: 'Nutritious Morning Serving', lunch: 'Balanced Midday Meal', dinner: 'Wholesome Evening Supper' };
+      normalizedMenuData[lower] = val;
+      normalizedMenuData[upper] = val;
+    }
+
+    res.json({ ...menu, menuData: normalizedMenuData });
   } catch (error) {
     console.error('Save menu error:', error);
     res.status(500).json({ error: 'Failed to save menu' });

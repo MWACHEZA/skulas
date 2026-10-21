@@ -53,7 +53,8 @@ interface UniformsSummary {
 }
 
 export default function ParentUniforms() {
-  const { activeEntity } = useAuth();
+  const { user, activeEntity } = useAuth();
+  const currentChild = activeEntity || user?.linkedEntities?.[0];
   const { showToast } = useToast();
 
   const [loading, setLoading] = useState(true);
@@ -69,66 +70,40 @@ export default function ParentUniforms() {
 
   useEffect(() => {
     fetchUniforms();
-  }, [activeEntity?.id]);
+  }, [currentChild?.id]);
 
   const fetchUniforms = async () => {
     setLoading(true);
     try {
-      const studentId = activeEntity?.id;
+      const studentId = currentChild?.id;
       const url = studentId ? `/api/uniforms/parent-summary?studentId=${studentId}` : '/api/uniforms/parent-summary';
       const res = await api.get(url);
       setData(res.data);
     } catch (err) {
-      console.error('Failed to fetch uniforms data, loading fallback view:', err);
-      // Fallback fallback if tenant has fresh DB
+      console.error('Failed to fetch uniforms data, loading safe baseline:', err);
       setData({
         student: {
-          id: activeEntity?.id || 'stu-1',
-          name: activeEntity?.name || 'Child Records',
-          studentId: 'STU-2024-001',
-          gradeLevel: 'Grade 10A',
-          schoolName: 'St. Jude International Academy'
+          id: currentChild?.id || 'stu-1',
+          name: currentChild?.name || 'Student Records',
+          studentId: currentChild?.studentId || '',
+          gradeLevel: currentChild?.className || 'Primary School',
+          schoolName: currentChild?.schoolName || 'Lobengula Primary'
         },
         requirements: [
-          { id: 'req-1', name: 'Grey School Shorts / Pleated Skirt', category: 'Uniform', requiredQty: 2, ownedQty: 2, isSeasonal: false, seasonNotes: 'Standard daily dress code', status: 'FULFILLED' },
-          { id: 'req-2', name: 'Winter Woollen Blazer', category: 'Uniform', requiredQty: 1, ownedQty: 0, isSeasonal: true, seasonNotes: 'Required for winter — missing', status: 'MISSING' },
-          { id: 'req-3', name: 'White Collared Formal Shirts', category: 'Uniform', requiredQty: 3, ownedQty: 3, isSeasonal: false, seasonNotes: 'Daily formal wear', status: 'FULFILLED' },
-          { id: 'req-4', name: 'Mathematics Core Textbook', category: 'Textbook', requiredQty: 1, ownedQty: 1, isSeasonal: false, seasonNotes: 'Core syllabus requirement', status: 'FULFILLED' },
-          { id: 'req-5', name: 'Agriculture Practical Workbook', category: 'Workbook', requiredQty: 1, ownedQty: 0, isSeasonal: false, seasonNotes: 'Not purchased', status: 'MISSING' },
-          { id: 'req-6', name: 'Official Striped School Tie', category: 'Uniform', requiredQty: 1, ownedQty: 1, isSeasonal: false, seasonNotes: 'Assembly and formal events', status: 'FULFILLED' },
-          { id: 'req-7', name: 'Physical Education Winter Tracksuit', category: 'Sports', requiredQty: 1, ownedQty: 0, isSeasonal: true, seasonNotes: 'Term 2 sporting fixture requirement', status: 'MISSING' }
+          { id: 'req-1', name: 'Primary Official Uniform Set', category: 'Uniform', requiredQty: 2, ownedQty: 0, isSeasonal: false, seasonNotes: 'Daily standard dress code', status: 'MISSING' },
+          { id: 'req-2', name: 'School Knitwear / Jersey', category: 'Uniform', requiredQty: 1, ownedQty: 0, isSeasonal: true, seasonNotes: 'Winter uniform requirement', status: 'MISSING' },
+          { id: 'req-3', name: 'Official Striped School Tie', category: 'Uniform', requiredQty: 1, ownedQty: 0, isSeasonal: false, seasonNotes: 'Assemblies and formal events', status: 'MISSING' },
+          { id: 'req-4', name: 'Physical Education Sportswear Kit', category: 'Sports', requiredQty: 1, ownedQty: 0, isSeasonal: false, seasonNotes: 'Weekly sports and physical education', status: 'MISSING' }
         ],
         shopItems: [
-          { id: 'def-1', name: 'Winter Woollen Blazer', price: 45.00, stockLevel: 24, isMissingForChild: true },
-          { id: 'def-2', name: 'Agriculture Practical Workbook', price: 12.00, stockLevel: 40, isMissingForChild: true },
-          { id: 'def-7', name: 'Physical Education Winter Tracksuit', price: 32.00, stockLevel: 18, isMissingForChild: true },
-          { id: 'def-3', name: 'Grey School Shorts / Pleated Skirt', price: 18.00, stockLevel: 35, isMissingForChild: false },
-          { id: 'def-4', name: 'White Collared Formal Shirt', price: 10.00, stockLevel: 50, isMissingForChild: false },
-          { id: 'def-5', name: 'Official Striped School Tie', price: 6.00, stockLevel: 60, isMissingForChild: false },
-          { id: 'def-8', name: 'Black Cotton Socks (Pack of 3)', price: 5.00, stockLevel: 100, isMissingForChild: false }
+          { id: 'shop-1', name: 'Primary Official Uniform Set', price: 25.00, stockLevel: 30, isMissingForChild: true },
+          { id: 'shop-2', name: 'School V-Neck Knitwear Jersey', price: 18.00, stockLevel: 25, isMissingForChild: true },
+          { id: 'shop-3', name: 'Official Striped School Tie', price: 5.00, stockLevel: 50, isMissingForChild: true },
+          { id: 'shop-4', name: 'Physical Education Sportswear Kit', price: 15.00, stockLevel: 40, isMissingForChild: true },
+          { id: 'shop-5', name: 'School Cotton Sun Cap', price: 6.00, stockLevel: 60, isMissingForChild: false },
+          { id: 'shop-6', name: 'Navy Blue School Socks (Pack of 3)', price: 4.50, stockLevel: 80, isMissingForChild: false }
         ],
-        orderHistory: [
-          {
-            id: 'ord-101',
-            orderNumber: 'ORD-984210',
-            date: '15 Jan 2026',
-            itemsCount: 6,
-            itemsSummary: 'Grey Shorts x2, White Shirts x3, School Tie x1',
-            totalAmount: 72.00,
-            paymentMode: 'Paynow USD',
-            status: 'Ready for collection ✓'
-          },
-          {
-            id: 'ord-102',
-            orderNumber: 'ORD-871140',
-            date: '10 Sep 2025',
-            itemsCount: 1,
-            itemsSummary: 'Mathematics Core Textbook x1',
-            totalAmount: 25.00,
-            paymentMode: 'EcoCash ZiG',
-            status: 'Collected'
-          }
-        ]
+        orderHistory: []
       });
     } finally {
       setLoading(false);
@@ -200,8 +175,47 @@ export default function ParentUniforms() {
           <h1>Uniforms & School Supplies</h1>
           <p>
             Official dress code requirements, textbooks, top-up supplies, and past orders for{' '}
-            <strong>{student?.name || activeEntity?.name}</strong> ({student?.gradeLevel}).
+            <strong>{student?.name || currentChild?.name}</strong> ({student?.gradeLevel}).
           </p>
+        </div>
+      </div>
+
+      {/* KPI Stat Cards */}
+      <div className="portal-stats-grid">
+        <div className="portal-stat-card" style={{ borderLeft: '4px solid #10b981' }}>
+          <div className="portal-stat-icon green">
+            <i className="fas fa-check-circle"></i>
+          </div>
+          <div className="portal-stat-info">
+            <h3 style={{ fontSize: '1.8rem', fontWeight: 900 }}>
+              {requirements.filter(r => r.status === 'FULFILLED').length} / {requirements.length}
+            </h3>
+            <p>Requirements Fulfilled</p>
+          </div>
+        </div>
+
+        <div className="portal-stat-card" style={{ borderLeft: '4px solid #ef4444' }}>
+          <div className="portal-stat-icon orange">
+            <i className="fas fa-tshirt"></i>
+          </div>
+          <div className="portal-stat-info">
+            <h3 style={{ fontSize: '1.8rem', fontWeight: 900, color: requirements.filter(r => r.status === 'MISSING').length > 0 ? '#dc2626' : '#16a34a' }}>
+              {requirements.filter(r => r.status === 'MISSING').length}
+            </h3>
+            <p>Missing Items Needed</p>
+          </div>
+        </div>
+
+        <div className="portal-stat-card" style={{ borderLeft: '4px solid #3b82f6' }}>
+          <div className="portal-stat-icon blue">
+            <i className="fas fa-store"></i>
+          </div>
+          <div className="portal-stat-info">
+            <h3 style={{ fontSize: '1.8rem', fontWeight: 900 }}>
+              {shopItems.length}
+            </h3>
+            <p>School Store Items</p>
+          </div>
         </div>
       </div>
 

@@ -106,8 +106,18 @@ export default function DHRepresentative() {
       ]);
 
       if (menuRes.status === 'fulfilled' && menuRes.value.data?.menuData) {
-        setMenu(menuRes.value.data.menuData);
-        setMenuForm(menuRes.value.data.menuData);
+        const raw = menuRes.value.data.menuData as Record<string, any>;
+        const normalized: MenuData = {
+          monday: raw.monday || raw.Monday || defaultMenuData.monday,
+          tuesday: raw.tuesday || raw.Tuesday || defaultMenuData.tuesday,
+          wednesday: raw.wednesday || raw.Wednesday || defaultMenuData.wednesday,
+          thursday: raw.thursday || raw.Thursday || defaultMenuData.thursday,
+          friday: raw.friday || raw.Friday || defaultMenuData.friday,
+          saturday: raw.saturday || raw.Saturday || defaultMenuData.saturday,
+          sunday: raw.sunday || raw.Sunday || defaultMenuData.sunday,
+        };
+        setMenu(normalized);
+        setMenuForm(normalized);
       } else {
         setMenu(defaultMenuData);
       }
@@ -201,13 +211,14 @@ export default function DHRepresentative() {
   }, []);
 
   const activeMenu = menu || defaultMenuData;
-  const currentDayData = activeMenu[selectedDay] || activeMenu.monday;
+  const capitalizedDay = (selectedDay.charAt(0).toUpperCase() + selectedDay.slice(1)) as keyof MenuData;
+  const currentDayData = activeMenu[selectedDay] || (activeMenu as any)[capitalizedDay] || activeMenu.monday || (activeMenu as any).Monday || defaultMenuData[selectedDay] || defaultMenuData.monday;
 
   const todayCards = [
     {
       title: 'Breakfast',
       time: '06:30 AM – 08:30 AM',
-      dish: currentDayData.breakfast || 'Nutritious Morning Serving',
+      dish: currentDayData?.breakfast || 'Nutritious Morning Serving',
       desc: 'Energizing start featuring high-fiber whole grains, dairy, fresh seasonal fruit, and hot beverages.',
       calories: '420 kcal',
       allergens: 'Contains Dairy, Gluten',
@@ -220,7 +231,7 @@ export default function DHRepresentative() {
     {
       title: 'Lunch',
       time: '12:00 PM – 02:30 PM',
-      dish: currentDayData.lunch || 'Balanced Midday Meal',
+      dish: currentDayData?.lunch || 'Balanced Midday Meal',
       desc: 'Chef-crafted high-protein meal balanced with fresh local vegetables, carbohydrate staples, and salads.',
       calories: '780 kcal',
       allergens: 'Nut-Free Kitchen Protocol',
@@ -233,7 +244,7 @@ export default function DHRepresentative() {
     {
       title: 'Dinner',
       time: '06:00 PM – 07:45 PM',
-      dish: currentDayData.dinner || 'Evening Entrée',
+      dish: currentDayData?.dinner || 'Evening Entrée',
       desc: 'Satisfying wholesome supper formulated for evening recovery, digestion, and restful boarding sleep.',
       calories: '650 kcal',
       allergens: 'Prepared with Halal Certification',
@@ -721,7 +732,7 @@ export default function DHRepresentative() {
                   </thead>
                   <tbody>
                     {daysList.map(d => {
-                      const dayMenu = activeMenu[d.key] || defaultMenuData[d.key];
+                      const dayMenu = activeMenu[d.key] || (activeMenu as any)[d.label] || defaultMenuData[d.key];
                       const isToday = daysList[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1]?.key === d.key;
                       return (
                         <tr key={d.key} style={{ background: isToday ? '#f0fdf4' : undefined }}>
@@ -735,15 +746,15 @@ export default function DHRepresentative() {
                           </td>
                           <td style={{ fontSize: '0.9rem', color: '#334155' }}>
                             <i className="fas fa-coffee mr-2" style={{ color: '#d97706', fontSize: '0.8rem' }}></i>
-                            {dayMenu.breakfast || '—'}
+                            {dayMenu?.breakfast || '—'}
                           </td>
                           <td style={{ fontSize: '0.9rem', color: '#334155' }}>
                             <i className="fas fa-drumstick-bite mr-2" style={{ color: '#2563eb', fontSize: '0.8rem' }}></i>
-                            {dayMenu.lunch || '—'}
+                            {dayMenu?.lunch || '—'}
                           </td>
                           <td style={{ fontSize: '0.9rem', color: '#334155' }}>
                             <i className="fas fa-moon mr-2" style={{ color: '#7c3aed', fontSize: '0.8rem' }}></i>
-                            {dayMenu.dinner || '—'}
+                            {dayMenu?.dinner || '—'}
                           </td>
                         </tr>
                       );

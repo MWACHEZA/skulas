@@ -97,9 +97,9 @@ export default function KitchenManagement() {
                 <div key={day} style={{ background: '#f7fafc', padding: 15, borderRadius: 12, border: '1px solid #e2e8f0' }}>
                   <h3 style={{ textTransform: 'capitalize', margin: '0 0 10px', fontSize: '1rem', borderBottom: '2px solid #ed8936', paddingBottom: 5 }}>{day}</h3>
                   <div style={{ fontSize: '0.9rem' }}>
-                    <p style={{ margin: '0 0 5px' }}><strong>B:</strong> {menu.menuData?.[day]?.breakfast || 'Not set'}</p>
-                    <p style={{ margin: '0 0 5px' }}><strong>L:</strong> {menu.menuData?.[day]?.lunch || 'Not set'}</p>
-                    <p style={{ margin: 0 }}><strong>D:</strong> {menu.menuData?.[day]?.dinner || 'Not set'}</p>
+                    <p style={{ margin: '0 0 5px' }}><strong>B:</strong> {(menu.menuData?.[day] || menu.menuData?.[day.charAt(0).toUpperCase() + day.slice(1)])?.breakfast || 'Not set'}</p>
+                    <p style={{ margin: '0 0 5px' }}><strong>L:</strong> {(menu.menuData?.[day] || menu.menuData?.[day.charAt(0).toUpperCase() + day.slice(1)])?.lunch || 'Not set'}</p>
+                    <p style={{ margin: 0 }}><strong>D:</strong> {(menu.menuData?.[day] || menu.menuData?.[day.charAt(0).toUpperCase() + day.slice(1)])?.dinner || 'Not set'}</p>
                   </div>
                 </div>
               ))}

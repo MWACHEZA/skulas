@@ -92,7 +92,17 @@ router.delete('/news/:id', async (req: AuthRequest, res: Response) => {
 router.get('/announcements', async (req: AuthRequest, res: Response) => {
   const { category } = req.query;
   try {
-    const where: any = { schoolId: req.user!.schoolId! };
+    let schoolId = req.user?.schoolId || (req.headers['x-school-id'] as string);
+    if (!schoolId && req.user?.role === 'PARENT') {
+      const parent = await prisma.parent.findUnique({
+        where: { userId: req.user.id },
+        include: { students: { include: { student: true } } }
+      });
+      if (parent && parent.students.length > 0) {
+        schoolId = parent.students[0].student.schoolId;
+      }
+    }
+    const where: any = schoolId ? { schoolId } : {};
     if (category && category !== 'ALL') {
       where.category = String(category);
     }

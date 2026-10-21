@@ -1417,8 +1417,21 @@ router.delete('/sports-equipment/:id', requireAuth, requireRole('SCHOOL_ADMIN'),
 // ── HOLIDAYS ──
 router.get('/holidays', requireAuth, async (req: AuthRequest, res) => {
   try {
+    let schoolId = req.user?.schoolId || (req.headers['x-school-id'] as string);
+    if (!schoolId && req.user?.role === 'PARENT') {
+      const parent = await prisma.parent.findUnique({
+        where: { userId: req.user.id },
+        include: { students: { include: { student: true } } }
+      });
+      if (parent && parent.students.length > 0) {
+        schoolId = parent.students[0].student.schoolId;
+      }
+    }
+    if (!schoolId) {
+      return res.json([]);
+    }
     const holidays = await prisma.holiday.findMany({
-      where: { schoolId: req.user!.schoolId! },
+      where: { schoolId },
       orderBy: { startDate: 'asc' }
     });
     res.json(holidays);

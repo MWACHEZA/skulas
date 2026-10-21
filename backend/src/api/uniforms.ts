@@ -742,11 +742,11 @@ router.get('/parent-summary', requireAuth, async (req: AuthRequest, res: Respons
     if (userRole === 'PARENT') {
       const parent = await prisma.parent.findUnique({
         where: { userId },
-        include: { students: { where: { status: 'APPROVED' }, include: { student: true } } }
+        include: { students: { where: { status: { in: ['APPROVED', 'PENDING'] } }, include: { student: true } } }
       });
 
       if (!parent || parent.students.length === 0) {
-        return res.status(403).json({ error: 'No approved student link found for this parent.' });
+        return res.status(403).json({ error: 'No student link found for this parent.' });
       }
 
       if (!studentId) {

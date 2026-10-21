@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'ANCILLARY', 'STUDENT', 'TEACHER', 'PARENT'), async (req: AuthRequest, res: Response) => {
   try {
     const noticeboards = await prisma.noticeboard.findMany({
-      where: { schoolId: req.user!.schoolId! },
+      where: (req.user?.schoolId ? { schoolId: req.user.schoolId } : {}),
       orderBy: { date: 'desc' }
     });
     res.json(noticeboards);
