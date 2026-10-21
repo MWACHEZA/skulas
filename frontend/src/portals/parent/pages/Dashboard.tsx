@@ -99,7 +99,7 @@ export default function ParentDashboard() {
 
   // Child selection state
   const linkedChildren = useMemo(() => {
-    return user?.linkedEntities?.filter(e => e.status === 'APPROVED') || [];
+    return user?.linkedEntities || [];
   }, [user?.linkedEntities]);
 
   const [activeChildId, setActiveChildId] = useState<string>(() => {
@@ -379,7 +379,7 @@ export default function ParentDashboard() {
               >
                 {linkedChildren.map(c => (
                   <option key={c.id} value={c.id}>
-                    Switch Child: {c.name}
+                    {c.name} {c.status === 'PENDING' ? '(Pending Verification)' : ''}
                   </option>
                 ))}
               </select>

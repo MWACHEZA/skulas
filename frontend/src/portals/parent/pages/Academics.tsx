@@ -151,7 +151,7 @@ export default function ParentAcademics() {
   const fetchAcademics = async () => {
     setLoading(true);
     try {
-      const studentId = activeEntity?.id;
+      const studentId = activeEntity?.id || user?.linkedEntities?.[0]?.id;
       const url = studentId ? `/api/reports/parent-summary?studentId=${studentId}` : '/api/reports/parent-summary';
       const res = await api.get(url);
       setData(res.data);
