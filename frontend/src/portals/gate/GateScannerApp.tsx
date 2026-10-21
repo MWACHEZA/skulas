@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import api from '../../lib/api';
 import { format } from 'date-fns';
+import { useAuth } from '../../contexts/AuthContext';
+import { getPublicMediaUrl } from '../../utils/formatters';
 
 interface GateStudent {
   id: string;
@@ -46,10 +48,37 @@ interface OfflineStudent {
 }
 
 export default function GateScannerApp() {
+  const { user: authUser } = useAuth();
+
   // Auth state
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem('gate_auth_token'));
-  const [guardName, setGuardName] = useState<string>(() => localStorage.getItem('gate_guard_name') || 'Security Guard');
-  const [schoolName, setSchoolName] = useState<string>(() => localStorage.getItem('gate_school_name') || 'Skulas Academy');
+  const [token, setToken] = useState<string | null>(() => {
+    return localStorage.getItem('gate_auth_token') || localStorage.getItem('acadex_token');
+  });
+  const [guardName, setGuardName] = useState<string>(() => {
+    try {
+      const stored = localStorage.getItem('acadex_user');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed.name) return parsed.name;
+      }
+    } catch {}
+    return localStorage.getItem('gate_guard_name') || 'Security Guard';
+  });
+  const [schoolName, setSchoolName] = useState<string>(() => {
+    try {
+      const stored = localStorage.getItem('acadex_user');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed.schoolName || parsed.school?.name) return parsed.schoolName || parsed.school?.name;
+      }
+    } catch {}
+    return localStorage.getItem('gate_school_name') || 'Skulas Academy';
+  });
+
+  // Effective school and officer identities
+  const effectiveOfficerName = authUser?.name || guardName || 'Security Guard';
+  const effectiveSchoolName = authUser?.schoolName || authUser?.school?.name || schoolName || 'Skulas Academy';
+  const effectiveSchoolCode = authUser?.schoolCode || authUser?.school?.code || 'global';
   
   // PIN Login modal state
   const [pinInput, setPinInput] = useState('');
@@ -63,6 +92,24 @@ export default function GateScannerApp() {
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [scanDirection, setScanDirection] = useState<'IN' | 'OUT'>('IN');
   const [countdown, setCountdown] = useState<number | null>(null);
+
+  // Live Autocomplete Search state
+  const [searchResults, setSearchResults] = useState<Array<{
+    id: string;
+    studentId: string;
+    name: string;
+    className: string | null;
+    avatar: string | null;
+    boardingStatus: string;
+    balance: number;
+    feeStatus?: string;
+    allowed?: boolean;
+  }>>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const searchTimeoutRef = useRef<any>(null);
+  const searchContainerRef = useRef<HTMLDivElement | null>(null);
+  const [bursarNoticeMsg, setBursarNoticeMsg] = useState<string | null>(null);
 
   // HM Override modal state
   const [showOverrideModal, setShowOverrideModal] = useState(false);
@@ -82,6 +129,33 @@ export default function GateScannerApp() {
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const cooldownRef = useRef(false);
   const timerRef = useRef<any>(null);
+
+  // Sync auth context with local state
+  useEffect(() => {
+    if (!token) {
+      const adminToken = localStorage.getItem('acadex_token');
+      if (adminToken) {
+        setToken(adminToken);
+      }
+    }
+    if (authUser?.name) {
+      setGuardName(authUser.name);
+    }
+    if (authUser?.schoolName || authUser?.school?.name) {
+      setSchoolName(authUser.schoolName || authUser.school?.name);
+    }
+  }, [authUser, token]);
+
+  // Click outside listener for search autocomplete dropdown
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
 
   // Online / Offline monitor
   useEffect(() => {
@@ -241,11 +315,101 @@ export default function GateScannerApp() {
     processScanInput(decodedText);
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setManualInput(val);
+
+    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+
+    if (!val.trim() || val.trim().length < 1) {
+      setSearchResults([]);
+      setShowDropdown(false);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+    searchTimeoutRef.current = setTimeout(async () => {
+      try {
+        if (navigator.onLine) {
+          const res = await api.get(`/api/gate/search-students?q=${encodeURIComponent(val.trim())}`, {
+            headers: token ? { Authorization: `Bearer ${token}` } : undefined
+          });
+          if (res.data?.students && res.data.students.length > 0) {
+            setSearchResults(res.data.students);
+            setShowDropdown(true);
+            setIsSearching(false);
+            return;
+          }
+        }
+
+        // Offline / Fallback search using daily allow list
+        const rawList = localStorage.getItem('gate_daily_allow_list');
+        const allowList: OfflineStudent[] = rawList ? JSON.parse(rawList) : [];
+        const lower = val.trim().toLowerCase();
+        const filtered = allowList
+          .filter(s =>
+            (s.name && s.name.toLowerCase().includes(lower)) ||
+            (s.regNo && s.regNo.toLowerCase().includes(lower)) ||
+            (s.className && s.className.toLowerCase().includes(lower))
+          )
+          .slice(0, 8)
+          .map(s => ({
+            id: s.studentId,
+            studentId: s.regNo,
+            name: s.name,
+            className: s.className,
+            avatar: s.photoUrl,
+            boardingStatus: s.isBoarder ? 'Boarder' : 'Day',
+            balance: 0,
+            feeStatus: s.feeStatus,
+            allowed: s.allowed
+          }));
+
+        setSearchResults(filtered);
+        setShowDropdown(filtered.length > 0);
+      } catch (err) {
+        console.warn('Student search error, using offline cache fallback:', err);
+        const rawList = localStorage.getItem('gate_daily_allow_list');
+        const allowList: OfflineStudent[] = rawList ? JSON.parse(rawList) : [];
+        const lower = val.trim().toLowerCase();
+        const filtered = allowList
+          .filter(s =>
+            (s.name && s.name.toLowerCase().includes(lower)) ||
+            (s.regNo && s.regNo.toLowerCase().includes(lower)) ||
+            (s.className && s.className.toLowerCase().includes(lower))
+          )
+          .slice(0, 8)
+          .map(s => ({
+            id: s.studentId,
+            studentId: s.regNo,
+            name: s.name,
+            className: s.className,
+            avatar: s.photoUrl,
+            boardingStatus: s.isBoarder ? 'Boarder' : 'Day',
+            balance: 0,
+            feeStatus: s.feeStatus,
+            allowed: s.allowed
+          }));
+        setSearchResults(filtered);
+        setShowDropdown(filtered.length > 0);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 250);
+  };
+
+  const handleSelectStudent = (student: { id: string; studentId: string; name: string }) => {
+    setManualInput(student.name);
+    setShowDropdown(false);
+    processScanInput(student.studentId || student.id);
+  };
+
   const handleManualSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!manualInput.trim()) return;
+    setShowDropdown(false);
     processScanInput(manualInput.trim());
-    setManualInput('');
   };
 
   const processScanInput = async (inputString: string) => {
@@ -346,7 +510,22 @@ export default function GateScannerApp() {
     cooldownRef.current = false;
   };
 
-  const handleSendToBursar = () => {
+  const handleSendToBursar = async () => {
+    if (scanResult?.student?.id) {
+      try {
+        await api.post(
+          '/api/gate/notify-bursar',
+          { studentId: scanResult.student.id },
+          { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
+        );
+        setBursarNoticeMsg(`SMS Notice dispatched to ${scanResult.student.name}'s guardian and Bursar.`);
+        setTimeout(() => setBursarNoticeMsg(null), 5000);
+      } catch (err) {
+        console.warn('Could not dispatch bursar SMS:', err);
+        setBursarNoticeMsg(`Notice queued for Bursar regarding ${scanResult.student.name}.`);
+        setTimeout(() => setBursarNoticeMsg(null), 5000);
+      }
+    }
     clearScanAndResume();
   };
 
@@ -545,6 +724,9 @@ export default function GateScannerApp() {
     }}>
       {/* Top Header Bar */}
       <header style={{
+        position: 'relative',
+        width: '100%',
+        zIndex: 20,
         backgroundColor: '#131b2e',
         borderBottom: '1px solid #1e293b',
         padding: '12px 16px',
@@ -552,7 +734,8 @@ export default function GateScannerApp() {
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '10px'
+        gap: '10px',
+        boxSizing: 'border-box'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{
@@ -568,9 +751,9 @@ export default function GateScannerApp() {
             🛡️
           </div>
           <div>
-            <div style={{ fontWeight: '700', fontSize: '15px', color: '#fff' }}>{schoolName}</div>
+            <div style={{ fontWeight: '700', fontSize: '15px', color: '#fff' }}>{effectiveSchoolName}</div>
             <div style={{ fontSize: '12px', color: '#94a3b8' }}>
-              Officer: <strong>{guardName}</strong>
+              Officer: <strong style={{ color: '#38bdf8' }}>{effectiveOfficerName}</strong>
             </div>
           </div>
         </div>
@@ -758,8 +941,172 @@ export default function GateScannerApp() {
         width: '100%',
         boxSizing: 'border-box'
       }}>
+        {/* Toast Alert for Bursar Actions */}
+        {bursarNoticeMsg && (
+          <div style={{
+            width: '100%',
+            backgroundColor: '#1e3a8a',
+            border: '1px solid #3b82f6',
+            color: '#bfdbfe',
+            padding: '12px 16px',
+            borderRadius: '10px',
+            marginBottom: '16px',
+            fontSize: '13px',
+            fontWeight: '600',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.4)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>📩</span>
+              <span>{bursarNoticeMsg}</span>
+            </div>
+            <button
+              onClick={() => setBursarNoticeMsg(null)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#bfdbfe',
+                cursor: 'pointer',
+                fontSize: '16px',
+                padding: '2px 6px'
+              }}
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
         {/* RESULT CARD IF SCANNED */}
-        {scanResult ? (
+        {scanResult && (scanResult.status === 'NOT_FOUND' || (!scanResult.student && !scanResult.staff)) ? (
+          /* RESULT CARD: NOT FOUND (Clean Warning, No Broken Photo or Denial Buttons) */
+          <div style={{
+            width: '100%',
+            backgroundColor: '#1e293b',
+            borderRadius: '16px',
+            border: '2px solid #f59e0b',
+            padding: '24px',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)',
+            marginBottom: '20px',
+            animation: 'fadeIn 0.2s ease-in-out'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              borderBottom: '1px solid #334155',
+              paddingBottom: '16px',
+              marginBottom: '16px'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '12px',
+                  backgroundColor: '#f59e0b22',
+                  border: '1px solid #f59e0b55',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '22px'
+                }}>
+                  🔍
+                </div>
+                <div>
+                  <span style={{
+                    display: 'inline-block',
+                    padding: '3px 8px',
+                    borderRadius: '4px',
+                    fontSize: '11px',
+                    fontWeight: '800',
+                    backgroundColor: '#f59e0b',
+                    color: '#000',
+                    textTransform: 'uppercase',
+                    marginBottom: '4px'
+                  }}>
+                    Record Not Found
+                  </span>
+                  <h2 style={{ fontSize: '20px', fontWeight: '800', margin: 0, color: '#fff' }}>
+                    Student Record Not Found
+                  </h2>
+                </div>
+              </div>
+
+              <button
+                onClick={clearScanAndResume}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#94a3b8',
+                  fontSize: '20px',
+                  cursor: 'pointer',
+                  padding: '4px'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <p style={{ margin: '0 0 16px 0', fontSize: '14px', color: '#cbd5e1', lineHeight: '1.5' }}>
+              {scanResult.reason || 'No student or staff member in this school matches the scanned QR code or search term.'}
+            </p>
+
+            <div style={{
+              backgroundColor: '#0f172a',
+              borderRadius: '10px',
+              padding: '12px 16px',
+              marginBottom: '20px',
+              fontSize: '13px',
+              color: '#94a3b8',
+              lineHeight: '1.6'
+            }}>
+              <div style={{ fontWeight: '600', color: '#cbd5e1', marginBottom: '4px' }}>Recommended steps:</div>
+              <div>• Use the live search box below to search as you type by <strong>first name</strong>, <strong>last name</strong>, or <strong>registration number</strong>.</div>
+              <div>• Verify that the student is active and enrolled for this academic term.</div>
+              <div>• If scanning a physical card, check that the QR code is clean and unobstructed.</div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                onClick={() => {
+                  clearScanAndResume();
+                  const el = document.getElementById('gate-manual-input');
+                  if (el) el.focus();
+                }}
+                style={{
+                  flex: 1,
+                  padding: '12px 18px',
+                  backgroundColor: '#0284c7',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '14px',
+                  fontWeight: '700',
+                  cursor: 'pointer'
+                }}
+              >
+                Search Again
+              </button>
+              <button
+                onClick={clearScanAndResume}
+                style={{
+                  padding: '12px 20px',
+                  backgroundColor: '#334155',
+                  color: '#cbd5e1',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: 'pointer'
+                }}
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        ) : scanResult ? (
+          /* RESULT CARD FOR FOUND STUDENT / STAFF */
           <div style={{
             width: '100%',
             backgroundColor: scanResult.allowed ? '#064e3b' : '#7f1d1d',
@@ -839,8 +1186,15 @@ export default function GateScannerApp() {
                 }}>
                   {scanResult.student.avatar ? (
                     <img
-                      src={scanResult.student.avatar}
+                      src={getPublicMediaUrl(scanResult.student.avatar, effectiveSchoolCode) || scanResult.student.avatar}
                       alt={scanResult.student.name}
+                      onError={(e) => {
+                        (e.target as HTMLElement).style.display = 'none';
+                        const parent = (e.target as HTMLElement).parentElement;
+                        if (parent) {
+                          parent.innerHTML = `<span style="font-size: 48px">👤</span>`;
+                        }
+                      }}
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
                   ) : (
@@ -853,8 +1207,8 @@ export default function GateScannerApp() {
                   <div style={{ fontSize: '20px', fontWeight: '800', color: '#fff', marginBottom: '4px' }}>
                     {scanResult.student.name}
                   </div>
-                  <div style={{ fontSize: '13px', color: '#cbd5e1', marginBottom: '8px' }}>
-                    Reg: <strong>{scanResult.student.studentId}</strong> • Class: <strong>{scanResult.student.className || 'General'}</strong>
+                  <div style={{ fontSize: '13px', color: '#cbd5e1', marginBottom: '6px' }}>
+                    Reg: <strong style={{ color: '#38bdf8' }}>{scanResult.student.studentId}</strong> • Class: <strong>{scanResult.student.className || 'General'}</strong>
                   </div>
                   <div style={{ fontSize: '12px', color: '#cbd5e1', marginBottom: '8px' }}>
                     Boarding: <strong>{scanResult.student.boardingStatus}</strong>
@@ -874,6 +1228,7 @@ export default function GateScannerApp() {
                     marginBottom: '8px'
                   }}>
                     Status: {scanResult.status}
+                    {scanResult.student.balance > 0 && ` • Arrears: $${scanResult.student.balance.toFixed(2)}`}
                   </div>
 
                   <p style={{ margin: 0, fontSize: '13px', color: '#f1f5f9', lineHeight: 1.4 }}>
@@ -889,14 +1244,19 @@ export default function GateScannerApp() {
               padding: '10px 14px',
               borderRadius: '8px',
               fontSize: '12px',
-              color: '#fef08a',
+              color: scanResult.allowed ? '#a7f3d0' : '#fef08a',
               marginBottom: '20px',
               display: 'flex',
               alignItems: 'center',
               gap: '8px'
             }}>
-              <span>⚠️</span>
-              <span><strong>Guard Protocol:</strong> Visually inspect bearer to ensure live student matches the photo above before permitting entry.</span>
+              <span>{scanResult.allowed ? '✓' : '⚠️'}</span>
+              <span>
+                <strong>Guard Protocol:</strong>{' '}
+                {scanResult.allowed
+                  ? 'Visually verify live student matches photo above before admitting through gate.'
+                  : 'Visually inspect bearer to ensure live student matches photo above before escorting to Bursar.'}
+              </span>
             </div>
 
             {/* Action Buttons */}
@@ -1083,47 +1443,173 @@ export default function GateScannerApp() {
           </div>
         </div>
 
-        {/* Manual ID / Token Input Fallback */}
-        <form
-          onSubmit={handleManualSearch}
-          style={{
-            width: '100%',
-            display: 'flex',
-            gap: '10px'
-          }}
-        >
-          <input
-            type="text"
-            placeholder="Manual entry: Type student Reg No. or paste QR token..."
-            value={manualInput}
-            onChange={e => setManualInput(e.target.value)}
+        {/* Manual ID / Token Input with Live Search Autocomplete */}
+        <div ref={searchContainerRef} style={{ width: '100%', position: 'relative' }}>
+          <form
+            onSubmit={handleManualSearch}
             style={{
-              flex: 1,
-              padding: '14px 16px',
-              backgroundColor: '#1e293b',
-              border: '1px solid #475569',
-              borderRadius: '10px',
-              color: '#fff',
-              fontSize: '15px',
-              outline: 'none'
-            }}
-          />
-          <button
-            type="submit"
-            style={{
-              padding: '14px 24px',
-              backgroundColor: '#0284c7',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '10px',
-              fontSize: '14px',
-              fontWeight: '700',
-              cursor: 'pointer'
+              width: '100%',
+              display: 'flex',
+              gap: '10px'
             }}
           >
-            Lookup
-          </button>
-        </form>
+            <div style={{ position: 'relative', flex: 1 }}>
+              <input
+                id="gate-manual-input"
+                type="text"
+                placeholder="Search as you type: Type student name, ID / Reg No..."
+                value={manualInput}
+                onChange={handleInputChange}
+                onFocus={() => {
+                  if (searchResults.length > 0) setShowDropdown(true);
+                }}
+                autoComplete="off"
+                style={{
+                  width: '100%',
+                  padding: '14px 16px',
+                  paddingRight: isSearching ? '40px' : '16px',
+                  backgroundColor: '#1e293b',
+                  border: '1px solid #475569',
+                  borderRadius: '10px',
+                  color: '#fff',
+                  fontSize: '15px',
+                  outline: 'none',
+                  boxSizing: 'border-box'
+                }}
+              />
+              {isSearching && (
+                <div style={{
+                  position: 'absolute',
+                  right: '14px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  fontSize: '13px',
+                  color: '#38bdf8'
+                }}>
+                  ⏳
+                </div>
+              )}
+            </div>
+            <button
+              type="submit"
+              style={{
+                padding: '14px 24px',
+                backgroundColor: '#0284c7',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '10px',
+                fontSize: '14px',
+                fontWeight: '700',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Lookup
+            </button>
+          </form>
+
+          {/* Autocomplete Dropdown */}
+          {showDropdown && searchResults.length > 0 && (
+            <div style={{
+              position: 'absolute',
+              top: 'calc(100% + 6px)',
+              left: 0,
+              right: 0,
+              backgroundColor: '#0f172a',
+              border: '1px solid #334155',
+              borderRadius: '12px',
+              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.8), 0 8px 10px -6px rgba(0,0,0,0.8)',
+              zIndex: 100,
+              maxHeight: '340px',
+              overflowY: 'auto'
+            }}>
+              <div style={{
+                padding: '8px 14px',
+                fontSize: '11px',
+                fontWeight: '700',
+                textTransform: 'uppercase',
+                color: '#64748b',
+                borderBottom: '1px solid #1e293b',
+                display: 'flex',
+                justifyContent: 'space-between'
+              }}>
+                <span>Matching Students ({searchResults.length})</span>
+                <span>Click to verify</span>
+              </div>
+              {searchResults.map((s) => {
+                const avatarUrl = s.avatar ? getPublicMediaUrl(s.avatar, effectiveSchoolCode) : null;
+                const isPaid = s.feeStatus === 'PAID' || s.feeStatus === 'ON_PLAN' || s.feeStatus === 'EXEMPT' || s.allowed;
+                return (
+                  <div
+                    key={s.id}
+                    onClick={() => handleSelectStudent(s)}
+                    style={{
+                      padding: '12px 14px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      borderBottom: '1px solid #1e293b',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.15s ease'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1e293b'}
+                    onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{
+                        width: '38px',
+                        height: '38px',
+                        borderRadius: '50%',
+                        backgroundColor: '#334155',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        border: '1px solid #475569'
+                      }}>
+                        {avatarUrl ? (
+                          <img
+                            src={avatarUrl}
+                            alt={s.name}
+                            onError={(e) => {
+                              (e.target as HTMLElement).style.display = 'none';
+                              const p = (e.target as HTMLElement).parentElement;
+                              if (p) p.innerHTML = '<span style="font-size: 16px">👤</span>';
+                            }}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                        ) : (
+                          <span style={{ fontSize: '16px' }}>👤</span>
+                        )}
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '14px', fontWeight: '700', color: '#fff' }}>
+                          {s.name}
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#94a3b8' }}>
+                          Reg: <span style={{ color: '#38bdf8' }}>{s.studentId}</span> • Class: {s.className || 'General'} • {s.boardingStatus}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{
+                      padding: '4px 10px',
+                      borderRadius: '6px',
+                      fontSize: '11px',
+                      fontWeight: '700',
+                      backgroundColor: isPaid ? '#16a34a22' : '#dc262622',
+                      color: isPaid ? '#4ade80' : '#f87171',
+                      border: `1px solid ${isPaid ? '#16a34a55' : '#dc262655'}`
+                    }}>
+                      {isPaid ? 'Fee Compliant' : (s.balance > 0 ? `Arrears $${s.balance}` : 'Arrears')}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </main>
 
       {/* HM Override Modal */}

@@ -373,7 +373,7 @@ export class GateService {
       where: { schoolId, qrToken: cleaned, isActive: true },
       include: {
         student: {
-          include: { class: true, parents: { include: { parent: { include: { user: true } } } } }
+          include: { user: true, class: true, parents: { include: { parent: { include: { user: true } } } } }
         }
       }
     });
@@ -400,20 +400,24 @@ export class GateService {
           schoolId,
           OR: [{ studentId: sigCheck.identifier }, { id: sigCheck.identifier }]
         },
-        include: { class: true, parents: { include: { parent: { include: { user: true } } } } }
+        include: { user: true, class: true, parents: { include: { parent: { include: { user: true } } } } }
       });
       if (student) {
         return { type: 'STUDENT' as const, student, qrCodeId: null };
       }
     }
 
-    // 5. Fallback: Direct ID / Student Registration Number lookup
+    // 5. Fallback: Direct ID, Student Registration Number, or Name lookup
     const studentDirect = await prisma.student.findFirst({
       where: {
         schoolId,
-        OR: [{ studentId: cleaned }, { id: cleaned }]
+        OR: [
+          { studentId: { equals: cleaned, mode: 'insensitive' } },
+          { id: cleaned },
+          { name: { contains: cleaned, mode: 'insensitive' } }
+        ]
       },
-      include: { class: true, parents: { include: { parent: { include: { user: true } } } } }
+      include: { user: true, class: true, parents: { include: { parent: { include: { user: true } } } } }
     });
 
     if (studentDirect) {
@@ -423,7 +427,11 @@ export class GateService {
     const staffDirect = await prisma.user.findFirst({
       where: {
         schoolId,
-        OR: [{ staffId: cleaned }, { id: cleaned }]
+        OR: [
+          { staffId: { equals: cleaned, mode: 'insensitive' } },
+          { id: cleaned },
+          { name: { contains: cleaned, mode: 'insensitive' } }
+        ]
       }
     });
 
@@ -806,6 +814,76 @@ export class GateService {
   }
 
   /**
+   * Fast autocomplete search for students (by name, studentId/regNo, or class name).
+   */
+  static async searchStudents(schoolId: string, query: string) {
+    const cleaned = query.trim();
+    if (!cleaned) return [];
+
+    const students = await prisma.student.findMany({
+      where: {
+        schoolId,
+        status: { not: 'Inactive' },
+        OR: [
+          { name: { contains: cleaned, mode: 'insensitive' } },
+          { studentId: { contains: cleaned, mode: 'insensitive' } },
+          { class: { name: { contains: cleaned, mode: 'insensitive' } } }
+        ]
+      },
+      include: {
+        user: true,
+        class: true,
+        fees: {
+          select: { amount: true, paid: true, status: true }
+        },
+        bursaries: {
+          where: { status: 'approved' },
+          select: { percentage: true }
+        },
+        paymentPlans: {
+          where: { status: 'ACTIVE' },
+          select: { id: true }
+        }
+      },
+      take: 8,
+      orderBy: { name: 'asc' }
+    });
+
+    return students.map(s => {
+      const isExempt = s.bursaries?.some(b => b.percentage >= 100);
+      const totalAmount = s.fees?.reduce((sum, f) => sum + (f.amount || 0), 0) || 0;
+      const totalPaid = s.fees?.reduce((sum, f) => sum + (f.paid || 0), 0) || 0;
+      const balance = Math.max(0, totalAmount - totalPaid);
+      const hasPlan = (s.paymentPlans?.length || 0) > 0;
+
+      let feeStatus = 'FEES_OWING';
+      let allowed = false;
+      if (isExempt) {
+        feeStatus = 'EXEMPT';
+        allowed = true;
+      } else if (balance <= 0) {
+        feeStatus = 'PAID';
+        allowed = true;
+      } else if (hasPlan) {
+        feeStatus = 'ON_PLAN';
+        allowed = true;
+      }
+
+      return {
+        id: s.id,
+        studentId: s.studentId,
+        name: s.name,
+        className: s.class?.name || 'General',
+        avatar: (s as any).user?.avatar || (s as any).avatar || null,
+        boardingStatus: s.boardingStatus || 'Day',
+        balance,
+        feeStatus,
+        allowed
+      };
+    });
+  }
+
+  /**
    * PART 4: Compact Daily Allow List for Offline PWA Caching.
    * Generates a tenant-scoped snapshot for today.
    */
@@ -813,6 +891,7 @@ export class GateService {
     const students = await prisma.student.findMany({
       where: { schoolId, status: 'Enrolled' },
       include: {
+        user: true,
         class: true,
         qrCodes: {
           where: { isActive: true },

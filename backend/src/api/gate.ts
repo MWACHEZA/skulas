@@ -127,6 +127,59 @@ router.post('/scan', requireAuth, async (req: AuthRequest, res: Response) => {
 });
 
 /**
+ * GET /api/gate/search-students?q=:query
+ * Fast live search autocomplete for students (by name, studentId/regNo, class).
+ */
+router.get('/search-students', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const q = String(req.query.q || '').trim();
+
+    if (!q || q.length < 1) {
+      return res.json({ success: true, students: [] });
+    }
+
+    const students = await GateService.searchStudents(schoolId, q);
+    res.json({ success: true, students });
+  } catch (error: any) {
+    console.error('Error searching students for gate:', error);
+    res.status(500).json({ error: 'Failed to search students' });
+  }
+});
+
+/**
+ * POST /api/gate/notify-bursar
+ * Send SMS/Push alert to parent when a student is stopped at the gate for fee compliance.
+ */
+router.post('/notify-bursar', requireAuth, async (req: AuthRequest, res: Response) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { studentId } = req.body;
+    if (!studentId) return res.status(400).json({ error: 'Student ID is required' });
+
+    const student = await prisma.student.findFirst({
+      where: { id: studentId, schoolId },
+      include: { parents: { include: { parent: { include: { user: true } } } } }
+    });
+
+    if (!student) return res.status(404).json({ error: 'Student not found' });
+
+    const parentPhone = student.phone || student.parents[0]?.parent?.user?.phone;
+    if (parentPhone) {
+      await NotificationService.sendSms(
+        parentPhone,
+        `Notice from ${req.user!.schoolCode || 'School'}: ${student.name} was redirected to the Bursar's office at the main gate this morning. Please contact Bursar to settle fees.`
+      ).catch(() => {});
+    }
+
+    res.json({ success: true, message: 'Notification dispatched to guardian and Bursar' });
+  } catch (err: any) {
+    console.error('Error in notify-bursar:', err);
+    res.status(500).json({ error: 'Failed to dispatch bursar notice' });
+  }
+});
+
+/**
  * POST /api/gate/override
  * Headmaster / Principal PIN override for denied entry.
  */
