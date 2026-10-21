@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="acadexGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
+  </defs>
+  <!-- Background Shield/Pill -->
+  <rect width="64" height="64" rx="16" fill="url(#acadexGrad)" />
+  
+  <!-- Graduation Cap -->
+  <path d="M32 14L12 24L32 34L52 24L32 14Z" fill="#ffffff" />
+  
+  <!-- Lower Crest/Cap Body -->
+  <path d="M20 28.5V39C20 45.6 25.4 51 32 51C38.6 51 44 45.6 44 39V28.5L32 34.5L20 28.5Z" fill="#ffffff" fill-opacity="0.92" />
+  
+  <!-- Gold Tassel -->
+  <path d="M52 24V38" stroke="#fcd34d" stroke-width="3" stroke-linecap="round" />
+  <circle cx="52" cy="40" r="2.5" fill="#fcd34d" />
+  
+  <!-- Letter A Accent -->
+  <path d="M32 23L27 37H30L31 34H33L34 37H37L32 23ZM32 27L32.6 31.5H31.4L32 27Z" fill="url(#acadexGrad)" />
+</svg>

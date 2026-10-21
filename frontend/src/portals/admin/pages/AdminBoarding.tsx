@@ -167,6 +167,7 @@ export default function AdminBoarding() {
 
   // Student Search filter for assign modal
   const [studentSearchTerm, setStudentSearchTerm] = useState('');
+  const [selectedBedNumber, setSelectedBedNumber] = useState<number | null>(null);
 
   const boarderStudentOptions = useMemo<ComboboxOption[]>(() => {
     return students.map((s: any) => ({
@@ -1503,61 +1504,77 @@ export default function AdminBoarding() {
 
       {/* 1. Add Hostel Modal */}
       {showHostelModal && (
-        <div className="portal-modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: '#fff', borderRadius: '10px', width: '100%', maxWidth: '500px', padding: '24px' }}>
-            <h3 style={{ margin: '0 0 16px 0', color: '#1e293b' }}>Create New Hostel</h3>
-            <form onSubmit={handleCreateHostel}>
-              <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Hostel Name</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Bishop Gaul Hostel"
-                  value={hostelForm.name}
-                  onChange={e => setHostelForm(prev => ({ ...prev, name: e.target.value }))}
-                  style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Hostel Type</label>
-                  <select
-                    value={hostelForm.type}
-                    onChange={e => setHostelForm(prev => ({ ...prev, type: e.target.value }))}
+        <div 
+          className="portal-modal-overlay" 
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(3px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1050, padding: '16px' }}
+          onClick={(e) => { if (e.target === e.currentTarget) setShowHostelModal(false); }}
+        >
+          <div style={{ background: '#fff', borderRadius: '12px', width: '100%', maxWidth: '500px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.35)', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc' }}>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#0f172a' }}>Create New Hostel</h3>
+              <button
+                type="button"
+                onClick={() => setShowHostelModal(false)}
+                style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '20px', cursor: 'pointer', padding: '2px 8px', borderRadius: '4px', lineHeight: 1 }}
+                title="Close"
+              >
+                ✕
+              </button>
+            </div>
+            <form onSubmit={handleCreateHostel} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+              <div style={{ padding: '20px', overflowY: 'auto', flex: 1 }}>
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Hostel Name</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Bishop Gaul Hostel"
+                    value={hostelForm.name}
+                    onChange={e => setHostelForm(prev => ({ ...prev, name: e.target.value }))}
                     style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                  >
-                    <option value="BOYS">Boys</option>
-                    <option value="GIRLS">Girls</option>
-                    <option value="MIXED">Mixed</option>
-                  </select>
+                  />
                 </div>
 
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Total Bed Capacity</label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Hostel Type</label>
+                    <select
+                      value={hostelForm.type}
+                      onChange={e => setHostelForm(prev => ({ ...prev, type: e.target.value }))}
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                    >
+                      <option value="BOYS">Boys</option>
+                      <option value="GIRLS">Girls</option>
+                      <option value="MIXED">Mixed</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Total Bed Capacity</label>
+                    <input
+                      type="number"
+                      required
+                      min={1}
+                      value={hostelForm.capacity}
+                      onChange={e => setHostelForm(prev => ({ ...prev, capacity: parseInt(e.target.value) || 0 }))}
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Location / Wing</label>
                   <input
-                    type="number"
-                    required
-                    min={1}
-                    value={hostelForm.capacity}
-                    onChange={e => setHostelForm(prev => ({ ...prev, capacity: parseInt(e.target.value) || 0 }))}
+                    type="text"
+                    placeholder="e.g. North Campus, Block B"
+                    value={hostelForm.location}
+                    onChange={e => setHostelForm(prev => ({ ...prev, location: e.target.value }))}
                     style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
                   />
                 </div>
               </div>
 
-              <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Location / Wing</label>
-                <input
-                  type="text"
-                  placeholder="e.g. North Campus, Block B"
-                  value={hostelForm.location}
-                  onChange={e => setHostelForm(prev => ({ ...prev, location: e.target.value }))}
-                  style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                />
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
+              <div style={{ padding: '14px 20px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end', gap: '10px', background: '#f8fafc' }}>
                 <button type="button" onClick={() => setShowHostelModal(false)} className="btn btn-secondary" style={{ padding: '8px 16px', borderRadius: '6px' }}>Cancel</button>
                 <button type="submit" disabled={submitting} className="btn btn-primary" style={{ padding: '8px 16px', background: '#2563eb', color: '#fff', borderRadius: '6px' }}>
                   {submitting ? 'Creating...' : 'Create Hostel'}
@@ -1570,62 +1587,78 @@ export default function AdminBoarding() {
 
       {/* 2. Add Room Modal */}
       {showRoomModal && (
-        <div className="portal-modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: '#fff', borderRadius: '10px', width: '100%', maxWidth: '480px', padding: '24px' }}>
-            <h3 style={{ margin: '0 0 16px 0', color: '#1e293b' }}>Add Room to Hostel</h3>
-            <form onSubmit={handleCreateRoom}>
-              <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Hostel</label>
-                <select
-                  value={roomForm.hostelId || selectedHostelId}
-                  onChange={e => setRoomForm(prev => ({ ...prev, hostelId: e.target.value }))}
-                  style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                >
-                  {hostels.map(h => (
-                    <option key={h.id} value={h.id}>{h.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Room Number</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. 101"
-                    value={roomForm.roomNumber}
-                    onChange={e => setRoomForm(prev => ({ ...prev, roomNumber: e.target.value, name: `Room ${e.target.value}` }))}
+        <div 
+          className="portal-modal-overlay" 
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(3px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1050, padding: '16px' }}
+          onClick={(e) => { if (e.target === e.currentTarget) setShowRoomModal(false); }}
+        >
+          <div style={{ background: '#fff', borderRadius: '12px', width: '100%', maxWidth: '480px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.35)', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc' }}>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#0f172a' }}>Add Room to Hostel</h3>
+              <button
+                type="button"
+                onClick={() => setShowRoomModal(false)}
+                style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '20px', cursor: 'pointer', padding: '2px 8px', borderRadius: '4px', lineHeight: 1 }}
+                title="Close"
+              >
+                ✕
+              </button>
+            </div>
+            <form onSubmit={handleCreateRoom} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+              <div style={{ padding: '20px', overflowY: 'auto', flex: 1 }}>
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Hostel</label>
+                  <select
+                    value={roomForm.hostelId || selectedHostelId}
+                    onChange={e => setRoomForm(prev => ({ ...prev, hostelId: e.target.value }))}
                     style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                  />
+                  >
+                    {hostels.map(h => (
+                      <option key={h.id} value={h.id}>{h.name}</option>
+                    ))}
+                  </select>
                 </div>
 
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Bed Count</label>
-                  <input
-                    type="number"
-                    min={1}
-                    value={roomForm.bedCount}
-                    onChange={e => setRoomForm(prev => ({ ...prev, bedCount: parseInt(e.target.value) || 0, capacity: parseInt(e.target.value) || 0 }))}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Room Number</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. 101"
+                      value={roomForm.roomNumber}
+                      onChange={e => setRoomForm(prev => ({ ...prev, roomNumber: e.target.value, name: `Room ${e.target.value}` }))}
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Bed Count</label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={roomForm.bedCount}
+                      onChange={e => setRoomForm(prev => ({ ...prev, bedCount: parseInt(e.target.value) || 0, capacity: parseInt(e.target.value) || 0 }))}
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Initial Condition Status</label>
+                  <select
+                    value={roomForm.conditionStatus}
+                    onChange={e => setRoomForm(prev => ({ ...prev, conditionStatus: e.target.value }))}
                     style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                  />
+                  >
+                    <option value="GOOD">Good Condition</option>
+                    <option value="NEEDS_REPAIR">Needs Repair</option>
+                    <option value="UNDER_MAINTENANCE">Under Maintenance</option>
+                  </select>
                 </div>
               </div>
 
-              <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Initial Condition Status</label>
-                <select
-                  value={roomForm.conditionStatus}
-                  onChange={e => setRoomForm(prev => ({ ...prev, conditionStatus: e.target.value }))}
-                  style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                >
-                  <option value="GOOD">Good Condition</option>
-                  <option value="NEEDS_REPAIR">Needs Repair</option>
-                  <option value="UNDER_MAINTENANCE">Under Maintenance</option>
-                </select>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
+              <div style={{ padding: '14px 20px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end', gap: '10px', background: '#f8fafc' }}>
                 <button type="button" onClick={() => setShowRoomModal(false)} className="btn btn-secondary" style={{ padding: '8px 16px', borderRadius: '6px' }}>Cancel</button>
                 <button type="submit" disabled={submitting} className="btn btn-primary" style={{ padding: '8px 16px', background: '#2563eb', color: '#fff', borderRadius: '6px' }}>
                   {submitting ? 'Adding...' : 'Add Room'}
@@ -1636,176 +1669,245 @@ export default function AdminBoarding() {
         </div>
       )}
 
-      {/* 3. Assign Boarder Modal (Bursar Billing Integration) */}
+      {/* 3. Assign Boarder Modal (Bursar Billing Integration & Interactive Room Bed Map) */}
       {showAssignModal && (
-        <div className="portal-modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: '#fff', borderRadius: '10px', width: '100%', maxWidth: '540px', padding: '24px' }}>
-            <h3 style={{ margin: '0 0 16px 0', color: '#1e293b' }}>Assign Student to Hostel Bed</h3>
-
-            <div style={{ background: '#eff6ff', padding: '10px 14px', borderRadius: '6px', border: '1px solid #bfdbfe', marginBottom: '16px', fontSize: '0.85rem', color: '#1e40af' }}>
-              <i className="fas fa-file-invoice-dollar"></i>&nbsp;<strong>Automatic Bursar Billing:</strong> Assigning a bed will post a standard accommodation invoice to Revenue Account <strong>4020</strong> with idempotency protection.
+        <div 
+          className="portal-modal-overlay" 
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(3px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1050, padding: '16px' }}
+          onClick={(e) => { if (e.target === e.currentTarget) setShowAssignModal(false); }}
+        >
+          <div style={{ background: '#fff', borderRadius: '12px', width: '100%', maxWidth: '620px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.35)', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+            {/* Header with Title and 'X' close button */}
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#eff6ff', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '15px' }}>
+                  <i className="fas fa-bed"></i>
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#0f172a' }}>Assign Student to Hostel Bed</h3>
+                  <div style={{ fontSize: '0.78rem', color: '#64748b' }}>Select dormitory room and click any available bed to allocate</div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAssignModal(false)}
+                style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '20px', cursor: 'pointer', padding: '2px 8px', borderRadius: '4px', lineHeight: 1 }}
+                title="Close"
+              >
+                ✕
+              </button>
             </div>
 
-            <form onSubmit={handleAssignBoarder}>
-              <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Select Student</label>
-                <input
-                  type="text"
-                  placeholder="Search student by name or ID..."
-                  value={studentSearchTerm}
-                  onChange={e => setStudentSearchTerm(e.target.value)}
-                  style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', marginBottom: '6px', fontSize: '0.85rem' }}
-                />
-                <select
-                  required
-                  value={assignForm.studentId}
-                  onChange={e => setAssignForm(prev => ({ ...prev, studentId: e.target.value }))}
-                  style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                >
-                  <option value="">-- Choose Learner --</option>
-                  {filteredStudents.map(s => (
-                    <option key={s.id} value={s.id}>
-                      {s.name} ({s.studentId}) {s.class?.name ? `• ${s.class.name}` : ''}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <form onSubmit={handleAssignBoarder} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+              {/* Scrollable Form Body */}
+              <div style={{ padding: '20px', overflowY: 'auto', flex: 1 }}>
+                <div style={{ background: '#eff6ff', padding: '10px 14px', borderRadius: '6px', border: '1px solid #bfdbfe', marginBottom: '16px', fontSize: '0.85rem', color: '#1e40af' }}>
+                  <i className="fas fa-file-invoice-dollar"></i>&nbsp;<strong>Automatic Bursar Billing:</strong> Assigning a bed will post a standard accommodation invoice to Revenue Account <strong>4020</strong> with idempotency protection.
+                </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Hostel</label>
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Select Student</label>
+                  <input
+                    type="text"
+                    placeholder="Search student by name or ID..."
+                    value={studentSearchTerm}
+                    onChange={e => setStudentSearchTerm(e.target.value)}
+                    style={{ width: '100%', padding: '7px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', marginBottom: '6px', fontSize: '0.85rem' }}
+                  />
                   <select
                     required
-                    value={assignForm.hostelId}
-                    onChange={e => setAssignForm(prev => ({ ...prev, hostelId: e.target.value, roomId: '' }))}
+                    value={assignForm.studentId}
+                    onChange={e => setAssignForm(prev => ({ ...prev, studentId: e.target.value }))}
                     style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
                   >
-                    <option value="">-- Choose Hostel --</option>
-                    {hostels.map(h => (
-                      <option key={h.id} value={h.id}>{h.name} ({h.type})</option>
+                    <option value="">-- Choose Learner --</option>
+                    {filteredStudents.map(s => (
+                      <option key={s.id} value={s.id}>
+                        {s.name} ({s.studentId}) {s.class?.name ? `• ${s.class.name}` : ''}
+                      </option>
                     ))}
                   </select>
                 </div>
 
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Term</label>
-                  <select
-                    value={assignForm.term}
-                    onChange={e => setAssignForm(prev => ({ ...prev, term: e.target.value }))}
-                    style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                  >
-                    <option value="Term 1">Term 1</option>
-                    <option value="Term 2">Term 2</option>
-                    <option value="Term 3">Term 3</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Room Selection */}
-              {assignForm.hostelId && (
-                <div style={{ marginBottom: '14px' }}>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>
-                    Select Dormitory Room <span style={{ color: '#ef4444' }}>*</span>
-                  </label>
-                  <select
-                    required
-                    value={assignForm.roomId}
-                    onChange={e => setAssignForm(prev => ({ ...prev, roomId: e.target.value }))}
-                    style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: isSelectedRoomFull ? '1px solid #ef4444' : '1px solid #cbd5e1' }}
-                  >
-                    <option value="">-- Choose Room / Dorm --</option>
-                    {selectedHostelRooms.map(rm => {
-                      const totalBeds = rm.bedCount || rm.capacity || 1;
-                      const occupied = rm._count?.bedAllocations || (rm.bedAllocations?.length || 0);
-                      const free = Math.max(0, totalBeds - occupied);
-                      const isFull = free === 0;
-                      return (
-                        <option key={rm.id} value={rm.id} disabled={isFull}>
-                          {rm.name} {rm.roomNumber ? `(#${rm.roomNumber})` : ''} — {isFull ? '🔴 FULL (0 beds free)' : `🟢 ${free} of ${totalBeds} beds free`}
-                        </option>
-                      );
-                    })}
-                  </select>
-                </div>
-              )}
-
-              {/* Visual Bed Map of Selected Room */}
-              {selectedRoomObj && (
-                <div style={{ marginBottom: '14px', background: '#f8fafc', padding: '12px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#334155' }}>
-                      <i className="fas fa-bed"></i> Room Bed Map ({selectedRoomObj.name})
-                    </span>
-                    <span style={{ fontSize: '0.75rem', color: isSelectedRoomFull ? '#dc2626' : '#16a34a', fontWeight: 600 }}>
-                      {isSelectedRoomFull ? '⚠️ Capacity Reached' : `${selectedRoomFreeCount} bed(s) available`}
-                    </span>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Hostel</label>
+                    <select
+                      required
+                      value={assignForm.hostelId}
+                      onChange={e => setAssignForm(prev => ({ ...prev, hostelId: e.target.value, roomId: '' }))}
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                    >
+                      <option value="">-- Choose Hostel --</option>
+                      {hostels.map(h => (
+                        <option key={h.id} value={h.id}>{h.name} ({h.type})</option>
+                      ))}
+                    </select>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: '8px' }}>
-                    {Array.from({ length: selectedRoomObj.bedCount || selectedRoomObj.capacity || 1 }).map((_, idx) => {
-                      const bedNum = idx + 1;
-                      const occupant = selectedRoomObj.bedAllocations?.[idx]?.student;
-                      const isOccupied = !!occupant || idx < (selectedRoomObj._count?.bedAllocations || 0);
-
-                      return (
-                        <div
-                          key={bedNum}
-                          style={{
-                            padding: '8px',
-                            borderRadius: '6px',
-                            border: isOccupied ? '1px solid #fecaca' : '1px solid #bbf7d0',
-                            background: isOccupied ? '#fef2f2' : '#f0fdf4',
-                            textAlign: 'center',
-                            fontSize: '0.75rem'
-                          }}
-                        >
-                          <div style={{ fontSize: '1rem', color: isOccupied ? '#ef4444' : '#16a34a', marginBottom: '2px' }}>
-                            <i className="fas fa-bed"></i>
-                          </div>
-                          <div style={{ fontWeight: 700, color: '#1e293b' }}>Bed #{bedNum}</div>
-                          <div style={{ color: isOccupied ? '#b91c1c' : '#15803d', fontSize: '0.7rem', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {occupant ? occupant.name : (isOccupied ? 'Occupied' : 'Available')}
-                          </div>
-                        </div>
-                      );
-                    })}
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Term</label>
+                    <select
+                      value={assignForm.term}
+                      onChange={e => setAssignForm(prev => ({ ...prev, term: e.target.value }))}
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                    >
+                      <option value="Term 1">Term 1</option>
+                      <option value="Term 2">Term 2</option>
+                      <option value="Term 3">Term 3</option>
+                    </select>
                   </div>
+                </div>
 
-                  {isSelectedRoomFull && (
-                    <div style={{ marginTop: '10px', padding: '6px 10px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '4px', color: '#b91c1c', fontSize: '0.78rem' }}>
-                      <i className="fas fa-exclamation-triangle mr-1"></i> This room is full. You cannot allocate additional students to this room.
+                {/* Room Selection */}
+                {assignForm.hostelId && (
+                  <div style={{ marginBottom: '14px' }}>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>
+                      Select Dormitory Room <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
+                    <select
+                      required
+                      value={assignForm.roomId}
+                      onChange={e => {
+                        setAssignForm(prev => ({ ...prev, roomId: e.target.value }));
+                        setSelectedBedNumber(null);
+                      }}
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: isSelectedRoomFull ? '1px solid #ef4444' : '1px solid #cbd5e1' }}
+                    >
+                      <option value="">-- Choose Room / Dorm --</option>
+                      {selectedHostelRooms.map(rm => {
+                        const totalBeds = rm.bedCount || rm.capacity || 1;
+                        const occupied = rm._count?.bedAllocations || (rm.bedAllocations?.length || 0);
+                        const free = Math.max(0, totalBeds - occupied);
+                        const isFull = free === 0;
+                        return (
+                          <option key={rm.id} value={rm.id} disabled={isFull}>
+                            {rm.name} {rm.roomNumber ? `(#${rm.roomNumber})` : ''} — {isFull ? '🔴 FULL (0 beds free)' : `🟢 ${free} of ${totalBeds} beds free`}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
+                )}
+
+                {/* Interactive Visual Bed Map of Selected Room */}
+                {selectedRoomObj && (
+                  <div style={{ marginBottom: '14px', background: '#f8fafc', padding: '14px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '6px' }}>
+                      <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#334155' }}>
+                        <i className="fas fa-bed mr-1 text-primary"></i> Room Bed Map ({selectedRoomObj.name})
+                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        {selectedBedNumber && (
+                          <span style={{ fontSize: '0.75rem', background: '#eff6ff', color: '#2563eb', padding: '2px 8px', borderRadius: '4px', fontWeight: 700, border: '1px solid #bfdbfe' }}>
+                            ✓ Bed #{selectedBedNumber} Selected
+                          </span>
+                        )}
+                        <span style={{ fontSize: '0.75rem', color: isSelectedRoomFull ? '#dc2626' : '#16a34a', fontWeight: 600 }}>
+                          {isSelectedRoomFull ? '⚠️ Capacity Reached' : `${selectedRoomFreeCount} bed(s) available`}
+                        </span>
+                      </div>
                     </div>
-                  )}
-                </div>
-              )}
 
-              <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Boarding Fee ($ USD)</label>
-                <input
-                  type="number"
-                  min={0}
-                  step={0.01}
-                  value={assignForm.feeAmount}
-                  onChange={e => setAssignForm(prev => ({ ...prev, feeAmount: parseFloat(e.target.value) || 0 }))}
-                  style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                />
+                    {/* Scrollable Bed Grid with Interactive Assignment Click */}
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(auto-fill, minmax(105px, 1fr))', 
+                      gap: '8px',
+                      maxHeight: '250px',
+                      overflowY: 'auto',
+                      padding: '4px',
+                      background: '#fff',
+                      borderRadius: '8px',
+                      border: '1px solid #cbd5e1'
+                    }}>
+                      {Array.from({ length: selectedRoomObj.bedCount || selectedRoomObj.capacity || 1 }).map((_, idx) => {
+                        const bedNum = idx + 1;
+                        const occupant = selectedRoomObj.bedAllocations?.[idx]?.student;
+                        const isOccupied = !!occupant || idx < (selectedRoomObj._count?.bedAllocations || 0);
+                        const isSelected = selectedBedNumber === bedNum;
+
+                        return (
+                          <div
+                            key={bedNum}
+                            onClick={() => {
+                              if (!isOccupied) {
+                                setSelectedBedNumber(bedNum);
+                              }
+                            }}
+                            title={isOccupied ? `Bed #${bedNum} is occupied by ${occupant?.name || 'student'}` : `Click to assign student to Bed #${bedNum}`}
+                            style={{
+                              padding: '8px',
+                              borderRadius: '8px',
+                              border: isSelected 
+                                ? '2px solid #2563eb' 
+                                : isOccupied 
+                                  ? '1px solid #fecaca' 
+                                  : '1px solid #bbf7d0',
+                              background: isSelected 
+                                ? '#eff6ff' 
+                                : isOccupied 
+                                  ? '#fef2f2' 
+                                  : '#f0fdf4',
+                              textAlign: 'center',
+                              fontSize: '0.75rem',
+                              cursor: isOccupied ? 'not-allowed' : 'pointer',
+                              boxShadow: isSelected ? '0 0 0 2px rgba(37,99,235,0.2)' : 'none',
+                              transition: 'all 0.15s ease'
+                            }}
+                          >
+                            <div style={{ fontSize: '1rem', color: isSelected ? '#2563eb' : isOccupied ? '#ef4444' : '#16a34a', marginBottom: '2px' }}>
+                              <i className="fas fa-bed"></i>
+                            </div>
+                            <div style={{ fontWeight: 700, color: isSelected ? '#1d4ed8' : '#1e293b' }}>
+                              Bed #{bedNum} {isSelected && '✓'}
+                            </div>
+                            <div style={{ color: isOccupied ? '#b91c1c' : isSelected ? '#2563eb' : '#15803d', fontSize: '0.7rem', marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {occupant ? occupant.name : (isOccupied ? 'Occupied' : isSelected ? 'Selected' : 'Available')}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {isSelectedRoomFull && (
+                      <div style={{ marginTop: '10px', padding: '6px 10px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '4px', color: '#b91c1c', fontSize: '0.78rem' }}>
+                        <i className="fas fa-exclamation-triangle mr-1"></i> This room is full. You cannot allocate additional students to this room.
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Boarding Fee ($ USD)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step={0.01}
+                    value={assignForm.feeAmount}
+                    onChange={e => setAssignForm(prev => ({ ...prev, feeAmount: parseFloat(e.target.value) || 0 }))}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                  />
+                </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }}>
+              {/* Sticky Modal Footer */}
+              <div style={{ padding: '14px 20px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end', gap: '10px', background: '#f8fafc' }}>
                 <button type="button" onClick={() => setShowAssignModal(false)} className="btn btn-secondary" style={{ padding: '8px 16px', borderRadius: '6px' }}>Cancel</button>
                 <button
                   type="submit"
-                  disabled={submitting || isSelectedRoomFull || (selectedHostelRooms.length > 0 && !assignForm.roomId)}
+                  disabled={submitting || isSelectedRoomFull || !assignForm.studentId || (selectedHostelRooms.length > 0 && !assignForm.roomId)}
                   className="btn btn-primary"
                   style={{
-                    padding: '8px 16px',
-                    background: (isSelectedRoomFull || (selectedHostelRooms.length > 0 && !assignForm.roomId)) ? '#94a3b8' : '#2563eb',
+                    padding: '8px 18px',
+                    background: (isSelectedRoomFull || !assignForm.studentId || (selectedHostelRooms.length > 0 && !assignForm.roomId)) ? '#94a3b8' : '#2563eb',
                     color: '#fff',
                     borderRadius: '6px',
-                    cursor: (isSelectedRoomFull || (selectedHostelRooms.length > 0 && !assignForm.roomId)) ? 'not-allowed' : 'pointer'
+                    fontWeight: 600,
+                    cursor: (isSelectedRoomFull || !assignForm.studentId || (selectedHostelRooms.length > 0 && !assignForm.roomId)) ? 'not-allowed' : 'pointer'
                   }}
                 >
-                  {submitting ? 'Allocating & Invoicing...' : isSelectedRoomFull ? 'Room Full' : 'Allocate & Invoice'}
+                  {submitting ? 'Allocating & Invoicing...' : isSelectedRoomFull ? 'Room Full' : selectedBedNumber ? `Allocate Bed #${selectedBedNumber}` : 'Allocate Bed & Invoice'}
                 </button>
               </div>
             </form>
@@ -1815,44 +1917,60 @@ export default function AdminBoarding() {
 
       {/* 4. Vacate Bed Modal (Pro-Rata Credit Note) */}
       {showVacateModal && vacateTarget && (
-        <div className="portal-modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: '#fff', borderRadius: '10px', width: '100%', maxWidth: '460px', padding: '24px' }}>
-            <h3 style={{ margin: '0 0 12px 0', color: '#1e293b' }}>Vacate Bed: {vacateTarget.studentName}</h3>
-            <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '16px' }}>
-              Confirm student checkout. You can optionally issue a pro-rata Credit Note reversal to the Bursar ledger.
-            </p>
-
-            <div style={{ marginBottom: '14px' }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Reason</label>
-              <input
-                type="text"
-                value={vacateReason}
-                onChange={e => setVacateReason(e.target.value)}
-                style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-              />
+        <div 
+          className="portal-modal-overlay" 
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(3px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1050, padding: '16px' }}
+          onClick={(e) => { if (e.target === e.currentTarget) setShowVacateModal(false); }}
+        >
+          <div style={{ background: '#fff', borderRadius: '12px', width: '100%', maxWidth: '460px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.35)', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc' }}>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#1e293b' }}>Vacate Bed: {vacateTarget.studentName}</h3>
+              <button
+                type="button"
+                onClick={() => setShowVacateModal(false)}
+                style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '20px', cursor: 'pointer', padding: '2px 8px', borderRadius: '4px', lineHeight: 1 }}
+                title="Close"
+              >
+                ✕
+              </button>
             </div>
+            <div style={{ padding: '20px', overflowY: 'auto', flex: 1 }}>
+              <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '16px' }}>
+                Confirm student checkout. You can optionally issue a pro-rata Credit Note reversal to the Bursar ledger.
+              </p>
 
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>
-                Pro-Rata Credit Note Reversal Ratio: {Math.round(proRataRatio * 100)}%
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.1"
-                value={proRataRatio}
-                onChange={e => setProRataRatio(parseFloat(e.target.value))}
-                style={{ width: '100%' }}
-              />
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
-                <span>0% (No reversal)</span>
-                <span>50% (Mid-term departure)</span>
-                <span>100% (Full refund)</span>
+              <div style={{ marginBottom: '14px' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Reason</label>
+                <input
+                  type="text"
+                  value={vacateReason}
+                  onChange={e => setVacateReason(e.target.value)}
+                  style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>
+                  Pro-Rata Credit Note Reversal Ratio: {Math.round(proRataRatio * 100)}%
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={proRataRatio}
+                  onChange={e => setProRataRatio(parseFloat(e.target.value))}
+                  style={{ width: '100%' }}
+                />
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#64748b', marginTop: '2px' }}>
+                  <span>0% (No reversal)</span>
+                  <span>50% (Mid-term departure)</span>
+                  <span>100% (Full refund)</span>
+                </div>
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+            <div style={{ padding: '14px 20px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end', gap: '10px', background: '#f8fafc' }}>
               <button type="button" onClick={() => setShowVacateModal(false)} className="btn btn-secondary" style={{ padding: '8px 16px', borderRadius: '6px' }}>Cancel</button>
               <button type="button" onClick={handleConfirmVacate} disabled={submitting} className="btn btn-primary" style={{ padding: '8px 16px', background: '#dc2626', color: '#fff', borderRadius: '6px' }}>
                 {submitting ? 'Processing...' : 'Confirm Vacate'}
@@ -1864,72 +1982,88 @@ export default function AdminBoarding() {
 
       {/* 5. Request Exeat Modal */}
       {showExeatModal && (
-        <div className="portal-modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: '#fff', borderRadius: '10px', width: '100%', maxWidth: '500px', padding: '24px' }}>
-            <h3 style={{ margin: '0 0 16px 0', color: '#1e293b' }}>Request Exeat Pass</h3>
-            <form onSubmit={handleCreateExeat}>
-              <div style={{ marginBottom: '14px' }}>
-                <SearchableCombobox
-                  label="Student (Boarder)"
-                  required
-                  placeholder="Select boarder student..."
-                  searchPlaceholder="Search student name or ID..."
-                  options={boarderStudentOptions}
-                  value={exeatForm.studentId}
-                  onChange={(val: string) => setExeatForm(prev => ({ ...prev, studentId: val }))}
-                />
-              </div>
-
-              <div style={{ marginBottom: '14px' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Exeat Type</label>
-                <select
-                  value={exeatForm.type}
-                  onChange={e => setExeatForm(prev => ({ ...prev, type: e.target.value }))}
-                  style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                >
-                  <option value="weekend">Weekend Exeat</option>
-                  <option value="medical">Medical Exeat (Hospital / Doctor)</option>
-                  <option value="emergency">Family Emergency Exeat</option>
-                </select>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Departure Date</label>
-                  <input
-                    type="date"
+        <div 
+          className="portal-modal-overlay" 
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(3px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1050, padding: '16px' }}
+          onClick={(e) => { if (e.target === e.currentTarget) setShowExeatModal(false); }}
+        >
+          <div style={{ background: '#fff', borderRadius: '12px', width: '100%', maxWidth: '500px', maxHeight: '90vh', display: 'flex', flexDirection: 'column', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.35)', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc' }}>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#1e293b' }}>Request Exeat Pass</h3>
+              <button
+                type="button"
+                onClick={() => setShowExeatModal(false)}
+                style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '20px', cursor: 'pointer', padding: '2px 8px', borderRadius: '4px', lineHeight: 1 }}
+                title="Close"
+              >
+                ✕
+              </button>
+            </div>
+            <form onSubmit={handleCreateExeat} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+              <div style={{ padding: '20px', overflowY: 'auto', flex: 1 }}>
+                <div style={{ marginBottom: '14px' }}>
+                  <SearchableCombobox
+                    label="Student (Boarder)"
                     required
-                    value={exeatForm.departureAt}
-                    onChange={e => setExeatForm(prev => ({ ...prev, departureAt: e.target.value }))}
-                    style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                    placeholder="Select boarder student..."
+                    searchPlaceholder="Search student name or ID..."
+                    options={boarderStudentOptions}
+                    value={exeatForm.studentId}
+                    onChange={(val: string) => setExeatForm(prev => ({ ...prev, studentId: val }))}
                   />
                 </div>
 
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Return Date</label>
-                  <input
-                    type="date"
+                <div style={{ marginBottom: '14px' }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Exeat Type</label>
+                  <select
+                    value={exeatForm.type}
+                    onChange={e => setExeatForm(prev => ({ ...prev, type: e.target.value }))}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                  >
+                    <option value="weekend">Weekend Exeat</option>
+                    <option value="medical">Medical Exeat (Hospital / Doctor)</option>
+                    <option value="emergency">Family Emergency Exeat</option>
+                  </select>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Departure Date</label>
+                    <input
+                      type="date"
+                      required
+                      value={exeatForm.departureAt}
+                      onChange={e => setExeatForm(prev => ({ ...prev, departureAt: e.target.value }))}
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Return Date</label>
+                    <input
+                      type="date"
+                      required
+                      value={exeatForm.returnAt}
+                      onChange={e => setExeatForm(prev => ({ ...prev, returnAt: e.target.value }))}
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Reason / Destination Details</label>
+                  <textarea
                     required
-                    value={exeatForm.returnAt}
-                    onChange={e => setExeatForm(prev => ({ ...prev, returnAt: e.target.value }))}
+                    rows={2}
+                    placeholder="Provide purpose of departure..."
+                    value={exeatForm.reason}
+                    onChange={e => setExeatForm(prev => ({ ...prev, reason: e.target.value }))}
                     style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
                   />
                 </div>
               </div>
 
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Reason / Destination Details</label>
-                <textarea
-                  required
-                  rows={2}
-                  placeholder="Provide purpose of departure..."
-                  value={exeatForm.reason}
-                  onChange={e => setExeatForm(prev => ({ ...prev, reason: e.target.value }))}
-                  style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                />
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+              <div style={{ padding: '14px 20px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'flex-end', gap: '10px', background: '#f8fafc' }}>
                 <button type="button" onClick={() => setShowExeatModal(false)} className="btn btn-secondary" style={{ padding: '8px 16px', borderRadius: '6px' }}>Cancel</button>
                 <button type="submit" disabled={submitting} className="btn btn-primary" style={{ padding: '8px 16px', background: '#2563eb', color: '#fff', borderRadius: '6px' }}>
                   {submitting ? 'Submitting...' : 'Submit Request'}

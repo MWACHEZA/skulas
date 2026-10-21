@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
+import { applySchoolTheme } from '../../../utils/theme';
 
 interface SystemColorsConfigProps {
   onSaved?: () => void;
@@ -98,10 +99,8 @@ export default function SystemColorsConfig({ onSaved }: SystemColorsConfigProps)
         textAlignment
       });
 
-      // 3. Immediately apply CSS variables to the document
-      document.documentElement.style.setProperty('--school-primary', primaryColor);
-      document.documentElement.style.setProperty('--portal-primary', primaryColor);
-      document.documentElement.style.setProperty('--school-accent', accentColor);
+      // 3. Immediately apply full CSS variable color palette to the document
+      applySchoolTheme({ primaryColor, accentColor });
 
       // 4. Update AuthContext user state
       if (user && updateUser) {

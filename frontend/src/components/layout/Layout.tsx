@@ -2,6 +2,7 @@ import { Outlet, useParams } from 'react-router-dom';
 import { useEffect, useState, createContext, useContext, useCallback } from 'react';
 import { getPublicMediaUrl } from '../../utils/formatters';
 import api from '../../lib/api';
+import { applySchoolTheme } from '../../utils/theme';
 import TopBar from './TopBar';
 import Header from './Header';
 import Footer from './Footer';
@@ -96,18 +97,13 @@ export default function Layout() {
       .finally(() => setLoading(false));
   }, [schoolCode]);
 
-  // Apply school branding CSS variables
+  // Apply school branding CSS variables across the entire public layout
   useEffect(() => {
-    const primaryColor = school?.branding?.primaryColor || (school as any)?.websiteSettings?.schoolPrimaryColor;
-    if (primaryColor) {
-      document.documentElement.style.setProperty('--school-primary', primaryColor);
-    }
-    if (school?.branding?.accentColor) {
-      document.documentElement.style.setProperty('--school-accent', school.branding.accentColor);
-    }
+    const primaryColor = school?.branding?.primaryColor || (school as any)?.websiteSettings?.schoolPrimaryColor || school?.schoolSetting?.themeColour;
+    const accentColor = school?.branding?.accentColor;
     const bannerTitleColor = (school as any)?.websiteSettings?.bannerTitleColor;
-    if (bannerTitleColor) {
-      document.documentElement.style.setProperty('--banner-title-color', bannerTitleColor);
+    if (primaryColor) {
+      applySchoolTheme({ primaryColor, accentColor, bannerTitleColor });
     }
     // Dynamic page title
     if (school?.name) {

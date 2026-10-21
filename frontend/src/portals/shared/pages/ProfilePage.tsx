@@ -261,14 +261,6 @@ export default function ProfilePage() {
     );
   };
 
-  if (fetchingProfile && !profileData) {
-    return (
-      <div className="portal-container" style={{ padding: '24px 0' }}>
-        <SkeletonLoader type="profile" />
-      </div>
-    );
-  }
-
   const pData = profileData || user;
   const staffId = pData?.staffId || (pData?.employeeProfile?.staffId) || targetStudent?.studentId || 'N/A';
   const departmentName = pData?.dept?.name || pData?.teacher?.department || (pData?.employeeProfile?.department) || 'Institutional Services';
@@ -318,6 +310,14 @@ export default function ProfilePage() {
 
     return Array.from(map.values());
   }, [teacherDirectSubjects, teacherClassSubjects]);
+
+  if (fetchingProfile && !profileData) {
+    return (
+      <div className="portal-container" style={{ padding: '24px 0' }}>
+        <SkeletonLoader type="profile" />
+      </div>
+    );
+  }
 
   return (
     <div className="portal-container" style={{ paddingBottom: '60px' }}>

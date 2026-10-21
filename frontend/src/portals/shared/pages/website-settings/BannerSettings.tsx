@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from '../../../../context/ToastContext';
 import api from '../../../../lib/api';
 import { useAuth } from '../../../../contexts/AuthContext';
+import { applySchoolTheme } from '../../../../utils/theme';
 
 interface BannerFormValues {
   bannerTitle: string;
@@ -157,8 +158,14 @@ export default function BannerSettings() {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
+      // 3. Keep schoolSetting themeColour in sync
+      if (data.primaryColor) {
+        await api.patch('/api/schools/settings', { themeColour: data.primaryColor }).catch(() => {});
+        applySchoolTheme({ primaryColor: data.primaryColor, accentColor: data.accentColor, bannerTitleColor: data.bannerTitleColor });
+      }
+
       await refreshUser();
-      window.dispatchEvent(new CustomEvent('school-settings-updated', { detail: { type: 'banner' } }));
+      window.dispatchEvent(new CustomEvent('school-settings-updated', { detail: { type: 'banner', primaryColor: data.primaryColor, accentColor: data.accentColor } }));
       localStorage.setItem('school_settings_updated', Date.now().toString());
       toast.success('Banner & Branding settings saved successfully!');
     } catch (error) {

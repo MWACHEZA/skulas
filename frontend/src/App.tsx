@@ -338,24 +338,72 @@ function SchoolCodeRedirect() {
 
 import { useAuth } from './contexts/AuthContext';
 import { useState, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import i18n from './i18n';
 import api from './lib/api';
 import { getPublicMediaUrl } from './utils/formatters';
+import { applySchoolTheme, resetToAcadexTheme, isAcadexPlatformPath } from './utils/theme';
 
 function SiteConfigHandler() {
   const { user } = useAuth();
+  const location = useLocation();
   const [favicon, setFavicon] = useState<string | null>(null);
   const [schoolCode, setSchoolCode] = useState<string | null>(null);
 
-  const fetchFaviconAndCode = useCallback(async () => {
-    // 1. Logged-in Portal User
-    if (user?.schoolId) {
-      if (user.schoolCode) {
-        setSchoolCode(user.schoolCode);
-      }
-      try {
+  const fetchFaviconAndTheme = useCallback(async () => {
+    // 1. If on Acadex public platform/marketing pages, strictly preserve Acadex branding & favicon
+    if (isAcadexPlatformPath(location.pathname)) {
+      resetToAcadexTheme();
+      return;
+    }
+
+    // 2. Identify active school code from URL (/school/:code) or user session
+    let sCode: string | null = null;
+    const match = location.pathname.match(/\/school\/([^/]+)/i);
+    if (match && match[1]) {
+      sCode = match[1].toUpperCase();
+    } else if (user?.schoolCode) {
+      sCode = user.schoolCode;
+    }
+
+    if (sCode) {
+      setSchoolCode(sCode);
+    }
+
+    // 3. Apply cached user theme immediately if available
+    const cachedPrimary = user?.schoolBranding?.primaryColor || (user?.school as any)?.branding?.primaryColor;
+    const cachedAccent = user?.schoolBranding?.accentColor || (user?.school as any)?.branding?.accentColor;
+    if (cachedPrimary) {
+      applySchoolTheme({ primaryColor: cachedPrimary, accentColor: cachedAccent });
+    }
+
+    // 4. Fetch latest school branding, colors & favicon
+    try {
+      if (sCode && !user?.schoolId) {
+        // Public school visitor
+        const res = await api.get(`/api/schools/${sCode}?_t=${Date.now()}`);
+        const s = res.data;
+        const pCol = s?.branding?.primaryColor || s?.websiteSettings?.schoolPrimaryColor || s?.schoolSetting?.themeColour;
+        const aCol = s?.branding?.accentColor;
+        const bTitleColor = s?.websiteSettings?.bannerTitleColor;
+        if (pCol) {
+          applySchoolTheme({ primaryColor: pCol, accentColor: aCol, bannerTitleColor: bTitleColor });
+        }
+        if (s?.schoolSetting?.favicon) {
+          setFavicon(s.schoolSetting.favicon);
+        }
+        if (s?.schoolSetting?.language) {
+          i18n.changeLanguage(s.schoolSetting.language);
+        }
+      } else if (user?.schoolId) {
+        // Logged-in Portal User
         const res = await api.get(`/api/schools/settings?_t=${Date.now()}`);
-        if (res.data?.favicon) setFavicon(res.data.favicon);
+        if (res.data?.favicon) {
+          setFavicon(res.data.favicon);
+        }
+        if (res.data?.themeColour) {
+          applySchoolTheme({ primaryColor: res.data.themeColour, accentColor: cachedAccent });
+        }
 
         // Apply language: Personal Prefs -> School Settings
         const localPrefs = localStorage.getItem('personal_prefs');
@@ -365,42 +413,23 @@ function SiteConfigHandler() {
         }
         const langToSet = prefLang || res.data?.language;
         if (langToSet) i18n.changeLanguage(langToSet);
-
-      } catch (err) {
-        console.error('Favicon fetch error', err);
       }
-    } else {
-      // 2. Public Website Visitor
-      const match = window.location.pathname.match(/\/school\/([^/]+)/i);
-      if (match && match[1]) {
-        const sCode = match[1].toUpperCase();
-        setSchoolCode(sCode);
-        try {
-          const res = await api.get(`/api/schools/${sCode}?_t=${Date.now()}`);
-          if (res.data?.schoolSetting?.favicon) {
-            setFavicon(res.data.schoolSetting.favicon);
-          }
-          if (res.data?.schoolSetting?.language) {
-            i18n.changeLanguage(res.data.schoolSetting.language);
-          }
-        } catch (err) {
-          console.error('Public favicon fetch error', err);
-        }
-      }
+    } catch (err) {
+      console.warn('School site config fetch error', err);
     }
-  }, [user]);
+  }, [user, location.pathname]);
 
   useEffect(() => {
-    fetchFaviconAndCode();
-  }, [fetchFaviconAndCode]);
+    fetchFaviconAndTheme();
+  }, [fetchFaviconAndTheme]);
 
   useEffect(() => {
     const handleRevalidate = () => {
-      fetchFaviconAndCode();
+      fetchFaviconAndTheme();
     };
     const handleStorage = (e: StorageEvent) => {
       if (e.key === 'school_settings_updated') {
-        fetchFaviconAndCode();
+        fetchFaviconAndTheme();
       }
     };
 
@@ -413,9 +442,15 @@ function SiteConfigHandler() {
       window.removeEventListener('school-settings-updated', handleRevalidate);
       window.removeEventListener('storage', handleStorage);
     };
-  }, [fetchFaviconAndCode]);
+  }, [fetchFaviconAndTheme]);
 
+  // Apply or reset favicon
   useEffect(() => {
+    if (isAcadexPlatformPath(location.pathname)) {
+      resetToAcadexTheme();
+      return;
+    }
+
     if (favicon && schoolCode) {
       const link = (document.querySelector("link[rel*='icon']") as HTMLLinkElement) || document.createElement('link');
       link.type = 'image/x-icon';
@@ -426,7 +461,7 @@ function SiteConfigHandler() {
         document.getElementsByTagName('head')[0].appendChild(link);
       }
     }
-  }, [favicon, schoolCode]);
+  }, [favicon, schoolCode, location.pathname]);
 
   return null;
 }
@@ -436,9 +471,9 @@ export default function App() {
     <AuthProvider>
       <ToastProvider>
         <SetupProvider>
-          <SiteConfigHandler />
           <BrowserRouter>
-          <Routes>
+            <SiteConfigHandler />
+            <Routes>
             {/*  Acadex Platform Marketing Pages (Solo)  */}
             <Route path="/" element={<AcadexLanding />} />
             <Route path="/features" element={<AcadexFeatures />} />
