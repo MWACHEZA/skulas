@@ -1179,7 +1179,7 @@ export default function ParentFees() {
     <>
       <TabbedPage
         title="Fees & Finances"
-        subtitle={`Review statements, invoices, and settle school fees for ${data?.student.name || activeEntity.name}`}
+        subtitle={`Review statements, invoices, and settle school fees for ${data?.student.name || currentChild?.name}`}
         tabs={tabs}
         defaultTab="overview"
         paramName="tab"

@@ -106,8 +106,8 @@ export default function ParentTransport() {
         student: {
           id: currentChild?.id || 'stu-1',
           name: currentChild?.name || 'Student',
-          studentId: currentChild?.studentId || '',
-          gradeLevel: currentChild?.className || 'Primary School'
+          studentId: (currentChild as any)?.studentId || currentChild?.code || '',
+          gradeLevel: (currentChild as any)?.className || 'Primary School'
         },
         isEnrolled: false,
         gpsEnabled: false,

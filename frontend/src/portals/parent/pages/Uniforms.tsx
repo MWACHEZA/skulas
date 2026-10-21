@@ -85,8 +85,8 @@ export default function ParentUniforms() {
         student: {
           id: currentChild?.id || 'stu-1',
           name: currentChild?.name || 'Student Records',
-          studentId: currentChild?.studentId || '',
-          gradeLevel: currentChild?.className || 'Primary School',
+          studentId: (currentChild as any)?.studentId || currentChild?.code || '',
+          gradeLevel: (currentChild as any)?.className || 'Primary School',
           schoolName: currentChild?.schoolName || 'Lobengula Primary'
         },
         requirements: [
