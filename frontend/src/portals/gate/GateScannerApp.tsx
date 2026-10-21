@@ -221,12 +221,16 @@ export default function GateScannerApp() {
   };
 
   const stopCamera = async () => {
-    if (scannerRef.current && scannerRef.current.isScanning) {
+    if (scannerRef.current) {
       try {
-        await scannerRef.current.stop();
+        if (scannerRef.current.isScanning) {
+          await scannerRef.current.stop();
+        }
+        await scannerRef.current.clear();
       } catch (err) {
         console.warn('Error stopping camera:', err);
       }
+      scannerRef.current = null;
     }
     setIsScanning(false);
   };
@@ -1028,19 +1032,27 @@ export default function GateScannerApp() {
             </div>
           </div>
 
-          <div
-            id="gate-camera-viewport"
-            style={{
-              width: '100%',
-              minHeight: '280px',
-              backgroundColor: '#000',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
+          <div style={{ position: 'relative', width: '100%', minHeight: '280px', backgroundColor: '#000' }}>
+            <div
+              id="gate-camera-viewport"
+              style={{
+                width: '100%',
+                minHeight: '280px',
+                display: isScanning ? 'block' : 'none'
+              }}
+            />
             {!isScanning && (
-              <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>
+              <div style={{
+                position: 'absolute',
+                inset: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center',
+                padding: '40px 20px',
+                color: '#64748b'
+              }}>
                 <div style={{ fontSize: '40px', marginBottom: '12px' }}>📷</div>
                 <div style={{ fontSize: '15px', fontWeight: '600', color: '#94a3b8' }}>
                   Camera is paused
@@ -1058,7 +1070,10 @@ export default function GateScannerApp() {
                     borderRadius: '8px',
                     fontSize: '14px',
                     fontWeight: '700',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px'
                   }}
                 >
                   Turn On Camera

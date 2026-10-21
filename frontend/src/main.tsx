@@ -1,3 +1,31 @@
+// ── DOM Mutation Protection ──────────────────────────────────────────────────
+// Prevents Google Chrome Auto-Translate, translation extensions, and 3rd-party
+// DOM injectors (e.g., QR scanners) from crashing React reconciliation with:
+// "NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node."
+if (typeof Node === 'function' && Node.prototype) {
+  const originalRemoveChild = Node.prototype.removeChild;
+  Node.prototype.removeChild = function <T extends Node>(child: T): T {
+    if (child.parentNode !== this) {
+      if (typeof console !== 'undefined' && console.warn) {
+        console.warn('[DOM Protection] removeChild parent mismatch bypassed:', child);
+      }
+      return child;
+    }
+    return originalRemoveChild.call(this, child) as T;
+  };
+
+  const originalInsertBefore = Node.prototype.insertBefore;
+  Node.prototype.insertBefore = function <T extends Node>(newNode: T, referenceNode: Node | null): T {
+    if (referenceNode && referenceNode.parentNode !== this) {
+      if (typeof console !== 'undefined' && console.warn) {
+        console.warn('[DOM Protection] insertBefore parent mismatch bypassed:', referenceNode);
+      }
+      return newNode;
+    }
+    return originalInsertBefore.call(this, newNode, referenceNode) as T;
+  };
+}
+
 import React, { Component, type ErrorInfo, type ReactNode } from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'

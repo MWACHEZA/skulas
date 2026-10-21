@@ -121,8 +121,16 @@ export default function QRAttendance() {
   };
 
   const stopScanning = async () => {
-    if (scannerRef.current?.isScanning) {
-      await scannerRef.current.stop();
+    if (scannerRef.current) {
+      try {
+        if (scannerRef.current.isScanning) {
+          await scannerRef.current.stop();
+        }
+        await scannerRef.current.clear();
+      } catch (err) {
+        console.warn('Error stopping scanner:', err);
+      }
+      scannerRef.current = null;
     }
     setScannerState('idle');
     setLastResult(null);
@@ -282,22 +290,17 @@ export default function QRAttendance() {
               )}
             </div>
             <div className="portal-card-body">
-              <div
-                id="qr-gate-reader"
-                style={{
-                  width: '100%',
-                  minHeight: 280,
-                  background: '#0f172a',
-                  borderRadius: 12,
-                  overflow: 'hidden',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  position: 'relative'
-                }}
-              >
+              <div style={{ position: 'relative', width: '100%', minHeight: 280, background: '#0f172a', borderRadius: 12, overflow: 'hidden' }}>
+                <div
+                  id="qr-gate-reader"
+                  style={{
+                    width: '100%',
+                    minHeight: 280,
+                    display: scannerState === 'idle' ? 'none' : 'block'
+                  }}
+                />
                 {scannerState === 'idle' && (
-                  <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)' }}>
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', color: 'rgba(255,255,255,0.4)' }}>
                     <i className="fas fa-camera" style={{ fontSize: 48, marginBottom: 12, display: 'block' }}></i>
                     <p style={{ margin: 0, fontSize: '0.9rem' }}>Camera not started</p>
                   </div>
