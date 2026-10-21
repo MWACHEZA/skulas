@@ -65,6 +65,259 @@ router.get('/', requireAuth, async (req: AuthRequest, res) => {
     res.status(500).json({ error: "Failed to load attendance records." });
   }
 });
+/**
+ * @route   GET /api/attendance/student/:studentId
+ * @desc    Comprehensive student attendance history and live statistics for Parent & Student portals
+ */
+router.get('/student/:studentId', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const studentId = String(req.params.studentId);
+    const { startDate, endDate, month, year, status } = req.query;
+
+    let student: any = await prisma.student.findUnique({
+      where: { id: studentId },
+      include: {
+        class: true,
+        user: { select: { name: true, avatar: true } },
+        school: { select: { id: true, name: true, code: true } }
+      }
+    });
+
+    if (!student) {
+      student = await prisma.student.findFirst({
+        where: { studentId },
+        include: {
+          class: true,
+          user: { select: { name: true, avatar: true } },
+          school: { select: { id: true, name: true, code: true } }
+        }
+      });
+    }
+
+    if (!student) {
+      return res.status(404).json({ error: 'Student record not found' });
+    }
+
+    if (req.user?.role === 'PARENT') {
+      const parent = await prisma.parent.findUnique({ where: { userId: req.user.id } });
+      if (!parent) return res.status(403).json({ error: 'Parent record not found' });
+      const link = await prisma.parentStudent.findFirst({
+        where: { parentId: parent.id, studentId: student.id }
+      });
+      if (!link) return res.status(403).json({ error: 'Unauthorized: Student is not linked to your parent account' });
+    } else if (req.user?.role === 'STUDENT') {
+      if (student.userId !== req.user.id) {
+        return res.status(403).json({ error: 'Unauthorized: Cannot view another student attendance' });
+      }
+    } else if (req.user?.role !== 'SUPER_ADMIN' && req.user?.schoolId && req.user.schoolId !== student.schoolId) {
+      return res.status(403).json({ error: 'Unauthorized cross-school access' });
+    }
+
+    let dateFilter: any = {};
+    if (month && year) {
+      const m = parseInt(month as string) - 1;
+      const y = parseInt(year as string);
+      dateFilter = {
+        gte: new Date(y, m, 1),
+        lte: new Date(y, m + 1, 0, 23, 59, 59, 999)
+      };
+    } else if (startDate && endDate) {
+      dateFilter = {
+        gte: startOfDay(new Date(startDate as string)),
+        lte: endOfDay(new Date(endDate as string))
+      };
+    }
+
+    const whereClause: any = {
+      studentId: student.id,
+      ...(Object.keys(dateFilter).length > 0 ? { date: dateFilter } : {})
+    };
+
+    if (status && status !== 'all') {
+      whereClause.status = { equals: status as string, mode: 'insensitive' };
+    }
+
+    const recordsRaw = await prisma.attendance.findMany({
+      where: whereClause,
+      include: {
+        class: { select: { id: true, name: true } },
+        teacher: {
+          select: {
+            id: true,
+            user: { select: { name: true } }
+          }
+        }
+      },
+      orderBy: { date: 'desc' }
+    });
+
+    const sessionRecords = await prisma.attendanceSessionRecord.findMany({
+      where: {
+        studentId: student.id,
+        ...(Object.keys(dateFilter).length > 0 ? { session: { date: dateFilter } } : {})
+      },
+      include: {
+        session: {
+          include: {
+            class: { select: { id: true, name: true } },
+            teacher: { select: { name: true } }
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    }).catch(() => []);
+
+    const allRecords: any[] = [];
+
+    recordsRaw.forEach((r: any) => {
+      const sLower = (r.status || 'present').toLowerCase();
+      let statusNormalized = 'PRESENT';
+      if (sLower.includes('absent')) statusNormalized = 'ABSENT';
+      else if (sLower.includes('late') || sLower.includes('tardy')) statusNormalized = 'LATE';
+      else if (sLower.includes('excuse') || sLower.includes('leave') || sLower.includes('sick')) statusNormalized = 'EXCUSED';
+
+      allRecords.push({
+        id: r.id,
+        date: new Date(r.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+        rawDate: new Date(r.date).toISOString().slice(0, 10),
+        status: statusNormalized,
+        session: 'Daily Roll Call',
+        className: r.class?.name || student.class?.name || 'Main Class',
+        teacherName: r.teacher?.user?.name || 'Class Teacher',
+        scanMethod: r.scanMethod || 'Roll Call',
+        note: r.note || ''
+      });
+    });
+
+    sessionRecords.forEach((sr: any) => {
+      const rawDateStr = new Date(sr.session.date).toISOString().slice(0, 10);
+      const exists = allRecords.some(r => r.rawDate === rawDateStr && r.session === sr.session.period);
+      if (!exists) {
+        const sLower = (sr.status || 'present').toLowerCase();
+        let statusNormalized = 'PRESENT';
+        if (sLower.includes('absent')) statusNormalized = 'ABSENT';
+        else if (sLower.includes('late') || sLower.includes('tardy')) statusNormalized = 'LATE';
+        else if (sLower.includes('excuse') || sLower.includes('leave') || sLower.includes('sick_bay') || sLower.includes('exeat')) statusNormalized = 'EXCUSED';
+
+        allRecords.push({
+          id: sr.id,
+          date: new Date(sr.session.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+          rawDate: rawDateStr,
+          status: statusNormalized,
+          session: sr.session.period || 'Session',
+          className: sr.session.class?.name || student.class?.name || 'Class',
+          teacherName: sr.session.teacher?.name || 'Instructor',
+          scanMethod: 'Session Log',
+          note: sr.notes || ''
+        });
+      }
+    });
+
+    allRecords.sort((a, b) => new Date(b.rawDate).getTime() - new Date(a.rawDate).getTime());
+
+    const totalDays = allRecords.length;
+    const presentCount = allRecords.filter(r => r.status === 'PRESENT').length;
+    const lateCount = allRecords.filter(r => r.status === 'LATE').length;
+    const excusedCount = allRecords.filter(r => r.status === 'EXCUSED').length;
+    const absentCount = allRecords.filter(r => r.status === 'ABSENT').length;
+    const presenceRate = totalDays > 0 ? Math.round(((presentCount + lateCount) / totalDays) * 1000) / 10 : 100;
+
+    res.json({
+      student: {
+        id: student.id,
+        name: student.name,
+        studentId: student.studentId,
+        className: student.class?.name || 'Class',
+        schoolName: student.school?.name || 'School'
+      },
+      metrics: {
+        totalDays,
+        presentCount,
+        lateCount,
+        excusedCount,
+        absentCount,
+        presenceRate
+      },
+      records: allRecords
+    });
+  } catch (error) {
+    console.error('Error fetching student attendance:', error);
+    res.status(500).json({ error: 'Failed to fetch student attendance data' });
+  }
+});
+
+/**
+ * @route   POST /api/attendance/excuse
+ * @desc    Submit absence excuse from Parent portal
+ */
+router.post('/excuse', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const { studentId, date, reason } = req.body;
+    if (!studentId || !date || !reason) {
+      return res.status(400).json({ error: 'Student ID, date, and reason are required' });
+    }
+
+    const student: any = await prisma.student.findUnique({
+      where: { id: String(studentId) },
+      include: { class: true, school: true }
+    });
+
+    if (!student) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
+
+    if (req.user?.role === 'PARENT') {
+      const parent = await prisma.parent.findUnique({ where: { userId: req.user.id } });
+      if (!parent) return res.status(403).json({ error: 'Parent record not found' });
+      const link = await prisma.parentStudent.findFirst({
+        where: { parentId: parent.id, studentId: student.id }
+      });
+      if (!link) return res.status(403).json({ error: 'Unauthorized: Student is not linked' });
+    }
+
+    const targetDate = startOfDay(new Date(date));
+    const teacher = await prisma.teacher.findFirst({
+      where: { schoolId: student.schoolId }
+    });
+
+    if (teacher) {
+      const existing = await prisma.attendance.findFirst({
+        where: {
+          schoolId: student.schoolId,
+          studentId: student.id,
+          date: targetDate
+        }
+      });
+
+      if (existing) {
+        await prisma.attendance.update({
+          where: { id: existing.id },
+          data: {
+            status: 'excused',
+            note: `Parent Excuse: ${reason}`
+          }
+        });
+      } else {
+        await prisma.attendance.create({
+          data: {
+            schoolId: student.schoolId,
+            studentId: student.id,
+            teacherId: teacher.id,
+            classId: student.classId,
+            date: targetDate,
+            status: 'excused',
+            note: `Parent Excuse: ${reason}`
+          }
+        });
+      }
+    }
+
+    res.json({ success: true, message: 'Absence excuse request submitted successfully' });
+  } catch (error) {
+    console.error('Error submitting absence excuse:', error);
+    res.status(500).json({ error: 'Failed to submit absence excuse' });
+  }
+});
 
 // Get aggregated class attendance summary report from Attendance table
 router.get('/class-summary', requireAuth, async (req: AuthRequest, res) => {

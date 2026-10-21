@@ -120,7 +120,7 @@ interface AcademicsSummary {
 }
 
 export default function ParentAcademics() {
-  const { activeEntity } = useAuth();
+  const { user, activeEntity } = useAuth();
   const { showToast } = useToast();
   const [searchParams] = useSearchParams();
 
@@ -186,194 +186,43 @@ export default function ParentAcademics() {
   };
 
   const createFallbackSummary = () => {
-    const studentName = activeEntity?.name || 'Child Records';
+    const studentName = activeEntity?.name || 'Active Student';
+    const studentCode = (activeEntity as any)?.studentCode || (activeEntity as any)?.studentId || 'STUDENT';
+    const schoolName = (activeEntity as any)?.schoolName || (user as any)?.schoolName || 'Institution';
+    const className = (activeEntity as any)?.className || 'Assigned Class';
+    const currentYear = new Date().getFullYear();
+
     setData({
       student: {
-        id: activeEntity?.id || 'stu-1',
+        id: activeEntity?.id || 'stu',
         name: studentName,
-        studentId: 'STU-2024-001',
-        className: 'Grade 10A',
-        schoolName: 'St. Jude International Academy'
+        studentId: studentCode,
+        className: className,
+        schoolName: schoolName
       },
-      activeTerm: 'Term 2',
-      activeYear: 2024,
+      activeTerm: 'Term 1',
+      activeYear: currentYear,
       overview: {
-        term: 'Term 2',
-        year: 2024,
-        className: 'Grade 10A',
-        currentAverage: 76,
-        previousAverage: 71,
-        trend: 5,
-        classPosition: 4,
-        totalClassStudents: 42,
-        overallGrade: 'B+',
-        conductStatus: 'Excellent',
-        bestSubject: { name: 'Information Technology', score: 92, grade: 'A' },
-        needsHelpSubject: null, // None below threshold
-        progression: [
-          { label: 'Term 3 2023', term: 'Term 3', year: 2023, score: 68 },
-          { label: 'Term 1 2024', term: 'Term 1', year: 2024, score: 71 },
-          { label: 'Term 2 2024', term: 'Term 2', year: 2024, score: 76 }
-        ],
+        term: 'Term 1',
+        year: currentYear,
+        className: className,
+        currentAverage: 0,
+        previousAverage: null,
+        trend: null,
+        classPosition: null,
+        totalClassStudents: 1,
+        overallGrade: 'Pending',
+        conductStatus: 'Good Standing',
+        bestSubject: null,
+        needsHelpSubject: null,
+        progression: [],
         targetAverage: 80,
         latestReportId: null
       },
-      subjectBreakdown: [
-        {
-          id: 'sub-1',
-          subjectId: 's1',
-          subjectName: 'Information Technology',
-          score: 92,
-          maxScore: 100,
-          grade: 'A',
-          classAverage: 74,
-          teacherComment: 'Outstanding logic, computational thinking, and project execution.',
-          teacherName: 'Mr. David Sibanda',
-          recentAssessments: [
-            { id: 'a1', title: 'Midterm Practical Exam', category: 'Exam', date: '18 Mar 2024', score: 47, maxScore: 50, status: 'Graded' },
-            { id: 'a2', title: 'Python Algorithms Lab', category: 'Homework', date: '04 Mar 2024', score: 20, maxScore: 20, status: 'Graded' }
-          ],
-          missingWorkCount: 0,
-          missingWork: []
-        },
-        {
-          id: 'sub-2',
-          subjectId: 's2',
-          subjectName: 'Mathematics',
-          score: 84,
-          maxScore: 100,
-          grade: 'A',
-          classAverage: 68,
-          teacherComment: 'Strong understanding of quadratic equations and algebraic proofs.',
-          teacherName: 'Mrs. Grace Moyo',
-          recentAssessments: [
-            { id: 'a3', title: 'Trigonometry Chapter Test', category: 'Test', date: '22 Mar 2024', score: 42, maxScore: 50, status: 'Graded' },
-            { id: 'a4', title: 'Calculus Exercises #5', category: 'Homework', date: '12 Mar 2024', score: 18, maxScore: 20, status: 'Graded' }
-          ],
-          missingWorkCount: 0,
-          missingWork: []
-        },
-        {
-          id: 'sub-3',
-          subjectId: 's3',
-          subjectName: 'Physical Sciences',
-          score: 78,
-          maxScore: 100,
-          grade: 'B+',
-          classAverage: 65,
-          teacherComment: 'Excellent lab participation. Recommend more revision on stoichiometry.',
-          teacherName: 'Dr. Arthur Phiri',
-          recentAssessments: [
-            { id: 'a5', title: 'Chemistry Lab Report: Acid-Base Titration', category: 'Lab', date: '15 Mar 2024', score: 23, maxScore: 30, status: 'Graded' }
-          ],
-          missingWorkCount: 0,
-          missingWork: []
-        },
-        {
-          id: 'sub-4',
-          subjectId: 's4',
-          subjectName: 'English Language & Literature',
-          score: 72,
-          maxScore: 100,
-          grade: 'B',
-          classAverage: 70,
-          teacherComment: 'Good analytical essay structure. Keep refining vocabulary and syntax.',
-          teacherName: 'Ms. Clara Chidemo',
-          recentAssessments: [
-            { id: 'a6', title: 'Shakespeare Macbeth Commentary', category: 'Essay', date: '20 Mar 2024', score: 36, maxScore: 50, status: 'Graded' }
-          ],
-          missingWorkCount: 0,
-          missingWork: []
-        },
-        {
-          id: 'sub-5',
-          subjectId: 's5',
-          subjectName: 'Geography',
-          score: 68,
-          maxScore: 100,
-          grade: 'C+',
-          classAverage: 62,
-          teacherComment: 'Well engaged in map reading and geomorphology.',
-          teacherName: 'Mr. Kenneth Ncube',
-          recentAssessments: [
-            { id: 'a7', title: 'Topographical Map Analysis', category: 'Test', date: '10 Mar 2024', score: 34, maxScore: 50, status: 'Graded' }
-          ],
-          missingWorkCount: 0,
-          missingWork: []
-        }
-      ],
-      reportCards: [
-        {
-          id: 'rep-term2-2024',
-          term: 'Term 2',
-          year: '2024',
-          publishedAt: '2024-04-12T10:00:00Z',
-          availableDate: '12 Apr 2024',
-          downloadUrl: '/api/reports/download/rep-term2-2024'
-        },
-        {
-          id: 'rep-term1-2024',
-          term: 'Term 1',
-          year: '2024',
-          publishedAt: '2024-01-20T10:00:00Z',
-          availableDate: '20 Jan 2024',
-          downloadUrl: '/api/reports/download/rep-term1-2024'
-        },
-        {
-          id: 'rep-term3-2023',
-          term: 'Term 3',
-          year: '2023',
-          publishedAt: '2023-12-05T10:00:00Z',
-          availableDate: '05 Dec 2023',
-          downloadUrl: '/api/reports/download/rep-term3-2023'
-        }
-      ],
-      principalComment: {
-        term: 'Term 2',
-        year: 2024,
-        comment: 'A focused, hardworking, and well-disciplined student. Continues to demonstrate academic vigor and commendable leadership in class activities.',
-        classTeacherComment: 'Pleasure to teach. Consistently meets deadlines and participates constructively during discussions.'
-      },
-      history: [
-        {
-          year: 2024,
-          className: 'Grade 10A',
-          average: 74,
-          position: '4th of 42',
-          finalGrade: 'B+',
-          status: 'In Progress',
-          terms: [
-            { term: 'Term 1', average: 71, grade: 'B', subjectsCount: 5 },
-            { term: 'Term 2', average: 76, grade: 'B+', subjectsCount: 5 }
-          ]
-        },
-        {
-          year: 2023,
-          className: 'Grade 9B',
-          average: 70,
-          position: '6th of 40',
-          finalGrade: 'B',
-          status: 'Completed',
-          terms: [
-            { term: 'Term 1', average: 69, grade: 'B', subjectsCount: 5 },
-            { term: 'Term 2', average: 72, grade: 'B', subjectsCount: 5 },
-            { term: 'Term 3', average: 68, grade: 'C+', subjectsCount: 5 }
-          ]
-        },
-        {
-          year: 2022,
-          className: 'Grade 8C',
-          average: 73,
-          position: '5th of 38',
-          finalGrade: 'B',
-          status: 'Completed',
-          terms: [
-            { term: 'Term 1', average: 70, grade: 'B', subjectsCount: 5 },
-            { term: 'Term 2', average: 74, grade: 'B', subjectsCount: 5 },
-            { term: 'Term 3', average: 75, grade: 'B+', subjectsCount: 5 }
-          ]
-        }
-      ]
+      subjectBreakdown: [],
+      reportCards: [],
+      principalComment: null,
+      history: []
     });
   };
 
@@ -657,11 +506,13 @@ export default function ParentAcademics() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '8px 0 4px' }}>
               <i className="fas fa-trophy" style={{ color: '#f59e0b', fontSize: '1.25rem' }}></i>
               <span style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0f172a' }}>
-                {overview?.classPosition ? `${overview.classPosition}th` : 'Top 10%'}
+                {overview?.classPosition ? `${overview.classPosition}th` : (overview?.currentAverage ? 'Active Rank' : 'Pending')}
               </span>
-              <span style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: 600 }}>
-                of {overview?.totalClassStudents || 42}
-              </span>
+              {overview?.totalClassStudents && overview.totalClassStudents > 1 && (
+                <span style={{ fontSize: '0.9rem', color: '#64748b', fontWeight: 600 }}>
+                  of {overview.totalClassStudents}
+                </span>
+              )}
             </div>
             <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
               Enrolled students in {overview?.className}
@@ -739,7 +590,7 @@ export default function ParentAcademics() {
             border: '1px solid #e2e8f0'
           }}
         >
-          {overview?.bestSubject && (
+          {overview?.bestSubject ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '0.9rem' }}>
               <span style={{ color: '#f59e0b', fontSize: '1.1rem' }}>⭐</span>
               <strong style={{ color: '#334155' }}>Best Subject:</strong>
@@ -749,6 +600,11 @@ export default function ParentAcademics() {
               <span className="portal-badge success" style={{ padding: '2px 8px', fontSize: '0.75rem' }}>
                 Grade {overview.bestSubject.grade}
               </span>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '0.85rem', color: '#64748b' }}>
+              <i className="fas fa-info-circle" style={{ color: '#0284c7' }}></i>
+              <span>Continuous assessment records for this term will be populated once marks are submitted by subject instructors.</span>
             </div>
           )}
 

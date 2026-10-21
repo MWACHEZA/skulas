@@ -361,14 +361,13 @@ router.get('/parent-summary', requireAuth, async (req: AuthRequest, res: Respons
         where: { userId },
         include: {
           students: {
-            where: { status: 'APPROVED' },
             include: { student: true }
           }
         }
       });
 
       if (!parent || parent.students.length === 0) {
-        return res.status(403).json({ error: 'No approved student link found for this parent.' });
+        return res.status(403).json({ error: 'No student link found for this parent.' });
       }
 
       if (!studentId) {

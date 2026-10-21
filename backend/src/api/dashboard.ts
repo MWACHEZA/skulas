@@ -624,6 +624,7 @@ router.get('/parent', requireAuth, async (req: AuthRequest, res: Response) => {
     }
 
     // 2. Parent & Tenant Authorization Guard
+    let parentLinkStatus = 'APPROVED';
     if (req.user?.role === 'PARENT') {
       const parent = await prisma.parent.findUnique({
         where: { userId: req.user.id }
@@ -636,14 +637,14 @@ router.get('/parent', requireAuth, async (req: AuthRequest, res: Response) => {
       const parentLink = await prisma.parentStudent.findFirst({
         where: {
           parentId: parent.id,
-          studentId: student.id,
-          status: 'APPROVED'
+          studentId: student.id
         }
       });
 
       if (!parentLink) {
-        return res.status(403).json({ error: 'Forbidden: You do not have approved access to view this student profile' });
+        return res.status(403).json({ error: 'Forbidden: You do not have access to view this student profile' });
       }
+      parentLinkStatus = parentLink.status;
     } else if (req.user?.role !== 'SUPER_ADMIN') {
       if (req.user?.schoolId && req.user.schoolId !== student.schoolId) {
         return res.status(403).json({ error: 'Cross-tenant access forbidden' });
@@ -1057,7 +1058,9 @@ router.get('/parent', requireAuth, async (req: AuthRequest, res: Response) => {
         houseName: student.house?.name || null,
         avatar: student.user?.avatar || null,
         schoolName: student.school?.name,
-        schoolCode: student.school?.code
+        schoolCode: student.school?.code,
+        verificationStatus: parentLinkStatus,
+        isPendingVerification: parentLinkStatus === 'PENDING'
       },
       fees: {
         balanceDue: outstandingBalance,

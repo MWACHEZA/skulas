@@ -114,6 +114,8 @@ export default function ParentDashboard() {
   const [loading, setLoading] = useState<boolean>(true);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [lastUpdatedText, setLastUpdatedText] = useState<string | null>(null);
+  const isFetchingRef = React.useRef(false);
+  const hasShownErrorRef = React.useRef(false);
 
   // Modals
   const [payModalOpen, setPayModalOpen] = useState(false);
@@ -146,7 +148,8 @@ export default function ParentDashboard() {
 
   // Fetch summary data from backend
   const fetchDashboardData = useCallback(async (childId: string, background: boolean = false) => {
-    if (!childId) return;
+    if (!childId || isFetchingRef.current) return;
+    isFetchingRef.current = true;
 
     if (!background) {
       setLoading(true);
@@ -170,10 +173,13 @@ export default function ParentDashboard() {
       }
     } catch (err: any) {
       console.error('Failed to fetch parent dashboard summary:', err);
-      if (!summary) {
-        showToast('Unable to load live student data. Check your internet connection.', 'error');
+      if (!hasShownErrorRef.current && !summary) {
+        hasShownErrorRef.current = true;
+        const msg = err.response?.data?.error || 'Unable to load live student data. Check your internet connection.';
+        showToast(msg, 'error');
       }
     } finally {
+      isFetchingRef.current = false;
       setLoading(false);
       setIsRefreshing(false);
     }
@@ -202,6 +208,7 @@ export default function ParentDashboard() {
   // Handle Child Switcher
   const handleChildSwitch = (newChildId: string) => {
     if (newChildId === activeChildId) return;
+    hasShownErrorRef.current = false;
     setActiveChildId(newChildId);
     const matched = linkedChildren.find(c => c.id === newChildId);
     if (matched) {
@@ -396,6 +403,48 @@ export default function ParentDashboard() {
         </div>
       </div>
 
+      {/* Verification Pending Banner */}
+      {(activeEntity?.status === 'PENDING' || (summary?.child as any)?.isPendingVerification) && (
+        <div style={{
+          background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
+          border: '1px solid #fcd34d',
+          borderRadius: 14,
+          padding: '14px 18px',
+          marginBottom: 20,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 14,
+          boxShadow: '0 2px 6px rgba(245, 158, 11, 0.08)'
+        }}>
+          <div style={{
+            width: 38,
+            height: 38,
+            borderRadius: '50%',
+            background: '#ffffff',
+            border: '2px solid #f59e0b',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#d97706',
+            fontSize: '1rem',
+            flexShrink: 0
+          }}>
+            <i className="fas fa-user-clock"></i>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#92400e', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span>Parent Link Verification in Progress</span>
+              <span style={{ fontSize: '0.68rem', fontWeight: 800, background: '#f59e0b', color: '#ffffff', padding: '2px 8px', borderRadius: 12, textTransform: 'uppercase' }}>
+                Preview Mode
+              </span>
+            </div>
+            <div style={{ fontSize: '0.8rem', color: '#b45309', marginTop: 2 }}>
+              Your linkage to <strong>{summary?.child.name || activeEntity?.name || 'this student'}</strong> is awaiting school administration sign-off. Live academic, fee, and attendance insights are displayed below.
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── SECTION 1: 4 STATUS CARDS (Traffic-Light Color Coded Grid) ── */}
       {/* 2x2 on Mobile, 4-across on Desktop. NEVER more than 3 lines of text per card */}
       <div style={{
@@ -506,20 +555,25 @@ export default function ParentDashboard() {
             <div>
               {/* Line 1: Term Average + Single Trend Arrow */}
               <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#0f172a' }}>
-                {summary?.academics.termName} Average: {summary?.academics.currentAverage}%{' '}
-                <span style={{
-                  color: summary?.academics.trendArrow === 'up' ? '#10b981' : summary?.academics.trendArrow === 'down' ? '#ef4444' : '#64748b',
-                  fontWeight: 900
-                }}>
-                  {summary?.academics.trendArrow === 'up' ? '↑' : summary?.academics.trendArrow === 'down' ? '↓' : '→'}
-                </span>
-                <span style={{ fontSize: '0.75rem', fontWeight: 500, color: '#64748b' }}>
-                  {' '}from {summary?.academics.previousAverage}%
-                </span>
+                {summary?.academics.termName || 'Current Term'} Average: {summary?.academics.currentAverage !== undefined && summary?.academics.currentAverage !== null ? `${summary.academics.currentAverage}%` : 'Pending'}
+                {summary?.academics.previousAverage !== undefined && summary?.academics.previousAverage !== null && (
+                  <>
+                    {' '}
+                    <span style={{
+                      color: summary?.academics.trendArrow === 'up' ? '#10b981' : summary?.academics.trendArrow === 'down' ? '#ef4444' : '#64748b',
+                      fontWeight: 900
+                    }}>
+                      {summary?.academics.trendArrow === 'up' ? '↑' : summary?.academics.trendArrow === 'down' ? '↓' : '→'}
+                    </span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 500, color: '#64748b' }}>
+                      {' '}from {summary?.academics.previousAverage}%
+                    </span>
+                  </>
+                )}
               </div>
               {/* Line 2: Latest Assessment Score */}
               <div style={{ fontSize: '0.8rem', color: '#475569', marginTop: 4, fontWeight: 600 }}>
-                Latest: {summary?.academics.latestAssessment} ({summary?.academics.latestScore}%)
+                Latest: {summary?.academics.latestAssessment || 'Classroom Assessment'}{summary?.academics.latestScore !== undefined && summary?.academics.latestScore !== null ? ` (${summary.academics.latestScore}%)` : ''}
               </div>
             </div>
 
@@ -562,11 +616,11 @@ export default function ParentDashboard() {
             <div>
               {/* Line 1: Term Attendance % */}
               <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#0f172a' }}>
-                {summary?.attendance.presentPercent}% Present this term
+                {summary?.attendance.presentPercent !== undefined ? `${summary.attendance.presentPercent}% Present this term` : '100% Present this term'}
               </div>
               {/* Line 2: Absence & Late counts */}
               <div style={{ fontSize: '0.78rem', color: '#475569', marginTop: 4, fontWeight: 600 }}>
-                Absent: {summary?.attendance.absentDays} days | Late: {summary?.attendance.lateDays}
+                Absent: {summary?.attendance.absentDays ?? 0} days | Late: {summary?.attendance.lateDays ?? 0}
               </div>
             </div>
 
@@ -578,7 +632,7 @@ export default function ParentDashboard() {
                 color: getTrafficColor(summary?.attendance.statusColor || 'GREEN')
               }}>
                 <i className="fas fa-check-circle" style={{ marginRight: 4, fontSize: '0.7rem' }}></i>
-                Today: {summary?.attendance.todayStatus}
+                Today: {summary?.attendance.todayStatus || 'Present'}
               </span>
               <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Tap for logs <i className="fas fa-chevron-right"></i></span>
             </div>
@@ -614,11 +668,11 @@ export default function ParentDashboard() {
             <div>
               {/* Line 1: Clinic visits this week (non-alarming, factual) */}
               <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#0f172a' }}>
-                {summary?.welfare.clinicStatusText}
+                {summary?.welfare.clinicStatusText || 'No clinic visits recorded this week'}
               </div>
               {/* Line 2: Library books status */}
               <div style={{ fontSize: '0.78rem', color: '#475569', marginTop: 3 }}>
-                Library: {summary?.welfare.libraryStatusText}
+                Library: {summary?.welfare.libraryStatusText || 'All loans up to date'}
               </div>
             </div>
 
@@ -626,7 +680,7 @@ export default function ParentDashboard() {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
               <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#10b981' }}>
                 <i className="fas fa-award" style={{ marginRight: 4 }}></i>
-                {summary?.welfare.conductStatus}
+                {summary?.welfare.conductStatus || 'Good Standing'}
               </span>
               <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Tap for wellbeing <i className="fas fa-chevron-right"></i></span>
             </div>

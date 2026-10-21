@@ -204,15 +204,15 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (!message) return;
     const now = Date.now();
     const lastSeen = recentToastsRef.current.get(message);
-    if (lastSeen && now - lastSeen < 3000) {
-      // Deduplicate: drop identical message within 3s window
+    if (lastSeen && now - lastSeen < 6000) {
+      // Deduplicate: drop identical message within 6s window
       return;
     }
     recentToastsRef.current.set(message, now);
 
-    // Prune entries older than 10s
+    // Prune entries older than 15s
     for (const [key, ts] of recentToastsRef.current.entries()) {
-      if (now - ts > 10000) {
+      if (now - ts > 15000) {
         recentToastsRef.current.delete(key);
       }
     }
@@ -226,6 +226,10 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     setActiveToasts((prev) => {
+      // Never show duplicate identical message concurrently on screen
+      if (prev.some((t) => t.message === message)) {
+        return prev;
+      }
       // FIFO eviction: cap to MAX_VISIBLE_TOASTS (3)
       if (prev.length >= MAX_VISIBLE_TOASTS) {
         return [...prev.slice(prev.length - (MAX_VISIBLE_TOASTS - 1)), newToast];
