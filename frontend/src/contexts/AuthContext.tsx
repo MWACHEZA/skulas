@@ -92,8 +92,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const [activeEntity, setActiveEntityState] = useState<LinkedEntity | null>(() => {
     const stored = localStorage.getItem('acadex_active_entity');
-    return stored ? JSON.parse(stored) : null;
+    if (stored) {
+      try { return JSON.parse(stored); } catch (e) {}
+    }
+    const storedUser = localStorage.getItem('acadex_user');
+    if (storedUser) {
+      try {
+        const u = JSON.parse(storedUser);
+        if (u.linkedEntities && u.linkedEntities.length > 0) {
+          return u.linkedEntities[0];
+        }
+      } catch (e) {}
+    }
+    return null;
   });
+
+  // Auto-activate first linked child if none is active
+  useEffect(() => {
+    if (!activeEntity && user?.linkedEntities && user.linkedEntities.length > 0) {
+      setActiveEntity(user.linkedEntities[0]);
+    }
+  }, [user?.linkedEntities, activeEntity]);
 
   // Apply school branding globally
   useEffect(() => {
