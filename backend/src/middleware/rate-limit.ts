@@ -24,6 +24,7 @@ export const globalLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: getClientKey,
+  validate: { keyGeneratorIpFallback: false },
   skip: (req) => {
     const p = req.path || req.originalUrl || '';
     return (

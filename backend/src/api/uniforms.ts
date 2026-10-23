@@ -737,7 +737,7 @@ router.get('/parent-summary', requireAuth, async (req: AuthRequest, res: Respons
     let studentId = req.query.studentId as string;
     const userRole = req.user?.role;
     const userId = req.user!.id;
-    const schoolId = req.user?.schoolId;
+    let schoolId = req.user?.schoolId;
 
     if (userRole === 'PARENT') {
       const parent = await prisma.parent.findUnique({
@@ -792,80 +792,66 @@ router.get('/parent-summary', requireAuth, async (req: AuthRequest, res: Respons
     const effectiveSchoolId = student.schoolId;
     const gradeLevel = student.class?.name || 'Current Grade';
 
-    // 1. Fetch all student's past uniform purchases / sales
-    const pastSales = await prisma.uniformSale.findMany({
-      where: {
-        schoolId: effectiveSchoolId,
-        studentId: student.id
-      },
-      include: {
-        items: {
-          include: {
-            item: true
+    // 1. Fetch student's past uniform purchases (UniformSale) and official issuances (UniformIssuance)
+    const [pastSales, pastIssuances] = await Promise.all([
+      prisma.uniformSale.findMany({
+        where: {
+          schoolId: effectiveSchoolId,
+          studentId: student.id
+        },
+        include: {
+          items: {
+            include: {
+              item: true
+            }
           }
-        }
-      },
-      orderBy: { saleDate: 'desc' }
-    });
+        },
+        orderBy: { saleDate: 'desc' }
+      }),
+      prisma.uniformIssuance.findMany({
+        where: {
+          schoolId: effectiveSchoolId,
+          studentId: student.id
+        },
+        orderBy: { issuedAt: 'desc' }
+      })
+    ]);
 
-    // Map owned quantities by item name
+    // Map owned quantities by itemId and item name
     const ownedMap = new Map<string, number>();
     for (const sale of pastSales) {
       for (const si of sale.items) {
+        if (si.itemId) {
+          ownedMap.set(si.itemId, (ownedMap.get(si.itemId) || 0) + si.quantity);
+        }
         const nameKey = (si.item?.name || '').toLowerCase();
-        ownedMap.set(nameKey, (ownedMap.get(nameKey) || 0) + si.quantity);
+        if (nameKey) {
+          ownedMap.set(nameKey, (ownedMap.get(nameKey) || 0) + si.quantity);
+        }
       }
     }
 
-    // 2. Master Requirements per Grade
-    const masterRequirements = [
-      { name: 'Grey shorts / Skirt', category: 'Uniform', requiredQty: 2, isSeasonal: false, seasonNotes: 'Standard daily wear' },
-      { name: 'Formal Blazer', category: 'Uniform', requiredQty: 1, isSeasonal: true, seasonNotes: 'Required for winter — missing if not purchased' },
-      { name: 'White Collared Shirts', category: 'Uniform', requiredQty: 3, isSeasonal: false, seasonNotes: 'Standard formal wear' },
-      { name: 'School Tie', category: 'Uniform', requiredQty: 1, isSeasonal: false, seasonNotes: 'Formal assemblies' },
-      { name: 'Mathematics Textbook', category: 'Textbook', requiredQty: 1, isSeasonal: false, seasonNotes: 'Core syllabus requirement' },
-      { name: 'Agriculture Workbook', category: 'Workbook', requiredQty: 1, isSeasonal: false, seasonNotes: 'Practical coursework workbook' },
-      { name: 'Physical Education Tracksuit', category: 'Sports', requiredQty: 1, isSeasonal: true, seasonNotes: 'Winter sporting activities' },
-      { name: 'Black Ankle Socks (Pack of 3)', category: 'Uniform', requiredQty: 2, isSeasonal: false, seasonNotes: 'Standard dress code' }
-    ];
-
-    // Cross-reference requirements vs owned items
-    const requirements = masterRequirements.map((req, idx) => {
-      const nameLower = req.name.toLowerCase();
-      let ownedQty = 0;
-      ownedMap.forEach((qty, ownedName) => {
-        if (nameLower.includes(ownedName) || ownedName.includes(nameLower) || 
-           (nameLower.includes('blazer') && ownedName.includes('blazer')) ||
-           (nameLower.includes('shirt') && ownedName.includes('shirt')) ||
-           (nameLower.includes('short') && ownedName.includes('short')) ||
-           (nameLower.includes('math') && ownedName.includes('math')) ||
-           (nameLower.includes('agric') && ownedName.includes('agric')) ||
-           (nameLower.includes('tracksuit') && ownedName.includes('tracksuit')) ||
-           (nameLower.includes('tie') && ownedName.includes('tie'))) {
-          ownedQty += qty;
+    for (const iss of pastIssuances) {
+      if (Array.isArray(iss.items)) {
+        for (const it of iss.items as any[]) {
+          if (it.productId) {
+            ownedMap.set(it.productId, (ownedMap.get(it.productId) || 0) + (it.qty || 1));
+          }
+          const nameKey = (it.productName || it.name || '').toLowerCase();
+          if (nameKey) {
+            ownedMap.set(nameKey, (ownedMap.get(nameKey) || 0) + (it.qty || 1));
+          }
         }
-      });
+      }
+    }
 
-      const isFulfilled = ownedQty >= req.requiredQty;
-
-      return {
-        id: `req-${idx + 1}`,
-        name: req.name,
-        category: req.category,
-        requiredQty: req.requiredQty,
-        ownedQty,
-        isSeasonal: req.isSeasonal,
-        seasonNotes: req.seasonNotes,
-        status: isFulfilled ? 'FULFILLED' : 'MISSING'
-      };
-    });
-
-    // 3. Shop Catalog: Limited to items this child actually needs/missing + relevant items, capped at ~10
+    // 2. Fetch real database UniformItems for this school
     const rawItems = await prisma.uniformItem.findMany({
       where: { schoolId: effectiveSchoolId },
-      orderBy: { sellingPrice: 'asc' }
+      orderBy: { name: 'asc' }
     });
 
+    // Compute live stock levels from UniformStockMovement
     const stockMovements = await prisma.uniformStockMovement.groupBy({
       by: ['itemId'],
       where: { schoolId: effectiveSchoolId },
@@ -873,44 +859,94 @@ router.get('/parent-summary', requireAuth, async (req: AuthRequest, res: Respons
     });
     const stockMap = new Map(stockMovements.map(s => [s.itemId, s._sum.quantity ?? 0]));
 
-    const missingReqNames = requirements.filter(r => r.status === 'MISSING').map(r => r.name.toLowerCase());
-    
-    const catalogWithStock = rawItems.map(item => ({
+    // 3. Build dynamic requirements directly from school's real database items
+    const requirements = rawItems.map((item, idx) => {
+      const nameLower = item.name.toLowerCase();
+      let ownedQty = ownedMap.get(item.id) || 0;
+      if (ownedQty === 0) {
+        ownedMap.forEach((qty, key) => {
+          if (nameLower.includes(key) || key.includes(nameLower)) {
+            ownedQty += qty;
+          }
+        });
+      }
+
+      const isShirtOrSock = nameLower.includes('shirt') || nameLower.includes('sock');
+      const requiredQty = isShirtOrSock ? 2 : 1;
+      const isFulfilled = ownedQty >= requiredQty;
+
+      const isSeasonal =
+        nameLower.includes('winter') ||
+        nameLower.includes('jersey') ||
+        nameLower.includes('knitwear') ||
+        nameLower.includes('blazer') ||
+        nameLower.includes('tracksuit');
+
+      let category = 'Uniform';
+      if (nameLower.includes('sport') || nameLower.includes('tracksuit') || nameLower.includes('physical')) {
+        category = 'Sports';
+      } else if (nameLower.includes('tie') || nameLower.includes('sock') || nameLower.includes('cap') || nameLower.includes('belt')) {
+        category = 'Accessories';
+      }
+
+      return {
+        id: item.id,
+        name: item.name,
+        category,
+        requiredQty,
+        ownedQty,
+        isSeasonal,
+        seasonNotes: isSeasonal ? 'Required winter dress code' : 'Standard daily curriculum dress code',
+        status: isFulfilled ? 'FULFILLED' : 'MISSING'
+      };
+    });
+
+    // 4. Shop Catalog: real items from database
+    const missingReqIds = new Set(requirements.filter(r => r.status === 'MISSING').map(r => r.id));
+
+    const shopItems = rawItems.map(item => ({
       id: item.id,
       name: item.name,
       price: item.sellingPrice,
-      stockLevel: stockMap.get(item.id) ?? 15,
-      isMissingForChild: missingReqNames.some(m => item.name.toLowerCase().includes(m) || m.includes(item.name.toLowerCase()))
+      costPrice: item.costPrice,
+      stockLevel: stockMap.get(item.id) ?? 20,
+      isMissingForChild: missingReqIds.has(item.id)
     }));
 
-    catalogWithStock.sort((a, b) => {
+    // Prioritize missing items first
+    shopItems.sort((a, b) => {
       if (a.isMissingForChild && !b.isMissingForChild) return -1;
       if (!a.isMissingForChild && b.isMissingForChild) return 1;
       return a.price - b.price;
     });
 
-    const shopItems = catalogWithStock.slice(0, 10);
-
-    const finalShopItems = shopItems.length > 0 ? shopItems : [
-      { id: 'def-1', name: 'Winter Woollen Blazer', price: 45.00, stockLevel: 24, isMissingForChild: true },
-      { id: 'def-2', name: 'Agriculture Practical Workbook', price: 12.00, stockLevel: 40, isMissingForChild: true },
-      { id: 'def-3', name: 'Grey School Shorts / Pleated Skirt', price: 18.00, stockLevel: 35, isMissingForChild: false },
-      { id: 'def-4', name: 'White Collared Formal Shirt', price: 10.00, stockLevel: 50, isMissingForChild: false },
-      { id: 'def-5', name: 'Official Striped School Tie', price: 6.00, stockLevel: 60, isMissingForChild: false },
-      { id: 'def-6', name: 'Physical Education Winter Tracksuit', price: 32.00, stockLevel: 18, isMissingForChild: true }
-    ];
-
-    // 4. Order History (Newest first)
-    const orderHistory = pastSales.map(s => ({
+    // 5. Order History from real database records (UniformSale + UniformIssuance)
+    const saleOrders = pastSales.map(s => ({
       id: s.id,
       orderNumber: s.reference || `ORD-${s.id.slice(-6).toUpperCase()}`,
       date: new Date(s.saleDate).toLocaleDateString(),
-      itemsCount: s.items.reduce((sum, item) => sum + item.quantity, 0),
-      itemsSummary: s.items.map(si => `${si.item?.name || 'Item'} x${si.quantity}`).join(', '),
+      itemsCount: s.items.reduce((sum, it) => sum + it.quantity, 0),
+      itemsSummary: s.items.map(si => `${si.item?.name || 'Item'} x${si.quantity}`).join(', ') || 'Uniform Order',
       totalAmount: s.totalAmount,
       paymentMode: s.paymentMode || 'Paid via Portal',
       status: 'Ready for collection ✓'
     }));
+
+    const issuanceOrders = pastIssuances.map(iss => {
+      const itemsArr = Array.isArray(iss.items) ? (iss.items as any[]) : [];
+      return {
+        id: iss.id,
+        orderNumber: `ISS-${iss.id.slice(-6).toUpperCase()}`,
+        date: new Date(iss.issuedAt).toLocaleDateString(),
+        itemsCount: itemsArr.reduce((sum, it) => sum + (it.qty || 1), 0),
+        itemsSummary: itemsArr.map(it => `${it.productName || it.name || 'Kit Item'} x${it.qty || 1}`).join(', ') || 'Direct Issuance',
+        totalAmount: iss.totalAmount,
+        paymentMode: iss.paymentStatus === 'PAID' ? 'Settled (Invoice)' : 'School Issued',
+        status: iss.collectionStatus === 'COLLECTED' ? 'Collected ✓' : 'Pending Pickup'
+      };
+    });
+
+    const orderHistory = [...saleOrders, ...issuanceOrders];
 
     res.json({
       student: {
@@ -921,7 +957,7 @@ router.get('/parent-summary', requireAuth, async (req: AuthRequest, res: Respons
         schoolName: student.school.name
       },
       requirements,
-      shopItems: finalShopItems,
+      shopItems,
       orderHistory
     });
   } catch (error: any) {
@@ -937,23 +973,63 @@ router.get('/parent-summary', requireAuth, async (req: AuthRequest, res: Respons
 router.post('/parent-order', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
     const { studentId, items, paymentMode, reference } = req.body;
-    const schoolId = req.user!.schoolId!;
+    let schoolId = req.user!.schoolId;
 
     if (!studentId || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ error: 'studentId and items list are required.' });
     }
 
+    const student = await prisma.student.findUnique({ where: { id: studentId } });
+    if (!student) {
+      return res.status(404).json({ error: 'Student not found.' });
+    }
+    if (!schoolId) {
+      schoolId = student.schoolId;
+    }
+
     const totalAmount = items.reduce((sum: number, it: any) => sum + (it.price * (it.quantity || 1)), 0);
+    const orderRef = reference || `ORD-${Date.now().toString().slice(-6)}`;
 
     const sale = await prisma.uniformSale.create({
       data: {
         schoolId,
         studentId,
         paymentMode: paymentMode || 'Paynow',
-        reference: reference || `UNIF-${Date.now().toString().slice(-6)}`,
-        totalAmount
+        reference: orderRef,
+        totalAmount,
+        items: {
+          create: items.map((it: any) => ({
+            itemId: it.id,
+            quantity: it.quantity || 1,
+            unitPrice: it.price || 0
+          }))
+        }
+      },
+      include: {
+        items: {
+          include: { item: true }
+        }
       }
     });
+
+    // Record stock movements (SALE_OUT) for each ordered item
+    for (const it of items) {
+      if (it.id) {
+        await prisma.uniformStockMovement.create({
+          data: {
+            schoolId,
+            itemId: it.id,
+            quantity: -(it.quantity || 1),
+            movementType: 'SALE_OUT',
+            reference: orderRef,
+            sourceType: 'uniform_sale',
+            sourceId: sale.id,
+            unitCost: it.costPrice || 0,
+            totalCost: (it.costPrice || 0) * (it.quantity || 1)
+          }
+        }).catch(err => console.warn('Could not record stock movement for parent sale:', err));
+      }
+    }
 
     res.json({
       success: true,

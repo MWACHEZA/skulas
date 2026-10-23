@@ -1831,7 +1831,7 @@ router.get('/:code/content', async (req, res) => {
  * @route   GET /api/schools/connections/pending
  * @desc    [SCHOOL_ADMIN] Fetch all users with pending link requests (Suppliers or Parents)
  */
-router.get('/connections/pending', requireAuth, requireRole(['SCHOOL_ADMIN', 'SUPER_ADMIN', 'PRINCIPAL']), async (req: AuthRequest, res) => {
+router.get('/connections/pending', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN', 'PRINCIPAL'), async (req: AuthRequest, res) => {
   const { role, status } = req.query;
   try {
     const schoolId = req.user!.schoolId!;
@@ -1904,7 +1904,7 @@ router.get('/connections/pending', requireAuth, requireRole(['SCHOOL_ADMIN', 'SU
  * @route   PATCH /api/schools/connections/:userId/approve
  * @desc    [SCHOOL_ADMIN] Approve a pending connection request (accepts connectionId or userId)
  */
-router.patch('/connections/:userId/approve', requireAuth, requireRole(['SCHOOL_ADMIN', 'SUPER_ADMIN', 'PRINCIPAL']), async (req: AuthRequest, res) => {
+router.patch('/connections/:userId/approve', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN', 'PRINCIPAL'), async (req: AuthRequest, res) => {
   try {
     const targetId = req.params.userId as string;
     const school = await prisma.school.findUnique({ where: { id: req.user!.schoolId! } });
@@ -1946,10 +1946,12 @@ router.patch('/connections/:userId/approve', requireAuth, requireRole(['SCHOOL_A
           where: { id: directSupplierConn.id },
           data: { status: 'APPROVED', schoolSpecificId }
         }),
-        prisma.user.update({
-          where: { id: directSupplierConn.supplier.userId },
-          data: { staffId: schoolSpecificId }
-        })
+        ...(directSupplierConn.supplier.userId ? [
+          prisma.user.update({
+            where: { id: directSupplierConn.supplier.userId },
+            data: { staffId: schoolSpecificId }
+          })
+        ] : [])
       ]);
       return res.json({ success: true, message: 'Supplier connection approved successfully', schoolSpecificId });
     }
@@ -2013,7 +2015,7 @@ router.patch('/connections/:userId/approve', requireAuth, requireRole(['SCHOOL_A
  * @route   PATCH /api/schools/connections/:id/reject
  * @desc    [SCHOOL_ADMIN] Reject or revoke a Parent-Student or Supplier connection request
  */
-router.patch('/connections/:id/reject', requireAuth, requireRole(['SCHOOL_ADMIN', 'SUPER_ADMIN', 'PRINCIPAL']), async (req: AuthRequest, res) => {
+router.patch('/connections/:id/reject', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN', 'PRINCIPAL'), async (req: AuthRequest, res) => {
   try {
     const targetId = req.params.id as string;
     const schoolId = req.user!.schoolId!;
