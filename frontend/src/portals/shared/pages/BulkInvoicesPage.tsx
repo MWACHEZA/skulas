@@ -291,52 +291,153 @@ export default function BulkInvoicesPage() {
       </div>
 
       {showModal && (
-        <div className="portal-modal-overlay">
-          <div className="portal-modal-card animate-in zoom-in duration-200" style={{ maxWidth: '640px', padding: 0 }}>
-            <div className="portal-modal-header" style={{ padding: '32px 40px', borderBottom: '1px solid #f1f5f9' }}>
-              <div>
-                <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 900, color: '#1e293b' }}>Authorize Mass Invoicing</h2>
-                <p style={{ margin: '4px 0 0 0', color: '#64748b', fontWeight: 700, fontSize: '0.9rem' }}>Initiate a comprehensive institutional billing cycle.</p>
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(6px)',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px'
+          }}
+          onClick={() => setShowModal(false)}
+        >
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '620px',
+              backgroundColor: '#ffffff',
+              borderRadius: '24px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35)',
+              border: '1px solid #e2e8f0',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              maxHeight: '90vh',
+              animation: 'fadeIn 0.2s ease-in-out'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{
+              padding: '22px 28px',
+              borderBottom: '1px solid #e2e8f0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              backgroundColor: '#f8fafc'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '12px',
+                  backgroundColor: '#0284c7',
+                  color: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '18px'
+                }}>
+                  📊
+                </div>
+                <div>
+                  <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>
+                    Authorize Mass Invoicing
+                  </h2>
+                  <p style={{ margin: '2px 0 0 0', color: '#64748b', fontWeight: 600, fontSize: '0.85rem' }}>
+                    Initiate an institutional billing cycle across recipient cohorts.
+                  </p>
+                </div>
               </div>
-              <button onClick={() => setShowModal(false)} className="portal-btn-ghost" style={{ padding: '12px' }}><i className="fas fa-times"></i></button>
+              <button
+                type="button"
+                onClick={() => setShowModal(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '20px',
+                  color: '#94a3b8',
+                  cursor: 'pointer',
+                  padding: '4px'
+                }}
+              >
+                ✕
+              </button>
             </div>
-            <form onSubmit={handleSubmit}>
-              <div className="portal-modal-body" style={{ padding: '40px' }}>
-                <div className="form-group" style={{ marginBottom: '24px' }}>
-                  <label className="portal-label">Canonical Invoice Identifier</label>
+
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', flex: 1, overflow: 'hidden' }}>
+              <div style={{ padding: '26px 28px', overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '6px' }}>
+                    Invoice Identifier / Run Name
+                  </label>
                   <input
                     type="text"
-                    className="portal-input"
-                    placeholder="e.g. 2024 Academic Session - General Levy"
+                    placeholder="e.g. 2026 Academic Session - General Levy"
                     value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    style={{ fontWeight: 800, height: '56px' }}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '10px',
+                      fontSize: '14px',
+                      fontWeight: 600,
+                      color: '#0f172a',
+                      boxSizing: 'border-box'
+                    }}
                     required
                   />
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
-                  <div className="form-group">
-                    <label className="portal-label">Assessment Amount ($)</label>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '6px' }}>
+                      Assessment Amount ($)
+                    </label>
                     <div style={{ position: 'relative' }}>
-                       <span style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontWeight: 900, fontSize: '1.2rem' }}>$</span>
-                       <input
+                      <span style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: '#059669', fontWeight: 800, fontSize: '16px' }}>$</span>
+                      <input
                         type="number"
-                        className="portal-input"
                         placeholder="0.00"
                         value={formData.amount}
-                        onChange={(e) => setFormData({...formData, amount: e.target.value})}
-                        style={{ paddingLeft: '40px', fontWeight: 900, color: '#059669', height: '56px', fontSize: '1.1rem' }}
+                        onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                        style={{
+                          width: '100%',
+                          padding: '12px 14px 12px 30px',
+                          border: '1px solid #cbd5e1',
+                          borderRadius: '10px',
+                          fontSize: '15px',
+                          fontWeight: 800,
+                          color: '#059669',
+                          boxSizing: 'border-box'
+                        }}
                         required
                       />
                     </div>
                   </div>
-                  <div className="form-group">
-                    <label className="portal-label">Financial Classification</label>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '6px' }}>
+                      Financial Classification
+                    </label>
                     <select
-                      className="portal-input"
                       value={formData.category}
-                      onChange={(e) => setFormData({...formData, category: e.target.value})}
-                      style={{ fontWeight: 800, height: '56px' }}
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                      style={{
+                        width: '100%',
+                        padding: '12px 14px',
+                        border: '1px solid #cbd5e1',
+                        borderRadius: '10px',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        color: '#0f172a',
+                        backgroundColor: '#ffffff',
+                        boxSizing: 'border-box'
+                      }}
                     >
                       <option value="General">General Levy</option>
                       <option value="Tuition">Tuition Fees</option>
@@ -346,33 +447,102 @@ export default function BulkInvoicesPage() {
                     </select>
                   </div>
                 </div>
-                <div className="form-group" style={{ marginBottom: '24px' }}>
-                  <label className="portal-label">Strategic Justification / Operational Notes</label>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '6px' }}>
+                    Operational Notes / Memo
+                  </label>
                   <textarea
-                    className="portal-input"
-                    style={{ minHeight: '140px', resize: 'none', fontSize: '1rem', fontWeight: 600, padding: '20px', lineHeight: 1.6 }}
+                    style={{
+                      width: '100%',
+                      minHeight: '100px',
+                      resize: 'none',
+                      fontSize: '13px',
+                      fontWeight: 500,
+                      padding: '12px',
+                      lineHeight: 1.5,
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '10px',
+                      color: '#0f172a',
+                      boxSizing: 'border-box'
+                    }}
                     placeholder="Provide authoritative context or justification for this institutional billing cycle..."
                     value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   />
                 </div>
-                <div className="form-group">
-                  <label className="portal-label">Target Recipient Demographics</label>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 800, color: '#475569', textTransform: 'uppercase', marginBottom: '6px' }}>
+                    Target Recipient Cohort
+                  </label>
                   <select
-                    className="portal-input"
                     value={formData.targetType}
-                    onChange={(e) => setFormData({...formData, targetType: e.target.value})}
-                    style={{ fontWeight: 900, color: '#2563eb', height: '56px' }}
+                    onChange={(e) => setFormData({ ...formData, targetType: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '12px 14px',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '10px',
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      color: '#0284c7',
+                      backgroundColor: '#ffffff',
+                      boxSizing: 'border-box'
+                    }}
                   >
-                    <option value="All Students">Entire Institutional {t('student')} Registry</option>
-                    <option value="Boarders Only">Residential Boarding Entities Only</option>
-                    <option value="Day Students Only">Non-Residential Scholars Only</option>
+                    <option value="All Students">Entire Institutional Student Registry</option>
+                    <option value="Boarders Only">Residential Boarders Only</option>
+                    <option value="Day Students Only">Day Scholars Only</option>
                   </select>
                 </div>
               </div>
-              <div className="portal-modal-footer" style={{ padding: '32px 40px', background: '#f8fafc', borderTop: '1px solid #f1f5f9' }}>
-                <button type="button" onClick={() => setShowModal(false)} className="portal-btn-ghost" style={{ padding: '14px 32px', fontWeight: 800 }}>Abort Process</button>
-                <button type="submit" className="portal-btn-primary" style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}><i className="fas fa-check"></i> AUTHORIZE MASS BILLING CYCLE</button>
+
+              <div style={{
+                padding: '18px 28px',
+                background: '#f8fafc',
+                borderTop: '1px solid #e2e8f0',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: '12px'
+              }}>
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  style={{
+                    padding: '10px 20px',
+                    backgroundColor: '#ffffff',
+                    color: '#64748b',
+                    border: '1px solid #cbd5e1',
+                    borderRadius: '10px',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    padding: '12px 26px',
+                    backgroundColor: '#059669',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '12px',
+                    fontSize: '13px',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    boxShadow: '0 4px 12px rgba(5, 150, 105, 0.3)'
+                  }}
+                >
+                  <span>✓</span>
+                  <span>AUTHORIZE MASS BILLING CYCLE</span>
+                </button>
               </div>
             </form>
           </div>

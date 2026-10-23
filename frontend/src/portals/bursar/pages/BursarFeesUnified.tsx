@@ -475,130 +475,203 @@ export default function BursarFeesUnified() {
         </p>
       </div>
 
-      {/* Tabs */}
+      {/* Modern High-End Responsive Tab Navigation */}
       <div
-        className="portal-tabs"
+        className="portal-tabs-wrapper"
         style={{
+          background: '#f1f5f9',
+          border: '1px solid #e2e8f0',
+          borderRadius: '16px',
+          padding: '6px',
+          marginBottom: '28px',
           display: 'flex',
-          gap: 6,
-          borderBottom: '2px solid #e2e8f0',
-          marginBottom: 24,
-          background: '#fff',
-          padding: '8px 12px 0 12px',
-          borderRadius: '8px 8px 0 0',
-          overflowX: 'auto'
+          alignItems: 'center',
+          gap: '6px',
+          overflowX: 'auto',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.03)'
         }}
       >
         <button
           type="button"
           onClick={() => handleTabChange('collection')}
           style={{
-            padding: '10px 16px', border: 'none', background: 'none', cursor: 'pointer',
-            fontWeight: activeTab === 'collection' ? 700 : 500,
-            color: activeTab === 'collection' ? '#0284c7' : '#64748b',
-            borderBottom: activeTab === 'collection' ? '3px solid #0284c7' : '3px solid transparent',
-            marginBottom: '-2px', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap'
+            padding: '10px 18px',
+            border: 'none',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            fontWeight: activeTab === 'collection' ? 700 : 600,
+            color: activeTab === 'collection' ? '#0369a1' : '#64748b',
+            background: activeTab === 'collection' ? '#ffffff' : 'transparent',
+            boxShadow: activeTab === 'collection' ? '0 2px 8px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
+            fontSize: '0.92rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            whiteSpace: 'nowrap',
+            transition: 'all 0.15s ease'
           }}
         >
-          <i className="fas fa-cash-register" />
-          Daily Counter Collection
+          <i className="fas fa-cash-register" style={{ color: activeTab === 'collection' ? '#0284c7' : '#94a3b8' }} />
+          <span>Daily Counter Collection</span>
         </button>
 
         <button
           type="button"
           onClick={() => handleTabChange('billing')}
           style={{
-            padding: '10px 16px', border: 'none', background: 'none', cursor: 'pointer',
-            fontWeight: activeTab === 'billing' ? 700 : 500,
-            color: activeTab === 'billing' ? '#0284c7' : '#64748b',
-            borderBottom: activeTab === 'billing' ? '3px solid #0284c7' : '3px solid transparent',
-            marginBottom: '-2px', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap'
+            padding: '10px 18px',
+            border: 'none',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            fontWeight: activeTab === 'billing' ? 700 : 600,
+            color: activeTab === 'billing' ? '#0369a1' : '#64748b',
+            background: activeTab === 'billing' ? '#ffffff' : 'transparent',
+            boxShadow: activeTab === 'billing' ? '0 2px 8px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
+            fontSize: '0.92rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            whiteSpace: 'nowrap',
+            transition: 'all 0.15s ease'
           }}
         >
-          <i className="fas fa-receipt" />
-          Fee Billing & Structures
+          <i className="fas fa-receipt" style={{ color: activeTab === 'billing' ? '#0284c7' : '#94a3b8' }} />
+          <span>Fee Billing & Structures</span>
         </button>
 
         <button
           type="button"
           onClick={() => handleTabChange('invoices')}
           style={{
-            padding: '10px 16px', border: 'none', background: 'none', cursor: 'pointer',
-            fontWeight: activeTab === 'invoices' ? 700 : 500,
-            color: activeTab === 'invoices' ? '#0284c7' : '#64748b',
-            borderBottom: activeTab === 'invoices' ? '3px solid #0284c7' : '3px solid transparent',
-            marginBottom: '-2px', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap'
+            padding: '10px 18px',
+            border: 'none',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            fontWeight: activeTab === 'invoices' ? 700 : 600,
+            color: activeTab === 'invoices' ? '#0369a1' : '#64748b',
+            background: activeTab === 'invoices' ? '#ffffff' : 'transparent',
+            boxShadow: activeTab === 'invoices' ? '0 2px 8px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
+            fontSize: '0.92rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            whiteSpace: 'nowrap',
+            transition: 'all 0.15s ease'
           }}
         >
-          <i className="fas fa-file-invoice" />
-          Invoices & Receipts
+          <i className="fas fa-file-invoice" style={{ color: activeTab === 'invoices' ? '#0284c7' : '#94a3b8' }} />
+          <span>Invoices & Receipts</span>
         </button>
 
         <button
           type="button"
           onClick={() => handleTabChange('ledgers')}
           style={{
-            padding: '10px 16px', border: 'none', background: 'none', cursor: 'pointer',
-            fontWeight: activeTab === 'ledgers' ? 700 : 500,
-            color: activeTab === 'ledgers' ? '#0284c7' : '#64748b',
-            borderBottom: activeTab === 'ledgers' ? '3px solid #0284c7' : '3px solid transparent',
-            marginBottom: '-2px', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap'
+            padding: '10px 18px',
+            border: 'none',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            fontWeight: activeTab === 'ledgers' ? 700 : 600,
+            color: activeTab === 'ledgers' ? '#0369a1' : '#64748b',
+            background: activeTab === 'ledgers' ? '#ffffff' : 'transparent',
+            boxShadow: activeTab === 'ledgers' ? '0 2px 8px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
+            fontSize: '0.92rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            whiteSpace: 'nowrap',
+            transition: 'all 0.15s ease'
           }}
         >
-          <i className="fas fa-book-open" />
-          Student Statements & Ledgers
+          <i className="fas fa-book-open" style={{ color: activeTab === 'ledgers' ? '#0284c7' : '#94a3b8' }} />
+          <span>Student Statements & Ledgers</span>
         </button>
 
         <button
           type="button"
           onClick={() => handleTabChange('bulk-invoices')}
           style={{
-            padding: '10px 16px', border: 'none', background: 'none', cursor: 'pointer',
-            fontWeight: activeTab === 'bulk-invoices' ? 700 : 500,
-            color: activeTab === 'bulk-invoices' ? '#0284c7' : '#64748b',
-            borderBottom: activeTab === 'bulk-invoices' ? '3px solid #0284c7' : '3px solid transparent',
-            marginBottom: '-2px', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap'
+            padding: '10px 18px',
+            border: 'none',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            fontWeight: activeTab === 'bulk-invoices' ? 700 : 600,
+            color: activeTab === 'bulk-invoices' ? '#0369a1' : '#64748b',
+            background: activeTab === 'bulk-invoices' ? '#ffffff' : 'transparent',
+            boxShadow: activeTab === 'bulk-invoices' ? '0 2px 8px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
+            fontSize: '0.92rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            whiteSpace: 'nowrap',
+            transition: 'all 0.15s ease'
           }}
         >
-          <i className="fas fa-mail-bulk" />
-          Term Bulk Invoicing
+          <i className="fas fa-mail-bulk" style={{ color: activeTab === 'bulk-invoices' ? '#0284c7' : '#94a3b8' }} />
+          <span>Term Bulk Invoicing</span>
         </button>
 
         <button
           type="button"
           onClick={() => handleTabChange('defaulters')}
           style={{
-            padding: '10px 16px', border: 'none', background: 'none', cursor: 'pointer',
-            fontWeight: activeTab === 'defaulters' ? 700 : 500,
-            color: activeTab === 'defaulters' ? '#0284c7' : '#64748b',
-            borderBottom: activeTab === 'defaulters' ? '3px solid #0284c7' : '3px solid transparent',
-            marginBottom: '-2px', fontSize: '0.95rem', display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap'
+            padding: '10px 18px',
+            border: 'none',
+            borderRadius: '12px',
+            cursor: 'pointer',
+            fontWeight: activeTab === 'defaulters' ? 700 : 600,
+            color: activeTab === 'defaulters' ? '#0369a1' : '#64748b',
+            background: activeTab === 'defaulters' ? '#ffffff' : 'transparent',
+            boxShadow: activeTab === 'defaulters' ? '0 2px 8px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
+            fontSize: '0.92rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            whiteSpace: 'nowrap',
+            transition: 'all 0.15s ease'
           }}
         >
-          <i className="fas fa-user-clock" />
-          Debtors Aging & Defaulters ({defaulters.length})
+          <i className="fas fa-user-clock" style={{ color: activeTab === 'defaulters' ? '#0284c7' : '#94a3b8' }} />
+          <span>Debtors Aging</span>
+          {defaulters.length > 0 && (
+            <span style={{
+              backgroundColor: activeTab === 'defaulters' ? '#fee2e2' : '#e2e8f0',
+              color: activeTab === 'defaulters' ? '#b91c1c' : '#475569',
+              padding: '2px 8px',
+              borderRadius: '999px',
+              fontSize: '11px',
+              fontWeight: 800
+            }}>
+              {defaulters.length}
+            </span>
+          )}
         </button>
 
         <Link
           to="/bursar/fee-groups"
           style={{
             marginLeft: 'auto',
-            padding: '8px 16px',
-            background: '#f8fafc',
+            padding: '10px 18px',
+            background: '#ffffff',
             border: '1px solid #cbd5e1',
-            borderRadius: '8px',
+            borderRadius: '12px',
             color: '#0f172a',
             fontWeight: 700,
             fontSize: '0.88rem',
             textDecoration: 'none',
             display: 'flex',
             alignItems: 'center',
-            gap: 8,
-            whiteSpace: 'nowrap'
+            gap: '8px',
+            whiteSpace: 'nowrap',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+            transition: 'all 0.15s ease'
           }}
         >
-          <i className="fas fa-layer-group" style={{ color: '#0284c7' }} />
-          Fee Groups & Structures
+          <i className="fas fa-cog" style={{ color: '#0284c7' }} />
+          <span>Fee Structures Setup</span>
+          <span style={{ fontSize: '11px', color: '#94a3b8' }}>↗</span>
         </Link>
       </div>
 
