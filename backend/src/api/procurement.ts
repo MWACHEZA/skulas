@@ -323,9 +323,12 @@ router.patch('/requisitions/:id/approve', requireAuth, async (req: AuthRequest, 
     if (action === 'REJECT') {
       const updated = await prisma.requisition.update({
         where: { id: id as string },
-        data: { status: 'REJECTED' }
+        data: { 
+          status: 'REJECTED',
+          rejectionReason: req.body.reason || 'Declined'
+        }
       });
-      await logAction(req, 'REJECT_REQUISITION', 'Requisition', String(id), { previousStatus: reqInstance.status });
+      await logAction(req, 'REJECT_REQUISITION', 'Requisition', String(id), { previousStatus: reqInstance.status, reason: req.body.reason });
       return res.json(updated);
     }
 
@@ -334,7 +337,7 @@ router.patch('/requisitions/:id/approve', requireAuth, async (req: AuthRequest, 
 
     // 0. MATRON APPROVAL for Student Leader requests (PENDING_HOD_BOARDING -> PENDING_ADMIN)
     if (reqInstance.status === 'PENDING_HOD_BOARDING') {
-      const isMatronOrAdmin = user.role === 'SCHOOL_ADMIN' || user.role === 'ANCILLARY' || reqInstance.hodId === user.id;
+      const isMatronOrAdmin = user.role === 'SCHOOL_ADMIN' || user.role === 'SUPER_ADMIN' || user.role === 'ANCILLARY' || reqInstance.hodId === user.id;
       if (isMatronOrAdmin) {
         nextStatus = 'PENDING_ADMIN';
         updateData.matronApprovedById = user.id;
@@ -345,7 +348,7 @@ router.patch('/requisitions/:id/approve', requireAuth, async (req: AuthRequest, 
     }
     // 0b. ADMIN APPROVAL for Student Leader requests (PENDING_ADMIN -> PENDING_BURSAR)
     else if (reqInstance.status === 'PENDING_ADMIN') {
-      if (user.role === 'SCHOOL_ADMIN') {
+      if (user.role === 'SCHOOL_ADMIN' || user.role === 'SUPER_ADMIN') {
         nextStatus = 'PENDING_BURSAR';
         updateData.adminId = user.id;
       } else {
@@ -354,7 +357,7 @@ router.patch('/requisitions/:id/approve', requireAuth, async (req: AuthRequest, 
     }
     // 0c. BURSAR APPROVAL for Student Leader requests (PENDING_BURSAR -> APPROVED)
     else if (reqInstance.status === 'PENDING_BURSAR') {
-      if (user.role === 'BURSAR' || user.role === 'SCHOOL_ADMIN') {
+      if (user.role === 'BURSAR' || user.role === 'SCHOOL_ADMIN' || user.role === 'SUPER_ADMIN') {
         nextStatus = 'APPROVED';
         updateData.bursarId = user.id;
       } else {
@@ -363,19 +366,24 @@ router.patch('/requisitions/:id/approve', requireAuth, async (req: AuthRequest, 
     }
     // 1. HOD APPROVAL (PENDING -> HOD_APPROVED)
     else if (reqInstance.status === 'PENDING') {
-      // Check if user is the assigned HOD for this requisition's department
+      // Check if user is the assigned HOD for this requisition's department, or heads any department
       const isAssignedHOD = reqInstance.hodId === user.id;
+      const headedDept = await prisma.department.findFirst({
+        where: { headId: user.id, schoolId: user.schoolId }
+      });
+      const isAnyHOD = Boolean(headedDept);
+      const isAuthorized = user.role === 'SCHOOL_ADMIN' || user.role === 'SUPER_ADMIN' || user.role === 'BURSAR' || isAssignedHOD || isAnyHOD;
       
-      if (user.role === 'SCHOOL_ADMIN' || isAssignedHOD) {
+      if (isAuthorized) {
         nextStatus = 'HOD_APPROVED';
         updateData.hodId = user.id; // Record who actually approved it
       } else {
-        return res.status(403).json({ error: 'Requires approval from the assigned Department Head' });
+        return res.status(403).json({ error: 'Requires approval from the assigned Department Head or School Administration' });
       }
     } 
     // 2. BURSAR APPROVAL (HOD_APPROVED -> BURSAR_APPROVED)
     else if (reqInstance.status === 'HOD_APPROVED') {
-      if (user.role === 'BURSAR' || user.role === 'SCHOOL_ADMIN') {
+      if (user.role === 'BURSAR' || user.role === 'SCHOOL_ADMIN' || user.role === 'SUPER_ADMIN') {
         nextStatus = 'BURSAR_APPROVED';
         updateData.bursarId = user.id;
       } else {
@@ -384,7 +392,7 @@ router.patch('/requisitions/:id/approve', requireAuth, async (req: AuthRequest, 
     } 
     // 3. ADMIN FINAL APPROVAL (BURSAR_APPROVED -> APPROVED)
     else if (reqInstance.status === 'BURSAR_APPROVED') {
-      if (user.role === 'SCHOOL_ADMIN') {
+      if (user.role === 'SCHOOL_ADMIN' || user.role === 'SUPER_ADMIN') {
         nextStatus = 'APPROVED';
         updateData.adminId = user.id;
       } else {
@@ -392,6 +400,96 @@ router.patch('/requisitions/:id/approve', requireAuth, async (req: AuthRequest, 
       }
     } 
     else {
+      return res.status(400).json({ error: 'Requisition is already finalized or in another stage' });
+    }
+
+    const updated = await prisma.requisition.update({
+      where: { id: id as string },
+      data: { status: nextStatus, ...updateData },
+      include: {
+        requester: { select: { name: true } },
+        requestedByStudent: { select: { name: true } },
+        hostelReq: { select: { name: true } }
+      }
+    });
+
+    await logAction(req, 'APPROVE_REQUISITION_STAGE', 'Requisition', String(id), { from: reqInstance.status, to: nextStatus });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: 'Approval action failed' });
+  }
+});
+
+/**
+ * @route   POST /api/procurement/requisitions/:id/approve-stage
+ * @desc    Alias for advancing approval stages
+ */
+router.post('/requisitions/:id/approve-stage', requireAuth, async (req: AuthRequest, res: Response) => {
+  req.body = { ...req.body, action: 'APPROVE' };
+  const { id } = req.params;
+  const user = req.user!;
+
+  try {
+    const reqInstance = await prisma.requisition.findFirst({ where: { id: id as string } });
+    if (!reqInstance || reqInstance.schoolId !== user.schoolId) {
+      return res.status(404).json({ error: 'Requisition not found' });
+    }
+
+    let nextStatus = reqInstance.status;
+    const updateData: any = {};
+
+    if (reqInstance.status === 'PENDING_HOD_BOARDING') {
+      const isMatronOrAdmin = user.role === 'SCHOOL_ADMIN' || user.role === 'SUPER_ADMIN' || user.role === 'ANCILLARY' || reqInstance.hodId === user.id;
+      if (isMatronOrAdmin) {
+        nextStatus = 'PENDING_ADMIN';
+        updateData.matronApprovedById = user.id;
+        updateData.matronApprovedAt = new Date();
+      } else {
+        return res.status(403).json({ error: 'Requires approval from the Boarding Matron / Warden' });
+      }
+    } else if (reqInstance.status === 'PENDING_ADMIN') {
+      if (user.role === 'SCHOOL_ADMIN' || user.role === 'SUPER_ADMIN') {
+        nextStatus = 'PENDING_BURSAR';
+        updateData.adminId = user.id;
+      } else {
+        return res.status(403).json({ error: 'Requires School Admin approval' });
+      }
+    } else if (reqInstance.status === 'PENDING_BURSAR') {
+      if (user.role === 'BURSAR' || user.role === 'SCHOOL_ADMIN' || user.role === 'SUPER_ADMIN') {
+        nextStatus = 'APPROVED';
+        updateData.bursarId = user.id;
+      } else {
+        return res.status(403).json({ error: 'Requires Bursar approval' });
+      }
+    } else if (reqInstance.status === 'PENDING') {
+      const isAssignedHOD = reqInstance.hodId === user.id;
+      const headedDept = await prisma.department.findFirst({
+        where: { headId: user.id, schoolId: user.schoolId }
+      });
+      const isAnyHOD = Boolean(headedDept);
+      const isAuthorized = user.role === 'SCHOOL_ADMIN' || user.role === 'SUPER_ADMIN' || user.role === 'BURSAR' || isAssignedHOD || isAnyHOD;
+      
+      if (isAuthorized) {
+        nextStatus = 'HOD_APPROVED';
+        updateData.hodId = user.id;
+      } else {
+        return res.status(403).json({ error: 'Requires approval from the assigned Department Head or Administration' });
+      }
+    } else if (reqInstance.status === 'HOD_APPROVED') {
+      if (user.role === 'BURSAR' || user.role === 'SCHOOL_ADMIN' || user.role === 'SUPER_ADMIN') {
+        nextStatus = 'BURSAR_APPROVED';
+        updateData.bursarId = user.id;
+      } else {
+        return res.status(403).json({ error: 'Requires Bursar approval' });
+      }
+    } else if (reqInstance.status === 'BURSAR_APPROVED') {
+      if (user.role === 'SCHOOL_ADMIN' || user.role === 'SUPER_ADMIN') {
+        nextStatus = 'APPROVED';
+        updateData.adminId = user.id;
+      } else {
+        return res.status(403).json({ error: 'Requires final Admin approval' });
+      }
+    } else {
       return res.status(400).json({ error: 'Requisition is already finalized or in another stage' });
     }
 

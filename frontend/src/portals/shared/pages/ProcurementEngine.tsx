@@ -120,7 +120,7 @@ export default function ProcurementEngine({ mode: initialMode }: Props) {
   // Actions
   const handleApprove = async (req: Requisition) => {
     try {
-      await api.post(`/api/procurement/requisitions/${req.id}/approve-stage`);
+      await api.patch(`/api/procurement/requisitions/${req.id}/approve`, { action: 'APPROVE' });
       showToast(`Request ${req.refNumber || req.title} approved`, 'success');
       fetchRequisitions();
     } catch (err: any) {
@@ -148,7 +148,8 @@ export default function ProcurementEngine({ mode: initialMode }: Props) {
     if (!selectedReqForReject) return;
     setRejecting(true);
     try {
-      await api.post(`/api/procurement/requisitions/${selectedReqForReject.id}/matron-reject`, {
+      await api.patch(`/api/procurement/requisitions/${selectedReqForReject.id}/approve`, {
+        action: 'REJECT',
         reason: rejectionReason
       });
       showToast('Requisition has been declined', 'info');
@@ -202,14 +203,16 @@ export default function ProcurementEngine({ mode: initialMode }: Props) {
 
     if (activeTab === 'approvals') {
       if (effectiveMode === 'ADMIN_APPROVE') {
-        return matchesSearch && matchesStatus && (r.status === 'PENDING_ADMIN' || r.status === 'BURSAR_APPROVED');
+        return matchesSearch && matchesStatus && (r.status === 'PENDING' || r.status === 'PENDING_ADMIN' || r.status === 'BURSAR_APPROVED');
       }
       if (effectiveMode === 'BURSAR_APPROVE') {
-        return matchesSearch && matchesStatus && (r.status === 'PENDING_BURSAR' || r.status === 'HOD_APPROVED');
+        return matchesSearch && matchesStatus && (r.status === 'PENDING' || r.status === 'PENDING_BURSAR' || r.status === 'HOD_APPROVED');
       }
       if (effectiveMode === 'STORE_ISSUE') {
         return matchesSearch && matchesStatus && r.status === 'APPROVED';
       }
+      // HOD / Teacher approval queue
+      return matchesSearch && matchesStatus && (r.status === 'PENDING' || r.status === 'PENDING_HOD');
     }
 
     return matchesSearch && matchesStatus;
@@ -224,12 +227,20 @@ export default function ProcurementEngine({ mode: initialMode }: Props) {
     { header: 'Created Date', formatter: r => r.createdAt ? new Date(r.createdAt).toLocaleDateString() : '—' },
   ], []);
 
+  const canApproveHOD = Boolean(
+    user?.role === 'TEACHER' || 
+    (user as any)?.isHOD || 
+    user?.role === 'HOD' || 
+    user?.role === 'BURSAR' || 
+    user?.role === 'SCHOOL_ADMIN' || 
+    user?.role === 'SUPER_ADMIN'
+  );
   const canApprove = user?.role === 'SCHOOL_ADMIN' || user?.role === 'SUPER_ADMIN';
-  const canReleaseFunds = user?.role === 'BURSAR' || user?.role === 'SCHOOL_ADMIN';
+  const canReleaseFunds = user?.role === 'BURSAR' || user?.role === 'SCHOOL_ADMIN' || user?.role === 'SUPER_ADMIN';
   const canIssue = user?.role === 'ANCILLARY' || user?.role === 'SCHOOL_ADMIN' || user?.role === 'BURSAR';
 
   return (
-    <div className="portal-container" style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
+    <div className="portal-container" style={{ padding: '20px 24px', width: '100%', maxWidth: '100%', boxSizing: 'border-box', minWidth: 0 }}>
       {/* Header */}
       <div className="portal-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>
@@ -411,15 +422,29 @@ export default function ProcurementEngine({ mode: initialMode }: Props) {
                       {new Date(r.createdAt).toLocaleDateString()}
                     </td>
                     <td style={{ padding: '12px 16px', textAlign: 'right' }}>
-                      <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
+                      <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                        {/* HOD Approval Button */}
+                        {canApproveHOD && (r.status === 'PENDING' || r.status === 'PENDING_HOD') && (
+                          <button
+                            type="button"
+                            onClick={() => handleApprove(r)}
+                            style={{ padding: '6px 14px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5 }}
+                            title="Approve Departmental Requisition"
+                          >
+                            <i className="fas fa-check-circle" />
+                            <span>Approve HOD</span>
+                          </button>
+                        )}
+
                         {/* Admin Approval Button */}
                         {canApprove && (r.status === 'PENDING_ADMIN' || r.status === 'BURSAR_APPROVED') && (
                           <button
                             type="button"
                             onClick={() => handleApprove(r)}
-                            style={{ padding: '5px 12px', background: '#10b981', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer' }}
+                            style={{ padding: '6px 14px', background: '#10b981', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5 }}
                           >
-                            Approve
+                            <i className="fas fa-check" />
+                            <span>Approve Admin</span>
                           </button>
                         )}
 
@@ -428,9 +453,10 @@ export default function ProcurementEngine({ mode: initialMode }: Props) {
                           <button
                             type="button"
                             onClick={() => handleApprove(r)}
-                            style={{ padding: '5px 12px', background: '#8b5cf6', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer' }}
+                            style={{ padding: '6px 14px', background: '#8b5cf6', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5 }}
                           >
-                            Release Funds
+                            <i className="fas fa-money-bill-wave" />
+                            <span>Release Funds</span>
                           </button>
                         )}
 
@@ -439,20 +465,22 @@ export default function ProcurementEngine({ mode: initialMode }: Props) {
                           <button
                             type="button"
                             onClick={() => handleIssue(r)}
-                            style={{ padding: '5px 12px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer' }}
+                            style={{ padding: '6px 14px', background: '#059669', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5 }}
                           >
-                            Issue Items
+                            <i className="fas fa-box-open" />
+                            <span>Issue Items</span>
                           </button>
                         )}
 
                         {/* Decline Button */}
-                        {(canApprove || canReleaseFunds) && (r.status === 'PENDING_ADMIN' || r.status === 'PENDING_BURSAR') && (
+                        {(canApprove || canReleaseFunds || canApproveHOD) && (r.status === 'PENDING' || r.status === 'PENDING_HOD' || r.status === 'PENDING_ADMIN' || r.status === 'PENDING_BURSAR' || r.status === 'HOD_APPROVED') && (
                           <button
                             type="button"
                             onClick={() => handleOpenReject(r)}
-                            style={{ padding: '5px 12px', background: '#fff', color: '#ef4444', border: '1px solid #fca5a5', borderRadius: 6, fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer' }}
+                            style={{ padding: '6px 12px', background: '#fff', color: '#ef4444', border: '1px solid #fca5a5', borderRadius: 6, fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}
                           >
-                            Decline
+                            <i className="fas fa-times" />
+                            <span>Decline</span>
                           </button>
                         )}
                       </div>
