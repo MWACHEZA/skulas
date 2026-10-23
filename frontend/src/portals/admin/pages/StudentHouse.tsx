@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Pagination } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
@@ -86,7 +87,7 @@ export default function StudentHouse() {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const fetchHouses = useCallback(async () => {
     try {
@@ -293,29 +294,7 @@ export default function StudentHouse() {
             )}
             
             {!loading && houses.length > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
-                <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-                  Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, houses.length)} of {houses.length} entries
-                </span>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button 
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                    className="portal-btn-ghost"
-                    style={{ padding: '6px 12px', fontSize: '0.85rem' }}
-                  >
-                    Previous
-                  </button>
-                  <button 
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(houses.length / itemsPerPage)))}
-                    disabled={currentPage === Math.ceil(houses.length / itemsPerPage) || houses.length === 0}
-                    className="portal-btn-ghost"
-                    style={{ padding: '6px 12px', fontSize: '0.85rem' }}
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
+              <Pagination currentPage={currentPage} totalItems={houses.length} pageSize={itemsPerPage} onPageChange={setCurrentPage} onPageSizeChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }} />
             )}
           </div>
         </div>

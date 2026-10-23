@@ -4,7 +4,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import TabbedPage from '../../../components/portals/shared/TabbedPage';
 import ViewingAsToggle from '../../../components/shared/ViewingAsToggle';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import { useModuleAccess } from '../../../hooks/useModuleAccess';
 
 export default function SportsModule() {
@@ -50,7 +50,7 @@ export default function SportsModule() {
 
   const TeamsTab = () => (
     <div style={{ background: '#fff', borderRadius: 10, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-      <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
             <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Name</th>
@@ -71,13 +71,13 @@ export default function SportsModule() {
             ))
           )}
         </tbody>
-      </table>
+      </PaginatedTable>
     </div>
   );
 
   const HousesTab = () => (
     <div style={{ background: '#fff', borderRadius: 10, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-      <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
             <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>House</th>
@@ -105,7 +105,7 @@ export default function SportsModule() {
             ))
           )}
         </tbody>
-      </table>
+      </PaginatedTable>
     </div>
   );
 
@@ -120,7 +120,7 @@ export default function SportsModule() {
       </div>
 
       <div style={{ background: '#fff', borderRadius: 10, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-        <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
               <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Item</th>
@@ -154,7 +154,7 @@ export default function SportsModule() {
               ))
             )}
           </tbody>
-        </table>
+        </PaginatedTable>
       </div>
     </div>
   );
@@ -194,7 +194,7 @@ export default function SportsModule() {
         </form>
 
         <div style={{ background: '#fff', borderRadius: 10, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-          <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
                 <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Title</th>
@@ -217,7 +217,7 @@ export default function SportsModule() {
                 ))
               )}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
     );

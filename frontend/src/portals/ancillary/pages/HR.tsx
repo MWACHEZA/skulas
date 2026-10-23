@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import jsPDF from 'jspdf';
 import { useToast } from '../../../context/ToastContext';
 
@@ -35,7 +36,7 @@ export default function AncillaryHR() {
             <button style={{ padding: '6px 14px', background: 'var(--portal-primary)', color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer', fontSize: '0.8rem' }} onClick={() => setIsLeaveModalOpen(true)}>Apply for Leave</button>
           </div>
           <div className="portal-card-body" style={{ padding: 0 }}>
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead><tr><th>Type</th><th>Period</th><th>Status</th></tr></thead>
               <tbody>
                 {leaves.map(l => (
@@ -46,7 +47,7 @@ export default function AncillaryHR() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         </div>
 

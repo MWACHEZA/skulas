@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Pagination } from '../../../../components/shared/Pagination';
 import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
 import api from '../../../../lib/api';
@@ -63,7 +64,7 @@ export default function ManageAwards() {
   const [categoryFilter, setCategoryFilter] = useState('ALL');
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const { register, handleSubmit, reset, watch } = useForm<FormValues>({
     defaultValues: {
@@ -515,19 +516,7 @@ export default function ManageAwards() {
             </table>
 
             {/* Pagination */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px', color: '#64748b', fontSize: '0.9rem' }}>
-              <span>
-                Showing {filteredAwards.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to {Math.min(currentPage * itemsPerPage, filteredAwards.length)} of {filteredAwards.length} entries
-              </span>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button className="portal-btn-ghost" style={{ padding: '6px 12px', fontSize: '0.85rem' }} disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>
-                  Previous
-                </button>
-                <button className="portal-btn-ghost" style={{ padding: '6px 12px', fontSize: '0.85rem' }} disabled={currentPage >= totalPages || filteredAwards.length === 0} onClick={() => setCurrentPage(p => p + 1)}>
-                  Next
-                </button>
-              </div>
-            </div>
+            <Pagination currentPage={currentPage} totalItems={filteredAwards.length} pageSize={itemsPerPage} onPageChange={setCurrentPage} onPageSizeChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }} />
           </div>
         </div>
       </div>

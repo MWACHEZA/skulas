@@ -3,7 +3,7 @@ import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import '../../../styles/portal.css';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 interface AllowanceItem {
   id?: string;
@@ -458,7 +458,7 @@ export default function PayrollSettingsPage({ isEmbedded = false }: { isEmbedded
                 </form>
               )}
 
-              <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
                     <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Descriptor</th>
@@ -498,7 +498,7 @@ export default function PayrollSettingsPage({ isEmbedded = false }: { isEmbedded
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           )}
 
@@ -591,7 +591,7 @@ export default function PayrollSettingsPage({ isEmbedded = false }: { isEmbedded
                 </form>
               )}
 
-              <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
                     <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Descriptor</th>
@@ -631,7 +631,7 @@ export default function PayrollSettingsPage({ isEmbedded = false }: { isEmbedded
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           )}
 
@@ -787,7 +787,7 @@ export default function PayrollSettingsPage({ isEmbedded = false }: { isEmbedded
                   </div>
 
                   {/* Clean Correct Labels for Bands */}
-                  <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', background: '#fff', borderRadius: 6, overflow: 'hidden' }}>
+                  <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', background: '#fff', borderRadius: 6, overflow: 'hidden' }}>
                     <thead>
                       <tr style={{ background: '#f1f5f9', textAlign: 'left' }}>
                         <th style={{ padding: '10px 14px', fontSize: '0.82rem', color: '#475569' }}>Lower Limit ($)</th>
@@ -839,7 +839,7 @@ export default function PayrollSettingsPage({ isEmbedded = false }: { isEmbedded
                         </tr>
                       ))}
                     </tbody>
-                  </table>
+                  </PaginatedTable>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 16 }}>
                     <button
@@ -882,7 +882,7 @@ export default function PayrollSettingsPage({ isEmbedded = false }: { isEmbedded
                           {tt.isActive ? 'Active' : 'Archived'}
                         </span>
                       </div>
-                      <table className="portal-table" style={{ width: '100%', fontSize: '0.85rem' }}>
+                      <PaginatedTable className="portal-table" style={{ width: '100%', fontSize: '0.85rem' }}>
                         <thead>
                           <tr style={{ background: '#f8fafc' }}>
                             <th style={{ padding: 8 }}>Lower Limit</th>
@@ -901,7 +901,7 @@ export default function PayrollSettingsPage({ isEmbedded = false }: { isEmbedded
                             </tr>
                           ))}
                         </tbody>
-                      </table>
+                      </PaginatedTable>
                     </div>
                   ))
                 )}

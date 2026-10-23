@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 interface Leave {
   id: string;
@@ -272,7 +272,7 @@ export default function AncillaryHRServices() {
           ) : leaves.length === 0 ? (
             <div style={{ padding: 30, textAlign: 'center', color: '#718096' }}>No leave applications found.</div>
           ) : (
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th>Reason</th>
@@ -293,7 +293,7 @@ export default function AncillaryHRServices() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       </div>

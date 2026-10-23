@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useNavigate } from 'react-router-dom';
@@ -354,7 +355,7 @@ export default function ClassroomAttendanceReports() {
               <p style={{ margin: '4px 0 0', fontSize: '0.82rem' }}>Ensure roll call has been recorded for this class stream.</p>
             </div>
           ) : (
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th style={{ minWidth: 200 }}>Student Name</th>
@@ -446,7 +447,7 @@ export default function ClassroomAttendanceReports() {
                   );
                 })}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       </div>

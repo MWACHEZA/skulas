@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -815,7 +816,7 @@ export default function AdminSystemConfig() {
               </span>
             </div>
 
-            <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
               <thead style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', color: '#475569' }}>
                 <tr>
                   <th style={{ padding: '12px 16px', textAlign: 'left' }}>Archive Filename</th>
@@ -855,7 +856,7 @@ export default function AdminSystemConfig() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         </div>
       )}

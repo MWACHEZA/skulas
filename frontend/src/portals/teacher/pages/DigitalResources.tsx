@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
 
@@ -310,7 +311,7 @@ export default function TeacherDigitalResources() {
             <span className="portal-badge success" style={{ fontWeight: 700 }}>Open Department Pool</span>
           </div>
 
-          <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>
                 <th style={{ padding: 12 }}>Resource Document</th>
@@ -340,7 +341,7 @@ export default function TeacherDigitalResources() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       )}
 
@@ -358,7 +359,7 @@ export default function TeacherDigitalResources() {
             </div>
           </div>
 
-          <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>
                 <th style={{ padding: 12 }}>Requisition Ref</th>
@@ -388,7 +389,7 @@ export default function TeacherDigitalResources() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       )}
 

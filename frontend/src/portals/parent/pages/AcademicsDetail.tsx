@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useToast } from '../../../context/ToastContext';
 
 export default function ParentAcademicsDetail() {
@@ -50,7 +51,7 @@ export default function ParentAcademicsDetail() {
               <button className="portal-btn-secondary" onClick={() => showToast('Downloading academic report...', 'info')}><i className="fas fa-download" style={{ marginRight: 6 }}></i>Download Report</button>
             </div>
             <div className="portal-card-body" style={{ padding: 0 }}>
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th>Subject</th>
@@ -69,7 +70,7 @@ export default function ParentAcademicsDetail() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useToast } from '../../../context/ToastContext';
 
 export default function parentWellbeing() {
@@ -72,7 +73,7 @@ export default function parentWellbeing() {
                <h2><i className="fas fa-list-ul" style={{ marginRight: 8, color: '#718096' }}></i>Recent Conduct Log</h2>
             </div>
             <div className="portal-card-body" style={{ padding: 0 }}>
-               <table className="portal-table">
+               <PaginatedTable className="portal-table">
                   <thead>
                      <tr>
                         <th>Date</th>
@@ -97,7 +98,7 @@ export default function parentWellbeing() {
                         </tr>
                      ))}
                   </tbody>
-               </table>
+               </PaginatedTable>
             </div>
          </div>
       </>

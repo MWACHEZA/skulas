@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
@@ -427,7 +428,7 @@ export default function AcadexSchoolDetails() {
           </div>
           <div className="portal-card-body" style={{ padding: 0 }}>
             {administrators.length > 0 ? (
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th>Name</th>
@@ -458,7 +459,7 @@ export default function AcadexSchoolDetails() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             ) : (
               <p style={{ padding: 20, color: '#64748b', margin: 0 }}>No administrators registered for this school.</p>
             )}
@@ -473,7 +474,7 @@ export default function AcadexSchoolDetails() {
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
           {recentLogs.length > 0 ? (
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th>Timestamp</th>
@@ -498,7 +499,7 @@ export default function AcadexSchoolDetails() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           ) : (
             <p style={{ padding: 20, color: '#64748b', margin: 0 }}>No audit logs recorded for this school instance yet.</p>
           )}

@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 export default function StudentClinicUnified() {
   const { user } = useAuth();
@@ -155,7 +155,7 @@ export default function StudentClinicUnified() {
               <p style={{ fontSize: '0.9rem', marginTop: 4 }}>You have not visited the school sick bay recently.</p>
             </div>
           ) : (
-            <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
                   <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Date & Time</th>
@@ -192,7 +192,7 @@ export default function StudentClinicUnified() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       )}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type StaffTab = 'daily-summary' | 'late-comers' | 'raw-logs' | 'leave-cross-check';
@@ -341,7 +341,7 @@ export default function AdminStaffAttendance() {
                 <div>No staff attendance records for this date.</div>
               </div>
             ) : (
-              <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#f1f5f9', borderBottom: '2px solid #cbd5e1' }}>
                     <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 800 }}>Staff Member</th>
@@ -407,7 +407,7 @@ export default function AdminStaffAttendance() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>
@@ -451,7 +451,7 @@ export default function AdminStaffAttendance() {
               <div style={{ color: '#64748b', fontSize: '0.85rem', marginTop: 4 }}>All staff clocked in on or before 08:00 AM on {selectedDate}.</div>
             </div>
           ) : (
-            <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ backgroundColor: '#f1f5f9', borderBottom: '2px solid #cbd5e1' }}>
                   <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 800 }}>Staff Member</th>
@@ -490,7 +490,7 @@ export default function AdminStaffAttendance() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       )}
@@ -602,7 +602,7 @@ export default function AdminStaffAttendance() {
                 <div>No raw punches received for {selectedDate}.</div>
               </div>
             ) : (
-              <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#f1f5f9', borderBottom: '2px solid #cbd5e1' }}>
                     <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 800 }}>Punch Time</th>
@@ -663,7 +663,7 @@ export default function AdminStaffAttendance() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>
@@ -711,7 +711,7 @@ export default function AdminStaffAttendance() {
                 <div style={{ color: '#64748b', fontSize: '0.85rem' }}>Full workforce attendance accounted for on {selectedDate}.</div>
               </div>
             ) : (
-              <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#f1f5f9', borderBottom: '2px solid #cbd5e1' }}>
                     <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 800 }}>Staff Member</th>
@@ -758,7 +758,7 @@ export default function AdminStaffAttendance() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>

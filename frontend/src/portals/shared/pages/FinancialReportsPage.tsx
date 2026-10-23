@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useAccountingQuery } from '../../../hooks/useAccountingQuery';
 import {
@@ -231,7 +232,7 @@ export default function FinancialReportsPage() {
             ) : !trialBalanceQuery.data?.lines?.length ? (
               <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>No journal lines recorded for this period.</div>
             ) : (
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', textAlign: 'left' }}>
+              <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: 600 }}>
                     <th style={{ padding: '12px 16px' }}>Code</th>
@@ -276,7 +277,7 @@ export default function FinancialReportsPage() {
                     </td>
                   </tr>
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>
@@ -459,7 +460,7 @@ export default function FinancialReportsPage() {
             ) : arRows.length === 0 ? (
               <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>No outstanding student fee balances.</div>
             ) : (
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', textAlign: 'left' }}>
+              <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: 600 }}>
                     <th style={{ padding: '12px 16px' }}>Student Name</th>
@@ -484,7 +485,7 @@ export default function FinancialReportsPage() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>
@@ -549,7 +550,7 @@ export default function FinancialReportsPage() {
                 <div style={{ padding: '16px', borderBottom: '1px solid #e2e8f0', backgroundColor: '#f8fafc', fontWeight: 600 }}>
                   Recent VAT Journal Allocations
                 </div>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', textAlign: 'left' }}>
+                <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', textAlign: 'left' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569' }}>
                       <th style={{ padding: '12px 16px' }}>Date</th>
@@ -576,7 +577,7 @@ export default function FinancialReportsPage() {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </PaginatedTable>
               </div>
             </div>
           )}
@@ -695,7 +696,7 @@ export default function FinancialReportsPage() {
                 No budget targets configured for {budgetYear} ({budgetTerm}). Configure budgets in Bursar Budgets section.
               </div>
             ) : (
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', textAlign: 'left' }}>
+              <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: 600 }}>
                     <th style={{ padding: '12px 16px' }}>Code</th>
@@ -735,7 +736,7 @@ export default function FinancialReportsPage() {
                     );
                   })}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>
@@ -798,7 +799,7 @@ export default function FinancialReportsPage() {
               {glQuery.data.entries.length === 0 ? (
                 <div style={{ padding: '30px', textAlign: 'center', color: '#64748b' }}>No transactions recorded for this account in the selected date range.</div>
               ) : (
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', textAlign: 'left' }}>
+                <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', textAlign: 'left' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: 600 }}>
                       <th style={{ padding: '12px 16px' }}>Date</th>
@@ -827,7 +828,7 @@ export default function FinancialReportsPage() {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </PaginatedTable>
               )}
             </div>
           )}

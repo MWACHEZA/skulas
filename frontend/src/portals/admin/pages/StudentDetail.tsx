@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useParams, useSearchParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import api, { BASE_URL } from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -391,7 +392,7 @@ export default function StudentDetail() {
                 <p>No assessment marks recorded for this academic period.</p>
               </div>
             ) : (
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead><tr><th>Subject</th><th>Assessment</th><th>Score</th><th>Grade</th><th>Teacher Remarks</th></tr></thead>
                 <tbody>
                   {student.grades.map((g: any, idx: number) => (
@@ -404,7 +405,7 @@ export default function StudentDetail() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>
@@ -435,7 +436,7 @@ export default function StudentDetail() {
                 <p>No billing invoices or charges on record.</p>
               </div>
             ) : (
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead><tr><th>Fee Title / Item</th><th>Term / Year</th><th>Billed</th><th>Paid</th><th>Balance</th><th>Status</th></tr></thead>
                 <tbody>
                   {student.fees.map((f: any, idx: number) => {
@@ -456,7 +457,7 @@ export default function StudentDetail() {
                     );
                   })}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>

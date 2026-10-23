@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 interface Fee {
   id?: string;
@@ -241,7 +241,7 @@ export default function StudentFees() {
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
-            <table className="portal-table" style={{ width: '100%' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%' }}>
               <thead>
                 <tr>
                   <th>Term / Cycle</th>
@@ -286,7 +286,7 @@ export default function StudentFees() {
                   );
                 })}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         )}
       </div>

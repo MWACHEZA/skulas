@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import SkeletonLoader from '../../../components/shared/SkeletonLoader';
@@ -523,7 +524,7 @@ export default function Holiday() {
               </button>
             </div>
           ) : (
-            <table className="portal-table" style={{ margin: 0 }}>
+            <PaginatedTable className="portal-table" style={{ margin: 0 }}>
               <thead>
                 <tr style={{ background: '#f8fafc' }}>
                   <th style={{ padding: '12px 18px' }}>Event Title &amp; Details</th>
@@ -645,7 +646,7 @@ export default function Holiday() {
                   );
                 })}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       )}

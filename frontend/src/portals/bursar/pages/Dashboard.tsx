@@ -1,7 +1,7 @@
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useAccountingQuery } from '../../../hooks/useAccountingQuery';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 interface DashboardData {
   metrics: {
@@ -84,7 +84,7 @@ export default function BursarDashboard() {
             {!data?.recentTransactions?.length ? (
               <div style={{ padding: 30, textAlign: 'center', color: '#718096' }}>No transactions found.</div>
             ) : (
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead><tr><th>Date</th><th>Entry</th><th>Description</th><th>Source</th><th>Status</th></tr></thead>
                 <tbody>
                   {data.recentTransactions.map((tx) => (
@@ -97,7 +97,7 @@ export default function BursarDashboard() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface ReservationRecord {
@@ -234,7 +234,7 @@ export default function LibraryReservations() {
             <p style={{ fontWeight: 600, margin: 0 }}>No hold requests found for this filter.</p>
           </div>
         ) : (
-          <table className="portal-table" style={{ width: '100%' }}>
+          <PaginatedTable className="portal-table" style={{ width: '100%' }}>
             <thead>
               <tr style={{ background: '#f8fafc', color: '#334155' }}>
                 <th>Patron / Requester</th>
@@ -346,7 +346,7 @@ export default function LibraryReservations() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         )}
       </div>
 

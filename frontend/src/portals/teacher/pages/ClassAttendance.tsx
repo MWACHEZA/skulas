@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useSearchParams } from 'react-router-dom';
-import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 interface Student {
   id: string;
@@ -386,7 +386,7 @@ export default function TeacherClassAttendance() {
               </p>
             </div>
           ) : (
-            <table className="portal-table" style={{ width: '100%' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%' }}>
               <thead>
                 <tr>
                   <th style={{ width: '160px' }}>Student ID</th>
@@ -481,7 +481,7 @@ export default function TeacherClassAttendance() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
 

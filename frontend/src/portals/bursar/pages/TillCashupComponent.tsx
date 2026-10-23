@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 
@@ -376,7 +377,7 @@ export default function TillCashupComponent() {
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #e2e8f0', fontWeight: 700, fontSize: '1.05rem' }}>
           Recent Till Sessions & Cash-Up Variances
         </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+        <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
           <thead style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569' }}>
             <tr>
               <th style={{ padding: '12px 16px' }}>Session #</th>
@@ -427,7 +428,7 @@ export default function TillCashupComponent() {
               </tr>
             )}
           </tbody>
-        </table>
+        </PaginatedTable>
       </div>
 
       {/* Modal: Open Till */}

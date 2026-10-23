@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useToast } from '../../../../context/ToastContext';
 import api from '../../../../lib/api';
-import { SkeletonLoader } from '../../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../../components/shared';
 import { useAcademicConfig } from '../../../../hooks/useAcademicConfig';
 
 export default function TeacherLessonPlan() {
@@ -411,7 +411,7 @@ export default function TeacherLessonPlan() {
                  <p style={{ fontSize: '0.85rem' }}>Select a {classLabel.toLowerCase()}, {subjectLabel.toLowerCase()}, and week to view lesson plans, or click "ADD LESSON PLAN".</p>
               </div>
             ) : (
-              <table className="portal-table" style={{ background: 'white', width: '100%', borderCollapse: 'collapse' }}>
+              <PaginatedTable className="portal-table" style={{ background: 'white', width: '100%', borderCollapse: 'collapse' }}>
                  <thead style={{ background: '#edf2f7' }}>
                    <tr>
                      <th style={{ color: '#4a5568', fontWeight: 700, width: 120, padding: '12px', textAlign: 'left' }}>LESSON WEEK</th>
@@ -471,7 +471,7 @@ export default function TeacherLessonPlan() {
                      </tr>
                    ))}
                  </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>

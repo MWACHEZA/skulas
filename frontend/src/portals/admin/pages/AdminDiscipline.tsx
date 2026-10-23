@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
-import { SearchInput, ExportButton, SearchableCombobox, Pagination, usePagination, type ComboboxOption, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, Pagination, usePagination, type ComboboxOption, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type DisciplineTab = 'conduct' | 'awards' | 'committee' | 'approvals' | 'houses';
@@ -851,7 +851,7 @@ export default function AdminDiscipline() {
             </div>
           </div>
 
-          <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+          <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
                 <th style={{ padding: '12px 16px' }}>Case Reference</th>
@@ -947,7 +947,7 @@ export default function AdminDiscipline() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       ) : activeTab === 'approvals' ? (
         /* Prefect Demerit Approvals Tab (HOD & Admin Queue) */
@@ -974,7 +974,7 @@ export default function AdminDiscipline() {
               <p style={{ fontSize: '0.85rem', marginTop: 4 }}>No prefect demerits are awaiting HOD or administrative review.</p>
             </div>
           ) : (
-            <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
                   <th style={{ padding: '12px 16px' }}>Date</th>
@@ -1097,7 +1097,7 @@ export default function AdminDiscipline() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       ) : (
@@ -1157,7 +1157,7 @@ export default function AdminDiscipline() {
               ))}
             </div>
 
-            <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
                   <th style={{ padding: '12px 16px', width: '80px' }}>Rank</th>
@@ -1197,7 +1197,7 @@ export default function AdminDiscipline() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         </div>
       )}

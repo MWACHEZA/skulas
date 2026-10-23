@@ -4,7 +4,7 @@ import api from '../../../../lib/api';
 import { useTerminology } from '../../../../hooks/useTerminology';
 import { format } from 'date-fns';
 import { useAuth } from '../../../../contexts/AuthContext';
-import { SkeletonLoader, SearchInput } from '../../../../components/shared';
+import { SkeletonLoader, SearchInput, PaginatedTable } from '../../../../components/shared';
 
 export default function StudyMaterial() {
   const { showToast } = useToast();
@@ -458,7 +458,7 @@ export default function StudyMaterial() {
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
-              <table className="portal-table" style={{ width: '100%' }}>
+              <PaginatedTable className="portal-table" style={{ width: '100%' }}>
                 <thead>
                   <tr>
                     <th style={{ width: '130px' }}>Upload Date</th>
@@ -561,7 +561,7 @@ export default function StudyMaterial() {
                     );
                   })}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           )}
         </div>

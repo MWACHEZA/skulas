@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import ReportGeneratorWizard, { ACADEMIC_REPORT_CATEGORIES } from '../../../components/portals/shared/ReportGeneratorWizard';
 import { useTerminology } from '../../../hooks/useTerminology';
 import api from '../../../lib/api';
@@ -838,7 +839,7 @@ export default function TeacherReports() {
                 {analyticsData.topStudents.length === 0 ? (
                   <p style={{ color: '#94a3b8', textAlign: 'center', padding: '24px' }}>No student rankings available yet.</p>
                 ) : (
-                  <table className="portal-table">
+                  <PaginatedTable className="portal-table">
                     <thead>
                       <tr>
                         <th style={{ width: 40 }}>Rank</th>
@@ -876,7 +877,7 @@ export default function TeacherReports() {
                         </tr>
                       ))}
                     </tbody>
-                  </table>
+                  </PaginatedTable>
                 )}
               </div>
             </div>
@@ -897,7 +898,7 @@ export default function TeacherReports() {
                     <p style={{ margin: 0, fontWeight: 600 }}>All assessed students are currently meeting the pass threshold!</p>
                   </div>
                 ) : (
-                  <table className="portal-table">
+                  <PaginatedTable className="portal-table">
                     <thead>
                       <tr>
                         <th>Student Name</th>
@@ -934,7 +935,7 @@ export default function TeacherReports() {
                         </tr>
                       ))}
                     </tbody>
-                  </table>
+                  </PaginatedTable>
                 )}
               </div>
             </div>

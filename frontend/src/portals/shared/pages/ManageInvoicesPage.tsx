@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Pagination, PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
@@ -36,14 +37,14 @@ const exportToWord = (title: string, headers: string[], dataRows: string[][]) =>
     </head>
     <body>
       <h2>${title}</h2>
-      <table>
+      <PaginatedTable>
         <thead>
           <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
         </thead>
         <tbody>
           ${dataRows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
         </tbody>
-      </table>
+      </PaginatedTable>
     </body>
     </html>
   `;
@@ -90,7 +91,7 @@ export default function ManageInvoicesPage() {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Payment form state
   const [paymentAmount, setPaymentAmount] = useState('');
@@ -351,29 +352,7 @@ export default function ManageInvoicesPage() {
           </table>
           
           {invoices.length > 0 && !loading && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, invoices.length)} of {invoices.length} entries
-              </span>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button 
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                  className="portal-btn-ghost"
-                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
-                >
-                  Previous
-                </button>
-                <button 
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(invoices.length / itemsPerPage)))}
-                  disabled={currentPage === Math.ceil(invoices.length / itemsPerPage) || invoices.length === 0}
-                  className="portal-btn-ghost"
-                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
-                >
-                  Next
-                </button>
-              </div>
-            </div>
+            <Pagination currentPage={currentPage} totalItems={invoices.length} pageSize={itemsPerPage} onPageChange={setCurrentPage} onPageSizeChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }} />
           )}
         </div>
       </div>
@@ -576,7 +555,7 @@ export default function ManageInvoicesPage() {
                       {selectedInvoice.payments.length > 0 && (
                         <div style={{ padding: '0 32px 32px' }}>
                           <h3 style={{ margin: '0 0 16px 0', color: primaryCol, fontSize: '1rem', fontWeight: 800 }}>Payment History</h3>
-                          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                          <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse' }}>
                             <thead>
                               <tr style={{ background: '#f8fafc' }}>
                                 <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '0.85rem', color: '#64748b' }}>Date</th>
@@ -595,7 +574,7 @@ export default function ManageInvoicesPage() {
                                 </tr>
                               ))}
                             </tbody>
-                          </table>
+                          </PaginatedTable>
                         </div>
                       )}
 

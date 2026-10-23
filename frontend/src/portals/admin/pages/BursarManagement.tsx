@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Pagination } from '../../../components/shared/Pagination';
 import api, { BASE_URL } from '../../../lib/api';
 import ManagementDetailPanel from '../../../components/shared/ManagementDetailPanel';
 import UserEditModal from '../../../components/shared/UserEditModal';
@@ -19,7 +20,7 @@ export default function BursarManagement() {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   
   const { user: currentUser } = useAuth();
   const { showToast } = useToast();
@@ -213,29 +214,7 @@ export default function BursarManagement() {
           )}
           
           {filteredBursars.length > 0 && !loading && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredBursars.length)} of {filteredBursars.length} entries
-              </span>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button 
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                  className="portal-btn-ghost"
-                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
-                >
-                  Previous
-                </button>
-                <button 
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredBursars.length / itemsPerPage)))}
-                  disabled={currentPage === Math.ceil(filteredBursars.length / itemsPerPage) || filteredBursars.length === 0}
-                  className="portal-btn-ghost"
-                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
-                >
-                  Next
-                </button>
-              </div>
-            </div>
+            <Pagination currentPage={currentPage} totalItems={filteredBursars.length} pageSize={itemsPerPage} onPageChange={setCurrentPage} onPageSizeChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }} />
           )}
         </div>
 

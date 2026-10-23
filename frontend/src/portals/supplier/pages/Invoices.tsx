@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import PortalGate from '../../../components/portals/shared/PortalGate';
@@ -54,7 +55,7 @@ export default function SupplierInvoices() {
           </button>
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
-          <table className="portal-table">
+          <PaginatedTable className="portal-table">
             <thead><tr><th>Invoice #</th><th>Linked PO</th><th>Amount</th><th>Due Date</th><th>Status</th></tr></thead>
             <tbody>
               {invoices.map(inv => (
@@ -67,7 +68,7 @@ export default function SupplierInvoices() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
 

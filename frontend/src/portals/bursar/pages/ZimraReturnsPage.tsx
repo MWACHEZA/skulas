@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SearchInput } from '../../../components/shared';
+import { SearchInput, PaginatedTable } from '../../../components/shared';
 
 export default function ZimraReturnsPage() {
   const { showToast } = useToast();
@@ -263,7 +263,7 @@ export default function ZimraReturnsPage() {
 
           {/* Enrolment Matrix */}
           <h4 style={{ margin: '16px 0 8px 0', color: '#334155' }}>1. Enrolment by Form and Gender</h4>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', marginBottom: 24 }}>
+          <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', marginBottom: 24 }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
                 <th style={{ padding: 10, textAlign: 'left' }}>Grade / Form</th>
@@ -282,7 +282,7 @@ export default function ZimraReturnsPage() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
 
           {/* Fees Summary */}
           <h4 style={{ margin: '16px 0 8px 0', color: '#334155' }}>2. Fees Billed vs Collected (Annual Ministry Return)</h4>

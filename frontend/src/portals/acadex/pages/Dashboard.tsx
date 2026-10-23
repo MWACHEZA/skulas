@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
 import '../../../styles/portal.css';
@@ -203,7 +204,7 @@ export default function AcadexDashboard() {
             </button>
           </div>
           <div className="portal-card-body" style={{ padding: 0 }}>
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th>School</th>
@@ -237,7 +238,7 @@ export default function AcadexDashboard() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         </div>
       </div>

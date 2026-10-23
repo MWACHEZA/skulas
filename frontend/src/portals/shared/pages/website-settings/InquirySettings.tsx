@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../../components/shared/Pagination';
 import { format } from 'date-fns';
 import api from '../../../../lib/api';
 
@@ -40,14 +41,14 @@ const exportToWord = (title: string, headers: string[], dataRows: string[][]) =>
     </head>
     <body>
       <h2>${title}</h2>
-      <table>
+      <PaginatedTable>
         <thead>
           <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
         </thead>
         <tbody>
           ${dataRows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
         </tbody>
-      </table>
+      </PaginatedTable>
     </body>
     </html>
   `;
@@ -172,7 +173,7 @@ export default function InquirySettings() {
           </div>
         </div>
 
-        <table className="portal-table">
+        <PaginatedTable className="portal-table">
           <thead>
             <tr>
               <th>NAME</th>
@@ -227,7 +228,7 @@ export default function InquirySettings() {
               ))
             )}
           </tbody>
-        </table>
+        </PaginatedTable>
       </div>
     </div>
   );

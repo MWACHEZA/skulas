@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -779,7 +780,7 @@ export default function AdminClasses() {
                       <span className="portal-badge info">{editingClass.students?.length || 0}</span>
                     </div>
                     <div style={{ maxHeight: '300px', overflowY: 'auto', border: '1px solid #e2e8f0', borderRadius: '8px' }}>
-                      <table className="portal-table" style={{ fontSize: '0.85rem' }}>
+                      <PaginatedTable className="portal-table" style={{ fontSize: '0.85rem' }}>
                         <thead>
                           <tr>
                             <th>ID</th>
@@ -801,7 +802,7 @@ export default function AdminClasses() {
                             </tr>
                           )}
                         </tbody>
-                      </table>
+                      </PaginatedTable>
                     </div>
                   </div>
                 )}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Pagination } from '../../../components/shared/Pagination';
 import api, { BASE_URL } from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTerminology } from '../../../hooks/useTerminology';
@@ -14,7 +15,7 @@ export default function AdminApplications() {
   const [classes, setClasses] = useState<any[]>([]);
   const [selectedClassId, setSelectedClassId] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [searchQuery, setSearchQuery] = useState('');
   
   // Interview Fields
@@ -369,29 +370,7 @@ export default function AdminApplications() {
               </tbody>
             </table>
             {filteredApps.length > 0 && !loading && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
-                <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-                  Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredApps.length)} of {filteredApps.length} entries
-                </span>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button 
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                    className="portal-btn-ghost"
-                    style={{ padding: '6px 12px', fontSize: '0.85rem' }}
-                  >
-                    Previous
-                  </button>
-                  <button 
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredApps.length / itemsPerPage)))}
-                    disabled={currentPage === Math.ceil(filteredApps.length / itemsPerPage) || filteredApps.length === 0}
-                    className="portal-btn-ghost"
-                    style={{ padding: '6px 12px', fontSize: '0.85rem' }}
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
+              <Pagination currentPage={currentPage} totalItems={filteredApps.length} pageSize={itemsPerPage} onPageChange={setCurrentPage} onPageSizeChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }} />
             )}
             </>
           )}

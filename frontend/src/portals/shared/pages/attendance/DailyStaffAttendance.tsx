@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Pagination, PaginatedTable } from '../../../../components/shared/Pagination';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useToast } from '../../../../context/ToastContext';
 import api from '../../../../lib/api';
@@ -34,14 +35,14 @@ const exportToWord = (title: string, headers: string[], dataRows: string[][]) =>
     </head>
     <body>
       <h2>${title}</h2>
-      <table>
+      <PaginatedTable>
         <thead>
           <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
         </thead>
         <tbody>
           ${dataRows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
         </tbody>
-      </table>
+      </PaginatedTable>
     </body>
     </html>
   `;
@@ -64,7 +65,7 @@ export default function DailyStaffAttendance() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     fetchAttendance();
@@ -214,14 +215,7 @@ export default function DailyStaffAttendance() {
               )}
             </tbody>
           </table>
-          <div style={{ marginTop: 15, display: 'flex', justifyContent: 'space-between', color: '#718096', fontSize: '0.9rem' }}>
-             <span>Showing {filteredAttendances.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to {Math.min(currentPage * itemsPerPage, filteredAttendances.length)} of {filteredAttendances.length} entries</span>
-             <div>
-                <button style={{ border: 'none', background: 'transparent', color: '#718096', cursor: 'pointer', marginRight: 10 }} disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>Previous</button>
-                <button style={{ border: 'none', background: 'var(--school-primary, #3182ce)', color: 'white', borderRadius: 50, width: 25, height: 25, cursor: 'pointer' }}>{currentPage}</button>
-                <button style={{ border: 'none', background: 'transparent', color: '#718096', cursor: 'pointer', marginLeft: 10 }} disabled={currentPage === totalPages || filteredAttendances.length === 0} onClick={() => setCurrentPage(p => p + 1)}>Next</button>
-             </div>
-          </div>
+          <Pagination currentPage={currentPage} totalItems={filteredAttendances.length} pageSize={itemsPerPage} onPageChange={setCurrentPage} onPageSizeChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }} />
         </div>
       </div>
     </>

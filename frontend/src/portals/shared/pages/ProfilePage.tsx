@@ -4,7 +4,7 @@ import { useToast } from '../../../context/ToastContext';
 import api, { BASE_URL } from '../../../lib/api';
 import { getAvatarUrl } from '../../../utils/formatters';
 import ActiveSessions from '../../../components/shared/ActiveSessions';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 export default function ProfilePage() {
@@ -1172,7 +1172,7 @@ export default function ProfilePage() {
 
             {pData?.gateLogs?.length > 0 ? (
               <div style={{ overflowX: 'auto' }}>
-                <table className="portal-table" style={{ width: '100%' }}>
+                <PaginatedTable className="portal-table" style={{ width: '100%' }}>
                   <thead>
                     <tr>
                       <th>Time</th>
@@ -1197,7 +1197,7 @@ export default function ProfilePage() {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </PaginatedTable>
               </div>
             ) : (
               <p style={{ color: '#64748b', margin: 0 }}>No recent campus gate scans recorded for your account.</p>

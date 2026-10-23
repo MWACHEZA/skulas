@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface CalendarEventItem {
@@ -204,7 +204,7 @@ export default function ParentCalendar() {
       <body>
         <h1>Academic Calendar & Term Planner</h1>
         <p>Generated on ${new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
-        <table>
+        <PaginatedTable>
           <thead>
             <tr>
               <th>Date</th>
@@ -225,7 +225,7 @@ export default function ParentCalendar() {
               </tr>
             `).join('')}
           </tbody>
-        </table>
+        </PaginatedTable>
         <script>
           window.onload = function() { window.print(); };
         </script>

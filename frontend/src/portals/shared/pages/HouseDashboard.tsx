@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import api from '../../../lib/api';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface House {
@@ -254,7 +254,7 @@ export default function HouseDashboard() {
         </div>
         
         <div style={{ padding: '20px' }}>
-          <table className="portal-table">
+          <PaginatedTable className="portal-table">
             <thead>
               <tr style={{ background: '#f1f5f9', color: '#475569' }}>
                 <th>Student Name</th>
@@ -310,7 +310,7 @@ export default function HouseDashboard() {
                 ))
               )}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
 
@@ -335,7 +335,7 @@ export default function HouseDashboard() {
                 />
               </div>
 
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr style={{ background: '#f1f5f9' }}>
                     <th>Name</th>
@@ -387,7 +387,7 @@ export default function HouseDashboard() {
                     })
                   )}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           </div>
         </div>

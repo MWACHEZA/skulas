@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { toast } from '../../../context/ToastContext';
 
@@ -148,7 +149,7 @@ export default function TuckshopSales() {
             </div>
 
             <div style={{ marginBottom: 20, minHeight: 150 }}>
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th>Item</th>
@@ -171,7 +172,7 @@ export default function TuckshopSales() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
 
             <div style={{ background: '#f8fafc', padding: 20, borderRadius: 12, marginBottom: 20 }}>
@@ -213,7 +214,7 @@ export default function TuckshopSales() {
             <h2>Recent Transactions</h2>
           </div>
           <div className="portal-card-body" style={{ padding: 0 }}>
-             <table className="portal-table">
+             <PaginatedTable className="portal-table">
                <thead>
                  <tr>
                    <th>Time</th>
@@ -232,7 +233,7 @@ export default function TuckshopSales() {
                    </tr>
                  ))}
                </tbody>
-             </table>
+             </PaginatedTable>
           </div>
         </div>
       </div>

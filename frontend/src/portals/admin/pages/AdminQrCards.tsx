@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
-import { SearchInput } from '../../../components/shared';
+import { SearchInput, Pagination } from '../../../components/shared';
 import { getAvatarUrl } from '../../../utils/formatters';
 
 interface StudentCard {
@@ -505,57 +505,15 @@ export default function AdminQrCards() {
       </div>
 
       {/* Pagination Controls */}
-      {!loading && filteredCards.length > CARDS_PER_PAGE && (
-        <div className="no-print" style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginTop: '24px',
-          padding: '14px 20px',
-          background: '#fff',
-          borderRadius: '12px',
-          border: '1px solid #cbd5e1'
-        }}>
-          <span style={{ fontSize: '13px', color: '#475569', fontWeight: 600 }}>
-            Showing {((currentPage - 1) * CARDS_PER_PAGE) + 1}–{Math.min(currentPage * CARDS_PER_PAGE, filteredCards.length)} of {filteredCards.length} student ID cards
-          </span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button
-              disabled={currentPage <= 1}
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '6px',
-                border: '1px solid #cbd5e1',
-                background: '#fff',
-                fontWeight: 700,
-                fontSize: '13px',
-                cursor: currentPage <= 1 ? 'not-allowed' : 'pointer',
-                color: currentPage <= 1 ? '#94a3b8' : '#0f172a'
-              }}
-            >
-              Previous
-            </button>
-            <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', padding: '0 8px' }}>
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              disabled={currentPage >= totalPages}
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '6px',
-                border: '1px solid #cbd5e1',
-                background: '#fff',
-                fontWeight: 700,
-                fontSize: '13px',
-                cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
-                color: currentPage >= totalPages ? '#94a3b8' : '#0f172a'
-              }}
-            >
-              Next
-            </button>
-          </div>
+      {!loading && filteredCards.length > 0 && (
+        <div className="no-print" style={{ marginTop: '24px', background: '#fff', borderRadius: '12px', border: '1px solid #cbd5e1', overflow: 'hidden' }}>
+          <Pagination
+            currentPage={currentPage}
+            totalItems={filteredCards.length}
+            pageSize={CARDS_PER_PAGE}
+            onPageChange={setCurrentPage}
+            itemLabel="student ID cards"
+          />
         </div>
       )}
     </div>

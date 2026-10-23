@@ -3,7 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
-import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import type { ExportColumn } from '../../../utils/exportService';
 import '../../../styles/portal.css';
 
@@ -425,7 +425,7 @@ export default function FinanceBilling() {
                     No receipts recorded matching search.
                   </div>
                 ) : (
-                  <table className="portal-table">
+                  <PaginatedTable className="portal-table">
                     <thead>
                       <tr>
                         <th>Receipt # / Ref</th>
@@ -467,7 +467,7 @@ export default function FinanceBilling() {
                         </tr>
                       ))}
                     </tbody>
-                  </table>
+                  </PaginatedTable>
                 )}
               </div>
             )}
@@ -480,7 +480,7 @@ export default function FinanceBilling() {
                     No student ledger accounts found.
                   </div>
                 ) : (
-                  <table className="portal-table">
+                  <PaginatedTable className="portal-table">
                     <thead>
                       <tr>
                         <th>Student ID</th>
@@ -514,7 +514,7 @@ export default function FinanceBilling() {
                         );
                       })}
                     </tbody>
-                  </table>
+                  </PaginatedTable>
                 )}
               </div>
             )}

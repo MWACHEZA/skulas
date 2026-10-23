@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
-import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 export type ConsultationTab = 'queue' | 'consultation' | 'icd10';
 
@@ -343,7 +343,7 @@ export default function ClinicConsultationsPage() {
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+              <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
                 <thead>
                   <tr style={{ borderBottom: '2px solid #f1f5f9', color: '#475569' }}>
                     <th style={{ padding: '12px 16px' }}>Episode Code</th>
@@ -406,7 +406,7 @@ export default function ClinicConsultationsPage() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           )}
         </div>
@@ -617,7 +617,7 @@ export default function ClinicConsultationsPage() {
                 </div>
 
                 {prescriptions.length > 0 && (
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                  <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                     <thead>
                       <tr style={{ borderBottom: '1px solid #e2e8f0', color: '#64748b', textAlign: 'left' }}>
                         <th style={{ padding: 8 }}>Drug Name</th>
@@ -646,7 +646,7 @@ export default function ClinicConsultationsPage() {
                         </tr>
                       ))}
                     </tbody>
-                  </table>
+                  </PaginatedTable>
                 )}
               </div>
 
@@ -827,7 +827,7 @@ export default function ClinicConsultationsPage() {
           </div>
 
           {dirResults.length > 0 && (
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+            <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid #f1f5f9', color: '#475569', textAlign: 'left' }}>
                   <th style={{ padding: '12px 16px' }}>ICD-10 Code</th>
@@ -852,7 +852,7 @@ export default function ClinicConsultationsPage() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       )}

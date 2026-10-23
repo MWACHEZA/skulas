@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
-import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type CommunicationTab = 'messages' | 'announcements' | 'approvals';
@@ -472,7 +472,7 @@ export default function AdminCommunication() {
               <p style={{ fontSize: '0.85rem', marginTop: 4 }}>Compose a new message above.</p>
             </div>
           ) : (
-            <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
                   <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Sender</th>
@@ -523,7 +523,7 @@ export default function AdminCommunication() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       ) : activeTab === 'announcements' ? (
@@ -536,7 +536,7 @@ export default function AdminCommunication() {
               <p style={{ fontSize: '0.85rem', marginTop: 4 }}>Broadcast school circulars and events above.</p>
             </div>
           ) : (
-            <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
                   <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Title</th>
@@ -576,7 +576,7 @@ export default function AdminCommunication() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       ) : (
@@ -589,7 +589,7 @@ export default function AdminCommunication() {
               <p style={{ fontSize: '0.85rem', marginTop: 4 }}>No pending requests requiring admin intervention.</p>
             </div>
           ) : (
-            <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
                   <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Type</th>
@@ -699,7 +699,7 @@ export default function AdminCommunication() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       )}

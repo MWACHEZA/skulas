@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useToast } from '../../../context/ToastContext';
 
 export default function TeacherAttendance() {
@@ -69,7 +70,7 @@ export default function TeacherAttendance() {
         </div>
 
         <div className="portal-card-body" style={{ padding: 0 }}>
-          <table className="portal-table">
+          <PaginatedTable className="portal-table">
             <thead><tr><th>#</th><th>Student Name</th><th>Status</th></tr></thead>
             <tbody>
               {students.map((s, i) => (
@@ -87,7 +88,7 @@ export default function TeacherAttendance() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
     </>

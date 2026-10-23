@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import '../../../styles/portal.css';
 import { useToast } from '../../../context/ToastContext';
@@ -135,7 +136,7 @@ export default function PlatformLogs() {
               <p style={{ marginTop: 10, color: '#64748b' }}>Streaming live platform logs from database...</p>
             </div>
           ) : (
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th>Timestamp</th>
@@ -193,7 +194,7 @@ export default function PlatformLogs() {
                   </tr>
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       </div>

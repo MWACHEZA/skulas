@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 interface RequirementItem {
   id: string;
@@ -488,7 +488,7 @@ export default function ParentUniforms() {
         </div>
 
         <div className="portal-card-body" style={{ padding: 0 }}>
-          <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr>
                 <th>Order #</th>
@@ -536,7 +536,7 @@ export default function ParentUniforms() {
                 ))
               )}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
 

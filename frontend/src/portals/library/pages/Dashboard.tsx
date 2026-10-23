@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import ClockInModal from '../../../components/attendance/ClockInModal';
@@ -670,7 +671,7 @@ export default function LibraryDashboard() {
         {/* Tab 1: Recent Issues (Today) Table */}
         {activeTab === 'issues' && (
           <div className="table-responsive" style={{ margin: 0 }}>
-            <table className="management-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <PaginatedTable className="management-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
                   <th style={{ padding: '14px 18px', textAlign: 'left', fontWeight: 800, color: '#475569', fontSize: '0.8rem' }}>Book Details</th>
@@ -750,14 +751,14 @@ export default function LibraryDashboard() {
                   ))
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         )}
 
         {/* Tab 2: Overdue Today Table */}
         {activeTab === 'overdue' && (
           <div className="table-responsive" style={{ margin: 0 }}>
-            <table className="management-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <PaginatedTable className="management-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
                   <th style={{ padding: '14px 18px', textAlign: 'left', fontWeight: 800, color: '#475569', fontSize: '0.8rem' }}>Book Details</th>
@@ -826,7 +827,7 @@ export default function LibraryDashboard() {
                   ))
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         )}
       </div>

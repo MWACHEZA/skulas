@@ -4,7 +4,7 @@ import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
-import { ExportButton, SkeletonLoader } from '../../../components/shared';
+import { ExportButton, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type AttendanceTab = 'daily-roll-call' | 'period' | 'boarding' | 'absentee-report' | 'sms-log' | 'qr-scanner';
@@ -494,7 +494,7 @@ export default function AdminAttendance() {
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
-              <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#f1f5f9', borderBottom: '2px solid #cbd5e1' }}>
                     <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 800, color: '#334155' }}>Student Details</th>
@@ -558,7 +558,7 @@ export default function AdminAttendance() {
                     );
                   })}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           )}
         </div>
@@ -639,7 +639,7 @@ export default function AdminAttendance() {
               <div>No boarders allocated to this hostel.</div>
             </div>
           ) : (
-            <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ backgroundColor: '#f1f5f9', borderBottom: '2px solid #cbd5e1' }}>
                   <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 800 }}>Boarder Name</th>
@@ -697,7 +697,7 @@ export default function AdminAttendance() {
                   );
                 })}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       )}
@@ -796,7 +796,7 @@ export default function AdminAttendance() {
 
               {/* Absentee Records Table */}
               <div className="portal-card" style={{ padding: 24 }}>
-                <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#f1f5f9', borderBottom: '2px solid #cbd5e1' }}>
                       <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 800 }}>Student</th>
@@ -845,7 +845,7 @@ export default function AdminAttendance() {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </PaginatedTable>
               </div>
             </>
           ) : null}
@@ -882,7 +882,7 @@ export default function AdminAttendance() {
               <div>No attendance absence SMS messages dispatched yet.</div>
             </div>
           ) : (
-            <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ backgroundColor: '#f1f5f9', borderBottom: '2px solid #cbd5e1' }}>
                   <th style={{ padding: '12px 16px', textAlign: 'left', fontWeight: 800 }}>Date & Time</th>
@@ -913,7 +913,7 @@ export default function AdminAttendance() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       )}

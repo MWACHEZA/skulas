@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useTranslation } from 'react-i18next';
 import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
@@ -546,7 +547,7 @@ export default function TeacherGrades() {
               <SkeletonLoader type="table" rows={8} columns={6} />
             </div>
           ) : (
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 {isIndustrial ? (
                   <tr>
@@ -699,7 +700,7 @@ export default function TeacherGrades() {
                   })
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       </div>

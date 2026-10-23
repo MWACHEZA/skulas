@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import '../../../styles/portal.css';
@@ -452,7 +453,7 @@ export default function PlatformSettings() {
               </div>
 
               <div className="portal-card-body" style={{ padding: 0 }}>
-                <table className="portal-table">
+                <PaginatedTable className="portal-table">
                   <thead>
                     <tr>
                       <th>Name</th>
@@ -495,7 +496,7 @@ export default function PlatformSettings() {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </PaginatedTable>
               </div>
             </div>
           )}

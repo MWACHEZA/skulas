@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../../../lib/api';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useToast } from '../../../../context/ToastContext';
-import { SkeletonLoader } from '../../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../../components/shared';
 
 interface LiveStudentSession {
   id: string;
@@ -216,7 +216,7 @@ export default function CBTResults() {
                 <p>No student has submitted this exam yet.</p>
               </div>
             ) : (
-              <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>
                     <th style={{ padding: 12 }}>Student Name</th>
@@ -263,7 +263,7 @@ export default function CBTResults() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>
@@ -303,7 +303,7 @@ export default function CBTResults() {
             <h2 style={{ fontSize: '1.2rem', fontWeight: 700, margin: '0 0 16px', color: '#1e293b' }}>
               Live Invigilation & Integrity Monitor
             </h2>
-            <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>
                   <th style={{ padding: 12 }}>Candidate</th>
@@ -372,7 +372,7 @@ export default function CBTResults() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         </div>
       )}

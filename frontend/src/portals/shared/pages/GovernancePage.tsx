@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -495,7 +496,7 @@ export default function GovernancePage() {
           {/* TAB 1: MEMBERS */}
           {activeTab === 'members' && (
             <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+              <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: 600 }}>
                     <th style={{ padding: '14px 18px' }}>Member Name</th>
@@ -570,7 +571,7 @@ export default function GovernancePage() {
                     </tr>
                   )}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           )}
 
@@ -721,7 +722,7 @@ export default function GovernancePage() {
           {/* TAB 4: MINUTES */}
           {activeTab === 'minutes' && (
             <div style={{ background: '#fff', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+              <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: 600 }}>
                     <th style={{ padding: '14px 18px' }}>Meeting Date</th>
@@ -786,7 +787,7 @@ export default function GovernancePage() {
                     </tr>
                   )}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           )}
         </>

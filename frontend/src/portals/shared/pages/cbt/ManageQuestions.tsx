@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '../../../../context/ToastContext';
 import api from '../../../../lib/api';
-import { SkeletonLoader } from '../../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../../components/shared';
 
 export interface Question {
   id: string;
@@ -449,7 +449,7 @@ export default function ManageQuestions() {
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th style={{ width: 50 }}>#</th>
@@ -490,7 +490,7 @@ export default function ManageQuestions() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           )}
         </div>

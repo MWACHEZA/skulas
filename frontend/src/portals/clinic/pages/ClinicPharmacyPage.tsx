@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
-import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 export type PharmacyTab = 'stock' | 'dispense-log' | 'low-stock' | 'expiry';
 
@@ -339,7 +339,7 @@ export default function ClinicPharmacyPage() {
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+              <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
                 <thead>
                   <tr style={{ borderBottom: '2px solid #f1f5f9', color: '#475569' }}>
                     <th style={{ padding: '12px 16px' }}>Medication Name</th>
@@ -402,7 +402,7 @@ export default function ClinicPharmacyPage() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           )}
         </div>
@@ -423,7 +423,7 @@ export default function ClinicPharmacyPage() {
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+              <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
                 <thead>
                   <tr style={{ borderBottom: '2px solid #f1f5f9', color: '#475569' }}>
                     <th style={{ padding: '12px 16px' }}>Medication</th>
@@ -459,7 +459,7 @@ export default function ClinicPharmacyPage() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           )}
         </div>
@@ -479,7 +479,7 @@ export default function ClinicPharmacyPage() {
               <p style={{ fontWeight: 600 }}>No medication batches expiring within the next 90 days.</p>
             </div>
           ) : (
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+            <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
               <thead>
                 <tr style={{ borderBottom: '2px solid #f1f5f9', color: '#475569' }}>
                   <th style={{ padding: '12px 16px' }}>Medication</th>
@@ -516,7 +516,7 @@ export default function ClinicPharmacyPage() {
                   );
                 })}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       )}
@@ -554,7 +554,7 @@ export default function ClinicPharmacyPage() {
             />
           </div>
 
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+          <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
             <thead>
               <tr style={{ borderBottom: '2px solid #f1f5f9', color: '#475569' }}>
                 <th style={{ padding: '12px 16px' }}>Medication</th>
@@ -579,7 +579,7 @@ export default function ClinicPharmacyPage() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       )}
 

@@ -3,7 +3,7 @@ import api from '../../../lib/api';
 import { toast } from '../../../context/ToastContext';
 import '../../../styles/portal.css';
 import { useAcademicConfig } from '../../../hooks/useAcademicConfig';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 interface AssessmentColumn {
   id: string;
@@ -1138,7 +1138,7 @@ export default function MarksEntryPage() {
 
           {/* TABLE */}
           <div className="table-responsive">
-            <table className="management-table">
+            <PaginatedTable className="management-table">
               <thead>
                 <tr>
                   <th style={{ width: '20%', minWidth: '180px' }}>Student Identity</th>
@@ -1419,7 +1419,7 @@ export default function MarksEntryPage() {
                   );
                 })}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
 
           {/* FOOTER ACTIONS */}
@@ -1657,7 +1657,7 @@ export default function MarksEntryPage() {
                 Grade Thresholds
               </div>
               <div style={{ border: '1px solid #e2e8f0', borderRadius: '10px', overflow: 'hidden' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                   <thead>
                     <tr style={{ background: '#f1f5f9', color: '#475569', borderBottom: '1px solid #e2e8f0' }}>
                       <th style={{ padding: '8px 12px', textAlign: 'left' }}>Grade</th>
@@ -1710,7 +1710,7 @@ export default function MarksEntryPage() {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </PaginatedTable>
               </div>
             </div>
 
@@ -1850,7 +1850,7 @@ export default function MarksEntryPage() {
 
             {/* Columns List Table */}
             <div style={{ maxHeight: '380px', overflowY: 'auto', border: '1px solid #e2e8f0', borderRadius: '10px', marginBottom: '20px' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+              <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', color: '#475569', borderBottom: '1px solid #e2e8f0' }}>
                     <th style={{ padding: '10px 12px', textAlign: 'left' }}>Assessment Name</th>
@@ -1976,7 +1976,7 @@ export default function MarksEntryPage() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
 
             {/* Modal Footer Actions */}

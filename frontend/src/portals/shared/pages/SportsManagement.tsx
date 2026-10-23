@@ -3,7 +3,7 @@ import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useAuth } from '../../../contexts/AuthContext';
-import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface SportsEvent {
@@ -1005,7 +1005,7 @@ export default function SportsManagement() {
 
             <div className="management-table-card" style={{ boxShadow: 'none', border: '1px solid #f1f5f9' }}>
               <div className="table-responsive">
-                <table className="management-table">
+                <PaginatedTable className="management-table">
                   <thead>
                     <tr>
                       <th>Item Name</th>
@@ -1063,7 +1063,7 @@ export default function SportsManagement() {
                       ))
                     )}
                   </tbody>
-                </table>
+                </PaginatedTable>
               </div>
             </div>
           </div>

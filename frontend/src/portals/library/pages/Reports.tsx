@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import {
@@ -645,7 +646,7 @@ export default function LibraryReports() {
             </div>
 
             <div className="table-responsive">
-              <table className="management-table" style={{ width: '100%' }}>
+              <PaginatedTable className="management-table" style={{ width: '100%' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc' }}>
                     <th style={{ padding: '12px 18px', textAlign: 'left' }}>Book Title & Author</th>
@@ -689,7 +690,7 @@ export default function LibraryReports() {
                     ))
                   )}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           </div>
 
@@ -703,7 +704,7 @@ export default function LibraryReports() {
                 </h3>
               </div>
               <div className="table-responsive">
-                <table className="management-table" style={{ width: '100%' }}>
+                <PaginatedTable className="management-table" style={{ width: '100%' }}>
                   <thead>
                     <tr style={{ background: '#f8fafc' }}>
                       <th style={{ padding: '10px 14px', width: 40, textAlign: 'center' }}>#</th>
@@ -730,7 +731,7 @@ export default function LibraryReports() {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </PaginatedTable>
               </div>
             </div>
 
@@ -742,7 +743,7 @@ export default function LibraryReports() {
                 </h3>
               </div>
               <div className="table-responsive">
-                <table className="management-table" style={{ width: '100%' }}>
+                <PaginatedTable className="management-table" style={{ width: '100%' }}>
                   <thead>
                     <tr style={{ background: '#f8fafc' }}>
                       <th style={{ padding: '10px 14px' }}>Book Title</th>
@@ -769,7 +770,7 @@ export default function LibraryReports() {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </PaginatedTable>
               </div>
             </div>
           </div>
@@ -945,7 +946,7 @@ export default function LibraryReports() {
                 </h3>
               </div>
               <div className="table-responsive">
-                <table className="management-table" style={{ width: '100%' }}>
+                <PaginatedTable className="management-table" style={{ width: '100%' }}>
                   <thead>
                     <tr style={{ background: '#f8fafc' }}>
                       <th style={{ padding: '10px 14px' }}>Name</th>
@@ -964,7 +965,7 @@ export default function LibraryReports() {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </PaginatedTable>
               </div>
             </div>
 
@@ -976,7 +977,7 @@ export default function LibraryReports() {
                 </h3>
               </div>
               <div className="table-responsive">
-                <table className="management-table" style={{ width: '100%' }}>
+                <PaginatedTable className="management-table" style={{ width: '100%' }}>
                   <thead>
                     <tr style={{ background: '#f8fafc' }}>
                       <th style={{ padding: '10px 14px' }}>Borrower</th>
@@ -1012,7 +1013,7 @@ export default function LibraryReports() {
                       ))
                     )}
                   </tbody>
-                </table>
+                </PaginatedTable>
               </div>
             </div>
           </div>
@@ -1171,7 +1172,7 @@ export default function LibraryReports() {
               </h3>
             </div>
             <div className="table-responsive">
-              <table className="management-table" style={{ width: '100%' }}>
+              <PaginatedTable className="management-table" style={{ width: '100%' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc' }}>
                     <th style={{ padding: '12px 18px', textAlign: 'left' }}>Book Title</th>
@@ -1209,7 +1210,7 @@ export default function LibraryReports() {
                     ))
                   )}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           </div>
         </div>

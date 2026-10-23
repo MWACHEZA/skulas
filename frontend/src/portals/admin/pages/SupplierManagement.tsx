@@ -6,7 +6,7 @@ import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModa
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl, parseCleanBadges } from '../../../utils/formatters';
-import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 export default function SupplierManagement() {
@@ -182,7 +182,7 @@ export default function SupplierManagement() {
               <SkeletonLoader type="table" rows={8} columns={7} />
             </div>
           ) : (
-            <table className="management-table">
+            <PaginatedTable className="management-table">
               <thead>
                 <tr>
                   <th>Vendor ID (Local)</th>
@@ -267,7 +267,7 @@ export default function SupplierManagement() {
                   </tr>
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       </div>
@@ -293,7 +293,7 @@ export default function SupplierManagement() {
               </div>
 
               <div style={{ overflowX: 'auto' }}>
-                <table className="portal-table">
+                <PaginatedTable className="portal-table">
                   <thead>
                     <tr>
                       <th>PO Number</th>
@@ -327,7 +327,7 @@ export default function SupplierManagement() {
                       </tr>
                     )}
                   </tbody>
-                </table>
+                </PaginatedTable>
               </div>
             </div>
           </div>

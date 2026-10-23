@@ -4,7 +4,7 @@ import { useAccountingQuery, useOptimisticAccountingMutation } from '../../../ho
 import toast from '../../../context/ToastContext';
 import { Plus, Shield, CheckCircle, XCircle, Search, RefreshCw, Layers } from 'lucide-react';
 import { EmptyState } from '../../../components/common/EmptyState';
-import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface Account {
@@ -204,7 +204,7 @@ export default function ChartOfAccountsPage() {
             setupStageLink={{ step: 3, label: 'Seed Standard COA in Setup Wizard' }}
           />
         ) : (
-          <table className="portal-coa-table">
+          <PaginatedTable className="portal-coa-table">
             <thead>
               <tr className="portal-coa-table-header-row">
                 <th className="portal-coa-th">Code</th>
@@ -268,7 +268,7 @@ export default function ChartOfAccountsPage() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         )}
       </div>
 

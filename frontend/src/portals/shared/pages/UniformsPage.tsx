@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from "../../../lib/api";
 import { useToast } from "../../../context/ToastContext";
 import { format } from "date-fns";
@@ -555,7 +556,7 @@ export const StockTab: React.FC<StockTabProps> = ({ items, suppliers, orders, on
             </span>
          </div>
          <div className="table-responsive">
-          <table className="management-table">
+          <PaginatedTable className="management-table">
               <thead>
                 <tr>
                     <th className="portal-th-pad-left">Settlement Date</th>
@@ -585,7 +586,7 @@ export const StockTab: React.FC<StockTabProps> = ({ items, suppliers, orders, on
                     </tr>
                 ))}
               </tbody>
-          </table>
+          </PaginatedTable>
          </div>
       </div>
 
@@ -638,7 +639,7 @@ export const StockTab: React.FC<StockTabProps> = ({ items, suppliers, orders, on
               
               {(Array.isArray(orderItems) ? orderItems : []).length > 0 ? (
                 <div className="portal-table-card-bordered">
-                   <table className="management-table portal-table-margin-zero">
+                   <PaginatedTable className="management-table portal-table-margin-zero">
                       <thead className="portal-thead-bg-light">
                          <tr>
                             <th className="portal-th-pad-24">Manifest Item</th>
@@ -678,7 +679,7 @@ export const StockTab: React.FC<StockTabProps> = ({ items, suppliers, orders, on
                             </td>
                          </tr>
                       </tfoot>
-                   </table>
+                   </PaginatedTable>
                 </div>
               ) : (
                 <div className="portal-empty-dashed-box">
@@ -857,7 +858,7 @@ const SalesTab: React.FC<SalesTabProps> = ({ items, sales, onUpdate, canManage, 
 
                {(Array.isArray(selectedItems) ? selectedItems : []).length > 0 ? (
                 <div className="portal-table-card-bordered">
-                    <table className="management-table portal-table-margin-zero">
+                    <PaginatedTable className="management-table portal-table-margin-zero">
                       <thead className="portal-thead-bg-light">
                           <tr>
                             <th className="portal-th-pad-24">Inventory Item</th>
@@ -893,7 +894,7 @@ const SalesTab: React.FC<SalesTabProps> = ({ items, sales, onUpdate, canManage, 
                             </td>
                          </tr>
                       </tfoot>
-                    </table>
+                    </PaginatedTable>
                 </div>
                ) : (
                 <div className="portal-empty-dashed-box">
@@ -1293,7 +1294,7 @@ const PaymentsTab = ({ suppliers, canManage }: { suppliers: Supplier[], canManag
 
          <div className="management-table-card">
             <div className="table-responsive">
-              <table className="management-table">
+              <PaginatedTable className="management-table">
                 <thead>
                     <tr>
                       <th>Vendor Entity</th>
@@ -1328,7 +1329,7 @@ const PaymentsTab = ({ suppliers, canManage }: { suppliers: Supplier[], canManag
                       </td></tr>
                     )}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
          </div>
 

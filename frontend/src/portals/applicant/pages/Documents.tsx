@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api, { BASE_URL } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
@@ -139,7 +140,7 @@ export default function ApplicantDocuments() {
             <h2><i className={`fas ${cat.icon}`} style={{ marginRight: 8, color: 'var(--school-primary, #3182ce)' }}></i>{cat.title}</h2>
           </div>
           <div className="portal-card-body" style={{ padding: 0 }}>
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th style={{ width: '40%' }}>Document Type</th>
@@ -151,7 +152,7 @@ export default function ApplicantDocuments() {
               <tbody>
                 {cat.types.map((type, idx) => renderDocRow(type, idx))}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         </div>
       ))}
@@ -161,7 +162,7 @@ export default function ApplicantDocuments() {
           <h2><i className="fas fa-plus-circle" style={{ marginRight: 8, color: '#4a5568' }}></i>Other Supporting Documents</h2>
         </div>
         <div className="portal-card-body">
-          <table className="portal-table" style={{ marginTop: 0 }}>
+          <PaginatedTable className="portal-table" style={{ marginTop: 0 }}>
              <tbody>
                 {docs.filter(d => !categories.some(c => c.types.includes(d.name))).map((doc, idx) => (
                   <tr key={idx}>
@@ -192,7 +193,7 @@ export default function ApplicantDocuments() {
                   </td>
                 </tr>
              </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
 

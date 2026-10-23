@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -421,7 +422,7 @@ export default function AdminDashboard() {
             {!data?.recentApplications?.length ? (
               <div className="portal-card-empty-pad">No applications in pipeline.</div>
             ) : (
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead><tr><th>{t('applicant')}</th><th>Type</th><th>Status</th><th>Action</th></tr></thead>
                 <tbody>
                   {(Array.isArray(data.recentApplications) ? data.recentApplications : []).map(a => (
@@ -441,7 +442,7 @@ export default function AdminDashboard() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>
@@ -510,7 +511,7 @@ export default function AdminDashboard() {
           {!data?.announcements?.length ? (
             <div className="portal-card-empty-pad">No circulars published yet.</div>
           ) : (
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead><tr><th>Title</th><th>Published By</th><th>Date</th></tr></thead>
               <tbody>
                 {(Array.isArray(data.announcements) ? data.announcements : []).map(a => {
@@ -535,7 +536,7 @@ export default function AdminDashboard() {
                   );
                 })}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       </div>

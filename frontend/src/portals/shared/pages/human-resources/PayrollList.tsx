@@ -4,7 +4,7 @@ import { useToast } from '../../../../context/ToastContext';
 import { useAuth } from '../../../../contexts/AuthContext';
 import SearchInput from '../../../../components/shared/SearchInput';
 import ExportButton from '../../../../components/shared/ExportButton';
-import { SkeletonLoader } from '../../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../../components/shared';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -690,7 +690,7 @@ export default function PayrollList() {
           </div>
 
           <div style={{ overflowX: 'auto' }}>
-            <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
                   <th style={{ padding: '10px 14px' }}>Staff Member</th>
@@ -768,7 +768,7 @@ export default function PayrollList() {
                   })
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         </div>
       )}
@@ -887,7 +887,7 @@ export default function PayrollList() {
             </button>
           </div>
 
-          <table className="portal-table" style={{ width: '100%', fontSize: '0.88rem' }}>
+          <PaginatedTable className="portal-table" style={{ width: '100%', fontSize: '0.88rem' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0' }}>
                 <th>Staff Member</th>
@@ -914,7 +914,7 @@ export default function PayrollList() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       )}
 

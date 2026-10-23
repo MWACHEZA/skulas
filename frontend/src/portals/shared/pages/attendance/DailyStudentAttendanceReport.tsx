@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTerminology } from '../../../../hooks/useTerminology';
 import api from '../../../../lib/api';
 import { useToast } from '../../../../context/ToastContext';
-import { SkeletonLoader } from '../../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../../components/shared';
 
 interface StudentReport {
   studentId: string;
@@ -212,7 +212,7 @@ export default function DailyStudentAttendanceReport() {
               <span className="portal-badge info">{reportData.length} {t('students')}</span>
             </div>
             <div className="portal-card-body" style={{ padding: 0 }}>
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th>#</th>
@@ -251,7 +251,7 @@ export default function DailyStudentAttendanceReport() {
                     );
                   })}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           </div>
         </>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../../components/shared/Pagination';
 import { useTerminology } from '../../../../hooks/useTerminology';
 import api from '../../../../lib/api';
 import { useToast } from '../../../../context/ToastContext';
@@ -101,7 +102,7 @@ export default function DailyStudentAttendance() {
             <h2>Attendance List</h2>
           </div>
           <div className="portal-card-body" style={{ padding: 0 }}>
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th>#</th>
@@ -144,7 +145,7 @@ export default function DailyStudentAttendance() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         </div>
       )}

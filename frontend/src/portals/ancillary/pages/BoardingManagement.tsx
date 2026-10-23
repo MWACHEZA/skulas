@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import TabbedPage, { type TabItem } from '../../../components/portals/shared/TabbedPage';
-import { SearchableCombobox, type ComboboxOption, SkeletonLoader } from '../../../components/shared';
+import { SearchableCombobox, type ComboboxOption, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 export default function BoardingManagement() {
   const [hostels, setHostels] = useState<any[]>([]);
@@ -268,7 +268,7 @@ export default function BoardingManagement() {
           {loading ? (
             <div style={{ padding: 20 }}><SkeletonLoader type="table" rows={6} columns={6} /></div>
           ) : (
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th>Hostel Name</th>
@@ -313,7 +313,7 @@ export default function BoardingManagement() {
                   );
                 })}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       </div>
@@ -361,7 +361,7 @@ export default function BoardingManagement() {
         ) : approvalsTab === 'STUDENT_LEADER' ? (
           // Sub-tab B: Student Leader Requests
           <div className="table-responsive">
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th>Prefect / Leader</th>
@@ -444,12 +444,12 @@ export default function BoardingManagement() {
                   </tr>
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         ) : (
           // Sub-tab A: Staff Requests
           <div className="table-responsive">
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th>Ref #</th>
@@ -483,7 +483,7 @@ export default function BoardingManagement() {
                   </tr>
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         )}
       </div>
@@ -534,7 +534,7 @@ export default function BoardingManagement() {
         </div>
       ) : (
         <div className="table-responsive">
-          <table className="portal-table">
+          <PaginatedTable className="portal-table">
             <thead>
               <tr>
                 <th>Student</th>
@@ -565,7 +565,7 @@ export default function BoardingManagement() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       )}
     </div>
@@ -674,7 +674,7 @@ export default function BoardingManagement() {
           </span>
         </div>
         <div className="table-responsive">
-          <table className="portal-table">
+          <PaginatedTable className="portal-table">
             <thead>
               <tr>
                 <th>Student</th>
@@ -750,7 +750,7 @@ export default function BoardingManagement() {
                 </tr>
               )}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
     </div>
@@ -798,7 +798,7 @@ export default function BoardingManagement() {
       </div>
 
       <div className="table-responsive">
-        <table className="portal-table">
+        <PaginatedTable className="portal-table">
           <thead>
             <tr>
               <th>Student</th>
@@ -869,7 +869,7 @@ export default function BoardingManagement() {
               </tr>
             )}
           </tbody>
-        </table>
+        </PaginatedTable>
       </div>
     </div>
   );

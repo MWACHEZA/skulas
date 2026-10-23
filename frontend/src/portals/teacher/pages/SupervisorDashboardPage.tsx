@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useToast } from '../../../context/ToastContext';
@@ -120,7 +121,7 @@ export default function SupervisorDashboard() {
               </div>
 
               <h3>Progress History</h3>
-              <table className="portal-table" style={{ marginTop: 12 }}>
+              <PaginatedTable className="portal-table" style={{ marginTop: 12 }}>
                 <thead>
                   <tr>
                     <th>Date</th>
@@ -160,7 +161,7 @@ export default function SupervisorDashboard() {
                     <tr><td colSpan={3} className="empty-text">No reports submitted yet.</td></tr>
                   )}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           ) : (
             <div className="portal-card-body" style={{ height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#a0aec0' }}>

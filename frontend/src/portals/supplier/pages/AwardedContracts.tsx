@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useAuth } from '../../../contexts/AuthContext';
 import PortalGate from '../../../components/portals/shared/PortalGate';
 
@@ -21,7 +22,7 @@ export default function AwardedContracts() {
           <h2><i className="fas fa-file-contract" style={{ marginRight: 8, color: 'var(--school-primary, #3182ce)' }}></i>Contract Repository</h2>
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
-          <table className="portal-table">
+          <PaginatedTable className="portal-table">
             <thead>
               <tr>
                 <th>Contract ID</th>
@@ -64,7 +65,7 @@ export default function AwardedContracts() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
     </PortalGate>

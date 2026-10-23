@@ -7,7 +7,7 @@ import AdminUserCreateModal from '../../../components/shared/AdminUserCreateModa
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl, formatCurrency, parseCleanBadges } from '../../../utils/formatters';
-import { SearchInput, FilterBar, ExportButton, DataImportModal, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, FilterBar, ExportButton, DataImportModal, Pagination, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import type { ExportColumn } from '../../../utils/exportService';
 import '../../../styles/portal.css';
 
@@ -845,61 +845,15 @@ export default function AdminStudents() {
             </table>
             
             {filteredStudents.length > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0', flexWrap: 'wrap', gap: 12 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-                    Showing <strong>{(currentPage - 1) * itemsPerPage + 1}</strong> to <strong>{Math.min(currentPage * itemsPerPage, filteredStudents.length)}</strong> of <strong>{filteredStudents.length}</strong> students
-                  </span>
-                  <select
-                    className="portal-input"
-                    value={itemsPerPage}
-                    onChange={e => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
-                    style={{ width: 'auto', padding: '4px 10px', fontSize: '0.8rem', height: 32 }}
-                  >
-                    <option value={12}>12 / page</option>
-                    <option value={25}>25 / page</option>
-                    <option value={50}>50 / page</option>
-                    <option value={100}>100 / page</option>
-                  </select>
-                </div>
-                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                  <button
-                    onClick={() => setCurrentPage(1)}
-                    disabled={currentPage === 1}
-                    className="portal-btn-ghost"
-                    style={{ padding: '6px 10px', fontSize: '0.82rem' }}
-                  >
-                    First
-                  </button>
-                  <button 
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                    className="portal-btn-ghost"
-                    style={{ padding: '6px 14px', fontSize: '0.85rem' }}
-                  >
-                    Previous
-                  </button>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#1e293b', padding: '0 8px' }}>
-                    Page {currentPage} of {Math.max(1, Math.ceil(filteredStudents.length / itemsPerPage))}
-                  </span>
-                  <button 
-                    onClick={() => setCurrentPage(prev => (prev * itemsPerPage < filteredStudents.length ? prev + 1 : prev))}
-                    disabled={currentPage * itemsPerPage >= filteredStudents.length}
-                    className="portal-btn-ghost"
-                    style={{ padding: '6px 14px', fontSize: '0.85rem' }}
-                  >
-                    Next
-                  </button>
-                  <button
-                    onClick={() => setCurrentPage(Math.max(1, Math.ceil(filteredStudents.length / itemsPerPage)))}
-                    disabled={currentPage * itemsPerPage >= filteredStudents.length}
-                    className="portal-btn-ghost"
-                    style={{ padding: '6px 10px', fontSize: '0.82rem' }}
-                  >
-                    Last
-                  </button>
-                </div>
-              </div>
+              <Pagination
+                currentPage={currentPage}
+                totalItems={filteredStudents.length}
+                pageSize={itemsPerPage}
+                onPageChange={setCurrentPage}
+                onPageSizeChange={(s) => { setItemsPerPage(s); setCurrentPage(1); }}
+                pageSizeOptions={[12, 25, 50, 100]}
+                itemLabel="students"
+              />
             )}
             </>
           )}
@@ -996,7 +950,7 @@ export default function AdminStudents() {
                   <p style={{ fontSize: '0.85rem', margin: 0 }}>When a parent links a student ID from the Parent Portal, it appears here for verification.</p>
                 </div>
               ) : (
-                <table className="management-table">
+                <PaginatedTable className="management-table">
                   <thead>
                     <tr>
                       <th>Parent / Guardian</th>
@@ -1082,7 +1036,7 @@ export default function AdminStudents() {
                       );
                     })}
                   </tbody>
-                </table>
+                </PaginatedTable>
               )}
             </div>
           </div>

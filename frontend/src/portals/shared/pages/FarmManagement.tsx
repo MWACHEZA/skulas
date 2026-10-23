@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface LivestockBatch {
@@ -542,7 +542,7 @@ export default function FarmManagement() {
               </div>
 
               <div className="table-responsive">
-                <table className="management-table" style={{ width: '100%' }}>
+                <PaginatedTable className="management-table" style={{ width: '100%' }}>
                   <thead>
                     <tr>
                       <th style={{ padding: '14px 24px' }}>Batch Name / Type</th>
@@ -615,7 +615,7 @@ export default function FarmManagement() {
                       ))
                     )}
                   </tbody>
-                </table>
+                </PaginatedTable>
               </div>
             </div>
           )}
@@ -716,7 +716,7 @@ export default function FarmManagement() {
               </div>
 
               <div className="table-responsive">
-                <table className="management-table" style={{ width: '100%' }}>
+                <PaginatedTable className="management-table" style={{ width: '100%' }}>
                   <thead>
                     <tr>
                       <th style={{ padding: '14px 24px' }}>Item Name</th>
@@ -771,7 +771,7 @@ export default function FarmManagement() {
                       ))
                     )}
                   </tbody>
-                </table>
+                </PaginatedTable>
               </div>
             </div>
           )}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface AuthorEntry {
@@ -67,14 +67,14 @@ const exportToWord = (title: string, headers: string[], dataRows: string[][]) =>
     </head>
     <body>
       <h2>${title}</h2>
-      <table>
+      <PaginatedTable>
         <thead>
           <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
         </thead>
         <tbody>
           ${dataRows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
         </tbody>
-      </table>
+      </PaginatedTable>
     </body>
     </html>
   `;
@@ -625,7 +625,7 @@ export default function LibraryBooks() {
             <p style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: 4 }}>Try clearing filters or checking for typo variations.</p>
           </div>
         ) : (
-          <table className="portal-table" style={{ width: '100%' }}>
+          <PaginatedTable className="portal-table" style={{ width: '100%' }}>
             <thead>
               <tr style={{ background: '#f8fafc', color: '#334155' }}>
                 <th>Title & Authors</th>
@@ -728,7 +728,7 @@ export default function LibraryBooks() {
                 );
               })}
             </tbody>
-          </table>
+          </PaginatedTable>
         )}
       </div>
 

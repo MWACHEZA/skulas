@@ -3,7 +3,7 @@ import api from '../../../../lib/api';
 import { useToast } from '../../../../context/ToastContext';
 import { useTerminology } from '../../../../hooks/useTerminology';
 import '../../../../styles/portal.css';
-import { SkeletonLoader } from '../../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../../components/shared';
 
 interface Visitor {
   id: string;
@@ -46,14 +46,14 @@ const exportToWord = (title: string, headers: string[], dataRows: string[][]) =>
     </head>
     <body>
       <h2>${title}</h2>
-      <table>
+      <PaginatedTable>
         <thead>
           <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
         </thead>
         <tbody>
           ${dataRows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
         </tbody>
-      </table>
+      </PaginatedTable>
     </body>
     </html>
   `;
@@ -234,7 +234,7 @@ export default function VisitorBookPage() {
           </div>
 
           <div className="table-responsive">
-            <table className="management-table">
+            <PaginatedTable className="management-table">
               <thead>
                 <tr>
                   <th>PURPOSE</th>
@@ -286,7 +286,7 @@ export default function VisitorBookPage() {
                   ))
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         </div>
       </div>

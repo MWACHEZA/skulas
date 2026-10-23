@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api, { BASE_URL } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
@@ -1712,7 +1713,7 @@ export default function AdminDocumentTemplates() {
                       </div>
                       {/* Subjects table */}
                       <div style={{ padding: '16px 24px' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.72rem' }}>
+                        <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.72rem' }}>
                           <thead>
                             <tr style={{ borderBottom: `2px solid ${primaryCol}` }}>
                               <th style={{ textAlign: 'left', padding: '6px 4px', color: primaryCol, fontWeight: 900 }}>Subject</th>
@@ -1731,7 +1732,7 @@ export default function AdminDocumentTemplates() {
                               </tr>
                             ))}
                           </tbody>
-                        </table>
+                        </PaginatedTable>
                       </div>
                       {/* Attendance bar */}
                       {template.config.showAttendance && (
@@ -1979,7 +1980,7 @@ export default function AdminDocumentTemplates() {
                     </div>
                     {/* Line items */}
                     <div style={{ padding: '12px 24px' }}>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.72rem' }}>
+                      <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.72rem' }}>
                         <thead>
                           <tr style={{ borderBottom: `2px solid ${primaryCol}` }}>
                             <th style={{ textAlign: 'left', padding: '5px 2px', color: primaryCol, fontWeight: 900 }}>Description</th>
@@ -2000,7 +2001,7 @@ export default function AdminDocumentTemplates() {
                             <td style={{ textAlign: 'right', fontWeight: 900, fontSize: '1rem', color: primaryCol }}>${total.toFixed(2)}</td>
                           </tr>
                         </tfoot>
-                      </table>
+                      </PaginatedTable>
                     </div>
                     {/* Footer */}
                     <div style={{ padding: '8px 24px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
@@ -2214,7 +2215,7 @@ export default function AdminDocumentTemplates() {
                     </div>
                     {/* Items */}
                     <div style={{ padding: '24px' }}>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+                      <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
                         <thead>
                           <tr style={{ borderBottom: `2px solid ${primaryCol}` }}>
                             <th style={{ textAlign: 'left', padding: '8px 4px', color: primaryCol, fontWeight: 900 }}>Description</th>
@@ -2229,7 +2230,7 @@ export default function AdminDocumentTemplates() {
                             </tr>
                           ))}
                         </tbody>
-                      </table>
+                      </PaginatedTable>
                     </div>
                     {/* Totals */}
                     <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0 24px 24px' }}>

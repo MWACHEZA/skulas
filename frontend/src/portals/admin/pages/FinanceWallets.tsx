@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
-import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type WalletTab = 'sales' | 'inventory' | 'topups';
@@ -276,7 +276,7 @@ export default function FinanceWallets() {
                     No inventory items listed matching search.
                   </div>
                 ) : (
-                  <table className="portal-table">
+                  <PaginatedTable className="portal-table">
                     <thead>
                       <tr>
                         <th>Item Name</th>
@@ -301,7 +301,7 @@ export default function FinanceWallets() {
                         </tr>
                       ))}
                     </tbody>
-                  </table>
+                  </PaginatedTable>
                 )}
               </div>
             )}
@@ -314,7 +314,7 @@ export default function FinanceWallets() {
                     No student wallets found matching search.
                   </div>
                 ) : (
-                  <table className="portal-table">
+                  <PaginatedTable className="portal-table">
                     <thead>
                       <tr>
                         <th>Student Name</th>
@@ -347,7 +347,7 @@ export default function FinanceWallets() {
                         </tr>
                       ))}
                     </tbody>
-                  </table>
+                  </PaginatedTable>
                 )}
               </div>
             )}

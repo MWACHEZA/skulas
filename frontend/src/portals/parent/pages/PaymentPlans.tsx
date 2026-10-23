@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { format } from 'date-fns';
@@ -318,7 +319,7 @@ export default function ParentPaymentPlans() {
               />
             </div>
           ) : (
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th>{t('student')}</th>
@@ -358,7 +359,7 @@ export default function ParentPaymentPlans() {
                   );
                 })}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       </div>

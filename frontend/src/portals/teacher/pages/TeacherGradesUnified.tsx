@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import TeacherGrades from './Grades';
 import MarksEntryPage from '../../shared/pages/MarksEntryPage';
@@ -248,7 +249,7 @@ export default function TeacherGradesUnified() {
                   <SkeletonLoader type="table" rows={6} columns={4} />
                 </div>
               ) : (
-                <table className="portal-table">
+                <PaginatedTable className="portal-table">
                   <thead>
                     <tr>
                       <th style={{ width: 100 }}>Grade Letter</th>
@@ -290,7 +291,7 @@ export default function TeacherGradesUnified() {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </PaginatedTable>
               )}
             </div>
           </div>

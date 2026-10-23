@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Pagination, PaginatedTable } from '../../../components/shared/Pagination';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
 import { toast } from '../../../context/ToastContext';
@@ -26,7 +27,7 @@ export default function ReportViewerPage() {
   const [reportTemplate, setReportTemplate] = useState<any>(null);
   const [selectedPayslip, setSelectedPayslip] = useState<any>(null);
   const [selectedAuditRecord, setSelectedAuditRecord] = useState<any>(null);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [filters, setFilters] = useState({ 
     from: '', to: '', categoryId: '', paymentMode: '', allocationId: '', classId: '',
     groupName: '2024', studentCategory: 'All', classCategory: 'All', reportMode: 'Detailed List',
@@ -194,7 +195,7 @@ tr:nth-child(even) td { background: #f8fafc; }
 <p class="subtitle">Institutional Report | Academic Session ${filters.year} | Total: ${rows.length} records</p>
 ${summary ? `<table class="summary-table"><tbody>${summary}</tbody></table>` : ''}
 <p class="note">&#9432; Note: Charts and visualizations are available in the PDF export. Use the PDF button for a full visual report including all graphs.</p>
-<table><thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${tableRows}</tbody></table>
+<PaginatedTable><thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${tableRows}</tbody></PaginatedTable>
 </body></html>`;
     const blob = new Blob([html], { type: 'application/msword' });
     const url = URL.createObjectURL(blob);
@@ -774,27 +775,7 @@ ${summary ? `<table class="summary-table"><tbody>${summary}</tbody></table>` : '
               const allRecords = Array.isArray(data) ? data : data.records || data.list || data.detailed || data.breakdown || [];
               const totalPages = Math.ceil(allRecords.length / itemsPerPage);
               return (
-                <div style={{ marginTop: 15, display: 'flex', justifyContent: 'space-between', color: '#718096', fontSize: '0.9rem' }}>
-                  <span>Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, allRecords.length)} of {allRecords.length} entries</span>
-                  <div>
-                    <button 
-                      className="portal-btn-ghost" 
-                      style={{ padding: '6px 12px', fontSize: '0.85rem', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.5 : 1 }} 
-                      disabled={currentPage === 1} 
-                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                    >
-                      Previous
-                    </button>
-                    <button 
-                      className="portal-btn-ghost" 
-                      style={{ padding: '6px 12px', fontSize: '0.85rem', cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer', opacity: currentPage >= totalPages ? 0.5 : 1 }} 
-                      disabled={currentPage >= totalPages} 
-                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                    >
-                      Next
-                    </button>
-                  </div>
-                </div>
+                <Pagination currentPage={currentPage} totalItems={allRecords.length} pageSize={itemsPerPage} onPageChange={setCurrentPage} onPageSizeChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }} />
               );
             })()}
           </div>
@@ -845,14 +826,14 @@ ${summary ? `<table class="summary-table"><tbody>${summary}</tbody></table>` : '
                  {selectedPayslip.deductions && selectedPayslip.deductions.length > 0 && (
                    <>
                      <h3 style={{ fontSize: '1rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '10px', margin: '20px 0 10px' }}>Deductions</h3>
-                     <table className="portal-table" style={{ width: '100%', fontSize: '0.9rem' }}>
+                     <PaginatedTable className="portal-table" style={{ width: '100%', fontSize: '0.9rem' }}>
                         <thead><tr><th style={{ textAlign: 'left', padding: '8px' }}>Description</th><th style={{textAlign: 'right', padding: '8px'}}>Amount</th></tr></thead>
                         <tbody>
                           {selectedPayslip.deductions.map((d: any, idx: number) => (
                             <tr key={idx}><td style={{ padding: '8px' }}>{d.description}</td><td style={{textAlign: 'right', padding: '8px', color: 'var(--portal-danger)'}}>${d.amount?.toLocaleString()}</td></tr>
                           ))}
                         </tbody>
-                     </table>
+                     </PaginatedTable>
                    </>
                  )}
               </div>
@@ -875,7 +856,7 @@ ${summary ? `<table class="summary-table"><tbody>${summary}</tbody></table>` : '
               </button>
             </div>
             <div className="portal-modal-body">
-               <table className="management-table">
+               <PaginatedTable className="management-table">
                   <thead>
                     <tr><th>Date</th><th>Action</th><th>Amount</th><th>Actor</th></tr>
                   </thead>
@@ -889,7 +870,7 @@ ${summary ? `<table class="summary-table"><tbody>${summary}</tbody></table>` : '
                       </tr>
                     ))}
                   </tbody>
-               </table>
+               </PaginatedTable>
             </div>
             <div className="portal-modal-footer" style={{ display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
               <button className="portal-btn-secondary" onClick={() => setSelectedAuditRecord(null)}>Close</button>

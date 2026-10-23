@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useToast } from '../../../../context/ToastContext';
 import api from '../../../../lib/api';
-import { SkeletonLoader } from '../../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../../components/shared';
 import { useAcademicConfig } from '../../../../hooks/useAcademicConfig';
 
 interface WeekItem {
@@ -430,7 +430,7 @@ export default function CreateSyllabus() {
                  <p style={{ fontSize: '0.85rem' }}>Select a {classLabel.toLowerCase()} and a {subjectLabel.toLowerCase()} to view entries, or click "ADD {syllabusLabel.toUpperCase()}".</p>
               </div>
             ) : (
-              <table className="portal-table" style={{ background: 'white', width: '100%', borderCollapse: 'collapse' }}>
+              <PaginatedTable className="portal-table" style={{ background: 'white', width: '100%', borderCollapse: 'collapse' }}>
                  <thead style={{ background: '#edf2f7' }}>
                    <tr>
                      <th style={{ color: '#4a5568', fontWeight: 700, textAlign: 'left', padding: '12px', width: '140px' }}>
@@ -479,7 +479,7 @@ export default function CreateSyllabus() {
                      </tr>
                    ))}
                  </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>

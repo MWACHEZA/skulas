@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Pagination } from '../../../../components/shared/Pagination';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle } from 'docx';
 import { saveAs } from 'file-saver';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -18,7 +19,7 @@ export default function ManageCBT() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'Active' | 'Expired' | 'Pending'>('Pending');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Creation Modal States
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -591,29 +592,7 @@ export default function ManageCBT() {
               </table>
               
               {filteredExams.length > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
-                  <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-                    Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredExams.length)} of {filteredExams.length} entries
-                  </span>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button 
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                      disabled={currentPage === 1}
-                      className="portal-btn-ghost"
-                      style={{ padding: '6px 12px', fontSize: '0.85rem' }}
-                    >
-                      Previous
-                    </button>
-                    <button 
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredExams.length / itemsPerPage)))}
-                      disabled={currentPage === Math.ceil(filteredExams.length / itemsPerPage) || filteredExams.length === 0}
-                      className="portal-btn-ghost"
-                      style={{ padding: '6px 12px', fontSize: '0.85rem' }}
-                    >
-                      Next
-                    </button>
-                  </div>
-                </div>
+                <Pagination currentPage={currentPage} totalItems={filteredExams.length} pageSize={itemsPerPage} onPageChange={setCurrentPage} onPageSizeChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }} />
               )}
             </div>
           )}

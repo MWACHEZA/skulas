@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useSearchParams } from 'react-router-dom';
 import TeacherSyllabusManager from './SyllabusManager';
 import TeacherLessonPlanner from './LessonPlanner';
@@ -348,7 +349,7 @@ export default function TeacherCurriculum() {
                 <i className="fas fa-plus mr-2" /> New Scheme Draft
               </button>
             </div>
-            <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>
                   <th style={{ padding: 12 }}>Subject & Class</th>
@@ -438,7 +439,7 @@ export default function TeacherCurriculum() {
                   ))
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
 
             {/* View Scheme Items Modal */}
             {viewScheme && (
@@ -451,7 +452,7 @@ export default function TeacherCurriculum() {
                     <button className="portal-btn-ghost" onClick={() => setViewScheme(null)}><i className="fas fa-times" /></button>
                   </div>
                   <div style={{ padding: 20, maxHeight: 450, overflowY: 'auto' }}>
-                    <table className="portal-table" style={{ width: '100%' }}>
+                    <PaginatedTable className="portal-table" style={{ width: '100%' }}>
                       <thead>
                         <tr style={{ background: '#f8fafc', textAlign: 'left' }}>
                           <th style={{ padding: 8 }}>Week</th>
@@ -470,7 +471,7 @@ export default function TeacherCurriculum() {
                           </tr>
                         ))}
                       </tbody>
-                    </table>
+                    </PaginatedTable>
                   </div>
                 </div>
               </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
@@ -439,7 +440,7 @@ export default function TeacherLeave() {
             <p style={{ fontSize: '0.9rem', marginTop: 4 }}>You have not submitted any leave applications for this academic year.</p>
           </div>
         ) : (
-          <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
                 <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Type</th>
@@ -496,7 +497,7 @@ export default function TeacherLeave() {
                 );
               })}
             </tbody>
-          </table>
+          </PaginatedTable>
         )}
       </div>
     </div>
@@ -518,7 +519,7 @@ export default function TeacherLeave() {
             No pending department leave requests.
           </div>
         ) : (
-          <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
                 <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Staff</th>
@@ -550,7 +551,7 @@ export default function TeacherLeave() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         )}
       </div>
     </div>
@@ -587,7 +588,7 @@ export default function TeacherLeave() {
         </div>
 
         <div style={{ background: '#fff', borderRadius: 10, border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-          <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
                 <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569', fontSize: '0.85rem' }}>Staff</th>
@@ -655,7 +656,7 @@ export default function TeacherLeave() {
                 );
               })}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
     );

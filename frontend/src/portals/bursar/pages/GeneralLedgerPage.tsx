@@ -14,7 +14,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { toast } from '../../../context/ToastContext';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, Pagination } from '../../../components/shared';
 import type { ExportColumn } from '../../../utils/exportService';
 
 interface GeneralLedgerPageProps {
@@ -403,9 +403,7 @@ export default function GeneralLedgerPage({ readOnly = false }: GeneralLedgerPag
 
         {/* Pagination Footer */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 18px', borderTop: '1px solid #e2e8f0', backgroundColor: '#f8fafc', fontSize: '13px', color: '#64748b' }}>
-          <div>
-            Showing {(page - 1) * 50 + 1}–{Math.min(page * 50, total)} of {total} transactions
-          </div>
+        <Pagination currentPage={page} totalItems={total} pageSize={50} onPageChange={setPage} itemLabel="transactions" />
           <div style={{ display: 'flex', gap: '8px' }}>
             <button
               disabled={page <= 1}

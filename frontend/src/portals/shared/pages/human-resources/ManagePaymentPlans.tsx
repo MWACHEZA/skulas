@@ -3,7 +3,7 @@ import api from '../../../../lib/api';
 import { useToast } from '../../../../context/ToastContext';
 import { format } from 'date-fns';
 import { useTerminology } from '../../../../hooks/useTerminology';
-import { SearchInput, ExportButton, SkeletonLoader } from '../../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader, PaginatedTable } from '../../../../components/shared';
 
 interface PaymentPlan {
   id: string;
@@ -268,7 +268,7 @@ export default function ManagePaymentPlans() {
                 <p style={{ color: '#94a3b8', margin: 0, fontWeight: 600 }}>Create templates that parents can immediately adopt for automated approval.</p>
               </div>
             ) : (
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th>Plan Name</th>
@@ -310,7 +310,7 @@ export default function ManagePaymentPlans() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>
@@ -417,7 +417,7 @@ export default function ManagePaymentPlans() {
                   </p>
                 </div>
               ) : (
-                <table className="portal-table">
+                <PaginatedTable className="portal-table">
                   <thead>
                     <tr>
                       <th>{t('student')}</th>
@@ -533,7 +533,7 @@ export default function ManagePaymentPlans() {
                       );
                     })}
                   </tbody>
-                </table>
+                </PaginatedTable>
               )}
             </div>
           </div>

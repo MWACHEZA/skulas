@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -323,7 +324,7 @@ export default function TeacherAssignments() {
               </button>
             </div>
           ) : (
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th>Type &amp; Title</th>
@@ -456,7 +457,7 @@ export default function TeacherAssignments() {
                   );
                 })}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       </div>

@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
-import { SearchInput, ExportButton, SearchableCombobox, Pagination, usePagination, type ComboboxOption } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, Pagination, usePagination, type ComboboxOption, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type UniformTab = 'stock' | 'kits' | 'issue' | 'alerts' | 'reports';
@@ -718,7 +718,7 @@ export default function AdminUniformsInventory() {
               </div>
             ) : (
               <div>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid #e2e8f0', color: '#64748b' }}>
                       <th style={{ textAlign: 'left', padding: '8px 0' }}>Item</th>
@@ -746,7 +746,7 @@ export default function AdminUniformsInventory() {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </PaginatedTable>
 
                 <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '2px solid #e2e8f0', paddingTop: '12px' }}>
                   <span style={{ fontWeight: 600, color: '#475569' }}>Total Invoiced Amount:</span>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
@@ -798,7 +799,7 @@ export default function ParentAcademics() {
       </div>
 
       <div className="portal-card" style={{ padding: 0, overflow: 'hidden' }}>
-        <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
               <th style={{ width: '32px' }}></th>
@@ -983,7 +984,7 @@ export default function ParentAcademics() {
               })
             )}
           </tbody>
-        </table>
+        </PaginatedTable>
       </div>
     </div>
   );
@@ -1209,7 +1210,7 @@ export default function ParentAcademics() {
       </div>
 
       <div className="portal-card" style={{ padding: 0, overflow: 'hidden' }}>
-        <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
               <th style={{ width: '32px' }}></th>
@@ -1336,7 +1337,7 @@ export default function ParentAcademics() {
               })
             )}
           </tbody>
-        </table>
+        </PaginatedTable>
       </div>
     </div>
   );

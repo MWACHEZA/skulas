@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
@@ -309,7 +310,7 @@ export default function TeacherClinicUnified() {
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
-            <table className="portal-table" style={{ width: '100%' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%' }}>
               <thead>
                 <tr>
                   <th style={{ width: '220px' }}>Student</th>
@@ -400,7 +401,7 @@ export default function TeacherClinicUnified() {
                   );
                 })}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         )}
       </div>

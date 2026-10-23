@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SearchableCombobox, type ComboboxOption, SkeletonLoader } from '../../../components/shared';
+import { SearchableCombobox, type ComboboxOption, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type BoardingTab = 'hostels-rooms' | 'allocations' | 'roll-call' | 'exeats';
@@ -1022,7 +1022,7 @@ export default function AdminBoarding() {
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
-              <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left', color: '#475569', fontSize: '0.85rem' }}>
                     <th style={{ padding: '12px 14px' }}>STUDENT</th>
@@ -1128,7 +1128,7 @@ export default function AdminBoarding() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           )}
         </div>
@@ -1236,7 +1236,7 @@ export default function AdminBoarding() {
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left', color: '#475569', fontSize: '0.85rem' }}>
                     <th style={{ padding: '10px 14px' }}>STUDENT</th>
@@ -1338,7 +1338,7 @@ export default function AdminBoarding() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           )}
         </div>
@@ -1390,7 +1390,7 @@ export default function AdminBoarding() {
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left', color: '#475569', fontSize: '0.85rem' }}>
                     <th style={{ padding: '12px 14px' }}>STUDENT</th>
@@ -1494,7 +1494,7 @@ export default function AdminBoarding() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           )}
         </div>

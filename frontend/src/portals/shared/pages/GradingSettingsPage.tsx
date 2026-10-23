@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface GradeRow {
@@ -287,7 +287,7 @@ export default function GradingSettingsPage() {
               </button>
             </div>
 
-            <table className="portal-table" style={{ margin: 0 }}>
+            <PaginatedTable className="portal-table" style={{ margin: 0 }}>
               <thead>
                 <tr style={{ background: '#f8fafc' }}>
                   <th style={{ padding: '12px 16px', width: 120 }}>Grade Symbol</th>
@@ -429,7 +429,7 @@ export default function GradingSettingsPage() {
                   );
                 })}
               </tbody>
-            </table>
+            </PaginatedTable>
 
             {/* Bottom Actions */}
             <div 

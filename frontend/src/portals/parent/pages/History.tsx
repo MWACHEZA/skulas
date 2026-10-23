@@ -1,4 +1,5 @@
 import { useToast } from '../../../context/ToastContext';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 
 export default function ParentHistory() {
   const { showToast } = useToast();
@@ -20,7 +21,7 @@ export default function ParentHistory() {
           <h2><i className="fas fa-history" style={{ marginRight: 8, color: 'var(--school-primary, #3182ce)' }}></i>Historical Performance</h2>
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
-          <table className="portal-table">
+          <PaginatedTable className="portal-table">
             <thead>
               <tr>
                 <th>Term / Session</th>
@@ -60,7 +61,7 @@ export default function ParentHistory() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useToast } from '../../../context/ToastContext';
@@ -63,7 +64,7 @@ export default function BursarSDCMinutes() {
           <h2><i className="fas fa-file-invoice" style={{ marginRight: 8, color: 'var(--school-primary, #0056b3)' }}></i>Governance Archive</h2>
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
-          <table className="portal-table">
+          <PaginatedTable className="portal-table">
             <thead>
               <tr>
                 <th>Meeting Date</th>
@@ -113,7 +114,7 @@ export default function BursarSDCMinutes() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
     </>

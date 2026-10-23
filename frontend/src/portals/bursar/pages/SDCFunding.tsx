@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { formatCurrency } from '../../../utils/formatters';
@@ -160,7 +161,7 @@ export default function BursarSDCFunding() {
           </button>
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
-          <table className="portal-table">
+          <PaginatedTable className="portal-table">
             <thead>
               <tr>
                 <th>Project</th>
@@ -192,7 +193,7 @@ export default function BursarSDCFunding() {
                 );
               })}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
 

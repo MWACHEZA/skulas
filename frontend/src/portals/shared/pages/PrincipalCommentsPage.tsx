@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import '../../../styles/portal.css';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import { useAcademicConfig } from '../../../hooks/useAcademicConfig';
 
 interface Grade {
@@ -242,7 +242,7 @@ export default function PrincipalCommentsPage() {
                     </h4>
                   </div>
                   <div className="table-responsive">
-                    <table className="management-table" style={{ fontSize: '0.95rem' }}>
+                    <PaginatedTable className="management-table" style={{ fontSize: '0.95rem' }}>
                       <thead>
                         <tr style={{ background: 'transparent' }}>
                           <th style={{ padding: '12px', borderBottom: '1px solid #f1f5f9' }}>Subject Entity</th>
@@ -275,7 +275,7 @@ export default function PrincipalCommentsPage() {
                           </td></tr>
                         )}
                       </tbody>
-                    </table>
+                    </PaginatedTable>
                   </div>
                 </div>
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Pagination, PaginatedTable } from '../../../../components/shared/Pagination';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useToast } from '../../../../context/ToastContext';
 import api from '../../../../lib/api';
@@ -33,14 +34,14 @@ const exportToWord = (title: string, headers: string[], dataRows: string[][]) =>
     </head>
     <body>
       <h2>${title}</h2>
-      <table>
+      <PaginatedTable>
         <thead>
           <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
         </thead>
         <tbody>
           ${dataRows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
         </tbody>
-      </table>
+      </PaginatedTable>
     </body>
     </html>
   `;
@@ -64,7 +65,7 @@ export default function ZoomLiveClass() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -369,13 +370,7 @@ export default function ZoomLiveClass() {
               )}
             </tbody>
           </table>
-          <div style={{ marginTop: 15, display: 'flex', justifyContent: 'space-between', color: '#718096', fontSize: '0.9rem' }}>
-             <span>Showing {filteredLiveClasses.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredLiveClasses.length)} of {filteredLiveClasses.length} entries</span>
-             <div>
-                <button style={{ border: 'none', background: 'transparent', color: currentPage === 1 ? '#cbd5e0' : '#718096', cursor: currentPage === 1 ? 'default' : 'pointer', marginRight: 10 }} onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1}>Previous</button>
-                <button style={{ border: 'none', background: 'transparent', color: currentPage * itemsPerPage >= filteredLiveClasses.length ? '#cbd5e0' : '#718096', cursor: currentPage * itemsPerPage >= filteredLiveClasses.length ? 'default' : 'pointer', marginLeft: 10 }} onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage * itemsPerPage >= filteredLiveClasses.length}>Next</button>
-             </div>
-          </div>
+          <Pagination currentPage={currentPage} totalItems={filteredLiveClasses.length} pageSize={itemsPerPage} onPageChange={setCurrentPage} onPageSizeChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }} />
         </div>
       </div>
     </>

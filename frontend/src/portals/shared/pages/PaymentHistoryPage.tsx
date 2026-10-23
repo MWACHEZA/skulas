@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Pagination, PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
@@ -35,14 +36,14 @@ const exportToWord = (title: string, headers: string[], dataRows: string[][]) =>
     </head>
     <body>
       <h2>${title}</h2>
-      <table>
+      <PaginatedTable>
         <thead>
           <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
         </thead>
         <tbody>
           ${dataRows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
         </tbody>
-      </table>
+      </PaginatedTable>
     </body>
     </html>
   `;
@@ -79,7 +80,7 @@ export default function PaymentHistoryPage() {
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedStudent, setSelectedStudent] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     fetchClasses();
@@ -275,27 +276,7 @@ export default function PaymentHistoryPage() {
           {payments.length > 0 && (() => {
             const totalPages = Math.ceil(payments.length / itemsPerPage);
             return (
-              <div style={{ padding: '16px 24px', display: 'flex', justifyContent: 'space-between', color: '#718096', fontSize: '0.9rem', borderTop: '1px solid #f1f5f9' }}>
-                <span>Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, payments.length)} of {payments.length} entries</span>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button 
-                    className="portal-btn-ghost" 
-                    style={{ padding: '6px 12px', fontSize: '0.85rem', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.5 : 1 }} 
-                    disabled={currentPage === 1} 
-                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  >
-                    Previous
-                  </button>
-                  <button 
-                    className="portal-btn-ghost" 
-                    style={{ padding: '6px 12px', fontSize: '0.85rem', cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer', opacity: currentPage >= totalPages ? 0.5 : 1 }} 
-                    disabled={currentPage >= totalPages} 
-                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
+              <Pagination currentPage={currentPage} totalItems={payments.length} pageSize={itemsPerPage} onPageChange={setCurrentPage} onPageSizeChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }} />
             );
           })()}
           </>

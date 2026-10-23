@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
@@ -295,7 +296,7 @@ export default function GlobalRevenue() {
               <p style={{ marginTop: 10, color: '#64748b' }}>Calculating platform revenue metrics...</p>
             </div>
           ) : (
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th>License ID</th>
@@ -365,7 +366,7 @@ export default function GlobalRevenue() {
                   </tr>
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       </div>

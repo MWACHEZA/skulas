@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -771,7 +772,7 @@ export default function ClassMigration() {
 
               {/* Decisions Table */}
               <div className="table-responsive" style={{ maxHeight: '520px' }}>
-                <table className="management-table" style={{ width: '100%' }}>
+                <PaginatedTable className="management-table" style={{ width: '100%' }}>
                   <thead style={{ position: 'sticky', top: 0, zIndex: 2, background: '#f8fafc' }}>
                     <tr>
                       <th style={{ padding: '12px' }}>Learner ID & Name</th>
@@ -966,7 +967,7 @@ export default function ClassMigration() {
                       );
                     })}
                   </tbody>
-                </table>
+                </PaginatedTable>
               </div>
 
               {/* Navigation footer */}
@@ -1385,7 +1386,7 @@ export default function ClassMigration() {
             </p>
           </div>
           <div className="table-responsive">
-            <table className="management-table">
+            <PaginatedTable className="management-table">
               <thead>
                 <tr>
                   <th>Source Class</th>
@@ -1448,7 +1449,7 @@ export default function ClassMigration() {
                   );
                 })}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
           <div
             className="portal-card-footer"

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import SkeletonLoader from '../../../components/shared/SkeletonLoader';
@@ -242,7 +243,7 @@ export default function TeacherTextbooks() {
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th>Title</th>
@@ -283,7 +284,7 @@ export default function TeacherTextbooks() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           )}
         </div>
@@ -509,7 +510,7 @@ export default function TeacherTextbooks() {
                   <p>No active assignments for this book.</p>
                 </div>
               ) : (
-                <table className="portal-table">
+                <PaginatedTable className="portal-table">
                   <thead>
                     <tr>
                       <th>Student Name</th>
@@ -538,7 +539,7 @@ export default function TeacherTextbooks() {
                       );
                     })}
                   </tbody>
-                </table>
+                </PaginatedTable>
               )}
             </div>
             <div style={modalFooter}>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 export default function AcadexSchools() {
@@ -137,7 +137,7 @@ export default function AcadexSchools() {
               <p style={{ marginTop: 10, color: '#64748b' }}>Loading registry...</p>
             </div>
           ) : (
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th>License ID</th>
@@ -260,7 +260,7 @@ export default function AcadexSchools() {
                   </tr>
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       </div>

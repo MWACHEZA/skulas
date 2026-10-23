@@ -3,7 +3,7 @@ import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useAuth } from '../../../contexts/AuthContext';
-import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 export default function StudentClub() {
@@ -304,7 +304,7 @@ export default function StudentClub() {
             {loading ? (
               <SkeletonLoader type="table" rows={6} columns={7} />
             ) : (
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th style={{ width: '80px' }}>Logo</th>
@@ -354,7 +354,7 @@ export default function StudentClub() {
                   );
                 })}
               </tbody>
-            </table>
+            </PaginatedTable>
             )}
           </div>
         </div>

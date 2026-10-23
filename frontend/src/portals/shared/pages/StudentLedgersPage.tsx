@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
@@ -35,14 +36,14 @@ const exportToWord = (title: string, headers: string[], dataRows: string[][]) =>
     </head>
     <body>
       <h2>${title}</h2>
-      <table>
+      <PaginatedTable>
         <thead>
           <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
         </thead>
         <tbody>
           ${dataRows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
         </tbody>
-      </table>
+      </PaginatedTable>
     </body>
     </html>
   `;
@@ -235,7 +236,7 @@ export default function StudentLedgersPage() {
             <SkeletonLoader type="table" rows={8} columns={9} />
           </div>
         ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+        <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
           <thead>
             <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: 600 }}>
               <th style={{ padding: '14px 18px' }}>INVOICE REFERENCE</th>
@@ -322,7 +323,7 @@ export default function StudentLedgersPage() {
               })
             )}
           </tbody>
-        </table>
+        </PaginatedTable>
         )}
       </div>
 
@@ -356,7 +357,7 @@ export default function StudentLedgersPage() {
               <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase', marginBottom: 10 }}>
                 Itemized Tuition & Fee Allocations (VAT Exempt)
               </h4>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+              <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569' }}>
                     <th style={{ padding: '10px 14px' }}>Item Description</th>
@@ -381,7 +382,7 @@ export default function StudentLedgersPage() {
                     ))
                   )}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
 
             {/* Financial Summary */}

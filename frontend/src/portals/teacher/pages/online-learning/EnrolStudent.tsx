@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../../components/shared/Pagination';
 import { useToast } from '../../../../context/ToastContext';
 import api from '../../../../lib/api';
 
@@ -194,7 +195,7 @@ export default function EnrolStudent({ isModal, onClose, onSuccess }: EnrolStude
             {enrollments.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '30px', color: '#a0aec0' }}>No students enrolled.</div>
             ) : (
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th>Student Name</th>
@@ -211,7 +212,7 @@ export default function EnrolStudent({ isModal, onClose, onSuccess }: EnrolStude
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>

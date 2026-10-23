@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface AttendanceRecord {
@@ -594,7 +594,7 @@ export default function AttendanceHistory() {
             </div>
           ) : (
             <div className="table-responsive" style={{ margin: 0 }}>
-              <table className="management-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <PaginatedTable className="management-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
                     <th style={{ padding: '14px 20px', fontSize: '0.78rem', fontWeight: 800, color: '#475569', textTransform: 'uppercase' }}>
@@ -660,7 +660,7 @@ export default function AttendanceHistory() {
                     );
                   })}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           )}
         </div>

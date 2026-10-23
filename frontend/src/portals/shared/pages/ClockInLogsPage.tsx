@@ -3,7 +3,7 @@ import api, { BASE_URL } from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
-import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface StaffLog {
@@ -308,7 +308,7 @@ export default function ClockInLogsPage() {
             <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 900 }}><i className="fas fa-user mr-2 text-primary"></i>My Attendance History (Last 30 Days)</h2>
           </div>
           <div className="table-responsive">
-            <table className="management-table">
+            <PaginatedTable className="management-table">
               <thead>
                 <tr>
                   <th style={{ padding: '16px 20px' }}>Date</th>
@@ -371,7 +371,7 @@ export default function ClockInLogsPage() {
                   ))
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         </div>
       ) : activeTab === 'staff' ? (
@@ -380,7 +380,7 @@ export default function ClockInLogsPage() {
             <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 900 }}><i className="fas fa-user-clock mr-2 text-primary"></i>Staff Clock Registry</h2>
           </div>
           <div className="table-responsive">
-            <table className="management-table">
+            <PaginatedTable className="management-table">
               <thead>
                 <tr>
                   <th style={{ padding: '16px 20px' }}>Staff Member</th>
@@ -456,7 +456,7 @@ export default function ClockInLogsPage() {
                   ))
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         </div>
       ) : (
@@ -465,7 +465,7 @@ export default function ClockInLogsPage() {
             <h2 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 900 }}><i className="fas fa-qrcode mr-2 text-success"></i>{t('student')} QR Scan Registry</h2>
           </div>
           <div className="table-responsive">
-            <table className="management-table">
+            <PaginatedTable className="management-table">
               <thead>
                 <tr>
                   <th style={{ padding: '16px 20px' }}>{t('student')}</th>
@@ -518,7 +518,7 @@ export default function ClockInLogsPage() {
                   ))
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         </div>
       )}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Pagination, PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { toast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
@@ -35,14 +36,14 @@ const exportToWord = (title: string, headers: string[], dataRows: string[][]) =>
     </head>
     <body>
       <h2>${title}</h2>
-      <table>
+      <PaginatedTable>
         <thead>
           <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
         </thead>
         <tbody>
           ${dataRows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
         </tbody>
-      </table>
+      </PaginatedTable>
     </body>
     </html>
   `;
@@ -93,7 +94,7 @@ export default function GroceriesPage() {
   const [editingProduct, setEditingProduct] = useState<Partial<Product> | null>(null);
   const [showConsumptionModal, setShowConsumptionModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   // Billing State
   const [billingYear, setBillingYear] = useState(new Date().getFullYear());
@@ -401,29 +402,7 @@ export default function GroceriesPage() {
               </div>
 
               {(Array.isArray(products) ? products : []).length > 0 && !loading && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #f1f5f9' }}>
-                  <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>
-                    Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, (Array.isArray(products) ? products : []).length)} of {(Array.isArray(products) ? products : []).length} assets
-                  </span>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                      disabled={currentPage === 1}
-                      className="portal-btn-ghost"
-                      style={{ padding: '6px 12px', fontSize: '0.85rem', fontWeight: 700 }}
-                    >
-                      Previous
-                    </button>
-                    <button
-                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil((Array.isArray(products) ? products : []).length / itemsPerPage)))}
-                      disabled={currentPage === Math.ceil((Array.isArray(products) ? products : []).length / itemsPerPage) || (Array.isArray(products) ? products : []).length === 0}
-                      className="portal-btn-ghost"
-                      style={{ padding: '6px 12px', fontSize: '0.85rem', fontWeight: 700 }}
-                    >
-                      Next
-                    </button>
-                  </div>
-                </div>
+                <Pagination currentPage={currentPage} totalItems={(Array.isArray(products) ? products : []).length} pageSize={itemsPerPage} onPageChange={setCurrentPage} onPageSizeChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }} itemLabel="assets" />
               )}
             </div>
           )}

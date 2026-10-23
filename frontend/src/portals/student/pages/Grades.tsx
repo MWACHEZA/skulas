@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useTranslation } from 'react-i18next';
 import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
@@ -117,7 +118,7 @@ export default function StudentGrades() {
             ) : grades.length === 0 ? (
               <p style={{ color: '#718096', textAlign: 'center', padding: 30 }}>{trans('no_grades_yet')}</p>
             ) : (
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th>{t('subject')}</th><th>{trans('code')}</th><th>{trans('score')}</th><th>{trans('result')}</th><th>{trans('term')}</th><th>{trans('performance')}</th>
@@ -139,7 +140,7 @@ export default function StudentGrades() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>
@@ -160,7 +161,7 @@ export default function StudentGrades() {
                 <p style={{ color: '#718096' }}>{trans('no_assessments_yet')}</p>
               </div>
             ) : (
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th>{trans('activity')}</th><th>{t('subject')}</th><th>{trans('type')}</th><th>{trans('score')}</th><th>{trans('status')}</th><th>{trans('submitted')}</th>
@@ -190,7 +191,7 @@ export default function StudentGrades() {
                     );
                   })}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>

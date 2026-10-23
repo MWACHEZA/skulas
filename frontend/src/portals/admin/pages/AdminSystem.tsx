@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Pagination, PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import ManagementDetailPanel from '../../../components/shared/ManagementDetailPanel';
 import UserEditModal from '../../../components/shared/UserEditModal';
@@ -36,7 +37,7 @@ export default function AdminSystem() {
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 15;
+  const [itemsPerPage, setItemsPerPage] = useState(15);
 
   const [activeSystemTab, setActiveSystemTab] = useState<'USERS' | 'LEADERSHIP' | 'ALLOWED_SUPPLIES' | 'PARENT_LINKAGE' | 'PERMISSIONS_MATRIX' | 'AUDIT_LOGS'>('USERS');
 
@@ -997,30 +998,8 @@ export default function AdminSystem() {
           )}
 
           {/* Pagination */}
-          {totalPages > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: '#f8fafc', borderTop: '1px solid #e2e8f0' }}>
-              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredUsers.length)} of {filteredUsers.length} users
-              </span>
-              <div style={{ display: 'flex', gap: '6px' }}>
-                <button
-                  type="button"
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
-                  style={{ padding: '4px 10px', borderRadius: '4px', border: '1px solid #cbd5e1', background: '#fff', cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
-                >
-                  Prev
-                </button>
-                <button
-                  type="button"
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
-                  style={{ padding: '4px 10px', borderRadius: '4px', border: '1px solid #cbd5e1', background: '#fff', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer' }}
-                >
-                  Next
-                </button>
-              </div>
-            </div>
+          {filteredUsers.length > 0 && (
+            <Pagination currentPage={currentPage} totalItems={filteredUsers.length} pageSize={itemsPerPage} onPageChange={setCurrentPage} onPageSizeChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }} itemLabel="users" />
           )}
         </div>
       )}
@@ -1052,7 +1031,7 @@ export default function AdminSystem() {
                 </div>
               ) : (
                 <div className="table-responsive">
-                  <table className="portal-table" style={{ width: '100%' }}>
+                  <PaginatedTable className="portal-table" style={{ width: '100%' }}>
                     <thead>
                       <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
                         <th style={{ padding: '12px 16px' }}>Student</th>
@@ -1113,7 +1092,7 @@ export default function AdminSystem() {
                         </tr>
                       )}
                     </tbody>
-                  </table>
+                  </PaginatedTable>
                 </div>
               )}
             </div>
@@ -1128,7 +1107,7 @@ export default function AdminSystem() {
               </p>
             </div>
             <div className="portal-card-body p-0">
-              <table className="portal-table" style={{ width: '100%' }}>
+              <PaginatedTable className="portal-table" style={{ width: '100%' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
                     <th style={{ padding: '12px 16px' }}>Hostel</th>
@@ -1193,7 +1172,7 @@ export default function AdminSystem() {
                     </tr>
                   )}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           </div>
         </div>
@@ -1269,7 +1248,7 @@ export default function AdminSystem() {
                   <SkeletonLoader type="table" rows={4} columns={6} />
                 </div>
               ) : (
-                <table className="portal-table" style={{ width: '100%' }}>
+                <PaginatedTable className="portal-table" style={{ width: '100%' }}>
                   <thead>
                     <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
                       <th style={{ padding: '12px 16px' }}>SKU</th>
@@ -1311,7 +1290,7 @@ export default function AdminSystem() {
                       </tr>
                     )}
                   </tbody>
-                </table>
+                </PaginatedTable>
               )}
             </div>
           </div>
@@ -1345,7 +1324,7 @@ export default function AdminSystem() {
           {/* Links Table */}
           <div className="portal-card" style={{ background: '#fff', borderRadius: '8px', overflow: 'hidden' }}>
             <div style={{ overflowX: 'auto' }}>
-              <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+              <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
                 <thead style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', color: '#475569' }}>
                   <tr>
                     <th style={{ padding: '12px 16px', textAlign: 'left' }}>Parent / Guardian</th>
@@ -1432,7 +1411,7 @@ export default function AdminSystem() {
                     </tr>
                   )}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           </div>
         </div>
@@ -1564,7 +1543,7 @@ export default function AdminSystem() {
               </div>
             ) : (
               <div style={{ overflowX: 'auto' }}>
-                <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+                <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
                   <thead style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', color: '#475569' }}>
                     <tr>
                       <th style={{ padding: '12px 16px', textAlign: 'left' }}>Timestamp</th>
@@ -1640,7 +1619,7 @@ export default function AdminSystem() {
                       </tr>
                     )}
                   </tbody>
-                </table>
+                </PaginatedTable>
               </div>
             )}
           </div>

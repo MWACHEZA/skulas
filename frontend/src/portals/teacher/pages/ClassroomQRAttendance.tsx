@@ -3,7 +3,7 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
 import { format } from 'date-fns';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 interface ClassOption {
   id: string;
@@ -548,7 +548,7 @@ export default function ClassroomQRAttendance() {
                   <p style={{ margin: '4px 0 0', fontSize: '0.82rem' }}>Scan a student badge or project the class QR code.</p>
                 </div>
               ) : (
-                <table className="portal-table">
+                <PaginatedTable className="portal-table">
                   <thead>
                     <tr>
                       <th>#</th>
@@ -574,7 +574,7 @@ export default function ClassroomQRAttendance() {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </PaginatedTable>
               )}
             </div>
           </div>

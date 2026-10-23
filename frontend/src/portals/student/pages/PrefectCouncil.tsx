@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Pagination } from '../../../components/shared/Pagination';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
@@ -57,7 +58,7 @@ export default function PrefectCouncil() {
   const [dutyDayFilter, setDutyDayFilter] = useState<string>('ALL');
   const [dutySearch, setDutySearch] = useState('');
   const [dutiesPage, setDutiesPage] = useState(1);
-  const itemsPerPage = 8;
+  const [itemsPerPage, setItemsPerPage] = useState(8);
 
   // Filters for Reports
   const [reportCategoryFilter, setReportCategoryFilter] = useState('ALL');
@@ -647,30 +648,8 @@ export default function PrefectCouncil() {
             )}
 
             {/* Pagination footer */}
-            {totalDutyPages > 1 && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 20px', borderTop: '1px solid #e2e8f0', background: '#fafbfc' }}>
-                <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-                  Showing {(dutiesPage - 1) * itemsPerPage + 1} to {Math.min(dutiesPage * itemsPerPage, filteredDuties.length)} of {filteredDuties.length} assignments
-                </span>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button
-                    type="button"
-                    onClick={() => setDutiesPage(p => Math.max(1, p - 1))}
-                    disabled={dutiesPage === 1}
-                    style={{ padding: '5px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#fff', fontSize: '0.8rem', cursor: dutiesPage === 1 ? 'not-allowed' : 'pointer' }}
-                  >
-                    Previous
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setDutiesPage(p => Math.min(totalDutyPages, p + 1))}
-                    disabled={dutiesPage === totalDutyPages}
-                    style={{ padding: '5px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', background: '#fff', fontSize: '0.8rem', cursor: dutiesPage === totalDutyPages ? 'not-allowed' : 'pointer' }}
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
+            {filteredDuties.length > 0 && (
+              <Pagination currentPage={dutiesPage} totalItems={filteredDuties.length} pageSize={itemsPerPage} onPageChange={setDutiesPage} onPageSizeChange={(size) => { setItemsPerPage(size); setDutiesPage(1); }} itemLabel="assignments" />
             )}
           </div>
         </div>

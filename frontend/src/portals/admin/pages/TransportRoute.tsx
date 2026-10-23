@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Pagination } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import '../../../styles/portal.css';
@@ -13,7 +14,7 @@ export default function TransportRoute() {
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const totalPages = Math.ceil(routes.length / itemsPerPage);
   const paginatedRoutes = routes.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   
@@ -148,29 +149,7 @@ export default function TransportRoute() {
           </table>
           
           {routes.length > 0 && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0', marginTop: '10px' }}>
-              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-                Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, routes.length)} of {routes.length} entries
-              </span>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button 
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                  className="portal-btn-ghost"
-                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
-                >
-                  Previous
-                </button>
-                <button 
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                  disabled={currentPage === totalPages || routes.length === 0}
-                  className="portal-btn-ghost"
-                  style={{ padding: '6px 12px', fontSize: '0.85rem' }}
-                >
-                  Next
-                </button>
-              </div>
-            </div>
+            <Pagination currentPage={currentPage} totalItems={routes.length} pageSize={itemsPerPage} onPageChange={setCurrentPage} onPageSizeChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }} />
           )}
         </div>
       </div>

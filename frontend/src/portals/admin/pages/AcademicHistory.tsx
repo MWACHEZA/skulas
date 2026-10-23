@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
@@ -177,7 +178,7 @@ export default function AdminAcademicHistory() {
           <h2><i className="fas fa-graduation-cap" style={{ marginRight: 8, color: 'var(--portal-primary)' }}></i>Most Recent Performance</h2>
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
-          <table className="portal-table">
+          <PaginatedTable className="portal-table">
             <thead>
               <tr>
                 <th>Subject Code</th>
@@ -208,7 +209,7 @@ export default function AdminAcademicHistory() {
                 </tr>
               )}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
 

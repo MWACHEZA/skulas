@@ -5,7 +5,7 @@ import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
 import TabbedPage, { type TabItem } from '../../../components/portals/shared/TabbedPage';
 import EmptyState from '../../../components/shared/EmptyState';
-import { Pagination, usePagination } from '../../../components/shared';
+import { Pagination, usePagination, PaginatedTable } from '../../../components/shared';
 
 // ── TYPES ──
 
@@ -481,7 +481,7 @@ export default function ParentFees() {
           <span style={{ fontSize: '0.85rem', color: '#64748b' }}>Current Academic Session</span>
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
-          <table className="portal-table">
+          <PaginatedTable className="portal-table">
             <thead>
               <tr>
                 <th>Category</th>
@@ -512,7 +512,7 @@ export default function ParentFees() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
 
@@ -1081,7 +1081,7 @@ export default function ParentFees() {
             </span>
           </div>
           <div className="portal-card-body" style={{ padding: 0 }}>
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th>Installment</th>
@@ -1149,7 +1149,7 @@ export default function ParentFees() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         </div>
 

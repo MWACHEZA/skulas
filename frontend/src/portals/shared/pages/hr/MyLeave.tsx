@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Pagination } from '../../../../components/shared/Pagination';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useToast } from '../../../../context/ToastContext';
 import api from '../../../../lib/api';
@@ -45,7 +46,7 @@ export default function MyLeave() {
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const [formData, setFormData] = useState({
     startDate: '',
@@ -360,29 +361,8 @@ export default function MyLeave() {
           </table>
 
           {/* Pagination Controls */}
-          {totalPages > 1 && (
-            <div style={{ marginTop: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#64748b', fontSize: '0.85rem' }}>
-              <span>Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredLeaves.length)} of {filteredLeaves.length} records</span>
-              <div style={{ display: 'flex', gap: 6 }}>
-                <button
-                  className="portal-btn-secondary"
-                  style={{ padding: '4px 10px', fontSize: '0.8rem' }}
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </button>
-                <span style={{ padding: '4px 10px', fontWeight: 600 }}>Page {currentPage} of {totalPages}</span>
-                <button
-                  className="portal-btn-secondary"
-                  style={{ padding: '4px 10px', fontSize: '0.8rem' }}
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  disabled={currentPage >= totalPages}
-                >
-                  Next
-                </button>
-              </div>
-            </div>
+          {filteredLeaves.length > 0 && (
+            <Pagination currentPage={currentPage} totalItems={filteredLeaves.length} pageSize={itemsPerPage} onPageChange={setCurrentPage} onPageSizeChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }} itemLabel="records" />
           )}
         </div>
       </div>

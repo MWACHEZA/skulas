@@ -3,7 +3,7 @@ import api from '../../../lib/api';
 import { toast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import '../../../styles/portal.css';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 interface FeeGroup {
   id: string;
@@ -403,7 +403,7 @@ export default function RevenueAllocationPage() {
           </span>
         </div>
         <div className="table-responsive">
-          <table className="management-table">
+          <PaginatedTable className="management-table">
             <thead>
               <tr>
                 <th className="portal-col-w22">Scheme Identity</th>
@@ -503,7 +503,7 @@ export default function RevenueAllocationPage() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
     </div>

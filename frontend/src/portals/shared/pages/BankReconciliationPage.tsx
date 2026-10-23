@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useAccountingQuery, useOptimisticAccountingMutation } from '../../../hooks/useAccountingQuery';
 import toast from '../../../context/ToastContext';
@@ -90,7 +91,7 @@ export default function BankReconciliationPage() {
             </div>
 
             {/* Statement Lines Table */}
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', textAlign: 'left' }}>
+            <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', textAlign: 'left' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: 600, backgroundColor: '#ffffff' }}>
                   <th style={{ padding: '12px 16px' }}>Date</th>
@@ -143,7 +144,7 @@ export default function BankReconciliationPage() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         ))
       )}

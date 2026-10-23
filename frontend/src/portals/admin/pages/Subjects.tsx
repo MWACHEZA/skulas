@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { generateShortCode } from '../../../lib/utils';
@@ -404,7 +405,7 @@ export default function AdminSubjects() {
         </div>
       ) : viewMode === 'table' ? (
         <div className="portal-card" style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-          <table className="portal-table" style={{ margin: 0 }}>
+          <PaginatedTable className="portal-table" style={{ margin: 0 }}>
             <thead>
               <tr style={{ background: '#f8fafc' }}>
                 <th style={{ padding: '14px 20px' }}>{subjectLabel || 'Subject'} Name</th>
@@ -561,7 +562,7 @@ export default function AdminSubjects() {
                 );
               })}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       ) : (
         /* Grid Cards View */

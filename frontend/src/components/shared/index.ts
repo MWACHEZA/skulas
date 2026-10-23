@@ -12,8 +12,8 @@ export type { ExportButtonProps } from './ExportButton';
 
 export { default as DataImportModal } from './DataImportModal';
 
-export { Pagination, usePagination } from './Pagination';
-export type { PaginationProps } from './Pagination';
+export { Pagination, PaginatedTable, usePagination } from './Pagination';
+export type { PaginationProps, PaginatedTableProps } from './Pagination';
 
 export {
   SkeletonLoader,

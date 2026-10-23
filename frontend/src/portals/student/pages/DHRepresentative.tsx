@@ -3,7 +3,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
 import '../../../styles/portal.css';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 interface WeeklyMenuData {
   breakfast: string;
@@ -721,7 +721,7 @@ export default function DHRepresentative() {
               </div>
 
               <div style={{ overflowX: 'auto' }}>
-                <table className="portal-table" style={{ width: '100%', minWidth: '700px' }}>
+                <PaginatedTable className="portal-table" style={{ width: '100%', minWidth: '700px' }}>
                   <thead>
                     <tr>
                       <th style={{ width: '120px' }}>Day</th>
@@ -760,7 +760,7 @@ export default function DHRepresentative() {
                       );
                     })}
                   </tbody>
-                </table>
+                </PaginatedTable>
               </div>
             </div>
           )}

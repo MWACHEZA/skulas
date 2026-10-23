@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { formatCurrency } from '../../../utils/formatters';
 import toast from '../../../context/ToastContext';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 interface MonthRow {
   period: string;
@@ -174,7 +174,7 @@ export default function BursarFinancialReconciliation() {
           </span>
         </div>
         <div className="table-responsive">
-          <table className="management-table">
+          <PaginatedTable className="management-table">
             <thead>
               <tr>
                 <th>Period</th>
@@ -224,7 +224,7 @@ export default function BursarFinancialReconciliation() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
     </div>

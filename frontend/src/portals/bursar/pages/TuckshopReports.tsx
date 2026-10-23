@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import SkeletonLoader from '../../../components/shared/SkeletonLoader';
@@ -89,7 +90,7 @@ export default function TuckshopReports() {
           <button className="portal-btn-secondary" onClick={handleExport}><i className="fas fa-download"></i> Export Data</button>
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
-          <table className="portal-table">
+          <PaginatedTable className="portal-table">
             <thead>
               <tr>
                 <th>Item Name</th>
@@ -114,7 +115,7 @@ export default function TuckshopReports() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
     </>

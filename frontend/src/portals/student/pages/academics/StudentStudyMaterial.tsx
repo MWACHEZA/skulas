@@ -3,7 +3,7 @@ import api from '../../../../lib/api';
 import { useTerminology } from '../../../../hooks/useTerminology';
 import { format } from 'date-fns';
 import { useToast } from '../../../../context/ToastContext';
-import { SkeletonLoader } from '../../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../../components/shared';
 
 export default function StudentStudyMaterial() {
   const { showToast } = useToast();
@@ -141,7 +141,7 @@ export default function StudentStudyMaterial() {
                 <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 700 }}>{folderMaterials.length} files available</span>
               </div>
 
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th>DATE UPLOADED</th>
@@ -190,7 +190,7 @@ export default function StudentStudyMaterial() {
                     ))
                   )}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           )}
         </div>

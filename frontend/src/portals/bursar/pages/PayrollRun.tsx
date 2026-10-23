@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
 
@@ -228,7 +229,7 @@ export default function BursarPayrollRun() {
               <h2>Recent Payroll Batches</h2>
             </div>
             <div className="portal-card-body" style={{ padding: 0 }}>
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th>Batch Period</th>
@@ -284,7 +285,7 @@ export default function BursarPayrollRun() {
                     </tr>
                   )}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           </div>
         </>
@@ -299,7 +300,7 @@ export default function BursarPayrollRun() {
             </p>
           </div>
           <div className="portal-card-body" style={{ padding: 0 }}>
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th>Employee</th>
@@ -342,7 +343,7 @@ export default function BursarPayrollRun() {
                   </tr>
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         </div>
       )}
@@ -382,7 +383,7 @@ export default function BursarPayrollRun() {
             </div>
           </div>
           <div className="portal-card-body" style={{ padding: 0 }}>
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th>Employee</th>
@@ -437,7 +438,7 @@ export default function BursarPayrollRun() {
                   </tr>
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         </div>
       )}

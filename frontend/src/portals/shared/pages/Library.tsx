@@ -5,7 +5,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useToast } from '../../../context/ToastContext';
 import SearchInput from '../../../components/shared/SearchInput';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 import { useModuleAccess } from '../../../hooks/useModuleAccess';
 import ViewingAsToggle from '../../../components/shared/ViewingAsToggle';
@@ -474,7 +474,7 @@ export default function Library() {
                 You have no active book loans. Browse the Resource Catalog to borrow books from the library.
               </div>
             ) : (
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th>Book Title</th>
@@ -529,7 +529,7 @@ export default function Library() {
                     );
                   })}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>
@@ -552,7 +552,7 @@ export default function Library() {
                 You have no pending book holds. When you find a book you want in the Catalog, click "Reserve" to hold it.
               </div>
             ) : (
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th>Book Title</th>
@@ -591,7 +591,7 @@ export default function Library() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>

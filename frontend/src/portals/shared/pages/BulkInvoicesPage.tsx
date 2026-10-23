@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 import { useTerminology } from '../../../hooks/useTerminology';
 
@@ -35,14 +35,14 @@ const exportToWord = (title: string, headers: string[], dataRows: string[][]) =>
     </head>
     <body>
       <h2>${title}</h2>
-      <table>
+      <PaginatedTable>
         <thead>
           <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
         </thead>
         <tbody>
           ${dataRows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
         </tbody>
-      </table>
+      </PaginatedTable>
     </body>
     </html>
   `;
@@ -211,7 +211,7 @@ export default function BulkInvoicesPage() {
         </div>
         
         <div className="table-responsive">
-          <table className="management-table">
+          <PaginatedTable className="management-table">
             <thead>
               <tr>
                 <th style={{ width: '15%' }}>Processing Date</th>
@@ -286,7 +286,7 @@ export default function BulkInvoicesPage() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
 

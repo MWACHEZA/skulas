@@ -4,7 +4,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import ReportDocument from '../../../components/portals/shared/ReportDocument';
 import '../../../styles/portal.css';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import { useToast } from '../../../context/ToastContext';
 
 export default function ProgressReports() {
@@ -116,7 +116,7 @@ export default function ProgressReports() {
               <p style={{ margin: 0, fontWeight: 600 }}>Archived academic reports will be rendered here once authorized.</p>
             </div>
           ) : (
-            <table className="management-table">
+            <PaginatedTable className="management-table">
               <thead>
                 <tr>
                   <th style={{ width: '25%' }}>Reporting Period</th>
@@ -150,7 +150,7 @@ export default function ProgressReports() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       </div>

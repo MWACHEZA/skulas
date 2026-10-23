@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 export default function BursarTuckshop() {
   const { showToast } = useToast();
@@ -89,7 +89,7 @@ export default function BursarTuckshop() {
               <SkeletonLoader type="table" rows={6} columns={7} />
             </div>
           ) : (
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th>Item</th>
@@ -122,7 +122,7 @@ export default function BursarTuckshop() {
                   ))
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       </div>

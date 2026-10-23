@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
@@ -118,7 +119,7 @@ export default function AdminFees() {
             {stats.topDefaulters.length === 0 ? (
               <p style={{ color: '#718096', fontStyle: 'italic', textAlign: 'center', padding: 20 }}>No outstanding balances detected.</p>
             ) : (
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th>Student</th>
@@ -135,7 +136,7 @@ export default function AdminFees() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>

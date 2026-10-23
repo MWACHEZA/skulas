@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import api from '../../../lib/api';
 import '../../../styles/portal.css';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 interface BookLoan {
   id: string;
@@ -140,7 +140,7 @@ export default function StudentMyBooks() {
           ) : textbooks.length === 0 ? (
             <div style={{ padding: 40, textAlign: 'center', color: '#94a3b8' }}>No curriculum textbooks currently issued.</div>
           ) : (
-            <table className="portal-table" style={{ width: '100%' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', color: '#334155' }}>
                   <th>Title</th>
@@ -163,7 +163,7 @@ export default function StudentMyBooks() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       </div>
@@ -183,7 +183,7 @@ export default function StudentMyBooks() {
           {loading ? null : libraryBooks.length === 0 ? (
             <div style={{ padding: 40, textAlign: 'center', color: '#94a3b8' }}>No general library books currently borrowed.</div>
           ) : (
-            <table className="portal-table" style={{ width: '100%' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', color: '#334155' }}>
                   <th>Title & Author</th>
@@ -209,7 +209,7 @@ export default function StudentMyBooks() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       </div>

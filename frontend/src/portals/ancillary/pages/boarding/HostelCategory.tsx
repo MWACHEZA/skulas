@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../../components/shared/Pagination';
 import api from '../../../../lib/api';
 
 export default function HostelCategory() {
@@ -60,7 +61,7 @@ export default function HostelCategory() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
+        <PaginatedTable className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
@@ -86,7 +87,7 @@ export default function HostelCategory() {
               </tr>
             )}
           </tbody>
-        </table>
+        </PaginatedTable>
       </div>
 
       {showModal && (

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import '../../../styles/portal.css';
@@ -283,7 +284,7 @@ export default function LibraryOverdue() {
             <p style={{ fontSize: '0.85rem', color: '#94a3b8', marginTop: 4 }}>All borrowed books have been returned or are within their active loan periods.</p>
           </div>
         ) : (
-          <table className="portal-table" style={{ width: '100%' }}>
+          <PaginatedTable className="portal-table" style={{ width: '100%' }}>
             <thead>
               <tr style={{ background: '#f8fafc', color: '#334155' }}>
                 <th>Borrower</th>
@@ -391,7 +392,7 @@ export default function LibraryOverdue() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         )}
       </div>
 

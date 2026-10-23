@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Pagination } from '../../../../components/shared/Pagination';
 import api from '../../../../lib/api';
 import { useTerminology } from '../../../../hooks/useTerminology';
 import { useToast } from '../../../../context/ToastContext';
@@ -535,27 +536,7 @@ export default function JobApplications() {
             </div>
             
             {!loading && (
-              <div style={{ marginTop: 15, display: 'flex', justifyContent: 'space-between', color: '#718096', fontSize: '0.9rem' }}>
-                <span>Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredApplications.length)} of {filteredApplications.length} entries</span>
-                <div>
-                  <button 
-                    className="portal-btn-ghost" 
-                    style={{ padding: '6px 12px', fontSize: '0.85rem', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', opacity: currentPage === 1 ? 0.5 : 1 }} 
-                    disabled={currentPage === 1} 
-                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  >
-                    Previous
-                  </button>
-                  <button 
-                    className="portal-btn-ghost" 
-                    style={{ padding: '6px 12px', fontSize: '0.85rem', cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer', opacity: currentPage >= totalPages ? 0.5 : 1 }} 
-                    disabled={currentPage >= totalPages} 
-                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
+              <Pagination currentPage={currentPage} totalItems={filteredApplications.length} pageSize={itemsPerPage} onPageChange={setCurrentPage} onPageSizeChange={(size) => { setItemsPerPage(size); setCurrentPage(1); }} />
             )}
           </div>
         </div>

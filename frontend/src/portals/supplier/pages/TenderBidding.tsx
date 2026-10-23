@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import PortalGate from '../../../components/portals/shared/PortalGate';
@@ -54,7 +55,7 @@ export default function TenderBidding() {
           </select>
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
-          <table className="portal-table">
+          <PaginatedTable className="portal-table">
             <thead>
               <tr>
                 <th>Tender ID</th>
@@ -89,7 +90,7 @@ export default function TenderBidding() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
 

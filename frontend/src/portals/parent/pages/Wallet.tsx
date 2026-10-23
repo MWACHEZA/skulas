@@ -4,7 +4,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { useAccountingQuery, invalidateAllAccountingKeys } from '../../../hooks/useAccountingQuery';
 import EmptyState from '../../../components/shared/EmptyState';
-import { Pagination, usePagination } from '../../../components/shared';
+import { Pagination, usePagination, PaginatedTable } from '../../../components/shared';
 
 interface WalletTransaction {
   id: string;
@@ -484,7 +484,7 @@ export default function ParentWallet() {
                   />
                 </div>
               ) : (
-                <table className="portal-table">
+                <PaginatedTable className="portal-table">
                   <thead>
                     <tr>
                       <th>Date & Time</th>
@@ -525,7 +525,7 @@ export default function ParentWallet() {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </PaginatedTable>
               )}
             </div>
           </div>

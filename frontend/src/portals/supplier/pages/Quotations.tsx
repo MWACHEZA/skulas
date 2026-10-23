@@ -1,4 +1,5 @@
 import { useAuth } from '../../../contexts/AuthContext';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import PortalGate from '../../../components/portals/shared/PortalGate';
 import { formatCurrency } from '../../../utils/formatters';
 
@@ -23,7 +24,7 @@ export default function SupplierQuotations() {
            <div className="portal-badge neutral">{quotes.length} Total Bids</div>
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
-          <table className="portal-table">
+          <PaginatedTable className="portal-table">
             <thead>
               <tr>
                 <th>Reference</th>
@@ -56,7 +57,7 @@ export default function SupplierQuotations() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
 

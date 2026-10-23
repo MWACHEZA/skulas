@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useParams, useNavigate } from 'react-router-dom';
 import api, { BASE_URL } from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -165,7 +166,7 @@ export default function TeacherClassDetails() {
             {students.length === 0 ? (
               <div style={{ padding: 40, textAlign: 'center', color: '#718096' }}>No students enrolled in this class yet.</div>
             ) : (
-              <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>
                     <th style={{ padding: '12px 14px' }}>Student</th>
@@ -284,7 +285,7 @@ export default function TeacherClassDetails() {
                     );
                   })}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>

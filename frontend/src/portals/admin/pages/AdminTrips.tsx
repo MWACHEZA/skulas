@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
-import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import ErrorBoundary from '../../../components/shared/ErrorBoundary';
 import '../../../styles/portal.css';
 
@@ -956,7 +956,7 @@ export default function AdminTrips({ defaultTab }: { defaultTab?: 'all-trips' | 
                   </div>
 
                   <div className="portal-table-container" style={{ overflowX: 'auto' }}>
-                    <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
+                    <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem' }}>
                       <thead>
                         <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>
                           <th style={{ padding: '10px 12px' }}>Seat #</th>
@@ -1115,7 +1115,7 @@ export default function AdminTrips({ defaultTab }: { defaultTab?: 'all-trips' | 
                           })
                         )}
                       </tbody>
-                    </table>
+                    </PaginatedTable>
                   </div>
                 </div>
               </div>
@@ -1547,7 +1547,7 @@ export default function AdminTrips({ defaultTab }: { defaultTab?: 'all-trips' | 
               </div>
 
               <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                   <thead>
                     <tr style={{ background: '#f1f5f9', textAlign: 'left', borderBottom: '2px solid #cbd5e1' }}>
                       <th style={{ padding: '8px 10px' }}>Seat</th>
@@ -1585,7 +1585,7 @@ export default function AdminTrips({ defaultTab }: { defaultTab?: 'all-trips' | 
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </PaginatedTable>
               </div>
 
               <div style={{ marginTop: 20, display: 'flex', justifyContent: 'flex-end', gap: 10 }}>

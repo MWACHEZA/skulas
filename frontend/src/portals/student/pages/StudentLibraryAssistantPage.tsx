@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 interface BookItem {
   id: string;
@@ -246,7 +246,7 @@ export default function StudentLibraryAssistantPage() {
                 No desk transactions recorded yet today. Use "Shelf Catalog Search" to assist walk-in students with book checkouts.
               </div>
             ) : (
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th>Student / Borrower</th>
@@ -271,7 +271,7 @@ export default function StudentLibraryAssistantPage() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>
@@ -320,7 +320,7 @@ export default function StudentLibraryAssistantPage() {
                 No books match your search.
               </div>
             ) : (
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th>Title & Identifier</th>
@@ -365,7 +365,7 @@ export default function StudentLibraryAssistantPage() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>

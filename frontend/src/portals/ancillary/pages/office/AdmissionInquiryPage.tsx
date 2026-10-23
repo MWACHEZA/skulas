@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../../../lib/api';
 import { useToast } from '../../../../context/ToastContext';
 import '../../../../styles/portal.css';
-import { SkeletonLoader } from '../../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../../components/shared';
 
 interface Inquiry {
   id: string;
@@ -168,7 +168,7 @@ export default function AdmissionInquiryPage() {
           </div>
 
           <div className="table-responsive">
-            <table className="management-table">
+            <PaginatedTable className="management-table">
               <thead>
                 <tr>
                   <th>NAME</th>
@@ -215,7 +215,7 @@ export default function AdmissionInquiryPage() {
                   ))
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         </div>
       </div>

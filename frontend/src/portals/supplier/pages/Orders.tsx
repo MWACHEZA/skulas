@@ -1,4 +1,5 @@
 import { useToast } from '../../../context/ToastContext';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useAuth } from '../../../contexts/AuthContext';
 import PortalGate from '../../../components/portals/shared/PortalGate';
 import { formatCurrency } from '../../../utils/formatters';
@@ -80,7 +81,7 @@ export default function SupplierOrders() {
           </div>
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
-          <table className="portal-table">
+          <PaginatedTable className="portal-table">
             <thead>
               <tr>
                 <th>PO Number</th>
@@ -134,7 +135,7 @@ export default function SupplierOrders() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
     </PortalGate>

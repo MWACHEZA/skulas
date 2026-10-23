@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import AnalyticsCard from '../../../components/shared/AnalyticsCard';
 import {
@@ -404,7 +405,7 @@ export default function AnalyticsEnginesPage() {
           ) : data?.rows?.length > 0 ? (
             <div>
               <div style={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', textAlign: 'left' }}>
+                <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', textAlign: 'left' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: 600 }}>
                       <th style={{ padding: '12px 16px' }}>Subject</th>
@@ -437,7 +438,7 @@ export default function AnalyticsEnginesPage() {
                       </tr>
                     ))}
                   </tbody>
-                </table>
+                </PaginatedTable>
               </div>
             </div>
           ) : (
@@ -457,7 +458,7 @@ export default function AnalyticsEnginesPage() {
             <div style={{ padding: '60px', textAlign: 'center', color: '#64748b' }}>Loading attendance analytics...</div>
           ) : data?.rows?.length > 0 ? (
             <div style={{ backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0', overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', textAlign: 'left' }}>
+              <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: 600 }}>
                     <th style={{ padding: '12px 16px' }}>Period</th>
@@ -484,7 +485,7 @@ export default function AnalyticsEnginesPage() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           ) : (
             <div style={{ padding: '40px', textAlign: 'center', color: '#64748b', backgroundColor: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
@@ -782,7 +783,7 @@ export default function AnalyticsEnginesPage() {
             </div>
 
             <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+              <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                 <thead style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', color: '#475569', textAlign: 'left' }}>
                   <tr>
                     {entityDefinitions[selectedEntity].columns
@@ -813,7 +814,7 @@ export default function AnalyticsEnginesPage() {
                       </tr>
                     ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           </div>
         </div>

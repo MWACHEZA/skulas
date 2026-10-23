@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 const exportVisitorsCSV = (visitors: any[]) => {
   const headers = ['Visitor Name', 'Phone', 'Purpose', 'Vehicle Reg', 'Time In', 'Time Out', 'Status'];
@@ -117,7 +117,7 @@ export default function SecurityLog() {
           {loading ? (
             <div style={{ padding: 20 }}><SkeletonLoader type="table" rows={6} columns={6} /></div>
           ) : (
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th>Visitor Name</th>
@@ -159,7 +159,7 @@ export default function SecurityLog() {
                   <tr><td colSpan={7} style={{ textAlign: 'center', padding: 30, color: '#718096' }}>No visitor records for today.</td></tr>
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       </div>

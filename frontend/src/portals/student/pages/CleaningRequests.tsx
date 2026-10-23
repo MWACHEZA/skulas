@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import TabbedPage, { type TabItem } from '../../../components/portals/shared/TabbedPage';
 
 interface LeadershipAssignment {
@@ -291,7 +291,7 @@ export default function CleaningRequests() {
 
           {selectedItems.length > 0 ? (
             <div className="table-responsive mb-4">
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th>Item</th>
@@ -335,7 +335,7 @@ export default function CleaningRequests() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           ) : (
             <div style={{ padding: '2rem', background: '#f7fafc', borderRadius: 8, textAlign: 'center', marginBottom: '1.5rem' }}>
@@ -378,7 +378,7 @@ export default function CleaningRequests() {
       </div>
       <div className="portal-card-body p-0">
         <div className="table-responsive">
-          <table className="portal-table">
+          <PaginatedTable className="portal-table">
             <thead>
               <tr>
                 <th>Reference</th>
@@ -448,7 +448,7 @@ export default function CleaningRequests() {
                 </tr>
               )}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
     </div>
@@ -464,7 +464,7 @@ export default function CleaningRequests() {
       </div>
       <div className="portal-card-body p-0">
         <div className="table-responsive">
-          <table className="portal-table">
+          <PaginatedTable className="portal-table">
             <thead>
               <tr>
                 <th>Dispatched Date</th>
@@ -491,7 +491,7 @@ export default function CleaningRequests() {
                 </tr>
               )}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
     </div>

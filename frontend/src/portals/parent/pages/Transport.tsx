@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
@@ -637,7 +638,7 @@ export default function ParentTransport() {
               </div>
             </div>
             <div className="portal-card-body" style={{ padding: 0 }}>
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th>Route Name</th>
@@ -692,7 +693,7 @@ export default function ParentTransport() {
                     })
                   )}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           </div>
         </div>

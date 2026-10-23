@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useSearchParams, Link } from 'react-router-dom';
 import FeesBillingPage from '../../shared/pages/FeesBillingPage';
 import ManageInvoicesPage from '../../shared/pages/ManageInvoicesPage';
@@ -1052,7 +1053,7 @@ export default function BursarFeesUnified() {
                 <p style={{ fontSize: '0.85rem' }}>All accounts in this segment are fully settled.</p>
               </div>
             ) : (
-              <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+              <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
                 <thead>
                   <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left', color: '#475569' }}>
                     <th style={{ padding: '12px 16px', width: 44, textAlign: 'center' }}>
@@ -1174,7 +1175,7 @@ export default function BursarFeesUnified() {
                     );
                   })}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>

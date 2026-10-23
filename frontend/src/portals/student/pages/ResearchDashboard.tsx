@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTerminology } from '../../../hooks/useTerminology';
@@ -161,7 +162,7 @@ export default function ResearchDashboard() {
             <button className="portal-btn-sm" onClick={handleNewReport}>+ New Report</button>
           </div>
           <div className="portal-card-body">
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th>Period</th>
@@ -185,7 +186,7 @@ export default function ResearchDashboard() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         </div>
 
@@ -223,7 +224,7 @@ export default function ResearchDashboard() {
                 </div>
               </form>
             ) : (
-              <table className="portal-table">
+              <PaginatedTable className="portal-table">
                 <thead>
                   <tr>
                     <th>Requested</th>
@@ -248,7 +249,7 @@ export default function ResearchDashboard() {
                     <tr><td colSpan={2} className="empty-text">No active requests.</td></tr>
                   )}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>

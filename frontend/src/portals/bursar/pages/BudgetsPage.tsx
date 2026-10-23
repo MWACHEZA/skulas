@@ -15,7 +15,7 @@ import {
   Layers
 } from 'lucide-react';
 import { toast } from '../../../context/ToastContext';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, PaginatedTable } from '../../../components/shared';
 
 export default function BudgetsPage() {
   const [activeTab, setActiveTab] = useState<'BUDGETS' | 'APPROVALS' | 'SETTINGS'>('BUDGETS');
@@ -411,7 +411,7 @@ export default function BudgetsPage() {
             ) : budgets.length === 0 ? (
               <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>No budget allocations created yet for this period.</div>
             ) : (
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', textAlign: 'left' }}>
+              <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: 600 }}>
                     <th style={{ padding: '12px 16px' }}>Code</th>
@@ -456,7 +456,7 @@ export default function BudgetsPage() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>
@@ -529,7 +529,7 @@ export default function BudgetsPage() {
             ) : approvals.length === 0 ? (
               <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>No authorization requests found.</div>
             ) : (
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', textAlign: 'left' }}>
+              <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', textAlign: 'left' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#f8fafc', borderBottom: '1px solid #e2e8f0', color: '#475569', fontWeight: 600 }}>
                     <th style={{ padding: '12px 16px' }}>Date</th>
@@ -608,7 +608,7 @@ export default function BudgetsPage() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             )}
           </div>
         </div>

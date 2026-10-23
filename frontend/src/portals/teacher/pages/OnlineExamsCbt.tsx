@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import SkeletonLoader from '../../../components/shared/SkeletonLoader';
@@ -49,7 +50,7 @@ export default function OnlineExamsCbt() {
       </div>
 
       <div className="portal-card">
-        <table className="portal-table w-full">
+        <PaginatedTable className="portal-table w-full">
           <thead>
             <tr>
               <th>Title</th>
@@ -77,7 +78,7 @@ export default function OnlineExamsCbt() {
               </tr>
             )}
           </tbody>
-        </table>
+        </PaginatedTable>
       </div>
     </div>
   );

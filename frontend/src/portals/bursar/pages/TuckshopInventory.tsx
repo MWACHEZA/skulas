@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import api from '../../../lib/api';
 import { toast } from '../../../context/ToastContext';
 
@@ -121,7 +122,7 @@ export default function TuckshopInventory() {
           {loading ? (
             <p style={{ padding: 20 }}>Loading items...</p>
           ) : (
-            <table className="portal-table">
+            <PaginatedTable className="portal-table">
               <thead>
                 <tr>
                   <th>Item Name</th>
@@ -155,7 +156,7 @@ export default function TuckshopInventory() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       </div>

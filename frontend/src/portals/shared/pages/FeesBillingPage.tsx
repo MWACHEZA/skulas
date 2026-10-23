@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Pagination, PaginatedTable } from '../../../components/shared/Pagination';
 import { Link } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
@@ -35,14 +36,14 @@ const exportToWord = (title: string, headers: string[], dataRows: string[][]) =>
     </head>
     <body>
       <h2>${title}</h2>
-      <table>
+      <PaginatedTable>
         <thead>
           <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
         </thead>
         <tbody>
           ${dataRows.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}
         </tbody>
-      </table>
+      </PaginatedTable>
     </body>
     </html>
   `;
@@ -93,7 +94,7 @@ export default function FeesBillingPage() {
   const [activeFeeYear, setActiveFeeYear] = useState(new Date().getFullYear());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const [pageSize, setPageSize] = useState(10);
 
   // Standard Invoicing State
   const [selectedFeeGroupIds, setSelectedFeeGroupIds] = useState<string[]>([]);
@@ -642,29 +643,14 @@ export default function FeesBillingPage() {
             </table>
           </div>
 
-          {totalPages > 1 && (
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', padding: '20px', borderTop: '1px solid #f1f5f9' }}>
-              <button
-                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className="portal-btn-ghost"
-                style={{ padding: '8px 16px', fontWeight: 800, borderRadius: '8px' }}
-              >
-                Previous
-              </button>
-              <div style={{ display: 'flex', alignItems: 'center', fontWeight: 800, color: '#475569', padding: '0 12px' }}>
-                Page {currentPage} of {totalPages}
-              </div>
-              <button
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className="portal-btn-ghost"
-                style={{ padding: '8px 16px', fontWeight: 800, borderRadius: '8px' }}
-              >
-                Next
-              </button>
-            </div>
-          )}
+          <Pagination
+            currentPage={currentPage}
+            totalItems={Array.isArray(students) ? students.length : 0}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={(size) => { setPageSize(size); setCurrentPage(1); }}
+            itemLabel="students"
+          />
           
           <div style={{ padding: '32px 40px', background: '#f8fafc', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: '0 0 24px 24px' }}>
              <div style={{ fontWeight: 900, color: '#64748b', display: 'flex', alignItems: 'center', gap: '12px' }}>

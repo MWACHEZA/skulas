@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PaginatedTable } from '../../../components/shared/Pagination';
 import { useToast } from '../../../context/ToastContext';
 
 export default function ApplicantFees() {
@@ -31,7 +32,7 @@ export default function ApplicantFees() {
           <button className="portal-btn-primary" onClick={handlePay} disabled={loading}>{loading ? 'Processing...' : 'Pay Outstanding'}</button>
         </div>
         <div className="portal-card-body" style={{ padding: 0 }}>
-          <table className="portal-table">
+          <PaginatedTable className="portal-table">
             <thead>
               <tr>
                 <th>Service/Fee</th>
@@ -59,7 +60,7 @@ export default function ApplicantFees() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
 

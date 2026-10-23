@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { getAvatarUrl } from '../../../utils/formatters';
-import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 interface StudentData {
   id: string;
@@ -470,7 +470,7 @@ export default function TeacherStudents() {
         /* TABLE REGISTER VIEW */
         <div style={{ background: '#ffffff', borderRadius: 12, border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.03)' }}>
           <div style={{ overflowX: 'auto' }}>
-            <table className="portal-table" style={{ width: '100%' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%' }}>
               <thead>
                 <tr>
                   <th style={{ width: '140px' }}>Student ID</th>
@@ -550,7 +550,7 @@ export default function TeacherStudents() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         </div>
       )}

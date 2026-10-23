@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 export type HospitalizationTab = 'admitted' | 'bed-map' | 'discharge';
 
@@ -225,7 +225,7 @@ export default function ClinicHospitalizationPage() {
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
+              <PaginatedTable style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.9rem' }}>
                 <thead>
                   <tr style={{ borderBottom: '2px solid #f1f5f9', color: '#475569' }}>
                     <th style={{ padding: '12px 16px' }}>Bed</th>
@@ -294,7 +294,7 @@ export default function ClinicHospitalizationPage() {
                     );
                   })}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           )}
         </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface AssetMaintenanceLog {
@@ -440,7 +440,7 @@ export default function AdminAssetMaintenance() {
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
-            <table className="portal-table" style={{ width: '100%', minWidth: '850px' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%', minWidth: '850px' }}>
               <thead>
                 <tr>
                   <th>Target Asset</th>
@@ -610,7 +610,7 @@ export default function AdminAssetMaintenance() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         )}
       </div>

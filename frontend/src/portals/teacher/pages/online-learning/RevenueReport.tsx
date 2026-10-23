@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../../../lib/api';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { formatCurrency } from '../../../../utils/formatters';
-import { SkeletonLoader } from '../../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../../components/shared';
 
 export default function RevenueReport() {
   const [report, setReport] = useState<any>(null);
@@ -87,7 +87,7 @@ export default function RevenueReport() {
 
       <div className="portal-card" style={{ marginTop: 20 }}>
         <div className="portal-card-body" style={{ padding: 0 }}>
-          <table className="portal-table" style={{ margin: 0 }}>
+          <PaginatedTable className="portal-table" style={{ margin: 0 }}>
             <thead style={{ background: '#edf2f7' }}>
               <tr>
                 <th style={{ padding: '15px 20px', borderBottom: '1px solid #e2e8f0' }}>TIME PERIOD</th>
@@ -121,7 +121,7 @@ export default function RevenueReport() {
                 );
               })}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       </div>
     </>

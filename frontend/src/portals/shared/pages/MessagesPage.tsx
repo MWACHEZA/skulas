@@ -3,7 +3,7 @@ import api from '../../../lib/api';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 interface MessageItem {
@@ -392,7 +392,7 @@ export default function MessagesPage() {
             </span>
           </div>
 
-          <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', textAlign: 'left' }}>
                 <th style={{ padding: 12 }}>Parent / Guardian</th>
@@ -462,7 +462,7 @@ export default function MessagesPage() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </PaginatedTable>
         </div>
       )}
 

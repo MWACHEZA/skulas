@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import api from '../../../lib/api';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 interface AttendanceRecord {
   date: string;
@@ -221,7 +221,7 @@ export default function StudentAttendance() {
           </div>
         ) : (
           <div style={{ overflowX: 'auto' }}>
-            <table className="portal-table" style={{ width: '100%' }}>
+            <PaginatedTable className="portal-table" style={{ width: '100%' }}>
               <thead>
                 <tr>
                   <th>Date & Day</th>
@@ -272,7 +272,7 @@ export default function StudentAttendance() {
                   );
                 })}
               </tbody>
-            </table>
+            </PaginatedTable>
           </div>
         )}
       </div>

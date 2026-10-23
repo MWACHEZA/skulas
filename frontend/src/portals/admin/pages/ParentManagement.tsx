@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import api, { BASE_URL } from '../../../lib/api';
 import ManagementDetailPanel from '../../../components/shared/ManagementDetailPanel';
 import UserEditModal from '../../../components/shared/UserEditModal';
-import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, SkeletonLoader, PaginatedTable } from '../../../components/shared';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { getAvatarUrl, parseCleanBadges } from '../../../utils/formatters';
@@ -165,7 +165,7 @@ export default function ParentManagement() {
               <SkeletonLoader type="table" rows={8} columns={6} />
             </div>
           ) : (
-            <table className="management-table">
+            <PaginatedTable className="management-table">
               <thead>
                 <tr>
                   <th>Family ID (Global)</th>
@@ -250,7 +250,7 @@ export default function ParentManagement() {
                   </tr>
                 )}
               </tbody>
-            </table>
+            </PaginatedTable>
           )}
         </div>
       </div>

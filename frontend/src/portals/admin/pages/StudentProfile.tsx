@@ -5,7 +5,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { useTerminology } from '../../../hooks/useTerminology';
 import { getAvatarUrl } from '../../../utils/formatters';
-import { SkeletonLoader } from '../../../components/shared';
+import { SkeletonLoader, PaginatedTable } from '../../../components/shared';
 
 export default function StudentProfile() {
   const location = useLocation();
@@ -720,7 +720,7 @@ export default function StudentProfile() {
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
-              <table className="portal-table" style={{ width: '100%' }}>
+              <PaginatedTable className="portal-table" style={{ width: '100%' }}>
                 <thead>
                   <tr>
                     <th>Subject</th>
@@ -753,7 +753,7 @@ export default function StudentProfile() {
                     </tr>
                   ))}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           )}
         </div>
@@ -785,7 +785,7 @@ export default function StudentProfile() {
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
-              <table className="portal-table" style={{ width: '100%' }}>
+              <PaginatedTable className="portal-table" style={{ width: '100%' }}>
                 <thead>
                   <tr>
                     <th>Date</th>
@@ -824,7 +824,7 @@ export default function StudentProfile() {
                     );
                   })}
                 </tbody>
-              </table>
+              </PaginatedTable>
             </div>
           )}
         </div>
