@@ -687,9 +687,9 @@ export default function DashboardLayout({
         </div>
 
         {/* Page content */}
-        <div className="portal-content" style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - var(--portal-header-height))' }}>
+        <div className="portal-content" style={{ display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - var(--portal-header-height))', minWidth: 0, maxWidth: '100%', overflowX: 'hidden', boxSizing: 'border-box' }}>
           {shouldShowTutorialChecklist && tutorialConfig && (
-            <div className="no-print" style={{ padding: '0 24px', marginTop: 16 }}>
+            <div className="no-print" style={{ padding: '0 24px', marginTop: 16, maxWidth: '100%', boxSizing: 'border-box' }}>
               <TutorialChecklist
                 tutorial={tutorialConfig}
                 completedStepIds={tutorialState.completedStepIds}
@@ -700,21 +700,23 @@ export default function DashboardLayout({
           )}
 
           {isStaffUser && (
-            <div className="no-print" style={{ padding: '0 24px', marginTop: '16px' }}>
+            <div className="no-print" style={{ padding: '0 24px', marginTop: '16px', maxWidth: '100%', boxSizing: 'border-box' }}>
               {!todayAttendance ? (
                 <div style={{
                   background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
                   border: '1px solid #fde68a',
                   borderRadius: '12px',
-                  padding: '16px 24px',
+                  padding: '16px 20px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '12px',
                   boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03)',
                   animation: 'pulse 2s infinite'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ background: '#d97706', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
+                    <div style={{ background: '#d97706', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', flexShrink: 0 }}>
                       <i className="fas fa-exclamation-triangle"></i>
                     </div>
                     <div>
@@ -725,7 +727,7 @@ export default function DashboardLayout({
                   <button 
                     onClick={() => { setClockActionType('IN'); setShowClockModal(true); }}
                     className="portal-btn-primary"
-                    style={{ background: '#d97706', borderColor: '#d97706', fontWeight: 800, padding: '10px 20px', borderRadius: '8px' }}
+                    style={{ background: '#d97706', borderColor: '#d97706', fontWeight: 800, padding: '10px 20px', borderRadius: '8px', whiteSpace: 'nowrap' }}
                   >
                     <i className="fas fa-sign-in-alt mr-2"></i>Clock In Now
                   </button>
@@ -735,14 +737,16 @@ export default function DashboardLayout({
                   background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
                   border: '1px solid #a7f3d0',
                   borderRadius: '12px',
-                  padding: '16px 24px',
+                  padding: '16px 20px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '12px',
                   boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03)'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ background: '#059669', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
+                    <div style={{ background: '#059669', color: 'white', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', flexShrink: 0 }}>
                       <i className="fas fa-clock"></i>
                     </div>
                     <div>
@@ -755,7 +759,7 @@ export default function DashboardLayout({
                   <button 
                     onClick={() => { setClockActionType('OUT'); setShowClockModal(true); }}
                     className="portal-btn-primary"
-                    style={{ background: '#dc2626', borderColor: '#dc2626', fontWeight: 800, padding: '10px 20px', borderRadius: '8px' }}
+                    style={{ background: '#dc2626', borderColor: '#dc2626', fontWeight: 800, padding: '10px 20px', borderRadius: '8px', whiteSpace: 'nowrap' }}
                   >
                     <i className="fas fa-sign-out-alt mr-2"></i>Clock Out Now
                   </button>

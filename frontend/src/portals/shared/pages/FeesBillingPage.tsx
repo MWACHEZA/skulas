@@ -319,15 +319,17 @@ export default function FeesBillingPage() {
   const allFilteredSelected = filteredStudents.length > 0 && filteredStudents.every(s => selectedStudentIds.includes(s.id));
 
   return (
-    <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '0 8px' }}>
+    <div style={{ width: '100%', maxWidth: '100%', margin: '0 auto', padding: '0', boxSizing: 'border-box', minWidth: 0 }}>
       {/* Page Header */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '16px',
-        marginBottom: '24px'
+        gap: '14px',
+        marginBottom: '20px',
+        width: '100%',
+        boxSizing: 'border-box'
       }}>
         <div>
           <h1 style={{
@@ -402,31 +404,33 @@ export default function FeesBillingPage() {
       <div style={{
         background: '#f8fafc',
         border: '1px solid #e2e8f0',
-        borderRadius: '16px',
-        padding: '6px',
-        marginBottom: '24px',
+        borderRadius: '14px',
+        padding: '4px',
+        marginBottom: '20px',
         display: 'inline-flex',
         alignItems: 'center',
         gap: '6px',
         flexWrap: 'wrap',
+        maxWidth: '100%',
+        boxSizing: 'border-box',
         boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
       }}>
         <button
           type="button"
           onClick={() => setActiveTab('standard')}
           style={{
-            padding: '10px 20px',
-            borderRadius: '12px',
+            padding: '8px 16px',
+            borderRadius: '10px',
             border: 'none',
             cursor: 'pointer',
-            fontSize: '0.92rem',
+            fontSize: '0.86rem',
             fontWeight: activeTab === 'standard' ? 700 : 600,
             color: activeTab === 'standard' ? '#0369a1' : '#64748b',
             backgroundColor: activeTab === 'standard' ? '#ffffff' : 'transparent',
-            boxShadow: activeTab === 'standard' ? '0 2px 8px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
-            display: 'flex',
+            boxShadow: activeTab === 'standard' ? '0 2px 6px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
+            display: 'inline-flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '7px',
             transition: 'all 0.15s ease'
           }}
         >
@@ -436,7 +440,7 @@ export default function FeesBillingPage() {
             <span style={{
               backgroundColor: '#e0f2fe',
               color: '#0369a1',
-              padding: '2px 8px',
+              padding: '1px 7px',
               borderRadius: '999px',
               fontSize: '11px',
               fontWeight: 800
@@ -450,18 +454,18 @@ export default function FeesBillingPage() {
           type="button"
           onClick={() => setActiveTab('custom')}
           style={{
-            padding: '10px 20px',
-            borderRadius: '12px',
+            padding: '8px 16px',
+            borderRadius: '10px',
             border: 'none',
             cursor: 'pointer',
-            fontSize: '0.92rem',
+            fontSize: '0.86rem',
             fontWeight: activeTab === 'custom' ? 700 : 600,
             color: activeTab === 'custom' ? '#0369a1' : '#64748b',
             backgroundColor: activeTab === 'custom' ? '#ffffff' : 'transparent',
-            boxShadow: activeTab === 'custom' ? '0 2px 8px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
-            display: 'flex',
+            boxShadow: activeTab === 'custom' ? '0 2px 6px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
+            display: 'inline-flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '7px',
             transition: 'all 0.15s ease'
           }}
         >
@@ -472,15 +476,15 @@ export default function FeesBillingPage() {
         <Link
           to="/bursar/fee-groups"
           style={{
-            padding: '10px 20px',
-            borderRadius: '12px',
+            padding: '8px 16px',
+            borderRadius: '10px',
             textDecoration: 'none',
-            fontSize: '0.92rem',
+            fontSize: '0.86rem',
             fontWeight: 600,
             color: '#475569',
-            display: 'flex',
+            display: 'inline-flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '7px',
             transition: 'all 0.15s ease'
           }}
           onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#ffffff'; e.currentTarget.style.color = '#0284c7'; }}
@@ -496,31 +500,36 @@ export default function FeesBillingPage() {
       <div style={{
         backgroundColor: '#ffffff',
         border: '1px solid #e2e8f0',
-        borderRadius: '20px',
+        borderRadius: '16px',
         overflow: 'hidden',
         boxShadow: '0 4px 16px -2px rgba(0, 0, 0, 0.05)',
-        marginBottom: '32px'
+        marginBottom: '28px',
+        width: '100%',
+        maxWidth: '100%',
+        boxSizing: 'border-box'
       }}>
         {/* Toolbar Header */}
         <div style={{
-          padding: '24px 28px',
+          padding: '16px 20px',
           borderBottom: '1px solid #f1f5f9',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '16px',
-          backgroundColor: '#fafafa'
+          gap: '12px',
+          backgroundColor: '#fafafa',
+          width: '100%',
+          boxSizing: 'border-box'
         }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '3px', flexWrap: 'wrap' }}>
+              <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>
                 Recipient Registry ({filteredStudents.length})
               </h2>
               <span style={{
                 backgroundColor: selectedStudentIds.length > 0 ? '#eff6ff' : '#f1f5f9',
                 color: selectedStudentIds.length > 0 ? '#1d4ed8' : '#64748b',
-                padding: '3px 10px',
+                padding: '2px 9px',
                 borderRadius: '999px',
                 fontSize: '11px',
                 fontWeight: 700,
@@ -529,31 +538,32 @@ export default function FeesBillingPage() {
                 {selectedStudentIds.length} of {students.length} Selected
               </span>
             </div>
-            <p style={{ margin: 0, fontSize: '0.86rem', color: '#64748b' }}>
+            <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748b' }}>
               Authorized students scheduled for invoice generation in this billing batch.
             </p>
           </div>
 
           {/* Action Buttons */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
             {/* Configure Parameters Button */}
             <button
               type="button"
               onClick={() => setIsModalOpen(true)}
               style={{
-                padding: '11px 22px',
+                padding: '8px 16px',
                 backgroundColor: '#0284c7',
                 color: '#ffffff',
                 border: 'none',
-                borderRadius: '12px',
-                fontSize: '0.9rem',
+                borderRadius: '10px',
+                fontSize: '0.84rem',
                 fontWeight: 700,
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '8px',
-                boxShadow: '0 4px 12px rgba(2, 132, 199, 0.25)',
-                transition: 'all 0.15s ease'
+                gap: '7px',
+                boxShadow: '0 3px 10px rgba(2, 132, 199, 0.25)',
+                transition: 'all 0.15s ease',
+                whiteSpace: 'nowrap'
               }}
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#0369a1')}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#0284c7')}
@@ -564,8 +574,8 @@ export default function FeesBillingPage() {
                 <span style={{
                   backgroundColor: 'rgba(255,255,255,0.25)',
                   color: '#fff',
-                  padding: '2px 6px',
-                  borderRadius: '6px',
+                  padding: '1px 5px',
+                  borderRadius: '5px',
                   fontSize: '10px',
                   fontWeight: 800
                 }}>
@@ -579,17 +589,18 @@ export default function FeesBillingPage() {
               type="button"
               onClick={toggleAllStudents}
               style={{
-                padding: '10px 16px',
+                padding: '8px 13px',
                 backgroundColor: '#ffffff',
                 color: '#334155',
                 border: '1px solid #cbd5e1',
-                borderRadius: '12px',
-                fontSize: '0.85rem',
+                borderRadius: '10px',
+                fontSize: '0.82rem',
                 fontWeight: 700,
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '6px'
+                gap: '6px',
+                whiteSpace: 'nowrap'
               }}
             >
               <span>{allFilteredSelected ? '☒' : '☑'}</span>
@@ -610,17 +621,18 @@ export default function FeesBillingPage() {
                 exportToCSV('Billing_Recipients', headers, rows);
               }}
               style={{
-                padding: '10px 14px',
+                padding: '8px 12px',
                 backgroundColor: '#ffffff',
                 color: '#475569',
                 border: '1px solid #cbd5e1',
-                borderRadius: '12px',
-                fontSize: '0.85rem',
+                borderRadius: '10px',
+                fontSize: '0.82rem',
                 fontWeight: 700,
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '6px'
+                gap: '5px',
+                whiteSpace: 'nowrap'
               }}
               title="Export to CSV"
             >
@@ -642,17 +654,18 @@ export default function FeesBillingPage() {
                 exportToWord('Billing_Recipients', headers, rows);
               }}
               style={{
-                padding: '10px 14px',
+                padding: '8px 12px',
                 backgroundColor: '#ffffff',
                 color: '#475569',
                 border: '1px solid #cbd5e1',
-                borderRadius: '12px',
-                fontSize: '0.85rem',
+                borderRadius: '10px',
+                fontSize: '0.82rem',
                 fontWeight: 700,
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '6px'
+                gap: '5px',
+                whiteSpace: 'nowrap'
               }}
               title="Export to Word"
             >
@@ -664,13 +677,15 @@ export default function FeesBillingPage() {
 
         {/* Filters Bar: Search, Class, Boarding Category */}
         <div style={{
-          padding: '16px 28px',
+          padding: '14px 20px',
           borderBottom: '1px solid #f1f5f9',
           display: 'flex',
           alignItems: 'center',
-          gap: '14px',
+          gap: '12px',
           flexWrap: 'wrap',
-          backgroundColor: '#ffffff'
+          backgroundColor: '#ffffff',
+          width: '100%',
+          boxSizing: 'border-box'
         }}>
           {/* Live Search */}
           <div style={{ position: 'relative', flex: '1 1 240px', minWidth: '220px' }}>
@@ -781,7 +796,7 @@ export default function FeesBillingPage() {
         </div>
 
         {/* Table Content */}
-        <div style={{ overflowX: 'auto' }}>
+        <div style={{ overflowX: 'auto', width: '100%', maxWidth: '100%', WebkitOverflowScrolling: 'touch' }}>
           <table style={{
             width: '100%',
             borderCollapse: 'collapse',
@@ -995,7 +1010,7 @@ export default function FeesBillingPage() {
         </div>
 
         {/* Pagination Section */}
-        <div style={{ padding: '16px 24px', borderTop: '1px solid #f1f5f9' }}>
+        <div style={{ padding: '14px 20px', borderTop: '1px solid #f1f5f9', width: '100%', boxSizing: 'border-box' }}>
           <Pagination
             currentPage={currentPage}
             totalItems={filteredStudents.length}
@@ -1008,32 +1023,34 @@ export default function FeesBillingPage() {
 
         {/* Batch Audit & Financial Impact Footer Bar */}
         <div style={{
-          padding: '20px 28px',
+          padding: '16px 20px',
           backgroundColor: '#0f172a',
           color: '#f8fafc',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
-          gap: '16px'
+          gap: '14px',
+          width: '100%',
+          boxSizing: 'border-box'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#38bdf8' }} />
-              <span style={{ fontSize: '13px', color: '#94a3b8' }}>
+              <span style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#38bdf8' }} />
+              <span style={{ fontSize: '12px', color: '#94a3b8' }}>
                 Audited Recipients: <strong style={{ color: '#fff' }}>{selectedStudentIds.length}</strong> / {students.length}
               </span>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#4ade80' }} />
-              <span style={{ fontSize: '13px', color: '#94a3b8' }}>
+              <span style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#4ade80' }} />
+              <span style={{ fontSize: '12px', color: '#94a3b8' }}>
                 Structures: <strong style={{ color: '#fff' }}>{activeTab === 'standard' ? selectedGroups.length : (customFeeGroupId ? 1 : 0)}</strong>
               </span>
             </div>
 
-            <div style={{ fontSize: '13px', color: '#94a3b8' }}>
-              Projected Ledger Volume: <strong style={{ color: '#4ade80', fontSize: '1.1rem' }}>{formatCurrency(projectedBatchAmount)}</strong>
+            <div style={{ fontSize: '12px', color: '#94a3b8' }}>
+              Projected Ledger Volume: <strong style={{ color: '#4ade80', fontSize: '1.05rem' }}>{formatCurrency(projectedBatchAmount)}</strong>
             </div>
           </div>
 
@@ -1041,18 +1058,19 @@ export default function FeesBillingPage() {
             type="button"
             onClick={() => setIsModalOpen(true)}
             style={{
-              padding: '12px 28px',
+              padding: '10px 22px',
               backgroundColor: '#0284c7',
               color: '#ffffff',
               border: 'none',
-              borderRadius: '12px',
-              fontSize: '0.92rem',
+              borderRadius: '10px',
+              fontSize: '0.88rem',
               fontWeight: 800,
               cursor: 'pointer',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '8px',
-              boxShadow: '0 4px 12px rgba(2, 132, 199, 0.35)'
+              gap: '7px',
+              boxShadow: '0 3px 10px rgba(2, 132, 199, 0.35)',
+              whiteSpace: 'nowrap'
             }}
           >
             <span>⚡</span>

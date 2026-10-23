@@ -464,7 +464,7 @@ export default function BursarFeesUnified() {
   };
 
   return (
-    <div className="portal-container" style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
+    <div className="portal-container" style={{ padding: '20px 24px', width: '100%', maxWidth: '100%', boxSizing: 'border-box', minWidth: 0 }}>
       <div className="portal-page-header" style={{ marginBottom: 20 }}>
         <h1 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 10 }}>
           <i className="fas fa-file-invoice-dollar" style={{ color: 'var(--school-primary, #0284c7)' }} />
@@ -479,36 +479,36 @@ export default function BursarFeesUnified() {
       <div
         className="portal-tabs-wrapper"
         style={{
-          background: '#f1f5f9',
+          background: '#f8fafc',
           border: '1px solid #e2e8f0',
-          borderRadius: '16px',
+          borderRadius: '14px',
           padding: '6px',
-          marginBottom: '28px',
+          marginBottom: '24px',
           display: 'flex',
+          flexWrap: 'wrap',
           alignItems: 'center',
           gap: '6px',
-          overflowX: 'auto',
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-          boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.03)'
+          width: '100%',
+          maxWidth: '100%',
+          boxSizing: 'border-box'
         }}
       >
         <button
           type="button"
           onClick={() => handleTabChange('collection')}
           style={{
-            padding: '10px 18px',
+            padding: '8px 14px',
             border: 'none',
-            borderRadius: '12px',
+            borderRadius: '10px',
             cursor: 'pointer',
             fontWeight: activeTab === 'collection' ? 700 : 600,
             color: activeTab === 'collection' ? '#0369a1' : '#64748b',
             background: activeTab === 'collection' ? '#ffffff' : 'transparent',
-            boxShadow: activeTab === 'collection' ? '0 2px 8px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
-            fontSize: '0.92rem',
-            display: 'flex',
+            boxShadow: activeTab === 'collection' ? '0 2px 6px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
+            fontSize: '0.85rem',
+            display: 'inline-flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '7px',
             whiteSpace: 'nowrap',
             transition: 'all 0.15s ease'
           }}
@@ -521,18 +521,18 @@ export default function BursarFeesUnified() {
           type="button"
           onClick={() => handleTabChange('billing')}
           style={{
-            padding: '10px 18px',
+            padding: '8px 14px',
             border: 'none',
-            borderRadius: '12px',
+            borderRadius: '10px',
             cursor: 'pointer',
             fontWeight: activeTab === 'billing' ? 700 : 600,
             color: activeTab === 'billing' ? '#0369a1' : '#64748b',
             background: activeTab === 'billing' ? '#ffffff' : 'transparent',
-            boxShadow: activeTab === 'billing' ? '0 2px 8px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
-            fontSize: '0.92rem',
-            display: 'flex',
+            boxShadow: activeTab === 'billing' ? '0 2px 6px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
+            fontSize: '0.85rem',
+            display: 'inline-flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '7px',
             whiteSpace: 'nowrap',
             transition: 'all 0.15s ease'
           }}
@@ -545,18 +545,18 @@ export default function BursarFeesUnified() {
           type="button"
           onClick={() => handleTabChange('invoices')}
           style={{
-            padding: '10px 18px',
+            padding: '8px 14px',
             border: 'none',
-            borderRadius: '12px',
+            borderRadius: '10px',
             cursor: 'pointer',
             fontWeight: activeTab === 'invoices' ? 700 : 600,
             color: activeTab === 'invoices' ? '#0369a1' : '#64748b',
             background: activeTab === 'invoices' ? '#ffffff' : 'transparent',
-            boxShadow: activeTab === 'invoices' ? '0 2px 8px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
-            fontSize: '0.92rem',
-            display: 'flex',
+            boxShadow: activeTab === 'invoices' ? '0 2px 6px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
+            fontSize: '0.85rem',
+            display: 'inline-flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '7px',
             whiteSpace: 'nowrap',
             transition: 'all 0.15s ease'
           }}
@@ -569,18 +569,18 @@ export default function BursarFeesUnified() {
           type="button"
           onClick={() => handleTabChange('ledgers')}
           style={{
-            padding: '10px 18px',
+            padding: '8px 14px',
             border: 'none',
-            borderRadius: '12px',
+            borderRadius: '10px',
             cursor: 'pointer',
             fontWeight: activeTab === 'ledgers' ? 700 : 600,
             color: activeTab === 'ledgers' ? '#0369a1' : '#64748b',
             background: activeTab === 'ledgers' ? '#ffffff' : 'transparent',
-            boxShadow: activeTab === 'ledgers' ? '0 2px 8px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
-            fontSize: '0.92rem',
-            display: 'flex',
+            boxShadow: activeTab === 'ledgers' ? '0 2px 6px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
+            fontSize: '0.85rem',
+            display: 'inline-flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '7px',
             whiteSpace: 'nowrap',
             transition: 'all 0.15s ease'
           }}
@@ -593,18 +593,18 @@ export default function BursarFeesUnified() {
           type="button"
           onClick={() => handleTabChange('bulk-invoices')}
           style={{
-            padding: '10px 18px',
+            padding: '8px 14px',
             border: 'none',
-            borderRadius: '12px',
+            borderRadius: '10px',
             cursor: 'pointer',
             fontWeight: activeTab === 'bulk-invoices' ? 700 : 600,
             color: activeTab === 'bulk-invoices' ? '#0369a1' : '#64748b',
             background: activeTab === 'bulk-invoices' ? '#ffffff' : 'transparent',
-            boxShadow: activeTab === 'bulk-invoices' ? '0 2px 8px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
-            fontSize: '0.92rem',
-            display: 'flex',
+            boxShadow: activeTab === 'bulk-invoices' ? '0 2px 6px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
+            fontSize: '0.85rem',
+            display: 'inline-flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '7px',
             whiteSpace: 'nowrap',
             transition: 'all 0.15s ease'
           }}
@@ -617,18 +617,18 @@ export default function BursarFeesUnified() {
           type="button"
           onClick={() => handleTabChange('defaulters')}
           style={{
-            padding: '10px 18px',
+            padding: '8px 14px',
             border: 'none',
-            borderRadius: '12px',
+            borderRadius: '10px',
             cursor: 'pointer',
             fontWeight: activeTab === 'defaulters' ? 700 : 600,
             color: activeTab === 'defaulters' ? '#0369a1' : '#64748b',
             background: activeTab === 'defaulters' ? '#ffffff' : 'transparent',
-            boxShadow: activeTab === 'defaulters' ? '0 2px 8px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
-            fontSize: '0.92rem',
-            display: 'flex',
+            boxShadow: activeTab === 'defaulters' ? '0 2px 6px -1px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)' : 'none',
+            fontSize: '0.85rem',
+            display: 'inline-flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '7px',
             whiteSpace: 'nowrap',
             transition: 'all 0.15s ease'
           }}
@@ -639,7 +639,7 @@ export default function BursarFeesUnified() {
             <span style={{
               backgroundColor: activeTab === 'defaulters' ? '#fee2e2' : '#e2e8f0',
               color: activeTab === 'defaulters' ? '#b91c1c' : '#475569',
-              padding: '2px 8px',
+              padding: '1px 7px',
               borderRadius: '999px',
               fontSize: '11px',
               fontWeight: 800
@@ -652,18 +652,17 @@ export default function BursarFeesUnified() {
         <Link
           to="/bursar/fee-groups"
           style={{
-            marginLeft: 'auto',
-            padding: '10px 18px',
+            padding: '8px 14px',
             background: '#ffffff',
             border: '1px solid #cbd5e1',
-            borderRadius: '12px',
+            borderRadius: '10px',
             color: '#0f172a',
             fontWeight: 700,
-            fontSize: '0.88rem',
+            fontSize: '0.85rem',
             textDecoration: 'none',
-            display: 'flex',
+            display: 'inline-flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '7px',
             whiteSpace: 'nowrap',
             boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
             transition: 'all 0.15s ease'

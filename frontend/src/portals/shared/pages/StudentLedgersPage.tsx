@@ -125,7 +125,7 @@ export default function StudentLedgersPage() {
   const totalDue = Math.max(0, subtotal - ledgerDiscount);
 
   return (
-    <div className="portal-container" style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
+    <div className="portal-container" style={{ padding: '20px 24px', width: '100%', maxWidth: '100%', boxSizing: 'border-box', minWidth: 0 }}>
       <div className="portal-page-header no-print" style={{ marginBottom: 24 }}>
         <div className="header-content">
           <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 12 }}>
