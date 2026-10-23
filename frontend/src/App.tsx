@@ -1,6 +1,6 @@
 // WebsiteSettings subcomponents and layout imports removed as they are unified in SettingsPage
 import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { ToastProvider } from './context/ToastContext';
 import { SetupProvider } from './context/SetupContext';
@@ -336,7 +336,6 @@ function SchoolCodeRedirect() {
   return <Navigate to={target} replace />;
 }
 
-import { useAuth } from './contexts/AuthContext';
 import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import i18n from './i18n';

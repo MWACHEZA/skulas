@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
-import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, Pagination, usePagination, type ComboboxOption, SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type DisciplineTab = 'conduct' | 'awards' | 'committee' | 'approvals' | 'houses';
@@ -398,6 +398,9 @@ export default function AdminDiscipline() {
     return matchesSearch;
   });
 
+  const conductPage = usePagination(filteredConduct, 12);
+  const awardsPage = usePagination(filteredAwards, 12);
+
   const exportData: Record<string, any>[] =
     activeTab === 'conduct'
       ? filteredConduct.map(r => ({
@@ -683,6 +686,7 @@ export default function AdminDiscipline() {
               <p style={{ fontSize: '0.85rem', marginTop: 4 }}>All student behaviour records are clear.</p>
             </div>
           ) : (
+            <>
             <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
@@ -696,7 +700,7 @@ export default function AdminDiscipline() {
                 </tr>
               </thead>
               <tbody>
-                {filteredConduct.map(report => (
+                {conductPage.paginatedItems.map(report => (
                   <tr key={report.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                     <td style={{ padding: '12px 16px', fontWeight: 600, color: '#1e293b' }}>
                       {report.studentName}
@@ -759,6 +763,15 @@ export default function AdminDiscipline() {
                 ))}
               </tbody>
             </table>
+            <Pagination
+              currentPage={conductPage.currentPage}
+              totalItems={conductPage.totalItems}
+              pageSize={conductPage.pageSize}
+              onPageChange={conductPage.setCurrentPage}
+              onPageSizeChange={conductPage.setPageSize}
+              itemLabel="conduct reports"
+            />
+            </>
           )}
         </div>
       ) : activeTab === 'awards' ? (
@@ -771,6 +784,7 @@ export default function AdminDiscipline() {
               <p style={{ fontSize: '0.85rem', marginTop: 4 }}>Present student merits, certificates, and prizes above.</p>
             </div>
           ) : (
+            <>
             <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
@@ -782,7 +796,7 @@ export default function AdminDiscipline() {
                 </tr>
               </thead>
               <tbody>
-                {filteredAwards.map(award => (
+                {awardsPage.paginatedItems.map(award => (
                   <tr key={award.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                     <td style={{ padding: '12px 16px', fontWeight: 600, color: '#1e293b' }}>
                       {award.user?.name || 'Student'}
@@ -811,6 +825,15 @@ export default function AdminDiscipline() {
                 ))}
               </tbody>
             </table>
+            <Pagination
+              currentPage={awardsPage.currentPage}
+              totalItems={awardsPage.totalItems}
+              pageSize={awardsPage.pageSize}
+              onPageChange={awardsPage.setCurrentPage}
+              onPageSizeChange={awardsPage.setPageSize}
+              itemLabel="awards"
+            />
+            </>
           )}
         </div>
       ) : activeTab === 'committee' ? (

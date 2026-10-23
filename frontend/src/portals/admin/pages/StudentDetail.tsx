@@ -53,6 +53,21 @@ export default function StudentDetail() {
     setSearchParams({ tab });
   };
 
+  const handleParentLinkAction = async (connectionId: string, action: 'approve' | 'reject') => {
+    try {
+      await api.patch(`/api/schools/connections/${connectionId}/${action}`);
+      showToast(
+        action === 'approve'
+          ? 'Parent-Student link approved! Status is now Active.'
+          : 'Parent-Student link rejected/revoked.',
+        'success'
+      );
+      fetchStudent();
+    } catch (err: any) {
+      showToast(err?.response?.data?.error || `Failed to ${action} parent link`, 'error');
+    }
+  };
+
   if (loading) {
     return (
       <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '24px' }}>
@@ -525,8 +540,13 @@ export default function StudentDetail() {
       {/* Tab 7: Parents */}
       {activeTab === 'parents' && (
         <div className="portal-card">
-          <div className="portal-card-header">
-            <h3 style={{ fontSize: '1rem', fontWeight: 800, margin: 0 }}>Linked Parents & Emergency Contacts</h3>
+          <div className="portal-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <h3 style={{ fontSize: '1rem', fontWeight: 800, margin: 0 }}>Linked Parents & Emergency Contacts</h3>
+              <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: '#64748b' }}>
+                Approve or manage Parent Portal account connections for this student.
+              </p>
+            </div>
           </div>
           <div className="portal-card-body portal-card-body-flat">
             {!student.parents?.length && !student.guardianName ? (
@@ -537,10 +557,13 @@ export default function StudentDetail() {
               <div style={{ padding: 20 }}>
                 {student.guardianName && (
                   <div style={{ padding: 16, background: '#f8fafc', borderRadius: 10, marginBottom: 16, border: '1px solid #e2e8f0' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
                       <div>
-                        <h4 style={{ margin: '0 0 4px', fontSize: '1rem', fontWeight: 800 }}>{student.guardianName}</h4>
-                        <p style={{ margin: 0, color: '#64748b', fontSize: '0.85rem' }}>Relationship: {student.guardianRelation || 'Guardian'}</p>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800 }}>{student.guardianName}</h4>
+                          <span className="portal-badge info">Admission Record</span>
+                        </div>
+                        <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.85rem' }}>Relationship: {student.guardianRelation || 'Guardian'}</p>
                       </div>
                       <div style={{ textAlign: 'right' }}>
                         <div style={{ fontWeight: 700, color: '#2563eb' }}>{student.guardianPhone || 'N/A'}</div>
@@ -549,20 +572,61 @@ export default function StudentDetail() {
                     </div>
                   </div>
                 )}
-                {student.parents?.map((p: any, idx: number) => (
-                  <div key={idx} style={{ padding: 16, background: '#f8fafc', borderRadius: 10, marginBottom: 12, border: '1px solid #e2e8f0' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div>
-                        <h4 style={{ margin: '0 0 4px', fontSize: '1rem', fontWeight: 800 }}>{p.parent?.user?.name || 'Parent'}</h4>
-                        <p style={{ margin: 0, color: '#64748b', fontSize: '0.85rem' }}>Relationship: {p.relation || 'Parent'}</p>
-                      </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontWeight: 700, color: '#2563eb' }}>{p.parent?.user?.phone || 'N/A'}</div>
-                        <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{p.parent?.user?.email || 'N/A'}</div>
+                {student.parents?.map((p: any, idx: number) => {
+                  const linkStatus = (p.status || 'APPROVED').toUpperCase();
+                  return (
+                    <div
+                      key={p.id || idx}
+                      style={{
+                        padding: 16,
+                        background: linkStatus === 'PENDING' ? '#fffbeb' : '#f8fafc',
+                        borderRadius: 10,
+                        marginBottom: 12,
+                        border: linkStatus === 'PENDING' ? '1px solid #fde68a' : '1px solid #e2e8f0'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                            <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800 }}>{p.parent?.user?.name || 'Parent'}</h4>
+                            <span
+                              className={`portal-badge ${
+                                linkStatus === 'APPROVED' ? 'success' : linkStatus === 'PENDING' ? 'warning' : 'danger'
+                              }`}
+                            >
+                              {linkStatus === 'APPROVED' ? 'APPROVED (ACTIVE)' : linkStatus}
+                            </span>
+                          </div>
+                          <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.85rem' }}>
+                            Relationship: <strong>{p.relation || 'Parent'}</strong> &bull; Phone: <strong>{p.parent?.user?.phone || 'N/A'}</strong> &bull; Email: {p.parent?.user?.email || 'N/A'}
+                          </p>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          {linkStatus !== 'APPROVED' && (
+                            <button
+                              type="button"
+                              className="portal-btn-primary"
+                              style={{ padding: '7px 14px', fontSize: '0.82rem', background: '#16a34a', borderColor: '#16a34a' }}
+                              onClick={() => handleParentLinkAction(p.id, 'approve')}
+                            >
+                              <i className="fas fa-check-circle mr-2"></i>Approve Link
+                            </button>
+                          )}
+                          {linkStatus !== 'REJECTED' && (
+                            <button
+                              type="button"
+                              className="portal-btn-ghost"
+                              style={{ padding: '7px 14px', fontSize: '0.82rem', color: '#dc2626', border: '1px solid #fecaca', background: '#fef2f2' }}
+                              onClick={() => handleParentLinkAction(p.id, 'reject')}
+                            >
+                              <i className="fas fa-times-circle mr-2"></i>{linkStatus === 'APPROVED' ? 'Revoke Link' : 'Reject'}
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

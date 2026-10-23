@@ -78,7 +78,9 @@ interface AuthContextType {
   refreshLeadership: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext: React.Context<AuthContextType | null> =
+  (globalThis as any).__ACADEX_AUTH_CONTEXT__ ||
+  ((globalThis as any).__ACADEX_AUTH_CONTEXT__ = createContext<AuthContextType | null>(null));
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(localStorage.getItem('acadex_token'));
@@ -465,6 +467,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used inside AuthProvider');
+  if (!ctx) {
+    let storedUser: AuthUser | null = null;
+    let storedEntity: LinkedEntity | null = null;
+    try {
+      const u = localStorage.getItem('acadex_user');
+      if (u) storedUser = JSON.parse(u);
+      const e = localStorage.getItem('acadex_active_entity');
+      if (e) storedEntity = JSON.parse(e);
+    } catch {
+      // ignore
+    }
+    const storedToken = localStorage.getItem('acadex_token');
+    return {
+      user: storedUser,
+      token: storedToken,
+      activeEntity: storedEntity,
+      login: () => {},
+      logout: () => {},
+      setActiveEntity: () => {},
+      updateLinkedEntities: () => {},
+      isAuthenticated: !!storedToken && !!storedUser,
+      hasRole: (...roles: string[]) => (storedUser ? roles.includes(storedUser.role) : false),
+      refreshUser: async () => {},
+      updateUser: () => {},
+      isLeader: false,
+      leadershipAssignment: null,
+      refreshLeadership: async () => {},
+    };
+  }
   return ctx;
 }

@@ -5,7 +5,7 @@ import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
 import { useAuth } from '../../../contexts/AuthContext';
 import ErrorBoundary from '../../../components/shared/ErrorBoundary';
-import { SearchInput, ExportButton, SkeletonLoader } from '../../../components/shared';
+import { SearchInput, ExportButton, Pagination, usePagination, SkeletonLoader } from '../../../components/shared';
 import type { ExportColumn } from '../../../utils/exportService';
 import '../../../styles/portal.css';
 
@@ -303,6 +303,10 @@ function AdminTransportContent() {
     return !q || name.includes(q) || rTitle.includes(q) || vNum.includes(q);
   });
 
+  const vehiclesPage = usePagination(filteredVehicles, 12);
+  const routesPage = usePagination(filteredRoutes, 12);
+  const assignmentsPage = usePagination(filteredAssignments, 12);
+
   // Export Columns configurations
   const busExportColumns: ExportColumn<Vehicle>[] = useMemo(() => [
     { header: 'Vehicle Number', formatter: v => getVehicleNumber(v) },
@@ -561,6 +565,7 @@ function AdminTransportContent() {
               <p style={{ fontSize: '0.85rem', marginTop: 4 }}>Add school buses, vans, and drivers above.</p>
             </div>
           ) : (
+            <>
             <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
@@ -573,7 +578,7 @@ function AdminTransportContent() {
                 </tr>
               </thead>
               <tbody>
-                {filteredVehicles.map(v => (
+                {vehiclesPage.paginatedItems.map(v => (
                   <tr key={v.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                     <td style={{ padding: '12px 16px', fontWeight: 600, color: '#1e293b' }}>
                       <i className="fas fa-bus" style={{ color: '#d97706', marginRight: 8 }}></i>
@@ -606,6 +611,15 @@ function AdminTransportContent() {
                 ))}
               </tbody>
             </table>
+            <Pagination
+              currentPage={vehiclesPage.currentPage}
+              totalItems={vehiclesPage.totalItems}
+              pageSize={vehiclesPage.pageSize}
+              onPageChange={vehiclesPage.setCurrentPage}
+              onPageSizeChange={vehiclesPage.setPageSize}
+              itemLabel="vehicles"
+            />
+            </>
           )}
         </div>
       ) : activeTab === 'routes' ? (
@@ -618,6 +632,7 @@ function AdminTransportContent() {
               <p style={{ fontSize: '0.85rem', marginTop: 4 }}>Set up morning and afternoon routes above.</p>
             </div>
           ) : (
+            <>
             <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
@@ -629,7 +644,7 @@ function AdminTransportContent() {
                 </tr>
               </thead>
               <tbody>
-                {filteredRoutes.map(r => (
+                {routesPage.paginatedItems.map(r => (
                   <tr key={r.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                     <td style={{ padding: '12px 16px', fontWeight: 600, color: '#1e293b' }}>
                       <i className="fas fa-map-pin" style={{ color: '#ef4444', marginRight: 8 }}></i>
@@ -651,6 +666,15 @@ function AdminTransportContent() {
                 ))}
               </tbody>
             </table>
+            <Pagination
+              currentPage={routesPage.currentPage}
+              totalItems={routesPage.totalItems}
+              pageSize={routesPage.pageSize}
+              onPageChange={routesPage.setCurrentPage}
+              onPageSizeChange={routesPage.setPageSize}
+              itemLabel="routes"
+            />
+            </>
           )}
         </div>
       ) : activeTab === 'map' ? (
@@ -718,6 +742,7 @@ function AdminTransportContent() {
               <p style={{ fontSize: '0.85rem', marginTop: 4 }}>Assign students to transit routes and manage billing fees.</p>
             </div>
           ) : (
+            <>
             <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
@@ -728,7 +753,7 @@ function AdminTransportContent() {
                 </tr>
               </thead>
               <tbody>
-                {filteredAssignments.map(a => (
+                {assignmentsPage.paginatedItems.map(a => (
                   <tr key={a.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                     <td style={{ padding: '12px 16px', fontWeight: 600, color: '#1e293b' }}>
                       {a.name}
@@ -746,6 +771,15 @@ function AdminTransportContent() {
                 ))}
               </tbody>
             </table>
+            <Pagination
+              currentPage={assignmentsPage.currentPage}
+              totalItems={assignmentsPage.totalItems}
+              pageSize={assignmentsPage.pageSize}
+              onPageChange={assignmentsPage.setCurrentPage}
+              onPageSizeChange={assignmentsPage.setPageSize}
+              itemLabel="allocations"
+            />
+            </>
           )}
         </div>
       )}

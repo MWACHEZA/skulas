@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
-import { SearchInput, ExportButton } from '../../../components/shared';
+import { SearchInput, ExportButton, Pagination, usePagination } from '../../../components/shared';
 import { format } from 'date-fns';
 
 interface GateDashboardData {
@@ -95,6 +95,11 @@ export default function AdminGateDashboard() {
       item.entryStatus?.toLowerCase().includes(searchLower)
     );
   });
+
+  const onCampusPage = usePagination(filteredOnCampus, 15);
+  const notArrivedPage = usePagination(filteredNotArrived, 15);
+  const deniedPage = usePagination(filteredDenied, 15);
+  const allScansPage = usePagination(filteredAllScans, 15);
 
   // Export datasets
   const exportColumnsMap: Record<string, any[]> = {
@@ -494,7 +499,7 @@ export default function AdminGateDashboard() {
                     </td>
                   </tr>
                 ) : (
-                  filteredOnCampus.map((l: any) => (
+                  onCampusPage.paginatedItems.map((l: any) => (
                     <tr key={l.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                       <td style={{ padding: '12px 16px', fontWeight: '600', color: '#0f172a' }}>
                         {l.student?.name}
@@ -528,6 +533,14 @@ export default function AdminGateDashboard() {
                 )}
               </tbody>
             </table>
+            <Pagination
+              currentPage={onCampusPage.currentPage}
+              totalItems={onCampusPage.totalItems}
+              pageSize={onCampusPage.pageSize}
+              onPageChange={onCampusPage.setCurrentPage}
+              onPageSizeChange={onCampusPage.setPageSize}
+              itemLabel="students on campus"
+            />
           </div>
         )}
 
@@ -553,7 +566,7 @@ export default function AdminGateDashboard() {
                     </td>
                   </tr>
                 ) : (
-                  filteredNotArrived.map((s: any) => (
+                  notArrivedPage.paginatedItems.map((s: any) => (
                     <tr key={s.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                       <td style={{ padding: '12px 16px', fontWeight: '600', color: '#0f172a' }}>
                         {s.name}
@@ -599,6 +612,14 @@ export default function AdminGateDashboard() {
                 )}
               </tbody>
             </table>
+            <Pagination
+              currentPage={notArrivedPage.currentPage}
+              totalItems={notArrivedPage.totalItems}
+              pageSize={notArrivedPage.pageSize}
+              onPageChange={notArrivedPage.setCurrentPage}
+              onPageSizeChange={notArrivedPage.setPageSize}
+              itemLabel="day scholars"
+            />
           </div>
         )}
 
@@ -625,7 +646,7 @@ export default function AdminGateDashboard() {
                     </td>
                   </tr>
                 ) : (
-                  filteredDenied.map((d: any) => (
+                  deniedPage.paginatedItems.map((d: any) => (
                     <tr key={d.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                       <td style={{ padding: '12px 16px', fontWeight: '600', color: '#0f172a' }}>
                         {d.name}
@@ -668,6 +689,14 @@ export default function AdminGateDashboard() {
                 )}
               </tbody>
             </table>
+            <Pagination
+              currentPage={deniedPage.currentPage}
+              totalItems={deniedPage.totalItems}
+              pageSize={deniedPage.pageSize}
+              onPageChange={deniedPage.setCurrentPage}
+              onPageSizeChange={deniedPage.setPageSize}
+              itemLabel="denied scans"
+            />
           </div>
         )}
 
@@ -693,7 +722,7 @@ export default function AdminGateDashboard() {
                     </td>
                   </tr>
                 ) : (
-                  filteredAllScans.map((l: any) => (
+                  allScansPage.paginatedItems.map((l: any) => (
                     <tr key={l.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                       <td style={{ padding: '12px 16px', fontWeight: '600', color: '#475569' }}>
                         {format(new Date(l.scannedAt), 'HH:mm:ss')}
@@ -731,6 +760,14 @@ export default function AdminGateDashboard() {
                 )}
               </tbody>
             </table>
+            <Pagination
+              currentPage={allScansPage.currentPage}
+              totalItems={allScansPage.totalItems}
+              pageSize={allScansPage.pageSize}
+              onPageChange={allScansPage.setCurrentPage}
+              onPageSizeChange={allScansPage.setPageSize}
+              itemLabel="gate scan events"
+            />
           </div>
         )}
       </div>

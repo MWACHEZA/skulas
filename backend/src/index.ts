@@ -116,13 +116,14 @@ app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, '../storage')));
 // Security: Rate Limiting
 // Apply global rate limiter to all requests
-import { globalLimiter, authLimiter } from './middleware/rate-limit';
+import { globalLimiter, authLimiter, mutationLimiter } from './middleware/rate-limit';
 import { auditMiddleware } from './middleware/audit';
 import { notificationWorker } from './jobs/notification-worker';
 import { libraryReminderWorker } from './jobs/library-reminder-job';
 notificationWorker.start();
 libraryReminderWorker.start();
 app.use(globalLimiter);
+app.use(mutationLimiter);
 app.use(auditMiddleware);
 // Routes
 app.use('/api/auth', authLimiter, authRoutes);

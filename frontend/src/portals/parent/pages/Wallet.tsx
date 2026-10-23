@@ -4,6 +4,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { useAccountingQuery, invalidateAllAccountingKeys } from '../../../hooks/useAccountingQuery';
 import EmptyState from '../../../components/shared/EmptyState';
+import { Pagination, usePagination } from '../../../components/shared';
 
 interface WalletTransaction {
   id: string;
@@ -145,6 +146,12 @@ export default function ParentWallet() {
     }
   };
 
+  const transactions = wallet?.transactions || [];
+  const purchases = transactions.filter(t => t.type === 'PURCHASE');
+  const recentPurchases = purchases.slice(0, 10);
+  const filteredTransactions = transactions.filter(t => filterType === 'ALL' || t.type === filterType);
+  const txnPage = usePagination(filteredTransactions, 10);
+
   if (!currentChild) {
     return (
       <div className="portal-container" style={{ padding: 40, textAlign: 'center' }}>
@@ -161,11 +168,6 @@ export default function ParentWallet() {
   const isLow = currentBalance < 5.00;
   const currentLimit = wallet?.dailyLimit ?? 5.00;
   const weekSpend = wallet?.weekSpendTotal ?? 0;
-
-  const transactions = wallet?.transactions || [];
-  const purchases = transactions.filter(t => t.type === 'PURCHASE');
-  const recentPurchases = purchases.slice(0, 10);
-  const filteredTransactions = transactions.filter(t => filterType === 'ALL' || t.type === filterType);
 
   const uniqueCategories = ['ALL', ...Array.from(new Set(menuItems.map(i => i.category).filter(Boolean)))];
 
@@ -564,6 +566,7 @@ export default function ParentWallet() {
                   No wallet transactions found for this filter.
                 </div>
               ) : (
+                <>
                 <table className="portal-table">
                   <thead>
                     <tr>
@@ -574,7 +577,7 @@ export default function ParentWallet() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredTransactions.slice(0, 15).map(txn => (
+                    {txnPage.paginatedItems.map(txn => (
                       <tr key={txn.id}>
                         <td style={{ fontSize: '0.84rem', fontWeight: 600 }}>
                           {new Date(txn.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
@@ -598,6 +601,15 @@ export default function ParentWallet() {
                     ))}
                   </tbody>
                 </table>
+                <Pagination
+                  currentPage={txnPage.currentPage}
+                  totalItems={txnPage.totalItems}
+                  pageSize={txnPage.pageSize}
+                  onPageChange={txnPage.setCurrentPage}
+                  onPageSizeChange={txnPage.setPageSize}
+                  itemLabel="transactions"
+                />
+                </>
               )}
             </div>
           </div>

@@ -5,6 +5,7 @@ import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
 import TabbedPage, { type TabItem } from '../../../components/portals/shared/TabbedPage';
 import EmptyState from '../../../components/shared/EmptyState';
+import { Pagination, usePagination } from '../../../components/shared';
 
 // ── TYPES ──
 
@@ -299,6 +300,10 @@ export default function ParentFees() {
       setIsSubmittingPlan(false);
     }
   };
+
+  const invoicesPage = usePagination(data?.invoices || [], 10);
+  const receiptsPage = usePagination(data?.receipts || [], 10);
+  const statementPage = usePagination(data?.statement || [], 12);
 
   if (!currentChild) {
     return (
@@ -717,6 +722,7 @@ export default function ParentFees() {
               <EmptyState icon="fas fa-file-invoice" title="No Invoices Yet" description="There are no fee invoices billed to this student account yet." />
             </div>
           ) : (
+            <>
             <table className="portal-table">
               <thead>
                 <tr>
@@ -730,7 +736,7 @@ export default function ParentFees() {
                 </tr>
               </thead>
               <tbody>
-                {data?.invoices.map(inv => (
+                {invoicesPage.paginatedItems.map(inv => (
                   <tr key={inv.id}>
                     <td style={{ fontWeight: 700, color: '#2563eb' }}>{inv.invoiceNumber}</td>
                     <td>
@@ -785,6 +791,15 @@ export default function ParentFees() {
                 ))}
               </tbody>
             </table>
+            <Pagination
+              currentPage={invoicesPage.currentPage}
+              totalItems={invoicesPage.totalItems}
+              pageSize={invoicesPage.pageSize}
+              onPageChange={invoicesPage.setCurrentPage}
+              onPageSizeChange={invoicesPage.setPageSize}
+              itemLabel="invoices"
+            />
+            </>
           )}
         </div>
       ) : (
@@ -794,6 +809,7 @@ export default function ParentFees() {
               <EmptyState icon="fas fa-receipt" title="No Receipts Yet" description="No verified or pending payment receipts found on this account." />
             </div>
           ) : (
+            <>
             <table className="portal-table">
               <thead>
                 <tr>
@@ -806,7 +822,7 @@ export default function ParentFees() {
                 </tr>
               </thead>
               <tbody>
-                {data?.receipts.map(rcp => (
+                {receiptsPage.paginatedItems.map(rcp => (
                   <tr key={rcp.id}>
                     <td style={{ fontWeight: 700, color: '#1e293b' }}>{rcp.receiptNumber}</td>
                     <td>{new Date(rcp.date).toLocaleDateString()}</td>
@@ -835,6 +851,15 @@ export default function ParentFees() {
                 ))}
               </tbody>
             </table>
+            <Pagination
+              currentPage={receiptsPage.currentPage}
+              totalItems={receiptsPage.totalItems}
+              pageSize={receiptsPage.pageSize}
+              onPageChange={receiptsPage.setCurrentPage}
+              onPageSizeChange={receiptsPage.setPageSize}
+              itemLabel="receipts"
+            />
+            </>
           )}
         </div>
       )}
@@ -917,6 +942,7 @@ export default function ParentFees() {
             <EmptyState icon="fas fa-book-open" title="No Ledger Entries" description="No financial transactions recorded on this student's ledger yet." />
           </div>
         ) : (
+          <>
           <table className="portal-table">
             <thead>
               <tr>
@@ -928,15 +954,15 @@ export default function ParentFees() {
               </tr>
             </thead>
             <tbody>
-              {data?.statement.map(st => (
+              {statementPage.paginatedItems.map(st => (
                 <tr key={st.id}>
                   <td>{new Date(st.date).toLocaleDateString()}</td>
                   <td style={{ fontWeight: 600, color: '#334155' }}>{st.description}</td>
                   <td style={{ textAlign: 'right', color: st.debit > 0 ? '#1e293b' : '#94a3b8' }}>
-                    {st.debit > 0 ? `${data.currencySymbol}${st.debit.toFixed(2)}` : '—'}
+                    {st.debit > 0 ? `${data?.currencySymbol}${st.debit.toFixed(2)}` : '—'}
                   </td>
                   <td style={{ textAlign: 'right', color: st.credit > 0 ? '#16a34a' : '#94a3b8', fontWeight: 600 }}>
-                    {st.credit > 0 ? `${data.currencySymbol}${st.credit.toFixed(2)}` : '—'}
+                    {st.credit > 0 ? `${data?.currencySymbol}${st.credit.toFixed(2)}` : '—'}
                   </td>
                   <td
                     style={{
@@ -945,12 +971,21 @@ export default function ParentFees() {
                       color: st.runningBalance > 0 ? '#dc2626' : '#16a34a'
                     }}
                   >
-                    {data.currencySymbol}{st.runningBalance.toFixed(2)}
+                    {data?.currencySymbol}{st.runningBalance.toFixed(2)}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          <Pagination
+            currentPage={statementPage.currentPage}
+            totalItems={statementPage.totalItems}
+            pageSize={statementPage.pageSize}
+            onPageChange={statementPage.setCurrentPage}
+            onPageSizeChange={statementPage.setPageSize}
+            itemLabel="statement lines"
+          />
+          </>
         )}
       </div>
     </div>

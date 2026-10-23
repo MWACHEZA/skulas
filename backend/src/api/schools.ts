@@ -1831,29 +1831,39 @@ router.get('/:code/content', async (req, res) => {
  * @route   GET /api/schools/connections/pending
  * @desc    [SCHOOL_ADMIN] Fetch all users with pending link requests (Suppliers or Parents)
  */
-router.get('/connections/pending', requireAuth, requireRole('SCHOOL_ADMIN'), async (req: AuthRequest, res) => {
-  const { role } = req.query;
+router.get('/connections/pending', requireAuth, requireRole(['SCHOOL_ADMIN', 'SUPER_ADMIN', 'PRINCIPAL']), async (req: AuthRequest, res) => {
+  const { role, status } = req.query;
   try {
     const schoolId = req.user!.schoolId!;
     
     if (role === 'PARENT') {
+      const statusFilter = status === 'ALL'
+        ? undefined
+        : (typeof status === 'string' && status ? status : 'PENDING');
+
       const pendingParents = await prisma.parentStudent.findMany({
         where: {
           student: { schoolId },
-          status: 'PENDING'
+          ...(statusFilter ? { status: statusFilter } : {})
         },
         include: {
           parent: { include: { user: true } },
-          student: true
-        }
+          student: { include: { class: true } }
+        },
+        orderBy: { createdAt: 'desc' }
       });
       
       return res.json(pendingParents.map(p => ({
         ...p.parent.user,
+        parentUserId: p.parent.userId,
         parentRecordId: p.parent.id,
         connectionId: p.id,
+        linkStatus: p.status,
+        createdAt: p.createdAt,
+        studentRecordId: p.student.id,
         studentName: p.student.name,
         studentId: p.student.studentId,
+        studentClass: p.student.class?.name || 'Unassigned',
         relation: p.relation
       })));
     }
@@ -1892,34 +1902,78 @@ router.get('/connections/pending', requireAuth, requireRole('SCHOOL_ADMIN'), asy
 
 /**
  * @route   PATCH /api/schools/connections/:userId/approve
- * @desc    [SCHOOL_ADMIN] Approve a pending connection request
+ * @desc    [SCHOOL_ADMIN] Approve a pending connection request (accepts connectionId or userId)
  */
-router.patch('/connections/:userId/approve', requireAuth, requireRole('SCHOOL_ADMIN'), async (req: AuthRequest, res) => {
+router.patch('/connections/:userId/approve', requireAuth, requireRole(['SCHOOL_ADMIN', 'SUPER_ADMIN', 'PRINCIPAL']), async (req: AuthRequest, res) => {
   try {
-    const applicantId = req.params.userId as string;
+    const targetId = req.params.userId as string;
     const school = await prisma.school.findUnique({ where: { id: req.user!.schoolId! } });
     if (!school) return res.status(404).json({ error: 'School not found' });
 
-    const applicant = await prisma.user.findFirst({ where: { id: applicantId } });
-    if (!applicant) return res.status(404).json({ error: 'User not found' });
+    // 1. Direct lookup by ParentStudent connectionId first (most specific, supports parents with multiple children)
+    const directParentConn = await prisma.parentStudent.findFirst({
+      where: {
+        id: targetId,
+        student: { schoolId: school.id }
+      }
+    });
 
-    // 1. Find the pending connection (Check Supplier first, then Parent)
+    if (directParentConn) {
+      const updated = await prisma.parentStudent.update({
+        where: { id: directParentConn.id },
+        data: { status: 'APPROVED' }
+      });
+      return res.json({
+        success: true,
+        message: 'Parent-Student link approved successfully',
+        connection: updated
+      });
+    }
+
+    // 2. Direct lookup by SchoolSupplier connectionId
+    const directSupplierConn = await prisma.schoolSupplier.findFirst({
+      where: {
+        id: targetId,
+        schoolId: school.id
+      },
+      include: { supplier: true }
+    });
+
+    if (directSupplierConn) {
+      const schoolSpecificId = await generateSequentialId(school.id, 'SUPPLIER');
+      await prisma.$transaction([
+        prisma.schoolSupplier.update({
+          where: { id: directSupplierConn.id },
+          data: { status: 'APPROVED', schoolSpecificId }
+        }),
+        prisma.user.update({
+          where: { id: directSupplierConn.supplier.userId },
+          data: { staffId: schoolSpecificId }
+        })
+      ]);
+      return res.json({ success: true, message: 'Supplier connection approved successfully', schoolSpecificId });
+    }
+
+    // 3. Fallback: Lookup by applicant User ID
+    const applicant = await prisma.user.findFirst({ where: { id: targetId } });
+    if (!applicant) return res.status(404).json({ error: 'User or connection not found' });
+
     let schoolSpecificId = null;
     let type = 'SUPPLIER';
 
     let connection: any = await prisma.schoolSupplier.findFirst({
-        where: {
-            schoolId: school.id,
-            supplier: { userId: applicantId },
-            status: 'PENDING'
-        }
+      where: {
+        schoolId: school.id,
+        supplier: { userId: targetId },
+        status: 'PENDING'
+      }
     });
 
     if (!connection) {
       connection = await prisma.parentStudent.findFirst({
         where: {
           student: { schoolId: school.id },
-          parent: { userId: applicantId },
+          parent: { userId: targetId },
           status: 'PENDING'
         }
       });
@@ -1930,19 +1984,15 @@ router.patch('/connections/:userId/approve', requireAuth, requireRole('SCHOOL_AD
       return res.status(400).json({ error: 'No pending request found for this school' });
     }
 
-    // 2. Handle role-specific logic (e.g., ID generation)
     if (type === 'SUPPLIER') {
-      // Generate ID before the transaction (atomic via SchoolSequence table)
       schoolSpecificId = await generateSequentialId(school.id, 'SUPPLIER');
-      // Both writes must succeed or neither should — wrap in transaction
       await prisma.$transaction([
         prisma.schoolSupplier.update({
           where: { id: connection.id },
           data: { status: 'APPROVED', schoolSpecificId }
         }),
-        // Sync generated ID back to the User table
         prisma.user.update({
-          where: { id: applicantId },
+          where: { id: targetId },
           data: { staffId: schoolSpecificId }
         })
       ]);
@@ -1956,6 +2006,55 @@ router.patch('/connections/:userId/approve', requireAuth, requireRole('SCHOOL_AD
     res.json({ success: true, message: 'Connection approved successfully', schoolSpecificId });
   } catch (error) {
     res.status(500).json({ error: 'Failed to approve connection' });
+  }
+});
+
+/**
+ * @route   PATCH /api/schools/connections/:id/reject
+ * @desc    [SCHOOL_ADMIN] Reject or revoke a Parent-Student or Supplier connection request
+ */
+router.patch('/connections/:id/reject', requireAuth, requireRole(['SCHOOL_ADMIN', 'SUPER_ADMIN', 'PRINCIPAL']), async (req: AuthRequest, res) => {
+  try {
+    const targetId = req.params.id as string;
+    const schoolId = req.user!.schoolId!;
+
+    const parentConn = await prisma.parentStudent.findFirst({
+      where: {
+        OR: [
+          { id: targetId, student: { schoolId } },
+          { parent: { userId: targetId }, student: { schoolId }, status: 'PENDING' }
+        ]
+      }
+    });
+
+    if (parentConn) {
+      const updated = await prisma.parentStudent.update({
+        where: { id: parentConn.id },
+        data: { status: 'REJECTED' }
+      });
+      return res.json({ success: true, message: 'Parent-Student link rejected', connection: updated });
+    }
+
+    const supplierConn = await prisma.schoolSupplier.findFirst({
+      where: {
+        OR: [
+          { id: targetId, schoolId },
+          { supplier: { userId: targetId }, schoolId, status: 'PENDING' }
+        ]
+      }
+    });
+
+    if (supplierConn) {
+      await prisma.schoolSupplier.update({
+        where: { id: supplierConn.id },
+        data: { status: 'REJECTED' }
+      });
+      return res.json({ success: true, message: 'Supplier connection rejected' });
+    }
+
+    return res.status(404).json({ error: 'Connection request not found' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to reject connection' });
   }
 });
 export default router;

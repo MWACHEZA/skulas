@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
-import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, Pagination, usePagination, type ComboboxOption } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type UniformTab = 'stock' | 'kits' | 'issue' | 'alerts' | 'reports';
@@ -331,6 +331,10 @@ export default function AdminUniformsInventory() {
     return matchesSearch && matchesGender;
   });
 
+  const stockPage = usePagination(filteredProducts, 15);
+  const alertsPage = usePagination(lowStockAlerts, 15);
+  const ledgerPage = usePagination(ledgerEntries, 15);
+
   return (
     <div className="portal-container" style={{ padding: '24px', maxWidth: '1440px', margin: '0 auto' }}>
       {/* Header */}
@@ -529,7 +533,7 @@ export default function AdminUniformsInventory() {
                 </tr>
               </thead>
               <tbody>
-                {filteredProducts.map(p => (
+                {stockPage.paginatedItems.map(p => (
                   <tr key={p.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                     <td style={{ padding: '12px 16px', fontWeight: 600, color: '#1e293b' }}>{p.name}</td>
                     <td style={{ padding: '12px 16px' }}>{p.gender} {p.ageRange ? `(${p.ageRange})` : ''}</td>
@@ -557,6 +561,14 @@ export default function AdminUniformsInventory() {
                 ))}
               </tbody>
             </table>
+            <Pagination
+              currentPage={stockPage.currentPage}
+              totalItems={stockPage.totalItems}
+              pageSize={stockPage.pageSize}
+              onPageChange={stockPage.setCurrentPage}
+              onPageSizeChange={stockPage.setPageSize}
+              itemLabel="uniform items"
+            />
           </div>
         </div>
       )}
@@ -821,7 +833,7 @@ export default function AdminUniformsInventory() {
                 </tr>
               </thead>
               <tbody>
-                {lowStockAlerts.map(p => (
+                {alertsPage.paginatedItems.map(p => (
                   <tr key={p.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                     <td style={{ padding: '12px 16px', fontWeight: 600, color: '#1e293b' }}>{p.name}</td>
                     <td style={{ padding: '12px 16px' }}>{p.size}</td>
@@ -833,6 +845,14 @@ export default function AdminUniformsInventory() {
                 ))}
               </tbody>
             </table>
+            <Pagination
+              currentPage={alertsPage.currentPage}
+              totalItems={alertsPage.totalItems}
+              pageSize={alertsPage.pageSize}
+              onPageChange={alertsPage.setCurrentPage}
+              onPageSizeChange={alertsPage.setPageSize}
+              itemLabel="low stock alerts"
+            />
           </div>
         </div>
       )}
@@ -878,7 +898,7 @@ export default function AdminUniformsInventory() {
               </tr>
             </thead>
             <tbody>
-              {ledgerEntries.map(entry => (
+              {ledgerPage.paginatedItems.map(entry => (
                 <tr key={entry.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
                   <td style={{ padding: '12px 16px', color: '#64748b' }}>
                     {new Date(entry.createdAt).toLocaleDateString()} {new Date(entry.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -908,6 +928,14 @@ export default function AdminUniformsInventory() {
               ))}
             </tbody>
           </table>
+          <Pagination
+            currentPage={ledgerPage.currentPage}
+            totalItems={ledgerPage.totalItems}
+            pageSize={ledgerPage.pageSize}
+            onPageChange={ledgerPage.setCurrentPage}
+            onPageSizeChange={ledgerPage.setPageSize}
+            itemLabel="stock movements"
+          />
         </div>
       )}
 

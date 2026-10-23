@@ -48,13 +48,17 @@ export default function AdminStudents() {
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isParentLinksModalOpen, setIsParentLinksModalOpen] = useState(false);
+  const [parentLinkRequests, setParentLinkRequests] = useState<any[]>([]);
+  const [parentLinkFilter, setParentLinkFilter] = useState<'PENDING' | 'APPROVED' | 'ALL'>('PENDING');
+  const [loadingParentLinks, setLoadingParentLinks] = useState(false);
   
   const { user: currentUser } = useAuth();
   const { showToast, toastConfirm } = useToast();
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12;
+  const [itemsPerPage, setItemsPerPage] = useState(12);
 
   // 300ms search debounce
   useEffect(() => {
@@ -68,11 +72,54 @@ export default function AdminStudents() {
   // Load filter options on mount
   useEffect(() => {
     fetchFilterOptions();
+    if (!isBursar) {
+      fetchParentLinkRequests();
+    }
     const params = new URLSearchParams(window.location.search);
     if (params.get('action') === 'add') {
       setIsCreateModalOpen(true);
     }
+    if (params.get('tab') === 'parent-links') {
+      setIsParentLinksModalOpen(true);
+    }
   }, []);
+
+  const fetchParentLinkRequests = async () => {
+    setLoadingParentLinks(true);
+    try {
+      const { data } = await api.get('/api/schools/connections/pending?role=PARENT&status=ALL');
+      setParentLinkRequests(Array.isArray(data) ? data : []);
+    } catch {
+      // Non-blocking
+    } finally {
+      setLoadingParentLinks(false);
+    }
+  };
+
+  const handleParentLinkAction = async (connectionId: string, action: 'approve' | 'reject') => {
+    try {
+      await api.patch(`/api/schools/connections/${connectionId}/${action}`);
+      showToast(
+        action === 'approve'
+          ? 'Parent-Student link approved! Parent status is now Active.'
+          : 'Parent-Student link rejected/revoked.',
+        'success'
+      );
+      fetchParentLinkRequests();
+    } catch (err: any) {
+      showToast(err?.response?.data?.error || `Failed to ${action} parent link`, 'error');
+    }
+  };
+
+  const pendingParentLinksCount = useMemo(
+    () => parentLinkRequests.filter(r => (r.linkStatus || 'PENDING') === 'PENDING').length,
+    [parentLinkRequests]
+  );
+
+  const filteredParentLinkRequests = useMemo(() => {
+    if (parentLinkFilter === 'ALL') return parentLinkRequests;
+    return parentLinkRequests.filter(r => (r.linkStatus || 'PENDING') === parentLinkFilter);
+  }, [parentLinkRequests, parentLinkFilter]);
 
   const fetchFilterOptions = async () => {
     try {
@@ -101,7 +148,7 @@ export default function AdminStudents() {
     setLoading(true);
     try {
       const params: Record<string, string> = {
-        limit: '100',
+        limit: '500',
         search: debouncedSearch,
         leadersOnly: leadersOnly ? 'true' : 'false'
       };
@@ -319,10 +366,100 @@ export default function AdminStudents() {
 
   return (
     <>
-      <div className="portal-page-header">
-        <h1>Student Management</h1>
-        <p>View, search, filter, and manage school student profiles, enrollment, and credentials.</p>
+      <div className="portal-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+        <div>
+          <h1>Student Management</h1>
+          <p>View, search, filter, and manage school student profiles, enrollment, and credentials.</p>
+        </div>
+        {!isBursar && (
+          <button
+            type="button"
+            onClick={() => { fetchParentLinkRequests(); setIsParentLinksModalOpen(true); }}
+            style={{
+              height: '42px',
+              padding: '0 18px',
+              borderRadius: '10px',
+              fontWeight: 800,
+              fontSize: '0.88rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              cursor: 'pointer',
+              background: pendingParentLinksCount > 0 ? '#fffbeb' : '#f8fafc',
+              color: pendingParentLinksCount > 0 ? '#b45309' : '#334155',
+              border: pendingParentLinksCount > 0 ? '2px solid #f59e0b' : '1px solid #cbd5e1',
+              boxShadow: pendingParentLinksCount > 0 ? '0 4px 12px rgba(245, 158, 11, 0.15)' : 'none'
+            }}
+          >
+            <i className="fas fa-user-check" style={{ color: pendingParentLinksCount > 0 ? '#d97706' : '#2563eb' }}></i>
+            Parent Link Approvals
+            <span
+              style={{
+                background: pendingParentLinksCount > 0 ? '#d97706' : '#e2e8f0',
+                color: pendingParentLinksCount > 0 ? '#fff' : '#475569',
+                borderRadius: '999px',
+                padding: '2px 9px',
+                fontSize: '0.75rem',
+                fontWeight: 800
+              }}
+            >
+              {pendingParentLinksCount} Pending
+            </span>
+          </button>
+        )}
       </div>
+
+      {/* Prominent Pending Parent-Student Link Banner */}
+      {!isBursar && pendingParentLinksCount > 0 && (
+        <div
+          style={{
+            background: 'linear-gradient(90deg, #fffbeb 0%, #fef3c7 100%)',
+            border: '1px solid #fde68a',
+            borderLeft: '5px solid #f59e0b',
+            borderRadius: '12px',
+            padding: '14px 20px',
+            marginBottom: '20px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '12px'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <div style={{ width: 40, height: 40, borderRadius: 10, background: '#f59e0b', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem' }}>
+              <i className="fas fa-user-friends"></i>
+            </div>
+            <div>
+              <div style={{ fontWeight: 800, color: '#92400e', fontSize: '0.95rem' }}>
+                {pendingParentLinksCount} Pending Parent–Student Link Request{pendingParentLinksCount > 1 ? 's' : ''} Awaiting Approval
+              </div>
+              <div style={{ color: '#b45309', fontSize: '0.82rem' }}>
+                Approve verified parent requests so their Parent Portal status changes from Pending to Active.
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => { setParentLinkFilter('PENDING'); setIsParentLinksModalOpen(true); }}
+            style={{
+              background: '#d97706',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '9px 16px',
+              fontWeight: 800,
+              fontSize: '0.85rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}
+          >
+            <i className="fas fa-check-double"></i> Review & Approve Links
+          </button>
+        </div>
+      )}
 
       <div className="portal-card" style={{ marginBottom: '24px' }}>
         {/* Top Action Bar */}
@@ -708,11 +845,32 @@ export default function AdminStudents() {
             </table>
             
             {filteredStudents.length > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0' }}>
-                <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-                  Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredStudents.length)} of {filteredStudents.length} entries
-                </span>
-                <div style={{ display: 'flex', gap: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', borderTop: '1px solid #e2e8f0', flexWrap: 'wrap', gap: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                    Showing <strong>{(currentPage - 1) * itemsPerPage + 1}</strong> to <strong>{Math.min(currentPage * itemsPerPage, filteredStudents.length)}</strong> of <strong>{filteredStudents.length}</strong> students
+                  </span>
+                  <select
+                    className="portal-input"
+                    value={itemsPerPage}
+                    onChange={e => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+                    style={{ width: 'auto', padding: '4px 10px', fontSize: '0.8rem', height: 32 }}
+                  >
+                    <option value={12}>12 / page</option>
+                    <option value={25}>25 / page</option>
+                    <option value={50}>50 / page</option>
+                    <option value={100}>100 / page</option>
+                  </select>
+                </div>
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                  <button
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                    className="portal-btn-ghost"
+                    style={{ padding: '6px 10px', fontSize: '0.82rem' }}
+                  >
+                    First
+                  </button>
                   <button 
                     onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                     disabled={currentPage === 1}
@@ -721,6 +879,9 @@ export default function AdminStudents() {
                   >
                     Previous
                   </button>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#1e293b', padding: '0 8px' }}>
+                    Page {currentPage} of {Math.max(1, Math.ceil(filteredStudents.length / itemsPerPage))}
+                  </span>
                   <button 
                     onClick={() => setCurrentPage(prev => (prev * itemsPerPage < filteredStudents.length ? prev + 1 : prev))}
                     disabled={currentPage * itemsPerPage >= filteredStudents.length}
@@ -729,6 +890,14 @@ export default function AdminStudents() {
                   >
                     Next
                   </button>
+                  <button
+                    onClick={() => setCurrentPage(Math.max(1, Math.ceil(filteredStudents.length / itemsPerPage)))}
+                    disabled={currentPage * itemsPerPage >= filteredStudents.length}
+                    className="portal-btn-ghost"
+                    style={{ padding: '6px 10px', fontSize: '0.82rem' }}
+                  >
+                    Last
+                  </button>
                 </div>
               </div>
             )}
@@ -736,6 +905,189 @@ export default function AdminStudents() {
           )}
         </div>
       </div>
+
+      {/* Parent-Student Link Approvals Modal */}
+      {isParentLinksModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(15, 23, 42, 0.55)',
+            zIndex: 1100,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px'
+          }}
+          onClick={() => setIsParentLinksModalOpen(false)}
+        >
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: '16px',
+              width: '100%',
+              maxWidth: '900px',
+              maxHeight: '85vh',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+              overflow: 'hidden'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>
+                  <i className="fas fa-user-check" style={{ color: '#2563eb', marginRight: 10 }}></i>
+                  Parent–Student Link Requests & Approvals
+                </h2>
+                <p style={{ margin: '4px 0 0', fontSize: '0.85rem', color: '#64748b' }}>
+                  Approve parent link requests so their account status changes from <strong>Pending</strong> to <strong>Active (Approved)</strong>.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsParentLinksModalOpen(false)}
+                style={{ background: '#f1f5f9', border: 'none', width: 36, height: 36, borderRadius: 8, cursor: 'pointer', color: '#475569', fontSize: '1rem' }}
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            <div style={{ padding: '14px 24px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {(['PENDING', 'APPROVED', 'ALL'] as const).map(f => (
+                  <button
+                    key={f}
+                    type="button"
+                    onClick={() => setParentLinkFilter(f)}
+                    style={{
+                      padding: '6px 14px',
+                      borderRadius: '8px',
+                      fontSize: '0.82rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      border: parentLinkFilter === f ? '1px solid #2563eb' : '1px solid #cbd5e1',
+                      background: parentLinkFilter === f ? '#2563eb' : '#fff',
+                      color: parentLinkFilter === f ? '#fff' : '#475569'
+                    }}
+                  >
+                    {f === 'PENDING' ? `Pending (${pendingParentLinksCount})` : f === 'APPROVED' ? 'Approved' : `All (${parentLinkRequests.length})`}
+                  </button>
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={fetchParentLinkRequests}
+                className="portal-btn-ghost"
+                style={{ padding: '6px 12px', fontSize: '0.82rem' }}
+              >
+                <i className="fas fa-sync-alt mr-1"></i> Refresh
+              </button>
+            </div>
+
+            <div style={{ padding: '20px 24px', overflowY: 'auto', flex: 1 }}>
+              {loadingParentLinks ? (
+                <SkeletonLoader type="table" rows={4} columns={5} />
+              ) : filteredParentLinkRequests.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>
+                  <i className="fas fa-check-circle fa-2x" style={{ color: '#10b981', marginBottom: 10, display: 'block' }}></i>
+                  <p style={{ fontWeight: 700, color: '#1e293b', margin: '0 0 4px' }}>No {parentLinkFilter.toLowerCase()} parent-student link requests found.</p>
+                  <p style={{ fontSize: '0.85rem', margin: 0 }}>When a parent links a student ID from the Parent Portal, it appears here for verification.</p>
+                </div>
+              ) : (
+                <table className="management-table">
+                  <thead>
+                    <tr>
+                      <th>Parent / Guardian</th>
+                      <th>Relationship</th>
+                      <th>Linked Student</th>
+                      <th>Status</th>
+                      <th style={{ textAlign: 'right' }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredParentLinkRequests.map((req: any) => {
+                      const status = (req.linkStatus || 'PENDING').toUpperCase();
+                      return (
+                        <tr key={req.connectionId || req.id}>
+                          <td>
+                            <div style={{ fontWeight: 800, color: '#0f172a' }}>{req.name || 'Parent'}</div>
+                            <div style={{ fontSize: '0.78rem', color: '#64748b' }}>{req.email || '—'} &bull; {req.phone || '—'}</div>
+                          </td>
+                          <td>
+                            <span style={{ fontWeight: 700, color: '#334155', fontSize: '0.85rem' }}>{req.relation || 'Parent'}</span>
+                          </td>
+                          <td>
+                            <div style={{ fontWeight: 800, color: '#2563eb' }}>{req.studentName}</div>
+                            <div style={{ fontSize: '0.78rem', color: '#64748b', fontFamily: 'monospace' }}>
+                              {req.studentId} &bull; {req.studentClass || 'Class'}
+                            </div>
+                          </td>
+                          <td>
+                            <span
+                              style={{
+                                padding: '4px 10px',
+                                borderRadius: '999px',
+                                fontSize: '0.75rem',
+                                fontWeight: 800,
+                                background: status === 'APPROVED' ? '#dcfce7' : status === 'PENDING' ? '#fef3c7' : '#fee2e2',
+                                color: status === 'APPROVED' ? '#15803d' : status === 'PENDING' ? '#b45309' : '#b91c1c'
+                              }}
+                            >
+                              {status === 'APPROVED' ? 'APPROVED (ACTIVE)' : status}
+                            </span>
+                          </td>
+                          <td style={{ textAlign: 'right' }}>
+                            <div style={{ display: 'inline-flex', gap: 8 }}>
+                              {status !== 'APPROVED' && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleParentLinkAction(req.connectionId, 'approve')}
+                                  style={{
+                                    background: '#16a34a',
+                                    color: '#fff',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    padding: '6px 12px',
+                                    fontSize: '0.8rem',
+                                    fontWeight: 700,
+                                    cursor: 'pointer'
+                                  }}
+                                >
+                                  <i className="fas fa-check mr-1"></i> Approve
+                                </button>
+                              )}
+                              {status !== 'REJECTED' && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleParentLinkAction(req.connectionId, 'reject')}
+                                  style={{
+                                    background: '#fef2f2',
+                                    color: '#dc2626',
+                                    border: '1px solid #fecaca',
+                                    borderRadius: '8px',
+                                    padding: '6px 12px',
+                                    fontSize: '0.8rem',
+                                    fontWeight: 700,
+                                    cursor: 'pointer'
+                                  }}
+                                >
+                                  <i className="fas fa-times mr-1"></i> {status === 'APPROVED' ? 'Revoke' : 'Reject'}
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Selected student slide-out panel if needed */}
       {selectedStudent && (

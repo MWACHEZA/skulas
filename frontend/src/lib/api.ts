@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import axiosRetry from 'axios-retry';
 
 export const BASE_URL = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL || 'http://localhost:5000');
@@ -9,10 +9,16 @@ const api = axios.create({
   timeout: 15000,
 });
 
+// Only retry transient network or 5xx errors on GET requests (never retry 4xx/429/404)
 axiosRetry(api, {
-  retries: 3,
+  retries: 2,
   retryDelay: axiosRetry.exponentialDelay,
-  retryCondition: (error) => error.config?.method?.toLowerCase() === 'get',
+  retryCondition: (error) => {
+    if (error.config?.method?.toLowerCase() !== 'get') return false;
+    const status = error.response?.status;
+    if (status && status >= 400 && status < 500) return false;
+    return axiosRetry.isNetworkOrIdempotentRequestError(error);
+  },
 });
 
 // Attach JWT token to every request
@@ -59,6 +65,12 @@ api.interceptors.request.use((config) => {
     console.error('Failed to parse user/entity for headers', e);
   }
 
+  // Clear GET micro-cache whenever a mutation occurs so subsequent GETs fetch fresh data
+  const method = (config.method || 'get').toLowerCase();
+  if (method !== 'get' && method !== 'head' && method !== 'options') {
+    getResponseCache.clear();
+  }
+
   return config;
 });
 
@@ -93,5 +105,59 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// ---------------------------------------------------------------------------
+// Frontend GET Request Deduplication & 2s Micro-Cache (Client-Side Rate Limiter)
+// Prevents duplicate concurrent API calls when multiple components mount together
+// ---------------------------------------------------------------------------
+const inFlightGets = new Map<string, Promise<AxiosResponse<any>>>();
+const getResponseCache = new Map<string, { response: AxiosResponse<any>; expiresAt: number }>();
+const GET_CACHE_TTL_MS = 2000;
+
+const originalGet = api.get.bind(api);
+
+api.get = function <T = any, R = AxiosResponse<T>, D = any>(
+  url: string,
+  config?: AxiosRequestConfig<D>
+): Promise<R> {
+  // Skip cache/dedupe for binary/blob downloads
+  if (config?.responseType && config.responseType !== 'json') {
+    return originalGet<T, R, D>(url, config);
+  }
+
+  const paramsKey = config?.params ? JSON.stringify(config.params) : '';
+  const entityKey = localStorage.getItem('acadex_active_entity') || '';
+  const cacheKey = `${url}?${paramsKey}|${entityKey}`;
+  const now = Date.now();
+
+  const cached = getResponseCache.get(cacheKey);
+  if (cached && cached.expiresAt > now) {
+    return Promise.resolve(cached.response as unknown as R);
+  }
+
+  const existingInFlight = inFlightGets.get(cacheKey);
+  if (existingInFlight) {
+    return existingInFlight as unknown as Promise<R>;
+  }
+
+  const reqPromise = originalGet<T, AxiosResponse<T>, D>(url, config)
+    .then((res) => {
+      getResponseCache.set(cacheKey, {
+        response: res,
+        expiresAt: Date.now() + GET_CACHE_TTL_MS,
+      });
+      if (getResponseCache.size > 300) {
+        const oldestKey = getResponseCache.keys().next().value;
+        if (oldestKey) getResponseCache.delete(oldestKey);
+      }
+      return res;
+    })
+    .finally(() => {
+      inFlightGets.delete(cacheKey);
+    });
+
+  inFlightGets.set(cacheKey, reqPromise);
+  return reqPromise as unknown as Promise<R>;
+};
 
 export default api;
