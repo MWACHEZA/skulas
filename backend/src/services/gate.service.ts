@@ -95,7 +95,20 @@ export class GateService {
       data: { isActive: false, deactivatedAt: new Date() }
     });
 
-    const qrToken = this.signToken(schoolId, student.studentId || student.id);
+    const school = await prisma.school.findUnique({ where: { id: schoolId } });
+    const { QrCryptoService } = await import('../lib/qr-crypto');
+    const activeKey = await QrCryptoService.getOrCreateActiveKey(schoolId, school?.code || 'global');
+
+    const qrToken = QrCryptoService.sign(
+      {
+        type: 'GATE',
+        schoolCode: school?.code || 'global',
+        entityId: student.studentId || student.id,
+        keyId: activeKey.keyId
+      },
+      activeKey.privateKey,
+      activeKey.algorithm
+    );
 
     await prisma.studentQrCode.create({
       data: {
@@ -392,7 +405,41 @@ export class GateService {
       return { type: 'STAFF' as const, staff: staffQr.staff, qrCodeId: staffQr.id };
     }
 
-    // 4. Try signature validation fallback
+    // 4. Try standard v1 signed QR code payload
+    if (cleaned.startsWith('v1:')) {
+      try {
+        const { QrCryptoService } = await import('../lib/qr-crypto');
+        const parsed = QrCryptoService.parsePayload(cleaned);
+        const school = await prisma.school.findUnique({ where: { id: schoolId } });
+        if (school && parsed.schoolCode.toUpperCase() === school.code.toUpperCase()) {
+          const keys = await QrCryptoService.findTenantKeys(schoolId, parsed.keyId);
+          let sigOk = false;
+          for (const k of keys) {
+            const kData = k.algorithm === 'ED25519' ? k.publicKey : k.encryptedPrivateKey;
+            if (QrCryptoService.verifySignatureWithKey(parsed, kData, k.algorithm as any)) {
+              sigOk = true;
+              break;
+            }
+          }
+          if (sigOk && !parsed.isExpired) {
+            const student = await prisma.student.findFirst({
+              where: {
+                schoolId,
+                OR: [{ studentId: parsed.entityId }, { id: parsed.entityId }]
+              },
+              include: { user: true, class: true, parents: { include: { parent: { include: { user: true } } } } }
+            });
+            if (student) {
+              return { type: 'STUDENT' as const, student, qrCodeId: null };
+            }
+          }
+        }
+      } catch {
+        // Fallback to legacy check
+      }
+    }
+
+    // 4b. Legacy HMAC signature validation fallback
     const sigCheck = this.verifySignature(cleaned);
     if (sigCheck.isValid && sigCheck.schoolId === schoolId && sigCheck.identifier) {
       const student = await prisma.student.findFirst({

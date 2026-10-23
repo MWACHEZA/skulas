@@ -258,6 +258,8 @@ model School {
   studentQrCodes       StudentQrCode[]
   staffQrCodes         StaffQrCode[]
   gateLogs             GateLog[]
+  tenantKeys           TenantKey[]
+  scanLogs             ScanLog[]
 
   @@index([code])
 }
@@ -545,6 +547,7 @@ model User {
   staffQrCodes           StaffQrCode[]
   scannedGateLogs        GateLog[]               @relation("GateLogGuard")
   gateLogs               GateLog[]               @relation("GateLogStaff")
+  scanLogs               ScanLog[]               @relation("ScanLogScannerUser")
 
   assignedAssets             Asset[]                 @relation("AssetCustodian")
   registeredAssets           Asset[]                 @relation("AssetRegisteredBy")
@@ -1620,6 +1623,7 @@ model SchoolSetting {
   tier2ApprovalRole          String? @default("SCHOOL_ADMIN")
   debtorLimit                Float?  @default(500.0)
   tillVarianceThreshold      Float?  @default(5.0)
+  gateFeeThreshold           Float?  @default(20.0)
   allowNegativeStock         Boolean @default(false)
   vatNumber                  String?
   vatRate                    Float?  @default(15.0)
@@ -6004,5 +6008,47 @@ model GateLog {
   @@index([scannedAt])
   @@index([schoolId, scannedAt])
   @@map("gate_logs")
+}
+
+model TenantKey {
+  id                  String    @id @default(cuid())
+  schoolId            String
+  school              School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  schoolCode          String
+  keyId               String    // e.g. "k2026_01"
+  algorithm           String    @default("ED25519") // "ED25519" | "HMAC_SHA256"
+  publicKey           String    // Base64 or PEM public key for verify-only clients
+  encryptedPrivateKey String    // Encrypted private key / HMAC secret
+  isActive            Boolean   @default(true)
+  expiresAt           DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@unique([schoolId, keyId])
+  @@index([schoolId, isActive])
+  @@index([schoolCode, keyId])
+  @@map("tenant_keys")
+}
+
+model ScanLog {
+  id            String    @id @default(cuid())
+  tenantId      String    @map("tenant_id")
+  tenant        School    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  type          String    // GATE, FEES, LIB, ATT
+  entityId      String    @map("entity_id")
+  scannerUserId String?   @map("scanner_user_id")
+  scannerUser   User?     @relation("ScanLogScannerUser", fields: [scannerUserId], references: [id], onDelete: SetNull)
+  result        String    // VALID, INVALID, DENIED, FLAGGED, WARNING
+  reason        String?
+  scannedAt     DateTime  @default(now()) @map("scanned_at")
+  deviceId      String?   @map("device_id")
+  syncedAt      DateTime? @map("synced_at")
+  offline       Boolean   @default(false)
+  metadata      Json?
+
+  @@index([tenantId, scannedAt])
+  @@index([tenantId, entityId, scannedAt])
+  @@index([tenantId, type])
+  @@map("scan_logs")
 }
 

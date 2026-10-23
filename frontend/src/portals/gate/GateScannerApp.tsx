@@ -4,6 +4,7 @@ import api from '../../lib/api';
 import { format } from 'date-fns';
 import { useAuth } from '../../contexts/AuthContext';
 import { getPublicMediaUrl } from '../../utils/formatters';
+import { qrOfflineService, type OfflineScanLog } from '../../services/qrOfflineService';
 
 interface GateStudent {
   id: string;
@@ -125,10 +126,22 @@ export default function GateScannerApp() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [offlineQueueCount, setOfflineQueueCount] = useState(0);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [scanHistory, setScanHistory] = useState<OfflineScanLog[]>([]);
+  const [cachedStudentCount, setCachedStudentCount] = useState<number>(0);
+  const [showHistoryModal, setShowHistoryModal] = useState<boolean>(false);
 
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const cooldownRef = useRef(false);
   const timerRef = useRef<any>(null);
+
+  // Register PWA Service Worker for offline resilience
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch((err) => {
+        console.warn('Service worker registration note:', err);
+      });
+    }
+  }, []);
 
   // Sync auth context with local state
   useEffect(() => {
@@ -157,7 +170,7 @@ export default function GateScannerApp() {
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, []);
 
-  // Online / Offline monitor
+  // Online / Offline monitor & initial IndexedDB load
   useEffect(() => {
     const handleOnline = () => {
       setIsOnline(true);
@@ -168,9 +181,9 @@ export default function GateScannerApp() {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    // Initial check of offline queue
-    const queue = JSON.parse(localStorage.getItem('gate_offline_queue') || '[]');
-    setOfflineQueueCount(queue.length);
+    // Initial check of offline queue and history from IndexedDB
+    qrOfflineService.getPendingQueueCount().then(setOfflineQueueCount);
+    qrOfflineService.getRecentHistory(30).then(setScanHistory);
 
     return () => {
       window.removeEventListener('online', handleOnline);
@@ -178,10 +191,11 @@ export default function GateScannerApp() {
     };
   }, []);
 
-  // Fetch daily allow-list on mount if authenticated
+  // Fetch daily allow-list and sync manifest on mount if authenticated
   useEffect(() => {
     if (token) {
       downloadDailyAllowList();
+      syncOfflineQueue();
     }
   }, [token]);
 
@@ -221,18 +235,21 @@ export default function GateScannerApp() {
   };
 
   const syncOfflineQueue = async () => {
-    const queue = JSON.parse(localStorage.getItem('gate_offline_queue') || '[]');
-    if (queue.length === 0) return;
-
+    if (!token) return;
     setIsSyncing(true);
     try {
-      await api.post('/api/gate/sync-logs', { logs: queue }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      localStorage.setItem('gate_offline_queue', JSON.stringify([]));
-      setOfflineQueueCount(0);
+      // 1. Sync queued scans from IndexedDB
+      await qrOfflineService.syncPendingQueue(token);
+      // 2. Refresh offline manifest (student roster + Ed25519 tenant public key)
+      const manifestRes = await qrOfflineService.syncOfflineManifest(token);
+      setCachedStudentCount(manifestRes.studentCount);
+      // 3. Update pending count & history
+      const pendingCount = await qrOfflineService.getPendingQueueCount();
+      setOfflineQueueCount(pendingCount);
+      const history = await qrOfflineService.getRecentHistory(30);
+      setScanHistory(history);
     } catch (err) {
-      console.error('Error syncing offline queue:', err);
+      console.warn('Offline sync attempt:', err);
     } finally {
       setIsSyncing(false);
     }
@@ -413,30 +430,92 @@ export default function GateScannerApp() {
   };
 
   const processScanInput = async (inputString: string) => {
+    const isV1 = inputString.startsWith('v1:');
+
     // 1. Try Online First
     if (navigator.onLine) {
       try {
-        const res = await api.post(
-          '/api/gate/scan',
-          { tokenOrId: inputString, forceDirection: scanDirection, deviceId: 'GATE-STATION-PWA' },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        if (isV1) {
+          const res = await api.post(
+            '/api/verify',
+            { payload: inputString, direction: scanDirection, deviceId: 'GATE-STATION-PWA' },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
 
-        handleScanResponse(res.data);
-        return;
+          const data = res.data;
+          handleScanResponse({
+            success: true,
+            type: 'STUDENT',
+            direction: scanDirection,
+            allowed: data.valid,
+            status: data.flags?.join(', ') || (data.valid ? 'PERMITTED' : 'DENIED'),
+            reason: data.reason,
+            isBoarder: false,
+            student: data.student ? {
+              id: data.student.id,
+              studentId: data.student.studentId,
+              name: data.student.name,
+              className: data.student.class || null,
+              avatar: data.student.photoUrl || null,
+              boardingStatus: 'Day',
+              balance: data.student.balance || 0
+            } : undefined,
+            gateLogId: data.auditLogId,
+            autoConfirmed: data.valid
+          });
+          return;
+        } else {
+          const res = await api.post(
+            '/api/gate/scan',
+            { tokenOrId: inputString, forceDirection: scanDirection, deviceId: 'GATE-STATION-PWA' },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+
+          handleScanResponse(res.data);
+          return;
+        }
       } catch (err: any) {
-        console.warn('Online scan error, falling back to offline cache:', err);
+        console.warn('Online scan error, falling back to offline verification:', err);
       }
     }
 
-    // 2. Offline Fallback using cached allow list
-    processOfflineScan(inputString);
+    // 2. Offline Fallback using IndexedDB and WebCrypto
+    await processOfflineScan(inputString);
   };
 
-  const processOfflineScan = (inputString: string) => {
+  const processOfflineScan = async (inputString: string) => {
+    if (inputString.startsWith('v1:')) {
+      const offlineRes = await qrOfflineService.verifyOffline(inputString, scanDirection);
+      
+      const pendingCount = await qrOfflineService.getPendingQueueCount();
+      setOfflineQueueCount(pendingCount);
+      const history = await qrOfflineService.getRecentHistory(30);
+      setScanHistory(history);
+
+      handleScanResponse({
+        success: true,
+        type: 'STUDENT',
+        direction: scanDirection,
+        allowed: offlineRes.valid,
+        status: offlineRes.flags.join(', ') || (offlineRes.valid ? 'OFFLINE_PERMITTED' : 'OFFLINE_DENIED'),
+        reason: offlineRes.reason,
+        isBoarder: false,
+        student: offlineRes.student ? {
+          id: offlineRes.student.id,
+          studentId: offlineRes.student.studentId,
+          name: offlineRes.student.name,
+          className: offlineRes.student.class || null,
+          avatar: offlineRes.student.photoUrl || null,
+          boardingStatus: 'Day',
+          balance: offlineRes.student.balance || 0
+        } : undefined,
+        autoConfirmed: offlineRes.valid
+      });
+      return;
+    }
+
     const rawList = localStorage.getItem('gate_daily_allow_list');
     const allowList: OfflineStudent[] = rawList ? JSON.parse(rawList) : [];
-
     const found = allowList.find(s => s.qrToken === inputString || s.regNo === inputString || s.studentId === inputString);
 
     if (!found) {
@@ -446,27 +525,31 @@ export default function GateScannerApp() {
         direction: scanDirection,
         allowed: false,
         status: 'OFFLINE_NOT_FOUND',
-        reason: 'Record not found in offline morning allow-list cache.',
+        reason: 'Verify online: Record not found in offline morning allow-list cache.',
         isBoarder: false
       });
       return;
     }
 
-    // Queue offline scan record
-    const queue = JSON.parse(localStorage.getItem('gate_offline_queue') || '[]');
-    const offlineRecord = {
-      studentId: found.studentId,
-      qrToken: inputString,
+    const clientLogId = `offline_${Date.now()}`;
+    await qrOfflineService.queueScanLog({
+      clientLogId,
+      type: 'GATE',
+      entityId: found.studentId,
+      studentId: found.regNo,
+      deviceId: 'GATE-OFFLINE-PWA',
+      result: found.allowed ? 'VALID' : 'DENIED',
+      valid: found.allowed,
+      reason: found.allowed ? 'Verified via offline morning allow list.' : 'Entry Denied: Cached policy marks fees owing.',
       scannedAt: new Date().toISOString(),
       direction: scanDirection,
-      entryStatus: found.allowed ? 'allowed' : 'denied',
-      feeStatusSnapshot: found.feeStatus,
-      denialReason: found.allowed ? undefined : 'Cached offline policy: Fees outstanding or plan breached',
-      deviceId: 'GATE-OFFLINE-PWA'
-    };
-    queue.push(offlineRecord);
-    localStorage.setItem('gate_offline_queue', JSON.stringify(queue));
-    setOfflineQueueCount(queue.length);
+      synced: false
+    });
+
+    const pendingCount = await qrOfflineService.getPendingQueueCount();
+    setOfflineQueueCount(pendingCount);
+    const history = await qrOfflineService.getRecentHistory(30);
+    setScanHistory(history);
 
     handleScanResponse({
       success: true,
@@ -493,6 +576,13 @@ export default function GateScannerApp() {
 
   const handleScanResponse = (result: ScanResult) => {
     setScanResult(result);
+
+    // Audio & Haptic feedback
+    qrOfflineService.playAudioFeedback(result.allowed);
+    qrOfflineService.triggerHapticFeedback(result.allowed);
+
+    // Update history list
+    qrOfflineService.getRecentHistory(30).then(setScanHistory);
 
     if (result.allowed) {
       setAllowedCount(prev => prev + 1);
@@ -1020,15 +1110,15 @@ export default function GateScannerApp() {
                     borderRadius: '4px',
                     fontSize: '11px',
                     fontWeight: '800',
-                    backgroundColor: '#f59e0b',
+                    backgroundColor: scanResult.reason?.includes('Verify online') ? '#eab308' : '#f59e0b',
                     color: '#000',
                     textTransform: 'uppercase',
                     marginBottom: '4px'
                   }}>
-                    Record Not Found
+                    {scanResult.reason?.includes('Verify online') ? '⚠️ Verify Online Required' : 'Record Not Found'}
                   </span>
                   <h2 style={{ fontSize: '20px', fontWeight: '800', margin: 0, color: '#fff' }}>
-                    Student Record Not Found
+                    {scanResult.reason?.includes('Verify online') ? 'Verify Online (Not in Cache)' : 'Student Record Not Found'}
                   </h2>
                 </div>
               </div>
@@ -1603,6 +1693,156 @@ export default function GateScannerApp() {
                       border: `1px solid ${isPaid ? '#16a34a55' : '#dc262655'}`
                     }}>
                       {isPaid ? 'Fee Compliant' : (s.balance > 0 ? `Arrears $${s.balance}` : 'Arrears')}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Scan History Section (Offline / Online Audit Trail) */}
+        <div style={{
+          width: '100%',
+          backgroundColor: '#131b2e',
+          border: '1px solid #1e293b',
+          borderRadius: '16px',
+          padding: '20px',
+          boxSizing: 'border-box'
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: '16px',
+            flexWrap: 'wrap',
+            gap: '10px'
+          }}>
+            <div>
+              <h3 style={{ fontSize: '16px', fontWeight: '800', margin: '0 0 4px', color: '#fff' }}>
+                📋 Gate Scan History ({scanHistory.length})
+              </h3>
+              <p style={{ fontSize: '12px', color: '#64748b', margin: 0 }}>
+                {cachedStudentCount > 0 ? `Synced offline roster: ${cachedStudentCount} students active` : 'IndexedDB offline roster ready'}
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                onClick={syncOfflineQueue}
+                disabled={isSyncing}
+                style={{
+                  padding: '8px 14px',
+                  backgroundColor: '#0284c7',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '12px',
+                  fontWeight: '700',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <span>🔄</span>
+                <span>{isSyncing ? 'Syncing...' : 'Sync Manifest & Scans'}</span>
+              </button>
+            </div>
+          </div>
+
+          {scanHistory.length === 0 ? (
+            <div style={{
+              textAlign: 'center',
+              padding: '30px 10px',
+              color: '#64748b',
+              fontSize: '13px'
+            }}>
+              No scans recorded yet in this session. Present an ID card to camera or enter registration number above.
+            </div>
+          ) : (
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+              maxHeight: '320px',
+              overflowY: 'auto'
+            }}>
+              {scanHistory.map((item) => {
+                const isValid = item.valid || item.result === 'VALID';
+                const timeStr = item.scannedAt ? new Date(item.scannedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
+                return (
+                  <div
+                    key={item.clientLogId}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      backgroundColor: '#0b1120',
+                      border: `1px solid ${isValid ? '#10b98133' : '#ef444433'}`,
+                      padding: '10px 14px',
+                      borderRadius: '10px',
+                      fontSize: '13px',
+                      flexWrap: 'wrap',
+                      gap: '8px'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{
+                        width: '8px',
+                        height: '8px',
+                        borderRadius: '50%',
+                        backgroundColor: isValid ? '#10b981' : '#ef4444'
+                      }} />
+                      <span style={{ color: '#94a3b8', fontSize: '11px', fontFamily: 'monospace' }}>
+                        {timeStr}
+                      </span>
+                      <span style={{ fontWeight: '700', color: '#fff' }}>
+                        {item.studentId || item.entityId}
+                      </span>
+                      {item.direction && (
+                        <span style={{
+                          fontSize: '10px',
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          backgroundColor: item.direction === 'IN' ? '#16a34a22' : '#2563eb22',
+                          color: item.direction === 'IN' ? '#4ade80' : '#60a5fa',
+                          fontWeight: '700'
+                        }}>
+                          {item.direction}
+                        </span>
+                      )}
+                      {!item.synced && (
+                        <span style={{
+                          fontSize: '10px',
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          backgroundColor: '#f59e0b22',
+                          color: '#fbbf24',
+                          fontWeight: '700'
+                        }}>
+                          Offline
+                        </span>
+                      )}
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{
+                        fontSize: '11px',
+                        color: isValid ? '#a7f3d0' : '#fca5a5'
+                      }}>
+                        {item.reason}
+                      </span>
+                      <span style={{
+                        padding: '3px 8px',
+                        borderRadius: '6px',
+                        fontSize: '11px',
+                        fontWeight: '800',
+                        backgroundColor: isValid ? '#10b98122' : '#ef444422',
+                        color: isValid ? '#34d399' : '#f87171'
+                      }}>
+                        {isValid ? 'ADMITTED' : 'DENIED'}
+                      </span>
                     </div>
                   </div>
                 );

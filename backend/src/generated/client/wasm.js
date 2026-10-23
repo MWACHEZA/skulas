@@ -954,6 +954,7 @@ exports.Prisma.SchoolSettingScalarFieldEnum = {
   tier2ApprovalRole: 'tier2ApprovalRole',
   debtorLimit: 'debtorLimit',
   tillVarianceThreshold: 'tillVarianceThreshold',
+  gateFeeThreshold: 'gateFeeThreshold',
   allowNegativeStock: 'allowNegativeStock',
   vatNumber: 'vatNumber',
   vatRate: 'vatRate',
@@ -3930,6 +3931,35 @@ exports.Prisma.GateLogScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.TenantKeyScalarFieldEnum = {
+  id: 'id',
+  schoolId: 'schoolId',
+  schoolCode: 'schoolCode',
+  keyId: 'keyId',
+  algorithm: 'algorithm',
+  publicKey: 'publicKey',
+  encryptedPrivateKey: 'encryptedPrivateKey',
+  isActive: 'isActive',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ScanLogScalarFieldEnum = {
+  id: 'id',
+  tenantId: 'tenantId',
+  type: 'type',
+  entityId: 'entityId',
+  scannerUserId: 'scannerUserId',
+  result: 'result',
+  reason: 'reason',
+  scannedAt: 'scannedAt',
+  deviceId: 'deviceId',
+  syncedAt: 'syncedAt',
+  offline: 'offline',
+  metadata: 'metadata'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -4234,7 +4264,9 @@ exports.Prisma.ModelName = {
   HrTardinessLog: 'HrTardinessLog',
   StudentQrCode: 'StudentQrCode',
   StaffQrCode: 'StaffQrCode',
-  GateLog: 'GateLog'
+  GateLog: 'GateLog',
+  TenantKey: 'TenantKey',
+  ScanLog: 'ScanLog'
 };
 
 /**

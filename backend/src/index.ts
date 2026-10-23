@@ -232,6 +232,9 @@ import parentApprovalsRoutes from './api/parent-approvals';
 app.use('/api/parent/approvals', parentApprovalsRoutes);
 import gateRoutes from './api/gate';
 app.use('/api/gate', gateRoutes);
+import qrRoutes from './api/qr';
+app.use('/api/qr', qrRoutes);
+app.use('/api', qrRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

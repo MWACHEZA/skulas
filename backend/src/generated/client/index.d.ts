@@ -1279,6 +1279,16 @@ export type StaffQrCode = $Result.DefaultSelection<Prisma.$StaffQrCodePayload>
  * 
  */
 export type GateLog = $Result.DefaultSelection<Prisma.$GateLogPayload>
+/**
+ * Model TenantKey
+ * 
+ */
+export type TenantKey = $Result.DefaultSelection<Prisma.$TenantKeyPayload>
+/**
+ * Model ScanLog
+ * 
+ */
+export type ScanLog = $Result.DefaultSelection<Prisma.$ScanLogPayload>
 
 /**
  * Enums
@@ -3953,6 +3963,26 @@ export class PrismaClient<
     * ```
     */
   get gateLog(): Prisma.GateLogDelegate<ExtArgs>;
+
+  /**
+   * `prisma.tenantKey`: Exposes CRUD operations for the **TenantKey** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TenantKeys
+    * const tenantKeys = await prisma.tenantKey.findMany()
+    * ```
+    */
+  get tenantKey(): Prisma.TenantKeyDelegate<ExtArgs>;
+
+  /**
+   * `prisma.scanLog`: Exposes CRUD operations for the **ScanLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ScanLogs
+    * const scanLogs = await prisma.scanLog.findMany()
+    * ```
+    */
+  get scanLog(): Prisma.ScanLogDelegate<ExtArgs>;
 }
 
 export namespace Prisma {
@@ -4643,7 +4673,9 @@ export namespace Prisma {
     HrTardinessLog: 'HrTardinessLog',
     StudentQrCode: 'StudentQrCode',
     StaffQrCode: 'StaffQrCode',
-    GateLog: 'GateLog'
+    GateLog: 'GateLog',
+    TenantKey: 'TenantKey',
+    ScanLog: 'ScanLog'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -4659,7 +4691,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "plan" | "school" | "gradingScale" | "hostelCategory" | "hostelRoom" | "leadershipAssignment" | "studentAllowedItem" | "uniformItem" | "uniformStockOrder" | "uniformStockOrderItem" | "uniformSale" | "uniformSaleItem" | "uniformSupplierPayment" | "accountCategory" | "liability" | "income" | "expense" | "user" | "userSession" | "teacher" | "student" | "schoolClass" | "section" | "subject" | "teacherSubject" | "classSubjectTeacher" | "grade" | "faculty" | "department" | "attendance" | "staffAttendance" | "fee" | "feeLineItem" | "studentInvoice" | "studentInvoiceItem" | "receipt" | "paymentAllocation" | "assignment" | "questionPaper" | "timetableSlot" | "announcement" | "announcementRead" | "auditLog" | "book" | "studentHouse" | "chaplaincyEvent" | "holiday" | "libraryCategory" | "bookLoan" | "librarySetting" | "bookReservation" | "libraryDigitalResource" | "assignmentSubmission" | "news" | "schoolSetting" | "paymentPlan" | "paymentPlanInstallment" | "gallery" | "club" | "sport" | "sportingEquipment" | "application" | "supplier" | "schoolSupplier" | "parent" | "parentStudent" | "tender" | "tenderBid" | "purchaseOrder" | "goodsReceivedNote" | "invoice" | "message" | "supportTicket" | "staffLeave" | "leaveBalance" | "asset" | "assetDepreciation" | "assetIncident" | "assetMaintenance" | "transportRoute" | "schoolEvent" | "tuckshopItem" | "tuckshopSale" | "digitalResource" | "salaryStub" | "shiftAssignment" | "applicantDocument" | "applicantTimeline" | "academicReport" | "reportTemplate" | "requisition" | "hostel" | "room" | "boardingLog" | "visitorLog" | "admissionInquiry" | "phoneCallLog" | "frontOfficeComplaint" | "securityIncident" | "weeklyMenu" | "transferAuthorization" | "supervisorAssignment" | "extensionRequest" | "progressReport" | "paymentMethod" | "feeGroup" | "feeGroupClassAmount" | "physicalProduct" | "physicalProductConsumption" | "feeReminderLog" | "studentPayment" | "communicationLog" | "notificationQueue" | "revenueAllocation" | "payrollAllowance" | "payrollDeduction" | "taxTable" | "taxBand" | "employeeProfile" | "termlyComment" | "payrollRun" | "payrollEntry" | "cBTExam" | "cBTQuestion" | "cBTResult" | "liveClass" | "award" | "course" | "courseEnrollment" | "studyMaterial" | "websiteSettings" | "websiteInquiry" | "noticeboard" | "vacancy" | "jobApplication" | "schoolVehicle" | "schoolTransport" | "meetingMinutes" | "projectFunding" | "clinicPatient" | "clinicAppointment" | "clinicComplaint" | "clinicEmergency" | "clinicImmunization" | "clinicReferral" | "clinicVisit" | "clinicInventoryItem" | "clinicDispensingLog" | "clinicHospitalization" | "farmLivestockBatch" | "farmCropCycle" | "farmInventoryItem" | "diningHallReport" | "prefectDuty" | "prefectMeeting" | "prefectReport" | "studentWallet" | "walletTransaction" | "schoolSequence" | "icd10Code" | "chartOfAccount" | "journalEntry" | "journalEntryLine" | "accountingPeriod" | "exchangeRate" | "approval" | "budget" | "stockMovement" | "taxBracket" | "uniformStockMovement" | "bankStatement" | "bankStatementLine" | "platformSetting" | "icd10ParentLabel" | "studentHealthProfile" | "clinicVital" | "clinicDiagnosis" | "clinicPrescription" | "pharmacyStock" | "pharmacyBatch" | "pharmacyDispense" | "clinicBed" | "clinicAdmission" | "clinicMonitoringLog" | "clinicAccessAudit" | "clinicEmergencyLog" | "clinicSetting" | "fiscalDevice" | "fiscalDeviceSecret" | "fiscalInvoice" | "documentSequence" | "creditNote" | "creditNoteLine" | "tillSession" | "cashupDenomination" | "cashupPayment" | "studentClearance" | "attendanceRegister" | "attendanceRecord" | "periodAttendance" | "qrCodeSession" | "syllabus" | "syllabusTopic" | "schemeOfWork" | "schemeItem" | "lessonPlan" | "lessonPlanResource" | "assessmentType" | "assessment" | "assessmentQuestion" | "questionBank" | "examTimetable" | "studentAssessment" | "question" | "cbtExam" | "cbtAttempt" | "disciplineRecord" | "calendarEvent" | "sportsEvent" | "transportRequest" | "facilitiesRequest" | "cateringRequest" | "awardConfig" | "studentAward" | "staffAward" | "bursaryType" | "studentBursary" | "hostelBedAllocation" | "studentTransportAllocation" | "schoolTrip" | "tripConsent" | "medicalConsent" | "bookLoanFine" | "boardingRollCall" | "exeat" | "diningPantryItem" | "diningRecipe" | "uniformCategory" | "uniformProduct" | "uniformKit" | "uniformIssuance" | "uniformStockLedger" | "attendanceSession" | "attendanceSessionRecord" | "staffAttendanceDaily" | "biometricRawLog" | "hrTardinessLog" | "studentQrCode" | "staffQrCode" | "gateLog"
+      modelProps: "plan" | "school" | "gradingScale" | "hostelCategory" | "hostelRoom" | "leadershipAssignment" | "studentAllowedItem" | "uniformItem" | "uniformStockOrder" | "uniformStockOrderItem" | "uniformSale" | "uniformSaleItem" | "uniformSupplierPayment" | "accountCategory" | "liability" | "income" | "expense" | "user" | "userSession" | "teacher" | "student" | "schoolClass" | "section" | "subject" | "teacherSubject" | "classSubjectTeacher" | "grade" | "faculty" | "department" | "attendance" | "staffAttendance" | "fee" | "feeLineItem" | "studentInvoice" | "studentInvoiceItem" | "receipt" | "paymentAllocation" | "assignment" | "questionPaper" | "timetableSlot" | "announcement" | "announcementRead" | "auditLog" | "book" | "studentHouse" | "chaplaincyEvent" | "holiday" | "libraryCategory" | "bookLoan" | "librarySetting" | "bookReservation" | "libraryDigitalResource" | "assignmentSubmission" | "news" | "schoolSetting" | "paymentPlan" | "paymentPlanInstallment" | "gallery" | "club" | "sport" | "sportingEquipment" | "application" | "supplier" | "schoolSupplier" | "parent" | "parentStudent" | "tender" | "tenderBid" | "purchaseOrder" | "goodsReceivedNote" | "invoice" | "message" | "supportTicket" | "staffLeave" | "leaveBalance" | "asset" | "assetDepreciation" | "assetIncident" | "assetMaintenance" | "transportRoute" | "schoolEvent" | "tuckshopItem" | "tuckshopSale" | "digitalResource" | "salaryStub" | "shiftAssignment" | "applicantDocument" | "applicantTimeline" | "academicReport" | "reportTemplate" | "requisition" | "hostel" | "room" | "boardingLog" | "visitorLog" | "admissionInquiry" | "phoneCallLog" | "frontOfficeComplaint" | "securityIncident" | "weeklyMenu" | "transferAuthorization" | "supervisorAssignment" | "extensionRequest" | "progressReport" | "paymentMethod" | "feeGroup" | "feeGroupClassAmount" | "physicalProduct" | "physicalProductConsumption" | "feeReminderLog" | "studentPayment" | "communicationLog" | "notificationQueue" | "revenueAllocation" | "payrollAllowance" | "payrollDeduction" | "taxTable" | "taxBand" | "employeeProfile" | "termlyComment" | "payrollRun" | "payrollEntry" | "cBTExam" | "cBTQuestion" | "cBTResult" | "liveClass" | "award" | "course" | "courseEnrollment" | "studyMaterial" | "websiteSettings" | "websiteInquiry" | "noticeboard" | "vacancy" | "jobApplication" | "schoolVehicle" | "schoolTransport" | "meetingMinutes" | "projectFunding" | "clinicPatient" | "clinicAppointment" | "clinicComplaint" | "clinicEmergency" | "clinicImmunization" | "clinicReferral" | "clinicVisit" | "clinicInventoryItem" | "clinicDispensingLog" | "clinicHospitalization" | "farmLivestockBatch" | "farmCropCycle" | "farmInventoryItem" | "diningHallReport" | "prefectDuty" | "prefectMeeting" | "prefectReport" | "studentWallet" | "walletTransaction" | "schoolSequence" | "icd10Code" | "chartOfAccount" | "journalEntry" | "journalEntryLine" | "accountingPeriod" | "exchangeRate" | "approval" | "budget" | "stockMovement" | "taxBracket" | "uniformStockMovement" | "bankStatement" | "bankStatementLine" | "platformSetting" | "icd10ParentLabel" | "studentHealthProfile" | "clinicVital" | "clinicDiagnosis" | "clinicPrescription" | "pharmacyStock" | "pharmacyBatch" | "pharmacyDispense" | "clinicBed" | "clinicAdmission" | "clinicMonitoringLog" | "clinicAccessAudit" | "clinicEmergencyLog" | "clinicSetting" | "fiscalDevice" | "fiscalDeviceSecret" | "fiscalInvoice" | "documentSequence" | "creditNote" | "creditNoteLine" | "tillSession" | "cashupDenomination" | "cashupPayment" | "studentClearance" | "attendanceRegister" | "attendanceRecord" | "periodAttendance" | "qrCodeSession" | "syllabus" | "syllabusTopic" | "schemeOfWork" | "schemeItem" | "lessonPlan" | "lessonPlanResource" | "assessmentType" | "assessment" | "assessmentQuestion" | "questionBank" | "examTimetable" | "studentAssessment" | "question" | "cbtExam" | "cbtAttempt" | "disciplineRecord" | "calendarEvent" | "sportsEvent" | "transportRequest" | "facilitiesRequest" | "cateringRequest" | "awardConfig" | "studentAward" | "staffAward" | "bursaryType" | "studentBursary" | "hostelBedAllocation" | "studentTransportAllocation" | "schoolTrip" | "tripConsent" | "medicalConsent" | "bookLoanFine" | "boardingRollCall" | "exeat" | "diningPantryItem" | "diningRecipe" | "uniformCategory" | "uniformProduct" | "uniformKit" | "uniformIssuance" | "uniformStockLedger" | "attendanceSession" | "attendanceSessionRecord" | "staffAttendanceDaily" | "biometricRawLog" | "hrTardinessLog" | "studentQrCode" | "staffQrCode" | "gateLog" | "tenantKey" | "scanLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -22163,6 +22195,146 @@ export namespace Prisma {
           }
         }
       }
+      TenantKey: {
+        payload: Prisma.$TenantKeyPayload<ExtArgs>
+        fields: Prisma.TenantKeyFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TenantKeyFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantKeyPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TenantKeyFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantKeyPayload>
+          }
+          findFirst: {
+            args: Prisma.TenantKeyFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantKeyPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TenantKeyFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantKeyPayload>
+          }
+          findMany: {
+            args: Prisma.TenantKeyFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantKeyPayload>[]
+          }
+          create: {
+            args: Prisma.TenantKeyCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantKeyPayload>
+          }
+          createMany: {
+            args: Prisma.TenantKeyCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TenantKeyCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantKeyPayload>[]
+          }
+          delete: {
+            args: Prisma.TenantKeyDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantKeyPayload>
+          }
+          update: {
+            args: Prisma.TenantKeyUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantKeyPayload>
+          }
+          deleteMany: {
+            args: Prisma.TenantKeyDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TenantKeyUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.TenantKeyUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TenantKeyPayload>
+          }
+          aggregate: {
+            args: Prisma.TenantKeyAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTenantKey>
+          }
+          groupBy: {
+            args: Prisma.TenantKeyGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TenantKeyGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TenantKeyCountArgs<ExtArgs>
+            result: $Utils.Optional<TenantKeyCountAggregateOutputType> | number
+          }
+        }
+      }
+      ScanLog: {
+        payload: Prisma.$ScanLogPayload<ExtArgs>
+        fields: Prisma.ScanLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ScanLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScanLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ScanLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScanLogPayload>
+          }
+          findFirst: {
+            args: Prisma.ScanLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScanLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ScanLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScanLogPayload>
+          }
+          findMany: {
+            args: Prisma.ScanLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScanLogPayload>[]
+          }
+          create: {
+            args: Prisma.ScanLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScanLogPayload>
+          }
+          createMany: {
+            args: Prisma.ScanLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ScanLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScanLogPayload>[]
+          }
+          delete: {
+            args: Prisma.ScanLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScanLogPayload>
+          }
+          update: {
+            args: Prisma.ScanLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScanLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.ScanLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ScanLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ScanLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ScanLogPayload>
+          }
+          aggregate: {
+            args: Prisma.ScanLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateScanLog>
+          }
+          groupBy: {
+            args: Prisma.ScanLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ScanLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ScanLogCountArgs<ExtArgs>
+            result: $Utils.Optional<ScanLogCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -22526,6 +22698,8 @@ export namespace Prisma {
     studentQrCodes: number
     staffQrCodes: number
     gateLogs: number
+    tenantKeys: number
+    scanLogs: number
   }
 
   export type SchoolCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -22700,6 +22874,8 @@ export namespace Prisma {
     studentQrCodes?: boolean | SchoolCountOutputTypeCountStudentQrCodesArgs
     staffQrCodes?: boolean | SchoolCountOutputTypeCountStaffQrCodesArgs
     gateLogs?: boolean | SchoolCountOutputTypeCountGateLogsArgs
+    tenantKeys?: boolean | SchoolCountOutputTypeCountTenantKeysArgs
+    scanLogs?: boolean | SchoolCountOutputTypeCountScanLogsArgs
   }
 
   // Custom InputTypes
@@ -23910,6 +24086,20 @@ export namespace Prisma {
     where?: GateLogWhereInput
   }
 
+  /**
+   * SchoolCountOutputType without action
+   */
+  export type SchoolCountOutputTypeCountTenantKeysArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TenantKeyWhereInput
+  }
+
+  /**
+   * SchoolCountOutputType without action
+   */
+  export type SchoolCountOutputTypeCountScanLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ScanLogWhereInput
+  }
+
 
   /**
    * Count Type HostelCategoryCountOutputType
@@ -24159,6 +24349,7 @@ export namespace Prisma {
     staffQrCodes: number
     scannedGateLogs: number
     gateLogs: number
+    scanLogs: number
     assignedAssets: number
     registeredAssets: number
     assignedSportingEquipments: number
@@ -24246,6 +24437,7 @@ export namespace Prisma {
     staffQrCodes?: boolean | UserCountOutputTypeCountStaffQrCodesArgs
     scannedGateLogs?: boolean | UserCountOutputTypeCountScannedGateLogsArgs
     gateLogs?: boolean | UserCountOutputTypeCountGateLogsArgs
+    scanLogs?: boolean | UserCountOutputTypeCountScanLogsArgs
     assignedAssets?: boolean | UserCountOutputTypeCountAssignedAssetsArgs
     registeredAssets?: boolean | UserCountOutputTypeCountRegisteredAssetsArgs
     assignedSportingEquipments?: boolean | UserCountOutputTypeCountAssignedSportingEquipmentsArgs
@@ -24467,6 +24659,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountGateLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: GateLogWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountScanLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ScanLogWhereInput
   }
 
   /**
@@ -29981,6 +30180,8 @@ export namespace Prisma {
     studentQrCodes?: boolean | School$studentQrCodesArgs<ExtArgs>
     staffQrCodes?: boolean | School$staffQrCodesArgs<ExtArgs>
     gateLogs?: boolean | School$gateLogsArgs<ExtArgs>
+    tenantKeys?: boolean | School$tenantKeysArgs<ExtArgs>
+    scanLogs?: boolean | School$scanLogsArgs<ExtArgs>
     _count?: boolean | SchoolCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["school"]>
 
@@ -30211,6 +30412,8 @@ export namespace Prisma {
     studentQrCodes?: boolean | School$studentQrCodesArgs<ExtArgs>
     staffQrCodes?: boolean | School$staffQrCodesArgs<ExtArgs>
     gateLogs?: boolean | School$gateLogsArgs<ExtArgs>
+    tenantKeys?: boolean | School$tenantKeysArgs<ExtArgs>
+    scanLogs?: boolean | School$scanLogsArgs<ExtArgs>
     _count?: boolean | SchoolCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type SchoolIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -30397,6 +30600,8 @@ export namespace Prisma {
       studentQrCodes: Prisma.$StudentQrCodePayload<ExtArgs>[]
       staffQrCodes: Prisma.$StaffQrCodePayload<ExtArgs>[]
       gateLogs: Prisma.$GateLogPayload<ExtArgs>[]
+      tenantKeys: Prisma.$TenantKeyPayload<ExtArgs>[]
+      scanLogs: Prisma.$ScanLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -30961,6 +31166,8 @@ export namespace Prisma {
     studentQrCodes<T extends School$studentQrCodesArgs<ExtArgs> = {}>(args?: Subset<T, School$studentQrCodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StudentQrCodePayload<ExtArgs>, T, "findMany"> | Null>
     staffQrCodes<T extends School$staffQrCodesArgs<ExtArgs> = {}>(args?: Subset<T, School$staffQrCodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StaffQrCodePayload<ExtArgs>, T, "findMany"> | Null>
     gateLogs<T extends School$gateLogsArgs<ExtArgs> = {}>(args?: Subset<T, School$gateLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GateLogPayload<ExtArgs>, T, "findMany"> | Null>
+    tenantKeys<T extends School$tenantKeysArgs<ExtArgs> = {}>(args?: Subset<T, School$tenantKeysArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantKeyPayload<ExtArgs>, T, "findMany"> | Null>
+    scanLogs<T extends School$scanLogsArgs<ExtArgs> = {}>(args?: Subset<T, School$scanLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScanLogPayload<ExtArgs>, T, "findMany"> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -34821,6 +35028,46 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: GateLogScalarFieldEnum | GateLogScalarFieldEnum[]
+  }
+
+  /**
+   * School.tenantKeys
+   */
+  export type School$tenantKeysArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantKey
+     */
+    select?: TenantKeySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantKeyInclude<ExtArgs> | null
+    where?: TenantKeyWhereInput
+    orderBy?: TenantKeyOrderByWithRelationInput | TenantKeyOrderByWithRelationInput[]
+    cursor?: TenantKeyWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TenantKeyScalarFieldEnum | TenantKeyScalarFieldEnum[]
+  }
+
+  /**
+   * School.scanLogs
+   */
+  export type School$scanLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScanLog
+     */
+    select?: ScanLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScanLogInclude<ExtArgs> | null
+    where?: ScanLogWhereInput
+    orderBy?: ScanLogOrderByWithRelationInput | ScanLogOrderByWithRelationInput[]
+    cursor?: ScanLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ScanLogScalarFieldEnum | ScanLogScalarFieldEnum[]
   }
 
   /**
@@ -50539,6 +50786,7 @@ export namespace Prisma {
     staffQrCodes?: boolean | User$staffQrCodesArgs<ExtArgs>
     scannedGateLogs?: boolean | User$scannedGateLogsArgs<ExtArgs>
     gateLogs?: boolean | User$gateLogsArgs<ExtArgs>
+    scanLogs?: boolean | User$scanLogsArgs<ExtArgs>
     assignedAssets?: boolean | User$assignedAssetsArgs<ExtArgs>
     registeredAssets?: boolean | User$registeredAssetsArgs<ExtArgs>
     assignedSportingEquipments?: boolean | User$assignedSportingEquipmentsArgs<ExtArgs>
@@ -50683,6 +50931,7 @@ export namespace Prisma {
     staffQrCodes?: boolean | User$staffQrCodesArgs<ExtArgs>
     scannedGateLogs?: boolean | User$scannedGateLogsArgs<ExtArgs>
     gateLogs?: boolean | User$gateLogsArgs<ExtArgs>
+    scanLogs?: boolean | User$scanLogsArgs<ExtArgs>
     assignedAssets?: boolean | User$assignedAssetsArgs<ExtArgs>
     registeredAssets?: boolean | User$registeredAssetsArgs<ExtArgs>
     assignedSportingEquipments?: boolean | User$assignedSportingEquipmentsArgs<ExtArgs>
@@ -50785,6 +51034,7 @@ export namespace Prisma {
       staffQrCodes: Prisma.$StaffQrCodePayload<ExtArgs>[]
       scannedGateLogs: Prisma.$GateLogPayload<ExtArgs>[]
       gateLogs: Prisma.$GateLogPayload<ExtArgs>[]
+      scanLogs: Prisma.$ScanLogPayload<ExtArgs>[]
       assignedAssets: Prisma.$AssetPayload<ExtArgs>[]
       registeredAssets: Prisma.$AssetPayload<ExtArgs>[]
       assignedSportingEquipments: Prisma.$SportingEquipmentPayload<ExtArgs>[]
@@ -51263,6 +51513,7 @@ export namespace Prisma {
     staffQrCodes<T extends User$staffQrCodesArgs<ExtArgs> = {}>(args?: Subset<T, User$staffQrCodesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StaffQrCodePayload<ExtArgs>, T, "findMany"> | Null>
     scannedGateLogs<T extends User$scannedGateLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$scannedGateLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GateLogPayload<ExtArgs>, T, "findMany"> | Null>
     gateLogs<T extends User$gateLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$gateLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GateLogPayload<ExtArgs>, T, "findMany"> | Null>
+    scanLogs<T extends User$scanLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$scanLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScanLogPayload<ExtArgs>, T, "findMany"> | Null>
     assignedAssets<T extends User$assignedAssetsArgs<ExtArgs> = {}>(args?: Subset<T, User$assignedAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany"> | Null>
     registeredAssets<T extends User$registeredAssetsArgs<ExtArgs> = {}>(args?: Subset<T, User$registeredAssetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssetPayload<ExtArgs>, T, "findMany"> | Null>
     assignedSportingEquipments<T extends User$assignedSportingEquipmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$assignedSportingEquipmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SportingEquipmentPayload<ExtArgs>, T, "findMany"> | Null>
@@ -52216,6 +52467,26 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: GateLogScalarFieldEnum | GateLogScalarFieldEnum[]
+  }
+
+  /**
+   * User.scanLogs
+   */
+  export type User$scanLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScanLog
+     */
+    select?: ScanLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScanLogInclude<ExtArgs> | null
+    where?: ScanLogWhereInput
+    orderBy?: ScanLogOrderByWithRelationInput | ScanLogOrderByWithRelationInput[]
+    cursor?: ScanLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ScanLogScalarFieldEnum | ScanLogScalarFieldEnum[]
   }
 
   /**
@@ -95345,6 +95616,7 @@ export namespace Prisma {
     financialApprovalThreshold: number | null
     debtorLimit: number | null
     tillVarianceThreshold: number | null
+    gateFeeThreshold: number | null
     vatRate: number | null
     smtpPort: number | null
     mapLatitude: number | null
@@ -95360,6 +95632,7 @@ export namespace Prisma {
     financialApprovalThreshold: number | null
     debtorLimit: number | null
     tillVarianceThreshold: number | null
+    gateFeeThreshold: number | null
     vatRate: number | null
     smtpPort: number | null
     mapLatitude: number | null
@@ -95387,6 +95660,7 @@ export namespace Prisma {
     tier2ApprovalRole: string | null
     debtorLimit: number | null
     tillVarianceThreshold: number | null
+    gateFeeThreshold: number | null
     allowNegativeStock: boolean | null
     vatNumber: string | null
     vatRate: number | null
@@ -95469,6 +95743,7 @@ export namespace Prisma {
     tier2ApprovalRole: string | null
     debtorLimit: number | null
     tillVarianceThreshold: number | null
+    gateFeeThreshold: number | null
     allowNegativeStock: boolean | null
     vatNumber: string | null
     vatRate: number | null
@@ -95551,6 +95826,7 @@ export namespace Prisma {
     tier2ApprovalRole: number
     debtorLimit: number
     tillVarianceThreshold: number
+    gateFeeThreshold: number
     allowNegativeStock: number
     vatNumber: number
     vatRate: number
@@ -95625,6 +95901,7 @@ export namespace Prisma {
     financialApprovalThreshold?: true
     debtorLimit?: true
     tillVarianceThreshold?: true
+    gateFeeThreshold?: true
     vatRate?: true
     smtpPort?: true
     mapLatitude?: true
@@ -95640,6 +95917,7 @@ export namespace Prisma {
     financialApprovalThreshold?: true
     debtorLimit?: true
     tillVarianceThreshold?: true
+    gateFeeThreshold?: true
     vatRate?: true
     smtpPort?: true
     mapLatitude?: true
@@ -95667,6 +95945,7 @@ export namespace Prisma {
     tier2ApprovalRole?: true
     debtorLimit?: true
     tillVarianceThreshold?: true
+    gateFeeThreshold?: true
     allowNegativeStock?: true
     vatNumber?: true
     vatRate?: true
@@ -95749,6 +96028,7 @@ export namespace Prisma {
     tier2ApprovalRole?: true
     debtorLimit?: true
     tillVarianceThreshold?: true
+    gateFeeThreshold?: true
     allowNegativeStock?: true
     vatNumber?: true
     vatRate?: true
@@ -95831,6 +96111,7 @@ export namespace Prisma {
     tier2ApprovalRole?: true
     debtorLimit?: true
     tillVarianceThreshold?: true
+    gateFeeThreshold?: true
     allowNegativeStock?: true
     vatNumber?: true
     vatRate?: true
@@ -96002,6 +96283,7 @@ export namespace Prisma {
     tier2ApprovalRole: string | null
     debtorLimit: number | null
     tillVarianceThreshold: number | null
+    gateFeeThreshold: number | null
     allowNegativeStock: boolean
     vatNumber: string | null
     vatRate: number | null
@@ -96105,6 +96387,7 @@ export namespace Prisma {
     tier2ApprovalRole?: boolean
     debtorLimit?: boolean
     tillVarianceThreshold?: boolean
+    gateFeeThreshold?: boolean
     allowNegativeStock?: boolean
     vatNumber?: boolean
     vatRate?: boolean
@@ -96190,6 +96473,7 @@ export namespace Prisma {
     tier2ApprovalRole?: boolean
     debtorLimit?: boolean
     tillVarianceThreshold?: boolean
+    gateFeeThreshold?: boolean
     allowNegativeStock?: boolean
     vatNumber?: boolean
     vatRate?: boolean
@@ -96275,6 +96559,7 @@ export namespace Prisma {
     tier2ApprovalRole?: boolean
     debtorLimit?: boolean
     tillVarianceThreshold?: boolean
+    gateFeeThreshold?: boolean
     allowNegativeStock?: boolean
     vatNumber?: boolean
     vatRate?: boolean
@@ -96371,6 +96656,7 @@ export namespace Prisma {
       tier2ApprovalRole: string | null
       debtorLimit: number | null
       tillVarianceThreshold: number | null
+      gateFeeThreshold: number | null
       allowNegativeStock: boolean
       vatNumber: string | null
       vatRate: number | null
@@ -96846,6 +97132,7 @@ export namespace Prisma {
     readonly tier2ApprovalRole: FieldRef<"SchoolSetting", 'String'>
     readonly debtorLimit: FieldRef<"SchoolSetting", 'Float'>
     readonly tillVarianceThreshold: FieldRef<"SchoolSetting", 'Float'>
+    readonly gateFeeThreshold: FieldRef<"SchoolSetting", 'Float'>
     readonly allowNegativeStock: FieldRef<"SchoolSetting", 'Boolean'>
     readonly vatNumber: FieldRef<"SchoolSetting", 'String'>
     readonly vatRate: FieldRef<"SchoolSetting", 'Float'>
@@ -304425,6 +304712,2045 @@ export namespace Prisma {
 
 
   /**
+   * Model TenantKey
+   */
+
+  export type AggregateTenantKey = {
+    _count: TenantKeyCountAggregateOutputType | null
+    _min: TenantKeyMinAggregateOutputType | null
+    _max: TenantKeyMaxAggregateOutputType | null
+  }
+
+  export type TenantKeyMinAggregateOutputType = {
+    id: string | null
+    schoolId: string | null
+    schoolCode: string | null
+    keyId: string | null
+    algorithm: string | null
+    publicKey: string | null
+    encryptedPrivateKey: string | null
+    isActive: boolean | null
+    expiresAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TenantKeyMaxAggregateOutputType = {
+    id: string | null
+    schoolId: string | null
+    schoolCode: string | null
+    keyId: string | null
+    algorithm: string | null
+    publicKey: string | null
+    encryptedPrivateKey: string | null
+    isActive: boolean | null
+    expiresAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type TenantKeyCountAggregateOutputType = {
+    id: number
+    schoolId: number
+    schoolCode: number
+    keyId: number
+    algorithm: number
+    publicKey: number
+    encryptedPrivateKey: number
+    isActive: number
+    expiresAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type TenantKeyMinAggregateInputType = {
+    id?: true
+    schoolId?: true
+    schoolCode?: true
+    keyId?: true
+    algorithm?: true
+    publicKey?: true
+    encryptedPrivateKey?: true
+    isActive?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TenantKeyMaxAggregateInputType = {
+    id?: true
+    schoolId?: true
+    schoolCode?: true
+    keyId?: true
+    algorithm?: true
+    publicKey?: true
+    encryptedPrivateKey?: true
+    isActive?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type TenantKeyCountAggregateInputType = {
+    id?: true
+    schoolId?: true
+    schoolCode?: true
+    keyId?: true
+    algorithm?: true
+    publicKey?: true
+    encryptedPrivateKey?: true
+    isActive?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type TenantKeyAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TenantKey to aggregate.
+     */
+    where?: TenantKeyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantKeys to fetch.
+     */
+    orderBy?: TenantKeyOrderByWithRelationInput | TenantKeyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TenantKeyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantKeys from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantKeys.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TenantKeys
+    **/
+    _count?: true | TenantKeyCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TenantKeyMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TenantKeyMaxAggregateInputType
+  }
+
+  export type GetTenantKeyAggregateType<T extends TenantKeyAggregateArgs> = {
+        [P in keyof T & keyof AggregateTenantKey]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTenantKey[P]>
+      : GetScalarType<T[P], AggregateTenantKey[P]>
+  }
+
+
+
+
+  export type TenantKeyGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TenantKeyWhereInput
+    orderBy?: TenantKeyOrderByWithAggregationInput | TenantKeyOrderByWithAggregationInput[]
+    by: TenantKeyScalarFieldEnum[] | TenantKeyScalarFieldEnum
+    having?: TenantKeyScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TenantKeyCountAggregateInputType | true
+    _min?: TenantKeyMinAggregateInputType
+    _max?: TenantKeyMaxAggregateInputType
+  }
+
+  export type TenantKeyGroupByOutputType = {
+    id: string
+    schoolId: string
+    schoolCode: string
+    keyId: string
+    algorithm: string
+    publicKey: string
+    encryptedPrivateKey: string
+    isActive: boolean
+    expiresAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: TenantKeyCountAggregateOutputType | null
+    _min: TenantKeyMinAggregateOutputType | null
+    _max: TenantKeyMaxAggregateOutputType | null
+  }
+
+  type GetTenantKeyGroupByPayload<T extends TenantKeyGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TenantKeyGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TenantKeyGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TenantKeyGroupByOutputType[P]>
+            : GetScalarType<T[P], TenantKeyGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TenantKeySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    schoolId?: boolean
+    schoolCode?: boolean
+    keyId?: boolean
+    algorithm?: boolean
+    publicKey?: boolean
+    encryptedPrivateKey?: boolean
+    isActive?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["tenantKey"]>
+
+  export type TenantKeySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    schoolId?: boolean
+    schoolCode?: boolean
+    keyId?: boolean
+    algorithm?: boolean
+    publicKey?: boolean
+    encryptedPrivateKey?: boolean
+    isActive?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["tenantKey"]>
+
+  export type TenantKeySelectScalar = {
+    id?: boolean
+    schoolId?: boolean
+    schoolCode?: boolean
+    keyId?: boolean
+    algorithm?: boolean
+    publicKey?: boolean
+    encryptedPrivateKey?: boolean
+    isActive?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type TenantKeyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }
+  export type TenantKeyIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    school?: boolean | SchoolDefaultArgs<ExtArgs>
+  }
+
+  export type $TenantKeyPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "TenantKey"
+    objects: {
+      school: Prisma.$SchoolPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      schoolId: string
+      schoolCode: string
+      keyId: string
+      algorithm: string
+      publicKey: string
+      encryptedPrivateKey: string
+      isActive: boolean
+      expiresAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["tenantKey"]>
+    composites: {}
+  }
+
+  type TenantKeyGetPayload<S extends boolean | null | undefined | TenantKeyDefaultArgs> = $Result.GetResult<Prisma.$TenantKeyPayload, S>
+
+  type TenantKeyCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<TenantKeyFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: TenantKeyCountAggregateInputType | true
+    }
+
+  export interface TenantKeyDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['TenantKey'], meta: { name: 'TenantKey' } }
+    /**
+     * Find zero or one TenantKey that matches the filter.
+     * @param {TenantKeyFindUniqueArgs} args - Arguments to find a TenantKey
+     * @example
+     * // Get one TenantKey
+     * const tenantKey = await prisma.tenantKey.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TenantKeyFindUniqueArgs>(args: SelectSubset<T, TenantKeyFindUniqueArgs<ExtArgs>>): Prisma__TenantKeyClient<$Result.GetResult<Prisma.$TenantKeyPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one TenantKey that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {TenantKeyFindUniqueOrThrowArgs} args - Arguments to find a TenantKey
+     * @example
+     * // Get one TenantKey
+     * const tenantKey = await prisma.tenantKey.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TenantKeyFindUniqueOrThrowArgs>(args: SelectSubset<T, TenantKeyFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TenantKeyClient<$Result.GetResult<Prisma.$TenantKeyPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first TenantKey that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantKeyFindFirstArgs} args - Arguments to find a TenantKey
+     * @example
+     * // Get one TenantKey
+     * const tenantKey = await prisma.tenantKey.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TenantKeyFindFirstArgs>(args?: SelectSubset<T, TenantKeyFindFirstArgs<ExtArgs>>): Prisma__TenantKeyClient<$Result.GetResult<Prisma.$TenantKeyPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first TenantKey that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantKeyFindFirstOrThrowArgs} args - Arguments to find a TenantKey
+     * @example
+     * // Get one TenantKey
+     * const tenantKey = await prisma.tenantKey.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TenantKeyFindFirstOrThrowArgs>(args?: SelectSubset<T, TenantKeyFindFirstOrThrowArgs<ExtArgs>>): Prisma__TenantKeyClient<$Result.GetResult<Prisma.$TenantKeyPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more TenantKeys that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantKeyFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TenantKeys
+     * const tenantKeys = await prisma.tenantKey.findMany()
+     * 
+     * // Get first 10 TenantKeys
+     * const tenantKeys = await prisma.tenantKey.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const tenantKeyWithIdOnly = await prisma.tenantKey.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TenantKeyFindManyArgs>(args?: SelectSubset<T, TenantKeyFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantKeyPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a TenantKey.
+     * @param {TenantKeyCreateArgs} args - Arguments to create a TenantKey.
+     * @example
+     * // Create one TenantKey
+     * const TenantKey = await prisma.tenantKey.create({
+     *   data: {
+     *     // ... data to create a TenantKey
+     *   }
+     * })
+     * 
+     */
+    create<T extends TenantKeyCreateArgs>(args: SelectSubset<T, TenantKeyCreateArgs<ExtArgs>>): Prisma__TenantKeyClient<$Result.GetResult<Prisma.$TenantKeyPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many TenantKeys.
+     * @param {TenantKeyCreateManyArgs} args - Arguments to create many TenantKeys.
+     * @example
+     * // Create many TenantKeys
+     * const tenantKey = await prisma.tenantKey.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TenantKeyCreateManyArgs>(args?: SelectSubset<T, TenantKeyCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many TenantKeys and returns the data saved in the database.
+     * @param {TenantKeyCreateManyAndReturnArgs} args - Arguments to create many TenantKeys.
+     * @example
+     * // Create many TenantKeys
+     * const tenantKey = await prisma.tenantKey.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many TenantKeys and only return the `id`
+     * const tenantKeyWithIdOnly = await prisma.tenantKey.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TenantKeyCreateManyAndReturnArgs>(args?: SelectSubset<T, TenantKeyCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TenantKeyPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a TenantKey.
+     * @param {TenantKeyDeleteArgs} args - Arguments to delete one TenantKey.
+     * @example
+     * // Delete one TenantKey
+     * const TenantKey = await prisma.tenantKey.delete({
+     *   where: {
+     *     // ... filter to delete one TenantKey
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TenantKeyDeleteArgs>(args: SelectSubset<T, TenantKeyDeleteArgs<ExtArgs>>): Prisma__TenantKeyClient<$Result.GetResult<Prisma.$TenantKeyPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one TenantKey.
+     * @param {TenantKeyUpdateArgs} args - Arguments to update one TenantKey.
+     * @example
+     * // Update one TenantKey
+     * const tenantKey = await prisma.tenantKey.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TenantKeyUpdateArgs>(args: SelectSubset<T, TenantKeyUpdateArgs<ExtArgs>>): Prisma__TenantKeyClient<$Result.GetResult<Prisma.$TenantKeyPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more TenantKeys.
+     * @param {TenantKeyDeleteManyArgs} args - Arguments to filter TenantKeys to delete.
+     * @example
+     * // Delete a few TenantKeys
+     * const { count } = await prisma.tenantKey.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TenantKeyDeleteManyArgs>(args?: SelectSubset<T, TenantKeyDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TenantKeys.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantKeyUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TenantKeys
+     * const tenantKey = await prisma.tenantKey.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TenantKeyUpdateManyArgs>(args: SelectSubset<T, TenantKeyUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one TenantKey.
+     * @param {TenantKeyUpsertArgs} args - Arguments to update or create a TenantKey.
+     * @example
+     * // Update or create a TenantKey
+     * const tenantKey = await prisma.tenantKey.upsert({
+     *   create: {
+     *     // ... data to create a TenantKey
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TenantKey we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TenantKeyUpsertArgs>(args: SelectSubset<T, TenantKeyUpsertArgs<ExtArgs>>): Prisma__TenantKeyClient<$Result.GetResult<Prisma.$TenantKeyPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of TenantKeys.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantKeyCountArgs} args - Arguments to filter TenantKeys to count.
+     * @example
+     * // Count the number of TenantKeys
+     * const count = await prisma.tenantKey.count({
+     *   where: {
+     *     // ... the filter for the TenantKeys we want to count
+     *   }
+     * })
+    **/
+    count<T extends TenantKeyCountArgs>(
+      args?: Subset<T, TenantKeyCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TenantKeyCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TenantKey.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantKeyAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TenantKeyAggregateArgs>(args: Subset<T, TenantKeyAggregateArgs>): Prisma.PrismaPromise<GetTenantKeyAggregateType<T>>
+
+    /**
+     * Group by TenantKey.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TenantKeyGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TenantKeyGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TenantKeyGroupByArgs['orderBy'] }
+        : { orderBy?: TenantKeyGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TenantKeyGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTenantKeyGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the TenantKey model
+   */
+  readonly fields: TenantKeyFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TenantKey.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TenantKeyClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    school<T extends SchoolDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SchoolDefaultArgs<ExtArgs>>): Prisma__SchoolClient<$Result.GetResult<Prisma.$SchoolPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the TenantKey model
+   */ 
+  interface TenantKeyFieldRefs {
+    readonly id: FieldRef<"TenantKey", 'String'>
+    readonly schoolId: FieldRef<"TenantKey", 'String'>
+    readonly schoolCode: FieldRef<"TenantKey", 'String'>
+    readonly keyId: FieldRef<"TenantKey", 'String'>
+    readonly algorithm: FieldRef<"TenantKey", 'String'>
+    readonly publicKey: FieldRef<"TenantKey", 'String'>
+    readonly encryptedPrivateKey: FieldRef<"TenantKey", 'String'>
+    readonly isActive: FieldRef<"TenantKey", 'Boolean'>
+    readonly expiresAt: FieldRef<"TenantKey", 'DateTime'>
+    readonly createdAt: FieldRef<"TenantKey", 'DateTime'>
+    readonly updatedAt: FieldRef<"TenantKey", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * TenantKey findUnique
+   */
+  export type TenantKeyFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantKey
+     */
+    select?: TenantKeySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantKeyInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantKey to fetch.
+     */
+    where: TenantKeyWhereUniqueInput
+  }
+
+  /**
+   * TenantKey findUniqueOrThrow
+   */
+  export type TenantKeyFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantKey
+     */
+    select?: TenantKeySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantKeyInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantKey to fetch.
+     */
+    where: TenantKeyWhereUniqueInput
+  }
+
+  /**
+   * TenantKey findFirst
+   */
+  export type TenantKeyFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantKey
+     */
+    select?: TenantKeySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantKeyInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantKey to fetch.
+     */
+    where?: TenantKeyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantKeys to fetch.
+     */
+    orderBy?: TenantKeyOrderByWithRelationInput | TenantKeyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TenantKeys.
+     */
+    cursor?: TenantKeyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantKeys from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantKeys.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TenantKeys.
+     */
+    distinct?: TenantKeyScalarFieldEnum | TenantKeyScalarFieldEnum[]
+  }
+
+  /**
+   * TenantKey findFirstOrThrow
+   */
+  export type TenantKeyFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantKey
+     */
+    select?: TenantKeySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantKeyInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantKey to fetch.
+     */
+    where?: TenantKeyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantKeys to fetch.
+     */
+    orderBy?: TenantKeyOrderByWithRelationInput | TenantKeyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TenantKeys.
+     */
+    cursor?: TenantKeyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantKeys from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantKeys.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TenantKeys.
+     */
+    distinct?: TenantKeyScalarFieldEnum | TenantKeyScalarFieldEnum[]
+  }
+
+  /**
+   * TenantKey findMany
+   */
+  export type TenantKeyFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantKey
+     */
+    select?: TenantKeySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantKeyInclude<ExtArgs> | null
+    /**
+     * Filter, which TenantKeys to fetch.
+     */
+    where?: TenantKeyWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TenantKeys to fetch.
+     */
+    orderBy?: TenantKeyOrderByWithRelationInput | TenantKeyOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TenantKeys.
+     */
+    cursor?: TenantKeyWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TenantKeys from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TenantKeys.
+     */
+    skip?: number
+    distinct?: TenantKeyScalarFieldEnum | TenantKeyScalarFieldEnum[]
+  }
+
+  /**
+   * TenantKey create
+   */
+  export type TenantKeyCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantKey
+     */
+    select?: TenantKeySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantKeyInclude<ExtArgs> | null
+    /**
+     * The data needed to create a TenantKey.
+     */
+    data: XOR<TenantKeyCreateInput, TenantKeyUncheckedCreateInput>
+  }
+
+  /**
+   * TenantKey createMany
+   */
+  export type TenantKeyCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many TenantKeys.
+     */
+    data: TenantKeyCreateManyInput | TenantKeyCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * TenantKey createManyAndReturn
+   */
+  export type TenantKeyCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantKey
+     */
+    select?: TenantKeySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many TenantKeys.
+     */
+    data: TenantKeyCreateManyInput | TenantKeyCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantKeyIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * TenantKey update
+   */
+  export type TenantKeyUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantKey
+     */
+    select?: TenantKeySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantKeyInclude<ExtArgs> | null
+    /**
+     * The data needed to update a TenantKey.
+     */
+    data: XOR<TenantKeyUpdateInput, TenantKeyUncheckedUpdateInput>
+    /**
+     * Choose, which TenantKey to update.
+     */
+    where: TenantKeyWhereUniqueInput
+  }
+
+  /**
+   * TenantKey updateMany
+   */
+  export type TenantKeyUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update TenantKeys.
+     */
+    data: XOR<TenantKeyUpdateManyMutationInput, TenantKeyUncheckedUpdateManyInput>
+    /**
+     * Filter which TenantKeys to update
+     */
+    where?: TenantKeyWhereInput
+  }
+
+  /**
+   * TenantKey upsert
+   */
+  export type TenantKeyUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantKey
+     */
+    select?: TenantKeySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantKeyInclude<ExtArgs> | null
+    /**
+     * The filter to search for the TenantKey to update in case it exists.
+     */
+    where: TenantKeyWhereUniqueInput
+    /**
+     * In case the TenantKey found by the `where` argument doesn't exist, create a new TenantKey with this data.
+     */
+    create: XOR<TenantKeyCreateInput, TenantKeyUncheckedCreateInput>
+    /**
+     * In case the TenantKey was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TenantKeyUpdateInput, TenantKeyUncheckedUpdateInput>
+  }
+
+  /**
+   * TenantKey delete
+   */
+  export type TenantKeyDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantKey
+     */
+    select?: TenantKeySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantKeyInclude<ExtArgs> | null
+    /**
+     * Filter which TenantKey to delete.
+     */
+    where: TenantKeyWhereUniqueInput
+  }
+
+  /**
+   * TenantKey deleteMany
+   */
+  export type TenantKeyDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which TenantKeys to delete
+     */
+    where?: TenantKeyWhereInput
+  }
+
+  /**
+   * TenantKey without action
+   */
+  export type TenantKeyDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TenantKey
+     */
+    select?: TenantKeySelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TenantKeyInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ScanLog
+   */
+
+  export type AggregateScanLog = {
+    _count: ScanLogCountAggregateOutputType | null
+    _min: ScanLogMinAggregateOutputType | null
+    _max: ScanLogMaxAggregateOutputType | null
+  }
+
+  export type ScanLogMinAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    type: string | null
+    entityId: string | null
+    scannerUserId: string | null
+    result: string | null
+    reason: string | null
+    scannedAt: Date | null
+    deviceId: string | null
+    syncedAt: Date | null
+    offline: boolean | null
+  }
+
+  export type ScanLogMaxAggregateOutputType = {
+    id: string | null
+    tenantId: string | null
+    type: string | null
+    entityId: string | null
+    scannerUserId: string | null
+    result: string | null
+    reason: string | null
+    scannedAt: Date | null
+    deviceId: string | null
+    syncedAt: Date | null
+    offline: boolean | null
+  }
+
+  export type ScanLogCountAggregateOutputType = {
+    id: number
+    tenantId: number
+    type: number
+    entityId: number
+    scannerUserId: number
+    result: number
+    reason: number
+    scannedAt: number
+    deviceId: number
+    syncedAt: number
+    offline: number
+    metadata: number
+    _all: number
+  }
+
+
+  export type ScanLogMinAggregateInputType = {
+    id?: true
+    tenantId?: true
+    type?: true
+    entityId?: true
+    scannerUserId?: true
+    result?: true
+    reason?: true
+    scannedAt?: true
+    deviceId?: true
+    syncedAt?: true
+    offline?: true
+  }
+
+  export type ScanLogMaxAggregateInputType = {
+    id?: true
+    tenantId?: true
+    type?: true
+    entityId?: true
+    scannerUserId?: true
+    result?: true
+    reason?: true
+    scannedAt?: true
+    deviceId?: true
+    syncedAt?: true
+    offline?: true
+  }
+
+  export type ScanLogCountAggregateInputType = {
+    id?: true
+    tenantId?: true
+    type?: true
+    entityId?: true
+    scannerUserId?: true
+    result?: true
+    reason?: true
+    scannedAt?: true
+    deviceId?: true
+    syncedAt?: true
+    offline?: true
+    metadata?: true
+    _all?: true
+  }
+
+  export type ScanLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ScanLog to aggregate.
+     */
+    where?: ScanLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ScanLogs to fetch.
+     */
+    orderBy?: ScanLogOrderByWithRelationInput | ScanLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ScanLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ScanLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ScanLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ScanLogs
+    **/
+    _count?: true | ScanLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ScanLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ScanLogMaxAggregateInputType
+  }
+
+  export type GetScanLogAggregateType<T extends ScanLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateScanLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateScanLog[P]>
+      : GetScalarType<T[P], AggregateScanLog[P]>
+  }
+
+
+
+
+  export type ScanLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ScanLogWhereInput
+    orderBy?: ScanLogOrderByWithAggregationInput | ScanLogOrderByWithAggregationInput[]
+    by: ScanLogScalarFieldEnum[] | ScanLogScalarFieldEnum
+    having?: ScanLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ScanLogCountAggregateInputType | true
+    _min?: ScanLogMinAggregateInputType
+    _max?: ScanLogMaxAggregateInputType
+  }
+
+  export type ScanLogGroupByOutputType = {
+    id: string
+    tenantId: string
+    type: string
+    entityId: string
+    scannerUserId: string | null
+    result: string
+    reason: string | null
+    scannedAt: Date
+    deviceId: string | null
+    syncedAt: Date | null
+    offline: boolean
+    metadata: JsonValue | null
+    _count: ScanLogCountAggregateOutputType | null
+    _min: ScanLogMinAggregateOutputType | null
+    _max: ScanLogMaxAggregateOutputType | null
+  }
+
+  type GetScanLogGroupByPayload<T extends ScanLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ScanLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ScanLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ScanLogGroupByOutputType[P]>
+            : GetScalarType<T[P], ScanLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ScanLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    type?: boolean
+    entityId?: boolean
+    scannerUserId?: boolean
+    result?: boolean
+    reason?: boolean
+    scannedAt?: boolean
+    deviceId?: boolean
+    syncedAt?: boolean
+    offline?: boolean
+    metadata?: boolean
+    tenant?: boolean | SchoolDefaultArgs<ExtArgs>
+    scannerUser?: boolean | ScanLog$scannerUserArgs<ExtArgs>
+  }, ExtArgs["result"]["scanLog"]>
+
+  export type ScanLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    tenantId?: boolean
+    type?: boolean
+    entityId?: boolean
+    scannerUserId?: boolean
+    result?: boolean
+    reason?: boolean
+    scannedAt?: boolean
+    deviceId?: boolean
+    syncedAt?: boolean
+    offline?: boolean
+    metadata?: boolean
+    tenant?: boolean | SchoolDefaultArgs<ExtArgs>
+    scannerUser?: boolean | ScanLog$scannerUserArgs<ExtArgs>
+  }, ExtArgs["result"]["scanLog"]>
+
+  export type ScanLogSelectScalar = {
+    id?: boolean
+    tenantId?: boolean
+    type?: boolean
+    entityId?: boolean
+    scannerUserId?: boolean
+    result?: boolean
+    reason?: boolean
+    scannedAt?: boolean
+    deviceId?: boolean
+    syncedAt?: boolean
+    offline?: boolean
+    metadata?: boolean
+  }
+
+  export type ScanLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | SchoolDefaultArgs<ExtArgs>
+    scannerUser?: boolean | ScanLog$scannerUserArgs<ExtArgs>
+  }
+  export type ScanLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    tenant?: boolean | SchoolDefaultArgs<ExtArgs>
+    scannerUser?: boolean | ScanLog$scannerUserArgs<ExtArgs>
+  }
+
+  export type $ScanLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ScanLog"
+    objects: {
+      tenant: Prisma.$SchoolPayload<ExtArgs>
+      scannerUser: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      tenantId: string
+      type: string
+      entityId: string
+      scannerUserId: string | null
+      result: string
+      reason: string | null
+      scannedAt: Date
+      deviceId: string | null
+      syncedAt: Date | null
+      offline: boolean
+      metadata: Prisma.JsonValue | null
+    }, ExtArgs["result"]["scanLog"]>
+    composites: {}
+  }
+
+  type ScanLogGetPayload<S extends boolean | null | undefined | ScanLogDefaultArgs> = $Result.GetResult<Prisma.$ScanLogPayload, S>
+
+  type ScanLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = 
+    Omit<ScanLogFindManyArgs, 'select' | 'include' | 'distinct'> & {
+      select?: ScanLogCountAggregateInputType | true
+    }
+
+  export interface ScanLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ScanLog'], meta: { name: 'ScanLog' } }
+    /**
+     * Find zero or one ScanLog that matches the filter.
+     * @param {ScanLogFindUniqueArgs} args - Arguments to find a ScanLog
+     * @example
+     * // Get one ScanLog
+     * const scanLog = await prisma.scanLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ScanLogFindUniqueArgs>(args: SelectSubset<T, ScanLogFindUniqueArgs<ExtArgs>>): Prisma__ScanLogClient<$Result.GetResult<Prisma.$ScanLogPayload<ExtArgs>, T, "findUnique"> | null, null, ExtArgs>
+
+    /**
+     * Find one ScanLog that matches the filter or throw an error with `error.code='P2025'` 
+     * if no matches were found.
+     * @param {ScanLogFindUniqueOrThrowArgs} args - Arguments to find a ScanLog
+     * @example
+     * // Get one ScanLog
+     * const scanLog = await prisma.scanLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ScanLogFindUniqueOrThrowArgs>(args: SelectSubset<T, ScanLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ScanLogClient<$Result.GetResult<Prisma.$ScanLogPayload<ExtArgs>, T, "findUniqueOrThrow">, never, ExtArgs>
+
+    /**
+     * Find the first ScanLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScanLogFindFirstArgs} args - Arguments to find a ScanLog
+     * @example
+     * // Get one ScanLog
+     * const scanLog = await prisma.scanLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ScanLogFindFirstArgs>(args?: SelectSubset<T, ScanLogFindFirstArgs<ExtArgs>>): Prisma__ScanLogClient<$Result.GetResult<Prisma.$ScanLogPayload<ExtArgs>, T, "findFirst"> | null, null, ExtArgs>
+
+    /**
+     * Find the first ScanLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScanLogFindFirstOrThrowArgs} args - Arguments to find a ScanLog
+     * @example
+     * // Get one ScanLog
+     * const scanLog = await prisma.scanLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ScanLogFindFirstOrThrowArgs>(args?: SelectSubset<T, ScanLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__ScanLogClient<$Result.GetResult<Prisma.$ScanLogPayload<ExtArgs>, T, "findFirstOrThrow">, never, ExtArgs>
+
+    /**
+     * Find zero or more ScanLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScanLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ScanLogs
+     * const scanLogs = await prisma.scanLog.findMany()
+     * 
+     * // Get first 10 ScanLogs
+     * const scanLogs = await prisma.scanLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const scanLogWithIdOnly = await prisma.scanLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ScanLogFindManyArgs>(args?: SelectSubset<T, ScanLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScanLogPayload<ExtArgs>, T, "findMany">>
+
+    /**
+     * Create a ScanLog.
+     * @param {ScanLogCreateArgs} args - Arguments to create a ScanLog.
+     * @example
+     * // Create one ScanLog
+     * const ScanLog = await prisma.scanLog.create({
+     *   data: {
+     *     // ... data to create a ScanLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends ScanLogCreateArgs>(args: SelectSubset<T, ScanLogCreateArgs<ExtArgs>>): Prisma__ScanLogClient<$Result.GetResult<Prisma.$ScanLogPayload<ExtArgs>, T, "create">, never, ExtArgs>
+
+    /**
+     * Create many ScanLogs.
+     * @param {ScanLogCreateManyArgs} args - Arguments to create many ScanLogs.
+     * @example
+     * // Create many ScanLogs
+     * const scanLog = await prisma.scanLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ScanLogCreateManyArgs>(args?: SelectSubset<T, ScanLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ScanLogs and returns the data saved in the database.
+     * @param {ScanLogCreateManyAndReturnArgs} args - Arguments to create many ScanLogs.
+     * @example
+     * // Create many ScanLogs
+     * const scanLog = await prisma.scanLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ScanLogs and only return the `id`
+     * const scanLogWithIdOnly = await prisma.scanLog.createManyAndReturn({ 
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ScanLogCreateManyAndReturnArgs>(args?: SelectSubset<T, ScanLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ScanLogPayload<ExtArgs>, T, "createManyAndReturn">>
+
+    /**
+     * Delete a ScanLog.
+     * @param {ScanLogDeleteArgs} args - Arguments to delete one ScanLog.
+     * @example
+     * // Delete one ScanLog
+     * const ScanLog = await prisma.scanLog.delete({
+     *   where: {
+     *     // ... filter to delete one ScanLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ScanLogDeleteArgs>(args: SelectSubset<T, ScanLogDeleteArgs<ExtArgs>>): Prisma__ScanLogClient<$Result.GetResult<Prisma.$ScanLogPayload<ExtArgs>, T, "delete">, never, ExtArgs>
+
+    /**
+     * Update one ScanLog.
+     * @param {ScanLogUpdateArgs} args - Arguments to update one ScanLog.
+     * @example
+     * // Update one ScanLog
+     * const scanLog = await prisma.scanLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ScanLogUpdateArgs>(args: SelectSubset<T, ScanLogUpdateArgs<ExtArgs>>): Prisma__ScanLogClient<$Result.GetResult<Prisma.$ScanLogPayload<ExtArgs>, T, "update">, never, ExtArgs>
+
+    /**
+     * Delete zero or more ScanLogs.
+     * @param {ScanLogDeleteManyArgs} args - Arguments to filter ScanLogs to delete.
+     * @example
+     * // Delete a few ScanLogs
+     * const { count } = await prisma.scanLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ScanLogDeleteManyArgs>(args?: SelectSubset<T, ScanLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ScanLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScanLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ScanLogs
+     * const scanLog = await prisma.scanLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ScanLogUpdateManyArgs>(args: SelectSubset<T, ScanLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ScanLog.
+     * @param {ScanLogUpsertArgs} args - Arguments to update or create a ScanLog.
+     * @example
+     * // Update or create a ScanLog
+     * const scanLog = await prisma.scanLog.upsert({
+     *   create: {
+     *     // ... data to create a ScanLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ScanLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ScanLogUpsertArgs>(args: SelectSubset<T, ScanLogUpsertArgs<ExtArgs>>): Prisma__ScanLogClient<$Result.GetResult<Prisma.$ScanLogPayload<ExtArgs>, T, "upsert">, never, ExtArgs>
+
+
+    /**
+     * Count the number of ScanLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScanLogCountArgs} args - Arguments to filter ScanLogs to count.
+     * @example
+     * // Count the number of ScanLogs
+     * const count = await prisma.scanLog.count({
+     *   where: {
+     *     // ... the filter for the ScanLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends ScanLogCountArgs>(
+      args?: Subset<T, ScanLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ScanLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ScanLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScanLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ScanLogAggregateArgs>(args: Subset<T, ScanLogAggregateArgs>): Prisma.PrismaPromise<GetScanLogAggregateType<T>>
+
+    /**
+     * Group by ScanLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ScanLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ScanLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ScanLogGroupByArgs['orderBy'] }
+        : { orderBy?: ScanLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ScanLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetScanLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ScanLog model
+   */
+  readonly fields: ScanLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ScanLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ScanLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    tenant<T extends SchoolDefaultArgs<ExtArgs> = {}>(args?: Subset<T, SchoolDefaultArgs<ExtArgs>>): Prisma__SchoolClient<$Result.GetResult<Prisma.$SchoolPayload<ExtArgs>, T, "findUniqueOrThrow"> | Null, Null, ExtArgs>
+    scannerUser<T extends ScanLog$scannerUserArgs<ExtArgs> = {}>(args?: Subset<T, ScanLog$scannerUserArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow"> | null, null, ExtArgs>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ScanLog model
+   */ 
+  interface ScanLogFieldRefs {
+    readonly id: FieldRef<"ScanLog", 'String'>
+    readonly tenantId: FieldRef<"ScanLog", 'String'>
+    readonly type: FieldRef<"ScanLog", 'String'>
+    readonly entityId: FieldRef<"ScanLog", 'String'>
+    readonly scannerUserId: FieldRef<"ScanLog", 'String'>
+    readonly result: FieldRef<"ScanLog", 'String'>
+    readonly reason: FieldRef<"ScanLog", 'String'>
+    readonly scannedAt: FieldRef<"ScanLog", 'DateTime'>
+    readonly deviceId: FieldRef<"ScanLog", 'String'>
+    readonly syncedAt: FieldRef<"ScanLog", 'DateTime'>
+    readonly offline: FieldRef<"ScanLog", 'Boolean'>
+    readonly metadata: FieldRef<"ScanLog", 'Json'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ScanLog findUnique
+   */
+  export type ScanLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScanLog
+     */
+    select?: ScanLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScanLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ScanLog to fetch.
+     */
+    where: ScanLogWhereUniqueInput
+  }
+
+  /**
+   * ScanLog findUniqueOrThrow
+   */
+  export type ScanLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScanLog
+     */
+    select?: ScanLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScanLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ScanLog to fetch.
+     */
+    where: ScanLogWhereUniqueInput
+  }
+
+  /**
+   * ScanLog findFirst
+   */
+  export type ScanLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScanLog
+     */
+    select?: ScanLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScanLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ScanLog to fetch.
+     */
+    where?: ScanLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ScanLogs to fetch.
+     */
+    orderBy?: ScanLogOrderByWithRelationInput | ScanLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ScanLogs.
+     */
+    cursor?: ScanLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ScanLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ScanLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ScanLogs.
+     */
+    distinct?: ScanLogScalarFieldEnum | ScanLogScalarFieldEnum[]
+  }
+
+  /**
+   * ScanLog findFirstOrThrow
+   */
+  export type ScanLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScanLog
+     */
+    select?: ScanLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScanLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ScanLog to fetch.
+     */
+    where?: ScanLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ScanLogs to fetch.
+     */
+    orderBy?: ScanLogOrderByWithRelationInput | ScanLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ScanLogs.
+     */
+    cursor?: ScanLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ScanLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ScanLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ScanLogs.
+     */
+    distinct?: ScanLogScalarFieldEnum | ScanLogScalarFieldEnum[]
+  }
+
+  /**
+   * ScanLog findMany
+   */
+  export type ScanLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScanLog
+     */
+    select?: ScanLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScanLogInclude<ExtArgs> | null
+    /**
+     * Filter, which ScanLogs to fetch.
+     */
+    where?: ScanLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ScanLogs to fetch.
+     */
+    orderBy?: ScanLogOrderByWithRelationInput | ScanLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ScanLogs.
+     */
+    cursor?: ScanLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ScanLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ScanLogs.
+     */
+    skip?: number
+    distinct?: ScanLogScalarFieldEnum | ScanLogScalarFieldEnum[]
+  }
+
+  /**
+   * ScanLog create
+   */
+  export type ScanLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScanLog
+     */
+    select?: ScanLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScanLogInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ScanLog.
+     */
+    data: XOR<ScanLogCreateInput, ScanLogUncheckedCreateInput>
+  }
+
+  /**
+   * ScanLog createMany
+   */
+  export type ScanLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ScanLogs.
+     */
+    data: ScanLogCreateManyInput | ScanLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ScanLog createManyAndReturn
+   */
+  export type ScanLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScanLog
+     */
+    select?: ScanLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * The data used to create many ScanLogs.
+     */
+    data: ScanLogCreateManyInput | ScanLogCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScanLogIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ScanLog update
+   */
+  export type ScanLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScanLog
+     */
+    select?: ScanLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScanLogInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ScanLog.
+     */
+    data: XOR<ScanLogUpdateInput, ScanLogUncheckedUpdateInput>
+    /**
+     * Choose, which ScanLog to update.
+     */
+    where: ScanLogWhereUniqueInput
+  }
+
+  /**
+   * ScanLog updateMany
+   */
+  export type ScanLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ScanLogs.
+     */
+    data: XOR<ScanLogUpdateManyMutationInput, ScanLogUncheckedUpdateManyInput>
+    /**
+     * Filter which ScanLogs to update
+     */
+    where?: ScanLogWhereInput
+  }
+
+  /**
+   * ScanLog upsert
+   */
+  export type ScanLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScanLog
+     */
+    select?: ScanLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScanLogInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ScanLog to update in case it exists.
+     */
+    where: ScanLogWhereUniqueInput
+    /**
+     * In case the ScanLog found by the `where` argument doesn't exist, create a new ScanLog with this data.
+     */
+    create: XOR<ScanLogCreateInput, ScanLogUncheckedCreateInput>
+    /**
+     * In case the ScanLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ScanLogUpdateInput, ScanLogUncheckedUpdateInput>
+  }
+
+  /**
+   * ScanLog delete
+   */
+  export type ScanLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScanLog
+     */
+    select?: ScanLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScanLogInclude<ExtArgs> | null
+    /**
+     * Filter which ScanLog to delete.
+     */
+    where: ScanLogWhereUniqueInput
+  }
+
+  /**
+   * ScanLog deleteMany
+   */
+  export type ScanLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ScanLogs to delete
+     */
+    where?: ScanLogWhereInput
+  }
+
+  /**
+   * ScanLog.scannerUser
+   */
+  export type ScanLog$scannerUserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * ScanLog without action
+   */
+  export type ScanLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ScanLog
+     */
+    select?: ScanLogSelect<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ScanLogInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -305432,6 +307758,7 @@ export namespace Prisma {
     tier2ApprovalRole: 'tier2ApprovalRole',
     debtorLimit: 'debtorLimit',
     tillVarianceThreshold: 'tillVarianceThreshold',
+    gateFeeThreshold: 'gateFeeThreshold',
     allowNegativeStock: 'allowNegativeStock',
     vatNumber: 'vatNumber',
     vatRate: 'vatRate',
@@ -308996,6 +311323,41 @@ export namespace Prisma {
   export type GateLogScalarFieldEnum = (typeof GateLogScalarFieldEnum)[keyof typeof GateLogScalarFieldEnum]
 
 
+  export const TenantKeyScalarFieldEnum: {
+    id: 'id',
+    schoolId: 'schoolId',
+    schoolCode: 'schoolCode',
+    keyId: 'keyId',
+    algorithm: 'algorithm',
+    publicKey: 'publicKey',
+    encryptedPrivateKey: 'encryptedPrivateKey',
+    isActive: 'isActive',
+    expiresAt: 'expiresAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type TenantKeyScalarFieldEnum = (typeof TenantKeyScalarFieldEnum)[keyof typeof TenantKeyScalarFieldEnum]
+
+
+  export const ScanLogScalarFieldEnum: {
+    id: 'id',
+    tenantId: 'tenantId',
+    type: 'type',
+    entityId: 'entityId',
+    scannerUserId: 'scannerUserId',
+    result: 'result',
+    reason: 'reason',
+    scannedAt: 'scannedAt',
+    deviceId: 'deviceId',
+    syncedAt: 'syncedAt',
+    offline: 'offline',
+    metadata: 'metadata'
+  };
+
+  export type ScanLogScalarFieldEnum = (typeof ScanLogScalarFieldEnum)[keyof typeof ScanLogScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -309442,6 +311804,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeListRelationFilter
     staffQrCodes?: StaffQrCodeListRelationFilter
     gateLogs?: GateLogListRelationFilter
+    tenantKeys?: TenantKeyListRelationFilter
+    scanLogs?: ScanLogListRelationFilter
   }
 
   export type SchoolOrderByWithRelationInput = {
@@ -309643,6 +312007,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeOrderByRelationAggregateInput
     staffQrCodes?: StaffQrCodeOrderByRelationAggregateInput
     gateLogs?: GateLogOrderByRelationAggregateInput
+    tenantKeys?: TenantKeyOrderByRelationAggregateInput
+    scanLogs?: ScanLogOrderByRelationAggregateInput
   }
 
   export type SchoolWhereUniqueInput = Prisma.AtLeast<{
@@ -309847,6 +312213,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeListRelationFilter
     staffQrCodes?: StaffQrCodeListRelationFilter
     gateLogs?: GateLogListRelationFilter
+    tenantKeys?: TenantKeyListRelationFilter
+    scanLogs?: ScanLogListRelationFilter
   }, "id" | "code" | "email">
 
   export type SchoolOrderByWithAggregationInput = {
@@ -311125,6 +313493,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeListRelationFilter
     scannedGateLogs?: GateLogListRelationFilter
     gateLogs?: GateLogListRelationFilter
+    scanLogs?: ScanLogListRelationFilter
     assignedAssets?: AssetListRelationFilter
     registeredAssets?: AssetListRelationFilter
     assignedSportingEquipments?: SportingEquipmentListRelationFilter
@@ -311240,6 +313609,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeOrderByRelationAggregateInput
     scannedGateLogs?: GateLogOrderByRelationAggregateInput
     gateLogs?: GateLogOrderByRelationAggregateInput
+    scanLogs?: ScanLogOrderByRelationAggregateInput
     assignedAssets?: AssetOrderByRelationAggregateInput
     registeredAssets?: AssetOrderByRelationAggregateInput
     assignedSportingEquipments?: SportingEquipmentOrderByRelationAggregateInput
@@ -311358,6 +313728,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeListRelationFilter
     scannedGateLogs?: GateLogListRelationFilter
     gateLogs?: GateLogListRelationFilter
+    scanLogs?: ScanLogListRelationFilter
     assignedAssets?: AssetListRelationFilter
     registeredAssets?: AssetListRelationFilter
     assignedSportingEquipments?: SportingEquipmentListRelationFilter
@@ -315573,6 +317944,7 @@ export namespace Prisma {
     tier2ApprovalRole?: StringNullableFilter<"SchoolSetting"> | string | null
     debtorLimit?: FloatNullableFilter<"SchoolSetting"> | number | null
     tillVarianceThreshold?: FloatNullableFilter<"SchoolSetting"> | number | null
+    gateFeeThreshold?: FloatNullableFilter<"SchoolSetting"> | number | null
     allowNegativeStock?: BoolFilter<"SchoolSetting"> | boolean
     vatNumber?: StringNullableFilter<"SchoolSetting"> | string | null
     vatRate?: FloatNullableFilter<"SchoolSetting"> | number | null
@@ -315658,6 +318030,7 @@ export namespace Prisma {
     tier2ApprovalRole?: SortOrderInput | SortOrder
     debtorLimit?: SortOrderInput | SortOrder
     tillVarianceThreshold?: SortOrderInput | SortOrder
+    gateFeeThreshold?: SortOrderInput | SortOrder
     allowNegativeStock?: SortOrder
     vatNumber?: SortOrderInput | SortOrder
     vatRate?: SortOrderInput | SortOrder
@@ -315746,6 +318119,7 @@ export namespace Prisma {
     tier2ApprovalRole?: StringNullableFilter<"SchoolSetting"> | string | null
     debtorLimit?: FloatNullableFilter<"SchoolSetting"> | number | null
     tillVarianceThreshold?: FloatNullableFilter<"SchoolSetting"> | number | null
+    gateFeeThreshold?: FloatNullableFilter<"SchoolSetting"> | number | null
     allowNegativeStock?: BoolFilter<"SchoolSetting"> | boolean
     vatNumber?: StringNullableFilter<"SchoolSetting"> | string | null
     vatRate?: FloatNullableFilter<"SchoolSetting"> | number | null
@@ -315831,6 +318205,7 @@ export namespace Prisma {
     tier2ApprovalRole?: SortOrderInput | SortOrder
     debtorLimit?: SortOrderInput | SortOrder
     tillVarianceThreshold?: SortOrderInput | SortOrder
+    gateFeeThreshold?: SortOrderInput | SortOrder
     allowNegativeStock?: SortOrder
     vatNumber?: SortOrderInput | SortOrder
     vatRate?: SortOrderInput | SortOrder
@@ -315923,6 +318298,7 @@ export namespace Prisma {
     tier2ApprovalRole?: StringNullableWithAggregatesFilter<"SchoolSetting"> | string | null
     debtorLimit?: FloatNullableWithAggregatesFilter<"SchoolSetting"> | number | null
     tillVarianceThreshold?: FloatNullableWithAggregatesFilter<"SchoolSetting"> | number | null
+    gateFeeThreshold?: FloatNullableWithAggregatesFilter<"SchoolSetting"> | number | null
     allowNegativeStock?: BoolWithAggregatesFilter<"SchoolSetting"> | boolean
     vatNumber?: StringNullableWithAggregatesFilter<"SchoolSetting"> | string | null
     vatRate?: FloatNullableWithAggregatesFilter<"SchoolSetting"> | number | null
@@ -334617,6 +336993,185 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"GateLog"> | Date | string
   }
 
+  export type TenantKeyWhereInput = {
+    AND?: TenantKeyWhereInput | TenantKeyWhereInput[]
+    OR?: TenantKeyWhereInput[]
+    NOT?: TenantKeyWhereInput | TenantKeyWhereInput[]
+    id?: StringFilter<"TenantKey"> | string
+    schoolId?: StringFilter<"TenantKey"> | string
+    schoolCode?: StringFilter<"TenantKey"> | string
+    keyId?: StringFilter<"TenantKey"> | string
+    algorithm?: StringFilter<"TenantKey"> | string
+    publicKey?: StringFilter<"TenantKey"> | string
+    encryptedPrivateKey?: StringFilter<"TenantKey"> | string
+    isActive?: BoolFilter<"TenantKey"> | boolean
+    expiresAt?: DateTimeNullableFilter<"TenantKey"> | Date | string | null
+    createdAt?: DateTimeFilter<"TenantKey"> | Date | string
+    updatedAt?: DateTimeFilter<"TenantKey"> | Date | string
+    school?: XOR<SchoolRelationFilter, SchoolWhereInput>
+  }
+
+  export type TenantKeyOrderByWithRelationInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    schoolCode?: SortOrder
+    keyId?: SortOrder
+    algorithm?: SortOrder
+    publicKey?: SortOrder
+    encryptedPrivateKey?: SortOrder
+    isActive?: SortOrder
+    expiresAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    school?: SchoolOrderByWithRelationInput
+  }
+
+  export type TenantKeyWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    schoolId_keyId?: TenantKeySchoolIdKeyIdCompoundUniqueInput
+    AND?: TenantKeyWhereInput | TenantKeyWhereInput[]
+    OR?: TenantKeyWhereInput[]
+    NOT?: TenantKeyWhereInput | TenantKeyWhereInput[]
+    schoolId?: StringFilter<"TenantKey"> | string
+    schoolCode?: StringFilter<"TenantKey"> | string
+    keyId?: StringFilter<"TenantKey"> | string
+    algorithm?: StringFilter<"TenantKey"> | string
+    publicKey?: StringFilter<"TenantKey"> | string
+    encryptedPrivateKey?: StringFilter<"TenantKey"> | string
+    isActive?: BoolFilter<"TenantKey"> | boolean
+    expiresAt?: DateTimeNullableFilter<"TenantKey"> | Date | string | null
+    createdAt?: DateTimeFilter<"TenantKey"> | Date | string
+    updatedAt?: DateTimeFilter<"TenantKey"> | Date | string
+    school?: XOR<SchoolRelationFilter, SchoolWhereInput>
+  }, "id" | "schoolId_keyId">
+
+  export type TenantKeyOrderByWithAggregationInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    schoolCode?: SortOrder
+    keyId?: SortOrder
+    algorithm?: SortOrder
+    publicKey?: SortOrder
+    encryptedPrivateKey?: SortOrder
+    isActive?: SortOrder
+    expiresAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: TenantKeyCountOrderByAggregateInput
+    _max?: TenantKeyMaxOrderByAggregateInput
+    _min?: TenantKeyMinOrderByAggregateInput
+  }
+
+  export type TenantKeyScalarWhereWithAggregatesInput = {
+    AND?: TenantKeyScalarWhereWithAggregatesInput | TenantKeyScalarWhereWithAggregatesInput[]
+    OR?: TenantKeyScalarWhereWithAggregatesInput[]
+    NOT?: TenantKeyScalarWhereWithAggregatesInput | TenantKeyScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"TenantKey"> | string
+    schoolId?: StringWithAggregatesFilter<"TenantKey"> | string
+    schoolCode?: StringWithAggregatesFilter<"TenantKey"> | string
+    keyId?: StringWithAggregatesFilter<"TenantKey"> | string
+    algorithm?: StringWithAggregatesFilter<"TenantKey"> | string
+    publicKey?: StringWithAggregatesFilter<"TenantKey"> | string
+    encryptedPrivateKey?: StringWithAggregatesFilter<"TenantKey"> | string
+    isActive?: BoolWithAggregatesFilter<"TenantKey"> | boolean
+    expiresAt?: DateTimeNullableWithAggregatesFilter<"TenantKey"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"TenantKey"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"TenantKey"> | Date | string
+  }
+
+  export type ScanLogWhereInput = {
+    AND?: ScanLogWhereInput | ScanLogWhereInput[]
+    OR?: ScanLogWhereInput[]
+    NOT?: ScanLogWhereInput | ScanLogWhereInput[]
+    id?: StringFilter<"ScanLog"> | string
+    tenantId?: StringFilter<"ScanLog"> | string
+    type?: StringFilter<"ScanLog"> | string
+    entityId?: StringFilter<"ScanLog"> | string
+    scannerUserId?: StringNullableFilter<"ScanLog"> | string | null
+    result?: StringFilter<"ScanLog"> | string
+    reason?: StringNullableFilter<"ScanLog"> | string | null
+    scannedAt?: DateTimeFilter<"ScanLog"> | Date | string
+    deviceId?: StringNullableFilter<"ScanLog"> | string | null
+    syncedAt?: DateTimeNullableFilter<"ScanLog"> | Date | string | null
+    offline?: BoolFilter<"ScanLog"> | boolean
+    metadata?: JsonNullableFilter<"ScanLog">
+    tenant?: XOR<SchoolRelationFilter, SchoolWhereInput>
+    scannerUser?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+  }
+
+  export type ScanLogOrderByWithRelationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    type?: SortOrder
+    entityId?: SortOrder
+    scannerUserId?: SortOrderInput | SortOrder
+    result?: SortOrder
+    reason?: SortOrderInput | SortOrder
+    scannedAt?: SortOrder
+    deviceId?: SortOrderInput | SortOrder
+    syncedAt?: SortOrderInput | SortOrder
+    offline?: SortOrder
+    metadata?: SortOrderInput | SortOrder
+    tenant?: SchoolOrderByWithRelationInput
+    scannerUser?: UserOrderByWithRelationInput
+  }
+
+  export type ScanLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: ScanLogWhereInput | ScanLogWhereInput[]
+    OR?: ScanLogWhereInput[]
+    NOT?: ScanLogWhereInput | ScanLogWhereInput[]
+    tenantId?: StringFilter<"ScanLog"> | string
+    type?: StringFilter<"ScanLog"> | string
+    entityId?: StringFilter<"ScanLog"> | string
+    scannerUserId?: StringNullableFilter<"ScanLog"> | string | null
+    result?: StringFilter<"ScanLog"> | string
+    reason?: StringNullableFilter<"ScanLog"> | string | null
+    scannedAt?: DateTimeFilter<"ScanLog"> | Date | string
+    deviceId?: StringNullableFilter<"ScanLog"> | string | null
+    syncedAt?: DateTimeNullableFilter<"ScanLog"> | Date | string | null
+    offline?: BoolFilter<"ScanLog"> | boolean
+    metadata?: JsonNullableFilter<"ScanLog">
+    tenant?: XOR<SchoolRelationFilter, SchoolWhereInput>
+    scannerUser?: XOR<UserNullableRelationFilter, UserWhereInput> | null
+  }, "id">
+
+  export type ScanLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    type?: SortOrder
+    entityId?: SortOrder
+    scannerUserId?: SortOrderInput | SortOrder
+    result?: SortOrder
+    reason?: SortOrderInput | SortOrder
+    scannedAt?: SortOrder
+    deviceId?: SortOrderInput | SortOrder
+    syncedAt?: SortOrderInput | SortOrder
+    offline?: SortOrder
+    metadata?: SortOrderInput | SortOrder
+    _count?: ScanLogCountOrderByAggregateInput
+    _max?: ScanLogMaxOrderByAggregateInput
+    _min?: ScanLogMinOrderByAggregateInput
+  }
+
+  export type ScanLogScalarWhereWithAggregatesInput = {
+    AND?: ScanLogScalarWhereWithAggregatesInput | ScanLogScalarWhereWithAggregatesInput[]
+    OR?: ScanLogScalarWhereWithAggregatesInput[]
+    NOT?: ScanLogScalarWhereWithAggregatesInput | ScanLogScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ScanLog"> | string
+    tenantId?: StringWithAggregatesFilter<"ScanLog"> | string
+    type?: StringWithAggregatesFilter<"ScanLog"> | string
+    entityId?: StringWithAggregatesFilter<"ScanLog"> | string
+    scannerUserId?: StringNullableWithAggregatesFilter<"ScanLog"> | string | null
+    result?: StringWithAggregatesFilter<"ScanLog"> | string
+    reason?: StringNullableWithAggregatesFilter<"ScanLog"> | string | null
+    scannedAt?: DateTimeWithAggregatesFilter<"ScanLog"> | Date | string
+    deviceId?: StringNullableWithAggregatesFilter<"ScanLog"> | string | null
+    syncedAt?: DateTimeNullableWithAggregatesFilter<"ScanLog"> | Date | string | null
+    offline?: BoolWithAggregatesFilter<"ScanLog"> | boolean
+    metadata?: JsonNullableWithAggregatesFilter<"ScanLog">
+  }
+
   export type PlanCreateInput = {
     id?: string
     name: string
@@ -334882,6 +337437,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateInput = {
@@ -335082,6 +337639,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUpdateInput = {
@@ -335282,6 +337841,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateInput = {
@@ -335482,6 +338043,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateManyInput = {
@@ -336812,6 +339375,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -336925,6 +339489,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -337038,6 +339603,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -337151,6 +339717,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -341802,6 +344369,7 @@ export namespace Prisma {
     tier2ApprovalRole?: string | null
     debtorLimit?: number | null
     tillVarianceThreshold?: number | null
+    gateFeeThreshold?: number | null
     allowNegativeStock?: boolean
     vatNumber?: string | null
     vatRate?: number | null
@@ -341887,6 +344455,7 @@ export namespace Prisma {
     tier2ApprovalRole?: string | null
     debtorLimit?: number | null
     tillVarianceThreshold?: number | null
+    gateFeeThreshold?: number | null
     allowNegativeStock?: boolean
     vatNumber?: string | null
     vatRate?: number | null
@@ -341970,6 +344539,7 @@ export namespace Prisma {
     tier2ApprovalRole?: NullableStringFieldUpdateOperationsInput | string | null
     debtorLimit?: NullableFloatFieldUpdateOperationsInput | number | null
     tillVarianceThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    gateFeeThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
     allowNegativeStock?: BoolFieldUpdateOperationsInput | boolean
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     vatRate?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -342055,6 +344625,7 @@ export namespace Prisma {
     tier2ApprovalRole?: NullableStringFieldUpdateOperationsInput | string | null
     debtorLimit?: NullableFloatFieldUpdateOperationsInput | number | null
     tillVarianceThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    gateFeeThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
     allowNegativeStock?: BoolFieldUpdateOperationsInput | boolean
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     vatRate?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -342139,6 +344710,7 @@ export namespace Prisma {
     tier2ApprovalRole?: string | null
     debtorLimit?: number | null
     tillVarianceThreshold?: number | null
+    gateFeeThreshold?: number | null
     allowNegativeStock?: boolean
     vatNumber?: string | null
     vatRate?: number | null
@@ -342222,6 +344794,7 @@ export namespace Prisma {
     tier2ApprovalRole?: NullableStringFieldUpdateOperationsInput | string | null
     debtorLimit?: NullableFloatFieldUpdateOperationsInput | number | null
     tillVarianceThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    gateFeeThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
     allowNegativeStock?: BoolFieldUpdateOperationsInput | boolean
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     vatRate?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -342306,6 +344879,7 @@ export namespace Prisma {
     tier2ApprovalRole?: NullableStringFieldUpdateOperationsInput | string | null
     debtorLimit?: NullableFloatFieldUpdateOperationsInput | number | null
     tillVarianceThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    gateFeeThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
     allowNegativeStock?: BoolFieldUpdateOperationsInput | boolean
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     vatRate?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -362805,6 +365379,206 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type TenantKeyCreateInput = {
+    id?: string
+    schoolCode: string
+    keyId: string
+    algorithm?: string
+    publicKey: string
+    encryptedPrivateKey: string
+    isActive?: boolean
+    expiresAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    school: SchoolCreateNestedOneWithoutTenantKeysInput
+  }
+
+  export type TenantKeyUncheckedCreateInput = {
+    id?: string
+    schoolId: string
+    schoolCode: string
+    keyId: string
+    algorithm?: string
+    publicKey: string
+    encryptedPrivateKey: string
+    isActive?: boolean
+    expiresAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TenantKeyUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolCode?: StringFieldUpdateOperationsInput | string
+    keyId?: StringFieldUpdateOperationsInput | string
+    algorithm?: StringFieldUpdateOperationsInput | string
+    publicKey?: StringFieldUpdateOperationsInput | string
+    encryptedPrivateKey?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    school?: SchoolUpdateOneRequiredWithoutTenantKeysNestedInput
+  }
+
+  export type TenantKeyUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    schoolCode?: StringFieldUpdateOperationsInput | string
+    keyId?: StringFieldUpdateOperationsInput | string
+    algorithm?: StringFieldUpdateOperationsInput | string
+    publicKey?: StringFieldUpdateOperationsInput | string
+    encryptedPrivateKey?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantKeyCreateManyInput = {
+    id?: string
+    schoolId: string
+    schoolCode: string
+    keyId: string
+    algorithm?: string
+    publicKey: string
+    encryptedPrivateKey: string
+    isActive?: boolean
+    expiresAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TenantKeyUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolCode?: StringFieldUpdateOperationsInput | string
+    keyId?: StringFieldUpdateOperationsInput | string
+    algorithm?: StringFieldUpdateOperationsInput | string
+    publicKey?: StringFieldUpdateOperationsInput | string
+    encryptedPrivateKey?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantKeyUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolId?: StringFieldUpdateOperationsInput | string
+    schoolCode?: StringFieldUpdateOperationsInput | string
+    keyId?: StringFieldUpdateOperationsInput | string
+    algorithm?: StringFieldUpdateOperationsInput | string
+    publicKey?: StringFieldUpdateOperationsInput | string
+    encryptedPrivateKey?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ScanLogCreateInput = {
+    id?: string
+    type: string
+    entityId: string
+    result: string
+    reason?: string | null
+    scannedAt?: Date | string
+    deviceId?: string | null
+    syncedAt?: Date | string | null
+    offline?: boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    tenant: SchoolCreateNestedOneWithoutScanLogsInput
+    scannerUser?: UserCreateNestedOneWithoutScanLogsInput
+  }
+
+  export type ScanLogUncheckedCreateInput = {
+    id?: string
+    tenantId: string
+    type: string
+    entityId: string
+    scannerUserId?: string | null
+    result: string
+    reason?: string | null
+    scannedAt?: Date | string
+    deviceId?: string | null
+    syncedAt?: Date | string | null
+    offline?: boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type ScanLogUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    result?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    scannedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    syncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    offline?: BoolFieldUpdateOperationsInput | boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    tenant?: SchoolUpdateOneRequiredWithoutScanLogsNestedInput
+    scannerUser?: UserUpdateOneWithoutScanLogsNestedInput
+  }
+
+  export type ScanLogUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    scannerUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    result?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    scannedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    syncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    offline?: BoolFieldUpdateOperationsInput | boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type ScanLogCreateManyInput = {
+    id?: string
+    tenantId: string
+    type: string
+    entityId: string
+    scannerUserId?: string | null
+    result: string
+    reason?: string | null
+    scannedAt?: Date | string
+    deviceId?: string | null
+    syncedAt?: Date | string | null
+    offline?: boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type ScanLogUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    result?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    scannedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    syncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    offline?: BoolFieldUpdateOperationsInput | boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type ScanLogUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    scannerUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    result?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    scannedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    syncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    offline?: BoolFieldUpdateOperationsInput | boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -364033,6 +366807,18 @@ export namespace Prisma {
     none?: GateLogWhereInput
   }
 
+  export type TenantKeyListRelationFilter = {
+    every?: TenantKeyWhereInput
+    some?: TenantKeyWhereInput
+    none?: TenantKeyWhereInput
+  }
+
+  export type ScanLogListRelationFilter = {
+    every?: ScanLogWhereInput
+    some?: ScanLogWhereInput
+    none?: ScanLogWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -364715,6 +367501,14 @@ export namespace Prisma {
   }
 
   export type GateLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type TenantKeyOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ScanLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -368295,6 +371089,7 @@ export namespace Prisma {
     tier2ApprovalRole?: SortOrder
     debtorLimit?: SortOrder
     tillVarianceThreshold?: SortOrder
+    gateFeeThreshold?: SortOrder
     allowNegativeStock?: SortOrder
     vatNumber?: SortOrder
     vatRate?: SortOrder
@@ -368367,6 +371162,7 @@ export namespace Prisma {
     financialApprovalThreshold?: SortOrder
     debtorLimit?: SortOrder
     tillVarianceThreshold?: SortOrder
+    gateFeeThreshold?: SortOrder
     vatRate?: SortOrder
     smtpPort?: SortOrder
     mapLatitude?: SortOrder
@@ -368394,6 +371190,7 @@ export namespace Prisma {
     tier2ApprovalRole?: SortOrder
     debtorLimit?: SortOrder
     tillVarianceThreshold?: SortOrder
+    gateFeeThreshold?: SortOrder
     allowNegativeStock?: SortOrder
     vatNumber?: SortOrder
     vatRate?: SortOrder
@@ -368476,6 +371273,7 @@ export namespace Prisma {
     tier2ApprovalRole?: SortOrder
     debtorLimit?: SortOrder
     tillVarianceThreshold?: SortOrder
+    gateFeeThreshold?: SortOrder
     allowNegativeStock?: SortOrder
     vatNumber?: SortOrder
     vatRate?: SortOrder
@@ -368546,6 +371344,7 @@ export namespace Prisma {
     financialApprovalThreshold?: SortOrder
     debtorLimit?: SortOrder
     tillVarianceThreshold?: SortOrder
+    gateFeeThreshold?: SortOrder
     vatRate?: SortOrder
     smtpPort?: SortOrder
     mapLatitude?: SortOrder
@@ -379187,6 +381986,96 @@ export namespace Prisma {
     balanceAtScan?: SortOrder
   }
 
+  export type TenantKeySchoolIdKeyIdCompoundUniqueInput = {
+    schoolId: string
+    keyId: string
+  }
+
+  export type TenantKeyCountOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    schoolCode?: SortOrder
+    keyId?: SortOrder
+    algorithm?: SortOrder
+    publicKey?: SortOrder
+    encryptedPrivateKey?: SortOrder
+    isActive?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TenantKeyMaxOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    schoolCode?: SortOrder
+    keyId?: SortOrder
+    algorithm?: SortOrder
+    publicKey?: SortOrder
+    encryptedPrivateKey?: SortOrder
+    isActive?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type TenantKeyMinOrderByAggregateInput = {
+    id?: SortOrder
+    schoolId?: SortOrder
+    schoolCode?: SortOrder
+    keyId?: SortOrder
+    algorithm?: SortOrder
+    publicKey?: SortOrder
+    encryptedPrivateKey?: SortOrder
+    isActive?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ScanLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    type?: SortOrder
+    entityId?: SortOrder
+    scannerUserId?: SortOrder
+    result?: SortOrder
+    reason?: SortOrder
+    scannedAt?: SortOrder
+    deviceId?: SortOrder
+    syncedAt?: SortOrder
+    offline?: SortOrder
+    metadata?: SortOrder
+  }
+
+  export type ScanLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    type?: SortOrder
+    entityId?: SortOrder
+    scannerUserId?: SortOrder
+    result?: SortOrder
+    reason?: SortOrder
+    scannedAt?: SortOrder
+    deviceId?: SortOrder
+    syncedAt?: SortOrder
+    offline?: SortOrder
+  }
+
+  export type ScanLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    tenantId?: SortOrder
+    type?: SortOrder
+    entityId?: SortOrder
+    scannerUserId?: SortOrder
+    result?: SortOrder
+    reason?: SortOrder
+    scannedAt?: SortOrder
+    deviceId?: SortOrder
+    syncedAt?: SortOrder
+    offline?: SortOrder
+  }
+
   export type PlanCreatefeaturesInput = {
     set: string[]
   }
@@ -380491,6 +383380,20 @@ export namespace Prisma {
     connect?: GateLogWhereUniqueInput | GateLogWhereUniqueInput[]
   }
 
+  export type TenantKeyCreateNestedManyWithoutSchoolInput = {
+    create?: XOR<TenantKeyCreateWithoutSchoolInput, TenantKeyUncheckedCreateWithoutSchoolInput> | TenantKeyCreateWithoutSchoolInput[] | TenantKeyUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: TenantKeyCreateOrConnectWithoutSchoolInput | TenantKeyCreateOrConnectWithoutSchoolInput[]
+    createMany?: TenantKeyCreateManySchoolInputEnvelope
+    connect?: TenantKeyWhereUniqueInput | TenantKeyWhereUniqueInput[]
+  }
+
+  export type ScanLogCreateNestedManyWithoutTenantInput = {
+    create?: XOR<ScanLogCreateWithoutTenantInput, ScanLogUncheckedCreateWithoutTenantInput> | ScanLogCreateWithoutTenantInput[] | ScanLogUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: ScanLogCreateOrConnectWithoutTenantInput | ScanLogCreateOrConnectWithoutTenantInput[]
+    createMany?: ScanLogCreateManyTenantInputEnvelope
+    connect?: ScanLogWhereUniqueInput | ScanLogWhereUniqueInput[]
+  }
+
   export type SyllabusUncheckedCreateNestedManyWithoutSchoolInput = {
     create?: XOR<SyllabusCreateWithoutSchoolInput, SyllabusUncheckedCreateWithoutSchoolInput> | SyllabusCreateWithoutSchoolInput[] | SyllabusUncheckedCreateWithoutSchoolInput[]
     connectOrCreate?: SyllabusCreateOrConnectWithoutSchoolInput | SyllabusCreateOrConnectWithoutSchoolInput[]
@@ -381716,6 +384619,20 @@ export namespace Prisma {
     connectOrCreate?: GateLogCreateOrConnectWithoutSchoolInput | GateLogCreateOrConnectWithoutSchoolInput[]
     createMany?: GateLogCreateManySchoolInputEnvelope
     connect?: GateLogWhereUniqueInput | GateLogWhereUniqueInput[]
+  }
+
+  export type TenantKeyUncheckedCreateNestedManyWithoutSchoolInput = {
+    create?: XOR<TenantKeyCreateWithoutSchoolInput, TenantKeyUncheckedCreateWithoutSchoolInput> | TenantKeyCreateWithoutSchoolInput[] | TenantKeyUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: TenantKeyCreateOrConnectWithoutSchoolInput | TenantKeyCreateOrConnectWithoutSchoolInput[]
+    createMany?: TenantKeyCreateManySchoolInputEnvelope
+    connect?: TenantKeyWhereUniqueInput | TenantKeyWhereUniqueInput[]
+  }
+
+  export type ScanLogUncheckedCreateNestedManyWithoutTenantInput = {
+    create?: XOR<ScanLogCreateWithoutTenantInput, ScanLogUncheckedCreateWithoutTenantInput> | ScanLogCreateWithoutTenantInput[] | ScanLogUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: ScanLogCreateOrConnectWithoutTenantInput | ScanLogCreateOrConnectWithoutTenantInput[]
+    createMany?: ScanLogCreateManyTenantInputEnvelope
+    connect?: ScanLogWhereUniqueInput | ScanLogWhereUniqueInput[]
   }
 
   export type BoolFieldUpdateOperationsInput = {
@@ -384183,6 +387100,34 @@ export namespace Prisma {
     deleteMany?: GateLogScalarWhereInput | GateLogScalarWhereInput[]
   }
 
+  export type TenantKeyUpdateManyWithoutSchoolNestedInput = {
+    create?: XOR<TenantKeyCreateWithoutSchoolInput, TenantKeyUncheckedCreateWithoutSchoolInput> | TenantKeyCreateWithoutSchoolInput[] | TenantKeyUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: TenantKeyCreateOrConnectWithoutSchoolInput | TenantKeyCreateOrConnectWithoutSchoolInput[]
+    upsert?: TenantKeyUpsertWithWhereUniqueWithoutSchoolInput | TenantKeyUpsertWithWhereUniqueWithoutSchoolInput[]
+    createMany?: TenantKeyCreateManySchoolInputEnvelope
+    set?: TenantKeyWhereUniqueInput | TenantKeyWhereUniqueInput[]
+    disconnect?: TenantKeyWhereUniqueInput | TenantKeyWhereUniqueInput[]
+    delete?: TenantKeyWhereUniqueInput | TenantKeyWhereUniqueInput[]
+    connect?: TenantKeyWhereUniqueInput | TenantKeyWhereUniqueInput[]
+    update?: TenantKeyUpdateWithWhereUniqueWithoutSchoolInput | TenantKeyUpdateWithWhereUniqueWithoutSchoolInput[]
+    updateMany?: TenantKeyUpdateManyWithWhereWithoutSchoolInput | TenantKeyUpdateManyWithWhereWithoutSchoolInput[]
+    deleteMany?: TenantKeyScalarWhereInput | TenantKeyScalarWhereInput[]
+  }
+
+  export type ScanLogUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<ScanLogCreateWithoutTenantInput, ScanLogUncheckedCreateWithoutTenantInput> | ScanLogCreateWithoutTenantInput[] | ScanLogUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: ScanLogCreateOrConnectWithoutTenantInput | ScanLogCreateOrConnectWithoutTenantInput[]
+    upsert?: ScanLogUpsertWithWhereUniqueWithoutTenantInput | ScanLogUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: ScanLogCreateManyTenantInputEnvelope
+    set?: ScanLogWhereUniqueInput | ScanLogWhereUniqueInput[]
+    disconnect?: ScanLogWhereUniqueInput | ScanLogWhereUniqueInput[]
+    delete?: ScanLogWhereUniqueInput | ScanLogWhereUniqueInput[]
+    connect?: ScanLogWhereUniqueInput | ScanLogWhereUniqueInput[]
+    update?: ScanLogUpdateWithWhereUniqueWithoutTenantInput | ScanLogUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: ScanLogUpdateManyWithWhereWithoutTenantInput | ScanLogUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: ScanLogScalarWhereInput | ScanLogScalarWhereInput[]
+  }
+
   export type SyllabusUncheckedUpdateManyWithoutSchoolNestedInput = {
     create?: XOR<SyllabusCreateWithoutSchoolInput, SyllabusUncheckedCreateWithoutSchoolInput> | SyllabusCreateWithoutSchoolInput[] | SyllabusUncheckedCreateWithoutSchoolInput[]
     connectOrCreate?: SyllabusCreateOrConnectWithoutSchoolInput | SyllabusCreateOrConnectWithoutSchoolInput[]
@@ -386627,6 +389572,34 @@ export namespace Prisma {
     deleteMany?: GateLogScalarWhereInput | GateLogScalarWhereInput[]
   }
 
+  export type TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput = {
+    create?: XOR<TenantKeyCreateWithoutSchoolInput, TenantKeyUncheckedCreateWithoutSchoolInput> | TenantKeyCreateWithoutSchoolInput[] | TenantKeyUncheckedCreateWithoutSchoolInput[]
+    connectOrCreate?: TenantKeyCreateOrConnectWithoutSchoolInput | TenantKeyCreateOrConnectWithoutSchoolInput[]
+    upsert?: TenantKeyUpsertWithWhereUniqueWithoutSchoolInput | TenantKeyUpsertWithWhereUniqueWithoutSchoolInput[]
+    createMany?: TenantKeyCreateManySchoolInputEnvelope
+    set?: TenantKeyWhereUniqueInput | TenantKeyWhereUniqueInput[]
+    disconnect?: TenantKeyWhereUniqueInput | TenantKeyWhereUniqueInput[]
+    delete?: TenantKeyWhereUniqueInput | TenantKeyWhereUniqueInput[]
+    connect?: TenantKeyWhereUniqueInput | TenantKeyWhereUniqueInput[]
+    update?: TenantKeyUpdateWithWhereUniqueWithoutSchoolInput | TenantKeyUpdateWithWhereUniqueWithoutSchoolInput[]
+    updateMany?: TenantKeyUpdateManyWithWhereWithoutSchoolInput | TenantKeyUpdateManyWithWhereWithoutSchoolInput[]
+    deleteMany?: TenantKeyScalarWhereInput | TenantKeyScalarWhereInput[]
+  }
+
+  export type ScanLogUncheckedUpdateManyWithoutTenantNestedInput = {
+    create?: XOR<ScanLogCreateWithoutTenantInput, ScanLogUncheckedCreateWithoutTenantInput> | ScanLogCreateWithoutTenantInput[] | ScanLogUncheckedCreateWithoutTenantInput[]
+    connectOrCreate?: ScanLogCreateOrConnectWithoutTenantInput | ScanLogCreateOrConnectWithoutTenantInput[]
+    upsert?: ScanLogUpsertWithWhereUniqueWithoutTenantInput | ScanLogUpsertWithWhereUniqueWithoutTenantInput[]
+    createMany?: ScanLogCreateManyTenantInputEnvelope
+    set?: ScanLogWhereUniqueInput | ScanLogWhereUniqueInput[]
+    disconnect?: ScanLogWhereUniqueInput | ScanLogWhereUniqueInput[]
+    delete?: ScanLogWhereUniqueInput | ScanLogWhereUniqueInput[]
+    connect?: ScanLogWhereUniqueInput | ScanLogWhereUniqueInput[]
+    update?: ScanLogUpdateWithWhereUniqueWithoutTenantInput | ScanLogUpdateWithWhereUniqueWithoutTenantInput[]
+    updateMany?: ScanLogUpdateManyWithWhereWithoutTenantInput | ScanLogUpdateManyWithWhereWithoutTenantInput[]
+    deleteMany?: ScanLogScalarWhereInput | ScanLogScalarWhereInput[]
+  }
+
   export type SchoolCreateNestedOneWithoutGradingScalesInput = {
     create?: XOR<SchoolCreateWithoutGradingScalesInput, SchoolUncheckedCreateWithoutGradingScalesInput>
     connectOrCreate?: SchoolCreateOrConnectWithoutGradingScalesInput
@@ -387638,6 +390611,13 @@ export namespace Prisma {
     connect?: GateLogWhereUniqueInput | GateLogWhereUniqueInput[]
   }
 
+  export type ScanLogCreateNestedManyWithoutScannerUserInput = {
+    create?: XOR<ScanLogCreateWithoutScannerUserInput, ScanLogUncheckedCreateWithoutScannerUserInput> | ScanLogCreateWithoutScannerUserInput[] | ScanLogUncheckedCreateWithoutScannerUserInput[]
+    connectOrCreate?: ScanLogCreateOrConnectWithoutScannerUserInput | ScanLogCreateOrConnectWithoutScannerUserInput[]
+    createMany?: ScanLogCreateManyScannerUserInputEnvelope
+    connect?: ScanLogWhereUniqueInput | ScanLogWhereUniqueInput[]
+  }
+
   export type AssetCreateNestedManyWithoutCustodianInput = {
     create?: XOR<AssetCreateWithoutCustodianInput, AssetUncheckedCreateWithoutCustodianInput> | AssetCreateWithoutCustodianInput[] | AssetUncheckedCreateWithoutCustodianInput[]
     connectOrCreate?: AssetCreateOrConnectWithoutCustodianInput | AssetCreateOrConnectWithoutCustodianInput[]
@@ -388260,6 +391240,13 @@ export namespace Prisma {
     connectOrCreate?: GateLogCreateOrConnectWithoutStaffInput | GateLogCreateOrConnectWithoutStaffInput[]
     createMany?: GateLogCreateManyStaffInputEnvelope
     connect?: GateLogWhereUniqueInput | GateLogWhereUniqueInput[]
+  }
+
+  export type ScanLogUncheckedCreateNestedManyWithoutScannerUserInput = {
+    create?: XOR<ScanLogCreateWithoutScannerUserInput, ScanLogUncheckedCreateWithoutScannerUserInput> | ScanLogCreateWithoutScannerUserInput[] | ScanLogUncheckedCreateWithoutScannerUserInput[]
+    connectOrCreate?: ScanLogCreateOrConnectWithoutScannerUserInput | ScanLogCreateOrConnectWithoutScannerUserInput[]
+    createMany?: ScanLogCreateManyScannerUserInputEnvelope
+    connect?: ScanLogWhereUniqueInput | ScanLogWhereUniqueInput[]
   }
 
   export type AssetUncheckedCreateNestedManyWithoutCustodianInput = {
@@ -389076,6 +392063,20 @@ export namespace Prisma {
     update?: GateLogUpdateWithWhereUniqueWithoutStaffInput | GateLogUpdateWithWhereUniqueWithoutStaffInput[]
     updateMany?: GateLogUpdateManyWithWhereWithoutStaffInput | GateLogUpdateManyWithWhereWithoutStaffInput[]
     deleteMany?: GateLogScalarWhereInput | GateLogScalarWhereInput[]
+  }
+
+  export type ScanLogUpdateManyWithoutScannerUserNestedInput = {
+    create?: XOR<ScanLogCreateWithoutScannerUserInput, ScanLogUncheckedCreateWithoutScannerUserInput> | ScanLogCreateWithoutScannerUserInput[] | ScanLogUncheckedCreateWithoutScannerUserInput[]
+    connectOrCreate?: ScanLogCreateOrConnectWithoutScannerUserInput | ScanLogCreateOrConnectWithoutScannerUserInput[]
+    upsert?: ScanLogUpsertWithWhereUniqueWithoutScannerUserInput | ScanLogUpsertWithWhereUniqueWithoutScannerUserInput[]
+    createMany?: ScanLogCreateManyScannerUserInputEnvelope
+    set?: ScanLogWhereUniqueInput | ScanLogWhereUniqueInput[]
+    disconnect?: ScanLogWhereUniqueInput | ScanLogWhereUniqueInput[]
+    delete?: ScanLogWhereUniqueInput | ScanLogWhereUniqueInput[]
+    connect?: ScanLogWhereUniqueInput | ScanLogWhereUniqueInput[]
+    update?: ScanLogUpdateWithWhereUniqueWithoutScannerUserInput | ScanLogUpdateWithWhereUniqueWithoutScannerUserInput[]
+    updateMany?: ScanLogUpdateManyWithWhereWithoutScannerUserInput | ScanLogUpdateManyWithWhereWithoutScannerUserInput[]
+    deleteMany?: ScanLogScalarWhereInput | ScanLogScalarWhereInput[]
   }
 
   export type AssetUpdateManyWithoutCustodianNestedInput = {
@@ -390312,6 +393313,20 @@ export namespace Prisma {
     update?: GateLogUpdateWithWhereUniqueWithoutStaffInput | GateLogUpdateWithWhereUniqueWithoutStaffInput[]
     updateMany?: GateLogUpdateManyWithWhereWithoutStaffInput | GateLogUpdateManyWithWhereWithoutStaffInput[]
     deleteMany?: GateLogScalarWhereInput | GateLogScalarWhereInput[]
+  }
+
+  export type ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput = {
+    create?: XOR<ScanLogCreateWithoutScannerUserInput, ScanLogUncheckedCreateWithoutScannerUserInput> | ScanLogCreateWithoutScannerUserInput[] | ScanLogUncheckedCreateWithoutScannerUserInput[]
+    connectOrCreate?: ScanLogCreateOrConnectWithoutScannerUserInput | ScanLogCreateOrConnectWithoutScannerUserInput[]
+    upsert?: ScanLogUpsertWithWhereUniqueWithoutScannerUserInput | ScanLogUpsertWithWhereUniqueWithoutScannerUserInput[]
+    createMany?: ScanLogCreateManyScannerUserInputEnvelope
+    set?: ScanLogWhereUniqueInput | ScanLogWhereUniqueInput[]
+    disconnect?: ScanLogWhereUniqueInput | ScanLogWhereUniqueInput[]
+    delete?: ScanLogWhereUniqueInput | ScanLogWhereUniqueInput[]
+    connect?: ScanLogWhereUniqueInput | ScanLogWhereUniqueInput[]
+    update?: ScanLogUpdateWithWhereUniqueWithoutScannerUserInput | ScanLogUpdateWithWhereUniqueWithoutScannerUserInput[]
+    updateMany?: ScanLogUpdateManyWithWhereWithoutScannerUserInput | ScanLogUpdateManyWithWhereWithoutScannerUserInput[]
+    deleteMany?: ScanLogScalarWhereInput | ScanLogScalarWhereInput[]
   }
 
   export type AssetUncheckedUpdateManyWithoutCustodianNestedInput = {
@@ -408046,6 +411061,50 @@ export namespace Prisma {
     update?: XOR<XOR<PaymentPlanUpdateToOneWithWhereWithoutGateLogsInput, PaymentPlanUpdateWithoutGateLogsInput>, PaymentPlanUncheckedUpdateWithoutGateLogsInput>
   }
 
+  export type SchoolCreateNestedOneWithoutTenantKeysInput = {
+    create?: XOR<SchoolCreateWithoutTenantKeysInput, SchoolUncheckedCreateWithoutTenantKeysInput>
+    connectOrCreate?: SchoolCreateOrConnectWithoutTenantKeysInput
+    connect?: SchoolWhereUniqueInput
+  }
+
+  export type SchoolUpdateOneRequiredWithoutTenantKeysNestedInput = {
+    create?: XOR<SchoolCreateWithoutTenantKeysInput, SchoolUncheckedCreateWithoutTenantKeysInput>
+    connectOrCreate?: SchoolCreateOrConnectWithoutTenantKeysInput
+    upsert?: SchoolUpsertWithoutTenantKeysInput
+    connect?: SchoolWhereUniqueInput
+    update?: XOR<XOR<SchoolUpdateToOneWithWhereWithoutTenantKeysInput, SchoolUpdateWithoutTenantKeysInput>, SchoolUncheckedUpdateWithoutTenantKeysInput>
+  }
+
+  export type SchoolCreateNestedOneWithoutScanLogsInput = {
+    create?: XOR<SchoolCreateWithoutScanLogsInput, SchoolUncheckedCreateWithoutScanLogsInput>
+    connectOrCreate?: SchoolCreateOrConnectWithoutScanLogsInput
+    connect?: SchoolWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutScanLogsInput = {
+    create?: XOR<UserCreateWithoutScanLogsInput, UserUncheckedCreateWithoutScanLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutScanLogsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type SchoolUpdateOneRequiredWithoutScanLogsNestedInput = {
+    create?: XOR<SchoolCreateWithoutScanLogsInput, SchoolUncheckedCreateWithoutScanLogsInput>
+    connectOrCreate?: SchoolCreateOrConnectWithoutScanLogsInput
+    upsert?: SchoolUpsertWithoutScanLogsInput
+    connect?: SchoolWhereUniqueInput
+    update?: XOR<XOR<SchoolUpdateToOneWithWhereWithoutScanLogsInput, SchoolUpdateWithoutScanLogsInput>, SchoolUncheckedUpdateWithoutScanLogsInput>
+  }
+
+  export type UserUpdateOneWithoutScanLogsNestedInput = {
+    create?: XOR<UserCreateWithoutScanLogsInput, UserUncheckedCreateWithoutScanLogsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutScanLogsInput
+    upsert?: UserUpsertWithoutScanLogsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutScanLogsInput, UserUpdateWithoutScanLogsInput>, UserUncheckedUpdateWithoutScanLogsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -408598,6 +411657,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutPlanInput = {
@@ -408797,6 +411858,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutPlanInput = {
@@ -409095,6 +412158,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -409207,6 +412271,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -413336,6 +416401,7 @@ export namespace Prisma {
     tier2ApprovalRole?: string | null
     debtorLimit?: number | null
     tillVarianceThreshold?: number | null
+    gateFeeThreshold?: number | null
     allowNegativeStock?: boolean
     vatNumber?: string | null
     vatRate?: number | null
@@ -413419,6 +416485,7 @@ export namespace Prisma {
     tier2ApprovalRole?: string | null
     debtorLimit?: number | null
     tillVarianceThreshold?: number | null
+    gateFeeThreshold?: number | null
     allowNegativeStock?: boolean
     vatNumber?: string | null
     vatRate?: number | null
@@ -416611,6 +419678,80 @@ export namespace Prisma {
 
   export type GateLogCreateManySchoolInputEnvelope = {
     data: GateLogCreateManySchoolInput | GateLogCreateManySchoolInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type TenantKeyCreateWithoutSchoolInput = {
+    id?: string
+    schoolCode: string
+    keyId: string
+    algorithm?: string
+    publicKey: string
+    encryptedPrivateKey: string
+    isActive?: boolean
+    expiresAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TenantKeyUncheckedCreateWithoutSchoolInput = {
+    id?: string
+    schoolCode: string
+    keyId: string
+    algorithm?: string
+    publicKey: string
+    encryptedPrivateKey: string
+    isActive?: boolean
+    expiresAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TenantKeyCreateOrConnectWithoutSchoolInput = {
+    where: TenantKeyWhereUniqueInput
+    create: XOR<TenantKeyCreateWithoutSchoolInput, TenantKeyUncheckedCreateWithoutSchoolInput>
+  }
+
+  export type TenantKeyCreateManySchoolInputEnvelope = {
+    data: TenantKeyCreateManySchoolInput | TenantKeyCreateManySchoolInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ScanLogCreateWithoutTenantInput = {
+    id?: string
+    type: string
+    entityId: string
+    result: string
+    reason?: string | null
+    scannedAt?: Date | string
+    deviceId?: string | null
+    syncedAt?: Date | string | null
+    offline?: boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    scannerUser?: UserCreateNestedOneWithoutScanLogsInput
+  }
+
+  export type ScanLogUncheckedCreateWithoutTenantInput = {
+    id?: string
+    type: string
+    entityId: string
+    scannerUserId?: string | null
+    result: string
+    reason?: string | null
+    scannedAt?: Date | string
+    deviceId?: string | null
+    syncedAt?: Date | string | null
+    offline?: boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type ScanLogCreateOrConnectWithoutTenantInput = {
+    where: ScanLogWhereUniqueInput
+    create: XOR<ScanLogCreateWithoutTenantInput, ScanLogUncheckedCreateWithoutTenantInput>
+  }
+
+  export type ScanLogCreateManyTenantInputEnvelope = {
+    data: ScanLogCreateManyTenantInput | ScanLogCreateManyTenantInput[]
     skipDuplicates?: boolean
   }
 
@@ -420154,6 +423295,7 @@ export namespace Prisma {
     tier2ApprovalRole?: NullableStringFieldUpdateOperationsInput | string | null
     debtorLimit?: NullableFloatFieldUpdateOperationsInput | number | null
     tillVarianceThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    gateFeeThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
     allowNegativeStock?: BoolFieldUpdateOperationsInput | boolean
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     vatRate?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -420237,6 +423379,7 @@ export namespace Prisma {
     tier2ApprovalRole?: NullableStringFieldUpdateOperationsInput | string | null
     debtorLimit?: NullableFloatFieldUpdateOperationsInput | number | null
     tillVarianceThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
+    gateFeeThreshold?: NullableFloatFieldUpdateOperationsInput | number | null
     allowNegativeStock?: BoolFieldUpdateOperationsInput | boolean
     vatNumber?: NullableStringFieldUpdateOperationsInput | string | null
     vatRate?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -422955,6 +426098,73 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"GateLog"> | Date | string
   }
 
+  export type TenantKeyUpsertWithWhereUniqueWithoutSchoolInput = {
+    where: TenantKeyWhereUniqueInput
+    update: XOR<TenantKeyUpdateWithoutSchoolInput, TenantKeyUncheckedUpdateWithoutSchoolInput>
+    create: XOR<TenantKeyCreateWithoutSchoolInput, TenantKeyUncheckedCreateWithoutSchoolInput>
+  }
+
+  export type TenantKeyUpdateWithWhereUniqueWithoutSchoolInput = {
+    where: TenantKeyWhereUniqueInput
+    data: XOR<TenantKeyUpdateWithoutSchoolInput, TenantKeyUncheckedUpdateWithoutSchoolInput>
+  }
+
+  export type TenantKeyUpdateManyWithWhereWithoutSchoolInput = {
+    where: TenantKeyScalarWhereInput
+    data: XOR<TenantKeyUpdateManyMutationInput, TenantKeyUncheckedUpdateManyWithoutSchoolInput>
+  }
+
+  export type TenantKeyScalarWhereInput = {
+    AND?: TenantKeyScalarWhereInput | TenantKeyScalarWhereInput[]
+    OR?: TenantKeyScalarWhereInput[]
+    NOT?: TenantKeyScalarWhereInput | TenantKeyScalarWhereInput[]
+    id?: StringFilter<"TenantKey"> | string
+    schoolId?: StringFilter<"TenantKey"> | string
+    schoolCode?: StringFilter<"TenantKey"> | string
+    keyId?: StringFilter<"TenantKey"> | string
+    algorithm?: StringFilter<"TenantKey"> | string
+    publicKey?: StringFilter<"TenantKey"> | string
+    encryptedPrivateKey?: StringFilter<"TenantKey"> | string
+    isActive?: BoolFilter<"TenantKey"> | boolean
+    expiresAt?: DateTimeNullableFilter<"TenantKey"> | Date | string | null
+    createdAt?: DateTimeFilter<"TenantKey"> | Date | string
+    updatedAt?: DateTimeFilter<"TenantKey"> | Date | string
+  }
+
+  export type ScanLogUpsertWithWhereUniqueWithoutTenantInput = {
+    where: ScanLogWhereUniqueInput
+    update: XOR<ScanLogUpdateWithoutTenantInput, ScanLogUncheckedUpdateWithoutTenantInput>
+    create: XOR<ScanLogCreateWithoutTenantInput, ScanLogUncheckedCreateWithoutTenantInput>
+  }
+
+  export type ScanLogUpdateWithWhereUniqueWithoutTenantInput = {
+    where: ScanLogWhereUniqueInput
+    data: XOR<ScanLogUpdateWithoutTenantInput, ScanLogUncheckedUpdateWithoutTenantInput>
+  }
+
+  export type ScanLogUpdateManyWithWhereWithoutTenantInput = {
+    where: ScanLogScalarWhereInput
+    data: XOR<ScanLogUpdateManyMutationInput, ScanLogUncheckedUpdateManyWithoutTenantInput>
+  }
+
+  export type ScanLogScalarWhereInput = {
+    AND?: ScanLogScalarWhereInput | ScanLogScalarWhereInput[]
+    OR?: ScanLogScalarWhereInput[]
+    NOT?: ScanLogScalarWhereInput | ScanLogScalarWhereInput[]
+    id?: StringFilter<"ScanLog"> | string
+    tenantId?: StringFilter<"ScanLog"> | string
+    type?: StringFilter<"ScanLog"> | string
+    entityId?: StringFilter<"ScanLog"> | string
+    scannerUserId?: StringNullableFilter<"ScanLog"> | string | null
+    result?: StringFilter<"ScanLog"> | string
+    reason?: StringNullableFilter<"ScanLog"> | string | null
+    scannedAt?: DateTimeFilter<"ScanLog"> | Date | string
+    deviceId?: StringNullableFilter<"ScanLog"> | string | null
+    syncedAt?: DateTimeNullableFilter<"ScanLog"> | Date | string | null
+    offline?: BoolFilter<"ScanLog"> | boolean
+    metadata?: JsonNullableFilter<"ScanLog">
+  }
+
   export type SchoolCreateWithoutGradingScalesInput = {
     id?: string
     code: string
@@ -423152,6 +426362,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutGradingScalesInput = {
@@ -423351,6 +426563,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutGradingScalesInput = {
@@ -423566,6 +426780,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutGradingScalesInput = {
@@ -423765,6 +426981,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutHostelCategoriesInput = {
@@ -423964,6 +427182,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutHostelCategoriesInput = {
@@ -424163,6 +427383,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutHostelCategoriesInput = {
@@ -424426,6 +427648,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutHostelCategoriesInput = {
@@ -424625,6 +427849,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type HostelUpsertWithWhereUniqueWithoutCategoryInput = {
@@ -424840,6 +428066,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutHostelRoomsInput = {
@@ -425039,6 +428267,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutHostelRoomsInput = {
@@ -425302,6 +428532,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutHostelRoomsInput = {
@@ -425501,6 +428733,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type HostelUpsertWithWhereUniqueWithoutRoomTypeInput = {
@@ -425716,6 +428950,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutLeadershipAssignmentsInput = {
@@ -425915,6 +429151,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutLeadershipAssignmentsInput = {
@@ -426217,6 +429455,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -426329,6 +429568,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -426607,6 +429847,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutLeadershipAssignmentsInput = {
@@ -426806,6 +430048,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentUpsertWithoutLeadershipAssignmentsInput = {
@@ -427126,6 +430370,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -427238,6 +430483,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -427500,6 +430746,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutStudentAllowedItemsInput = {
@@ -427699,6 +430947,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutStudentAllowedItemsInput = {
@@ -427914,6 +431164,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStudentAllowedItemsInput = {
@@ -428113,6 +431365,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutUniformItemsInput = {
@@ -428312,6 +431566,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutUniformItemsInput = {
@@ -428511,6 +431767,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutUniformItemsInput = {
@@ -428820,6 +432078,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutUniformItemsInput = {
@@ -429019,6 +432279,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UniformStockOrderItemUpsertWithWhereUniqueWithoutItemInput = {
@@ -429341,6 +432603,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutUniformStockOrdersInput = {
@@ -429540,6 +432804,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutUniformStockOrdersInput = {
@@ -429838,6 +433104,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutUniformStockOrdersInput = {
@@ -430037,6 +433305,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UniformStockOrderItemUpsertWithWhereUniqueWithoutOrderInput = {
@@ -430626,6 +433896,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutUniformSalesInput = {
@@ -430825,6 +434097,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutUniformSalesInput = {
@@ -431318,6 +434592,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutUniformSalesInput = {
@@ -431517,6 +434793,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UniformSaleItemUpsertWithWhereUniqueWithoutSaleInput = {
@@ -431917,6 +435195,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutUniformSupplierPaymentsInput = {
@@ -432116,6 +435396,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutUniformSupplierPaymentsInput = {
@@ -432386,6 +435668,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutUniformSupplierPaymentsInput = {
@@ -432585,6 +435869,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutAccountCategoriesInput = {
@@ -432784,6 +436070,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutAccountCategoriesInput = {
@@ -432983,6 +436271,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutAccountCategoriesInput = {
@@ -433300,6 +436590,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAccountCategoriesInput = {
@@ -433499,6 +436791,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type IncomeUpsertWithWhereUniqueWithoutCategoryInput = {
@@ -433773,6 +437067,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutLiabilitiesInput = {
@@ -433972,6 +437268,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutLiabilitiesInput = {
@@ -434220,6 +437518,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutLiabilitiesInput = {
@@ -434419,6 +437719,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type AccountCategoryCreateWithoutIncomesInput = {
@@ -434645,6 +437947,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutIncomesInput = {
@@ -434844,6 +438148,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutIncomesInput = {
@@ -435092,6 +438398,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutIncomesInput = {
@@ -435291,6 +438599,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type AccountCategoryCreateWithoutExpensesInput = {
@@ -435517,6 +438827,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutExpensesInput = {
@@ -435716,6 +439028,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutExpensesInput = {
@@ -435964,6 +439278,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutExpensesInput = {
@@ -436163,6 +439479,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SyllabusCreateWithoutUploadedByInput = {
@@ -436566,6 +439884,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutUsersInput = {
@@ -436765,6 +440085,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutUsersInput = {
@@ -437923,6 +441245,44 @@ export namespace Prisma {
 
   export type GateLogCreateManyStaffInputEnvelope = {
     data: GateLogCreateManyStaffInput | GateLogCreateManyStaffInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ScanLogCreateWithoutScannerUserInput = {
+    id?: string
+    type: string
+    entityId: string
+    result: string
+    reason?: string | null
+    scannedAt?: Date | string
+    deviceId?: string | null
+    syncedAt?: Date | string | null
+    offline?: boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    tenant: SchoolCreateNestedOneWithoutScanLogsInput
+  }
+
+  export type ScanLogUncheckedCreateWithoutScannerUserInput = {
+    id?: string
+    tenantId: string
+    type: string
+    entityId: string
+    result: string
+    reason?: string | null
+    scannedAt?: Date | string
+    deviceId?: string | null
+    syncedAt?: Date | string | null
+    offline?: boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type ScanLogCreateOrConnectWithoutScannerUserInput = {
+    where: ScanLogWhereUniqueInput
+    create: XOR<ScanLogCreateWithoutScannerUserInput, ScanLogUncheckedCreateWithoutScannerUserInput>
+  }
+
+  export type ScanLogCreateManyScannerUserInputEnvelope = {
+    data: ScanLogCreateManyScannerUserInput | ScanLogCreateManyScannerUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -441461,6 +444821,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutUsersInput = {
@@ -441660,6 +445022,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TeacherUpsertWithoutUserInput = {
@@ -442509,6 +445873,22 @@ export namespace Prisma {
   export type GateLogUpdateManyWithWhereWithoutStaffInput = {
     where: GateLogScalarWhereInput
     data: XOR<GateLogUpdateManyMutationInput, GateLogUncheckedUpdateManyWithoutStaffInput>
+  }
+
+  export type ScanLogUpsertWithWhereUniqueWithoutScannerUserInput = {
+    where: ScanLogWhereUniqueInput
+    update: XOR<ScanLogUpdateWithoutScannerUserInput, ScanLogUncheckedUpdateWithoutScannerUserInput>
+    create: XOR<ScanLogCreateWithoutScannerUserInput, ScanLogUncheckedCreateWithoutScannerUserInput>
+  }
+
+  export type ScanLogUpdateWithWhereUniqueWithoutScannerUserInput = {
+    where: ScanLogWhereUniqueInput
+    data: XOR<ScanLogUpdateWithoutScannerUserInput, ScanLogUncheckedUpdateWithoutScannerUserInput>
+  }
+
+  export type ScanLogUpdateManyWithWhereWithoutScannerUserInput = {
+    where: ScanLogScalarWhereInput
+    data: XOR<ScanLogUpdateManyMutationInput, ScanLogUncheckedUpdateManyWithoutScannerUserInput>
   }
 
   export type AssetUpsertWithWhereUniqueWithoutCustodianInput = {
@@ -443800,6 +447180,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -443912,6 +447293,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -444040,6 +447422,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -444152,6 +447535,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -444316,6 +447700,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -444428,6 +447813,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -444696,6 +448082,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutTeachersInput = {
@@ -444895,6 +448283,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutTeachersInput = {
@@ -445684,6 +449074,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -445796,6 +449187,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -446070,6 +449462,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutTeachersInput = {
@@ -446269,6 +449663,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type DepartmentUpsertWithoutTeachersInput = {
@@ -446627,6 +450023,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -446739,6 +450136,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -447068,6 +450466,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutStudentsInput = {
@@ -447267,6 +450667,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutStudentsInput = {
@@ -449333,6 +452735,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -449445,6 +452848,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -449786,6 +453190,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStudentsInput = {
@@ -449985,6 +453391,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type GradeUpsertWithWhereUniqueWithoutStudentInput = {
@@ -451223,6 +454631,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutClassesInput = {
@@ -451422,6 +454832,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutClassesInput = {
@@ -452783,6 +456195,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClassesInput = {
@@ -452982,6 +456396,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentUpsertWithWhereUniqueWithoutClassInput = {
@@ -453511,6 +456927,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutSectionsInput = {
@@ -453710,6 +457128,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutSectionsInput = {
@@ -454041,6 +457461,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSectionsInput = {
@@ -454240,6 +457662,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolClassUpsertWithWhereUniqueWithoutSectionInput = {
@@ -454616,6 +458040,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutSubjectsInput = {
@@ -454815,6 +458241,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutSubjectsInput = {
@@ -454869,6 +458297,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -454981,6 +458410,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -456130,6 +459560,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSubjectsInput = {
@@ -456329,6 +459761,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutCreatedSubjectsInput = {
@@ -456389,6 +459823,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -456501,6 +459936,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -458046,6 +461482,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutGradesInput = {
@@ -458245,6 +461683,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutGradesInput = {
@@ -458817,6 +462257,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutGradesInput = {
@@ -459016,6 +462458,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutFacultiesInput = {
@@ -459215,6 +462659,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutFacultiesInput = {
@@ -459414,6 +462860,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutFacultiesInput = {
@@ -459679,6 +463127,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutFacultiesInput = {
@@ -459878,6 +463328,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type DepartmentUpsertWithWhereUniqueWithoutFacultyInput = {
@@ -460157,6 +463609,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutDepartmentsInput = {
@@ -460356,6 +463810,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutDepartmentsInput = {
@@ -460574,6 +464030,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -460686,6 +464143,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -460808,6 +464266,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -460920,6 +464379,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -461287,6 +464747,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutDepartmentsInput = {
@@ -461486,6 +464948,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type FacultyUpsertWithoutDeptsInput = {
@@ -461620,6 +465084,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -461732,6 +465197,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -462336,6 +465802,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutAttendanceInput = {
@@ -462535,6 +466003,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutAttendanceInput = {
@@ -463093,6 +466563,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAttendanceInput = {
@@ -463292,6 +466764,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserCreateWithoutStaffAttendancesInput = {
@@ -463341,6 +466815,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -463453,6 +466928,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -463720,6 +467196,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutStaffAttendancesInput = {
@@ -463919,6 +467397,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutStaffAttendancesInput = {
@@ -463984,6 +467464,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -464096,6 +467577,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -464369,6 +467851,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStaffAttendancesInput = {
@@ -464568,6 +468052,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentCreateWithoutFeesInput = {
@@ -465083,6 +468569,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutFeesInput = {
@@ -465282,6 +468770,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutFeesInput = {
@@ -465806,6 +469296,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutFeesInput = {
@@ -466005,6 +469497,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type FeeCreateWithoutLineItemsInput = {
@@ -466308,6 +469802,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutStudentInvoicesInput = {
@@ -466507,6 +470003,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutStudentInvoicesInput = {
@@ -467083,6 +470581,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStudentInvoicesInput = {
@@ -467282,6 +470782,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentUpsertWithoutStudentInvoicesInput = {
@@ -467944,6 +471446,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutReceiptsInput = {
@@ -468143,6 +471647,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutReceiptsInput = {
@@ -468591,6 +472097,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutReceiptsInput = {
@@ -468790,6 +472298,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentUpsertWithoutReceiptsInput = {
@@ -469725,6 +473235,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutAssignmentsInput = {
@@ -469924,6 +473436,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutAssignmentsInput = {
@@ -470368,6 +473882,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAssignmentsInput = {
@@ -470567,6 +474083,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SubjectCreateWithoutQuestionPapersInput = {
@@ -470900,6 +474418,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutQuestionPapersInput = {
@@ -471099,6 +474619,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutQuestionPapersInput = {
@@ -471460,6 +474982,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutQuestionPapersInput = {
@@ -471659,6 +475183,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolClassCreateWithoutTimetableSlotsInput = {
@@ -471994,6 +475520,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutTimetableSlotsInput = {
@@ -472193,6 +475721,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutTimetableSlotsInput = {
@@ -472556,6 +476086,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutTimetableSlotsInput = {
@@ -472755,6 +476287,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolClassCreateWithoutAnnouncementsInput = {
@@ -472865,6 +476399,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -472977,6 +476512,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -473266,6 +476802,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutAnnouncementsInput = {
@@ -473465,6 +477003,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutAnnouncementsInput = {
@@ -473597,6 +477137,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -473709,6 +477250,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -473998,6 +477540,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAnnouncementsInput = {
@@ -474197,6 +477741,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type AnnouncementCreateWithoutReadsInput = {
@@ -474295,6 +477841,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -474407,6 +477954,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -474590,6 +478138,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -474702,6 +478251,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -474813,6 +478363,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -474925,6 +478476,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -475193,6 +478745,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutAuditLogsInput = {
@@ -475392,6 +478946,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutAuditLogsInput = {
@@ -475456,6 +479012,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -475568,6 +479125,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -475842,6 +479400,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAuditLogsInput = {
@@ -476041,6 +479601,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type LibraryCategoryCreateWithoutBooksInput = {
@@ -476593,6 +480155,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutBooksInput = {
@@ -476792,6 +480356,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutBooksInput = {
@@ -477330,6 +480896,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutBooksInput = {
@@ -477529,6 +481097,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutStudentHousesInput = {
@@ -477728,6 +481298,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutStudentHousesInput = {
@@ -477927,6 +481499,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutStudentHousesInput = {
@@ -478678,6 +482252,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStudentHousesInput = {
@@ -478877,6 +482453,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentUpsertWithWhereUniqueWithoutHouseInput = {
@@ -479384,6 +482962,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutChaplaincyEventsInput = {
@@ -479583,6 +483163,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutChaplaincyEventsInput = {
@@ -479798,6 +483380,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutChaplaincyEventsInput = {
@@ -479997,6 +483581,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutHolidaysInput = {
@@ -480196,6 +483782,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutHolidaysInput = {
@@ -480395,6 +483983,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutHolidaysInput = {
@@ -480610,6 +484200,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutHolidaysInput = {
@@ -480809,6 +484401,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutLibraryCategoriesInput = {
@@ -481008,6 +484602,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutLibraryCategoriesInput = {
@@ -481207,6 +484803,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutLibraryCategoriesInput = {
@@ -481582,6 +485180,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutLibraryCategoriesInput = {
@@ -481781,6 +485381,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type BookUpsertWithWhereUniqueWithoutCategoryInput = {
@@ -482149,6 +485751,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -482261,6 +485864,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -482567,6 +486171,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutBookLoansInput = {
@@ -482766,6 +486372,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutBookLoansInput = {
@@ -483130,6 +486738,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -483242,6 +486851,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -483532,6 +487142,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutBookLoansInput = {
@@ -483731,6 +487343,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutLibrarySettingInput = {
@@ -483930,6 +487544,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutLibrarySettingInput = {
@@ -484129,6 +487745,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutLibrarySettingInput = {
@@ -484344,6 +487962,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutLibrarySettingInput = {
@@ -484543,6 +488163,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type BookCreateWithoutReservationsInput = {
@@ -484879,6 +488501,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -484991,6 +488614,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -485259,6 +488883,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutBookReservationsInput = {
@@ -485458,6 +489084,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutBookReservationsInput = {
@@ -485822,6 +489450,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -485934,6 +489563,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -486208,6 +489838,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutBookReservationsInput = {
@@ -486407,6 +490039,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutLibraryDigitalResourcesInput = {
@@ -486606,6 +490240,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutLibraryDigitalResourcesInput = {
@@ -486805,6 +490441,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutLibraryDigitalResourcesInput = {
@@ -486999,6 +490637,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -487111,6 +490750,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -487390,6 +491030,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutLibraryDigitalResourcesInput = {
@@ -487589,6 +491231,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type LibraryCategoryUpsertWithoutDigitalResourcesInput = {
@@ -487807,6 +491451,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -487919,6 +491564,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -488432,6 +492078,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutAssignmentSubmissionsInput = {
@@ -488631,6 +492279,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutAssignmentSubmissionsInput = {
@@ -489108,6 +492758,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAssignmentSubmissionsInput = {
@@ -489307,6 +492959,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutNewsInput = {
@@ -489506,6 +493160,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutNewsInput = {
@@ -489705,6 +493361,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutNewsInput = {
@@ -489920,6 +493578,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutNewsInput = {
@@ -490119,6 +493779,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutSchoolSettingInput = {
@@ -490318,6 +493980,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutSchoolSettingInput = {
@@ -490517,6 +494181,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutSchoolSettingInput = {
@@ -490732,6 +494398,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSchoolSettingInput = {
@@ -490931,6 +494599,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutPaymentPlansInput = {
@@ -491130,6 +494800,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutPaymentPlansInput = {
@@ -491329,6 +495001,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutPaymentPlansInput = {
@@ -491588,6 +495262,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -491700,6 +495375,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -492054,6 +495730,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPaymentPlansInput = {
@@ -492253,6 +495931,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentUpsertWithoutPaymentPlansInput = {
@@ -492524,6 +496204,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -492636,6 +496317,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -493019,6 +496701,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutGalleryInput = {
@@ -493218,6 +496902,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutGalleryInput = {
@@ -493433,6 +497119,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutGalleryInput = {
@@ -493632,6 +497320,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutClubsInput = {
@@ -493831,6 +497521,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutClubsInput = {
@@ -494030,6 +497722,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutClubsInput = {
@@ -494455,6 +498149,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClubsInput = {
@@ -494654,6 +498350,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentUpsertWithWhereUniqueWithoutClubInput = {
@@ -494869,6 +498567,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutSportsInput = {
@@ -495068,6 +498768,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutSportsInput = {
@@ -495315,6 +499017,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSportsInput = {
@@ -495514,6 +499218,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SportingEquipmentUpsertWithWhereUniqueWithoutSportInput = {
@@ -495616,6 +499322,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     reportedIncidents?: AssetIncidentCreateNestedManyWithoutReporterInput
@@ -495728,6 +499435,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     reportedIncidents?: AssetIncidentUncheckedCreateNestedManyWithoutReporterInput
@@ -495995,6 +499703,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutSportingEquipmentInput = {
@@ -496194,6 +499904,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutSportingEquipmentInput = {
@@ -496302,6 +500014,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     reportedIncidents?: AssetIncidentUpdateManyWithoutReporterNestedInput
@@ -496414,6 +500127,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     reportedIncidents?: AssetIncidentUncheckedUpdateManyWithoutReporterNestedInput
@@ -496687,6 +500401,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSportingEquipmentInput = {
@@ -496886,6 +500602,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutApplicationsInput = {
@@ -497085,6 +500803,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutApplicationsInput = {
@@ -497284,6 +501004,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutApplicationsInput = {
@@ -497549,6 +501271,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutApplicationsInput = {
@@ -497748,6 +501472,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ApplicantDocumentUpsertWithWhereUniqueWithoutApplicationInput = {
@@ -497851,6 +501577,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -497963,6 +501690,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -498365,6 +502093,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -498477,6 +502206,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -498912,6 +502642,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutSuppliersInput = {
@@ -499111,6 +502843,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutSuppliersInput = {
@@ -499375,6 +503109,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSuppliersInput = {
@@ -499574,6 +503310,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SupplierUpsertWithoutSchoolsInput = {
@@ -499677,6 +503415,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -499789,6 +503528,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -499983,6 +503723,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -500095,6 +503836,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -501416,6 +505158,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -501528,6 +505271,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -501816,6 +505560,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -501928,6 +505673,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -502352,6 +506098,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -502464,6 +506211,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -502592,6 +506340,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -502704,6 +506453,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -502966,6 +506716,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutLeaveBalancesInput = {
@@ -503165,6 +506917,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutLeaveBalancesInput = {
@@ -503219,6 +506973,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -503331,6 +507086,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -503609,6 +507365,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutLeaveBalancesInput = {
@@ -503808,6 +507566,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutLeaveBalancesInput = {
@@ -503868,6 +507628,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -503980,6 +507741,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -504136,6 +507898,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
     reportedIncidents?: AssetIncidentCreateNestedManyWithoutReporterInput
@@ -504248,6 +508011,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
     reportedIncidents?: AssetIncidentUncheckedCreateNestedManyWithoutReporterInput
@@ -504365,6 +508129,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
     reportedIncidents?: AssetIncidentCreateNestedManyWithoutReporterInput
@@ -504477,6 +508242,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
     reportedIncidents?: AssetIncidentUncheckedCreateNestedManyWithoutReporterInput
@@ -504744,6 +508510,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutAssetsInput = {
@@ -504943,6 +508711,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutAssetsInput = {
@@ -505119,6 +508889,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
     reportedIncidents?: AssetIncidentUpdateManyWithoutReporterNestedInput
@@ -505231,6 +509002,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
     reportedIncidents?: AssetIncidentUncheckedUpdateManyWithoutReporterNestedInput
@@ -505354,6 +509126,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
     reportedIncidents?: AssetIncidentUpdateManyWithoutReporterNestedInput
@@ -505466,6 +509239,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
     reportedIncidents?: AssetIncidentUncheckedUpdateManyWithoutReporterNestedInput
@@ -505739,6 +509513,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAssetsInput = {
@@ -505938,6 +509714,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type AssetIncidentUpsertWithWhereUniqueWithoutAssetInput = {
@@ -506321,6 +510099,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -506433,6 +510212,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -506660,6 +510440,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -506772,6 +510553,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -507336,6 +511118,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutTuckshopItemsInput = {
@@ -507535,6 +511319,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutTuckshopItemsInput = {
@@ -507778,6 +511564,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutTuckshopItemsInput = {
@@ -507977,6 +511765,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TuckshopSaleUpsertWithWhereUniqueWithoutItemInput = {
@@ -508394,6 +512184,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -508506,6 +512297,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -508634,6 +512426,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -508746,6 +512539,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -508858,6 +512652,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -508970,6 +512765,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -509098,6 +512894,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -509210,6 +513007,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -509603,6 +513401,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -509715,6 +513514,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -509843,6 +513643,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -509955,6 +513756,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -510217,6 +514019,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutReportTemplateInput = {
@@ -510416,6 +514220,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutReportTemplateInput = {
@@ -510631,6 +514437,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutReportTemplateInput = {
@@ -510830,6 +514638,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type DepartmentCreateWithoutRequisitionsInput = {
@@ -510924,6 +514734,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -511036,6 +514847,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -511153,6 +514965,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -511265,6 +515078,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -511382,6 +515196,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -511494,6 +515309,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -511611,6 +515427,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -511723,6 +515540,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -511990,6 +515808,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutRequisitionsInput = {
@@ -512189,6 +516009,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutRequisitionsInput = {
@@ -512542,6 +516364,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -512654,6 +516477,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -512771,6 +516595,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -512883,6 +516708,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -513062,6 +516888,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -513174,6 +517001,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -513297,6 +517125,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -513409,6 +517238,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -513532,6 +517362,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -513644,6 +517475,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -513767,6 +517599,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -513879,6 +517712,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -514152,6 +517986,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutRequisitionsInput = {
@@ -514351,6 +518187,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type PurchaseOrderUpsertWithoutRequisitionInput = {
@@ -514728,6 +518566,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -514840,6 +518679,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -514963,6 +518803,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -515075,6 +518916,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -515385,6 +519227,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutHostelsInput = {
@@ -515584,6 +519428,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutHostelsInput = {
@@ -515882,6 +519728,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -515994,6 +519841,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -516530,6 +520378,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutHostelsInput = {
@@ -516729,6 +520579,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type RoomUpsertWithWhereUniqueWithoutHostelInput = {
@@ -516835,6 +520687,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -516947,6 +520800,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -517709,6 +521563,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -517821,6 +521676,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -518160,6 +522016,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -518272,6 +522129,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -518384,6 +522242,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -518496,6 +522355,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -518624,6 +522484,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -518736,6 +522597,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -518976,6 +522838,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -519088,6 +522951,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -519216,6 +523080,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -519328,6 +523193,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -519591,6 +523457,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutWeeklyMenusInput = {
@@ -519790,6 +523658,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutWeeklyMenusInput = {
@@ -520005,6 +523875,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutWeeklyMenusInput = {
@@ -520204,6 +524076,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserCreateWithoutTransfersInput = {
@@ -520253,6 +524127,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -520365,6 +524240,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -520632,6 +524508,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutOriginTransfersInput = {
@@ -520831,6 +524709,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutOriginTransfersInput = {
@@ -521035,6 +524915,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutTargetTransfersInput = {
@@ -521234,6 +525116,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutTargetTransfersInput = {
@@ -521299,6 +525183,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -521411,6 +525296,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -521684,6 +525570,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutOriginTransfersInput = {
@@ -521883,6 +525771,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUpsertWithoutTargetTransfersInput = {
@@ -522093,6 +525983,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutTargetTransfersInput = {
@@ -522292,6 +526184,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentCreateWithoutSupervisorsInput = {
@@ -522789,6 +526683,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutSupervisorAssignmentsInput = {
@@ -522988,6 +526884,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutSupervisorAssignmentsInput = {
@@ -523495,6 +527393,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSupervisorAssignmentsInput = {
@@ -523694,6 +527594,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentCreateWithoutExtensionRequestsInput = {
@@ -524098,6 +528000,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutExtensionRequestsInput = {
@@ -524297,6 +528201,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutExtensionRequestsInput = {
@@ -524723,6 +528629,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutExtensionRequestsInput = {
@@ -524922,6 +528830,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentCreateWithoutProgressReportsInput = {
@@ -525349,6 +529259,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutProgressReportsInput = {
@@ -525548,6 +529460,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutProgressReportsInput = {
@@ -526003,6 +529917,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutProgressReportsInput = {
@@ -526202,6 +530118,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutPaymentMethodsInput = {
@@ -526401,6 +530319,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutPaymentMethodsInput = {
@@ -526600,6 +530520,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutPaymentMethodsInput = {
@@ -526815,6 +530737,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPaymentMethodsInput = {
@@ -527014,6 +530938,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutFeeGroupsInput = {
@@ -527213,6 +531139,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutFeeGroupsInput = {
@@ -527412,6 +531340,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutFeeGroupsInput = {
@@ -527732,6 +531662,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutFeeGroupsInput = {
@@ -527931,6 +531863,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type FeeUpsertWithWhereUniqueWithoutFeeGroupInput = {
@@ -528410,6 +532344,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutPhysicalProductsInput = {
@@ -528609,6 +532545,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutPhysicalProductsInput = {
@@ -528858,6 +532796,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPhysicalProductsInput = {
@@ -529057,6 +532997,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type PhysicalProductConsumptionUpsertWithWhereUniqueWithoutProductInput = {
@@ -529299,6 +533241,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutPhysicalProductConsumptionsInput = {
@@ -529498,6 +533442,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutPhysicalProductConsumptionsInput = {
@@ -529746,6 +533692,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPhysicalProductConsumptionsInput = {
@@ -529945,6 +533893,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentCreateWithoutFeeReminderLogsInput = {
@@ -530349,6 +534299,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutFeeReminderLogsInput = {
@@ -530548,6 +534500,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutFeeReminderLogsInput = {
@@ -530974,6 +534928,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutFeeReminderLogsInput = {
@@ -531173,6 +535129,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentCreateWithoutPaymentsInput = {
@@ -531626,6 +535584,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutStudentPaymentsInput = {
@@ -531825,6 +535785,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutStudentPaymentsInput = {
@@ -532306,6 +536268,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStudentPaymentsInput = {
@@ -532505,6 +536469,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserCreateWithoutCommunicationLogsInput = {
@@ -532554,6 +536520,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -532666,6 +536633,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -533138,6 +537106,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutCommunicationLogsInput = {
@@ -533337,6 +537307,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutCommunicationLogsInput = {
@@ -533402,6 +537374,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -533514,6 +537487,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -533998,6 +537972,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutCommunicationLogsInput = {
@@ -534197,6 +538173,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutRevenueAllocationsInput = {
@@ -534396,6 +538374,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutRevenueAllocationsInput = {
@@ -534595,6 +538575,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutRevenueAllocationsInput = {
@@ -534859,6 +538841,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutRevenueAllocationsInput = {
@@ -535058,6 +539042,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type FeeGroupUpsertWithWhereUniqueWithoutRevenueAllocationsInput = {
@@ -535273,6 +539259,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutAllowanceTypesInput = {
@@ -535472,6 +539460,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutAllowanceTypesInput = {
@@ -535687,6 +539677,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAllowanceTypesInput = {
@@ -535886,6 +539878,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutDeductionTypesInput = {
@@ -536085,6 +540079,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutDeductionTypesInput = {
@@ -536284,6 +540280,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutDeductionTypesInput = {
@@ -536499,6 +540497,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutDeductionTypesInput = {
@@ -536698,6 +540698,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutTaxTablesInput = {
@@ -536897,6 +540899,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutTaxTablesInput = {
@@ -537096,6 +541100,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutTaxTablesInput = {
@@ -537343,6 +541349,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutTaxTablesInput = {
@@ -537542,6 +541550,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TaxBandUpsertWithWhereUniqueWithoutTaxTableInput = {
@@ -537685,6 +541695,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -537797,6 +541808,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -538065,6 +542077,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutEmployeeProfilesInput = {
@@ -538264,6 +542278,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutEmployeeProfilesInput = {
@@ -538328,6 +542344,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -538440,6 +542457,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -538714,6 +542732,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutEmployeeProfilesInput = {
@@ -538913,6 +542933,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentCreateWithoutTermlyCommentsInput = {
@@ -539317,6 +543339,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutTermlyCommentsInput = {
@@ -539516,6 +543540,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutTermlyCommentsInput = {
@@ -539942,6 +543968,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutTermlyCommentsInput = {
@@ -540141,6 +544169,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutPayrollRunsInput = {
@@ -540340,6 +544370,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutPayrollRunsInput = {
@@ -540539,6 +544571,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutPayrollRunsInput = {
@@ -540798,6 +544832,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPayrollRunsInput = {
@@ -540997,6 +545033,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type PayrollEntryUpsertWithWhereUniqueWithoutPayrollRunInput = {
@@ -541099,6 +545137,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -541211,6 +545250,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -541478,6 +545518,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutPayrollEntriesInput = {
@@ -541677,6 +545719,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutPayrollEntriesInput = {
@@ -541785,6 +545829,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -541897,6 +545942,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -542170,6 +546216,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPayrollEntriesInput = {
@@ -542369,6 +546417,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolClassCreateWithoutCBTExamInput = {
@@ -542727,6 +546777,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutCBTExamInput = {
@@ -542926,6 +546978,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutCBTExamInput = {
@@ -543386,6 +547440,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutCBTExamInput = {
@@ -543585,6 +547641,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CBTQuestionUpsertWithWhereUniqueWithoutExamInput = {
@@ -544040,6 +548098,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutLiveClassInput = {
@@ -544239,6 +548299,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutLiveClassInput = {
@@ -544293,6 +548355,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -544405,6 +548468,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -544744,6 +548808,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutLiveClassInput = {
@@ -544943,6 +549009,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutLiveClassInput = {
@@ -545003,6 +549071,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -545115,6 +549184,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -545444,6 +549514,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutAwardInput = {
@@ -545643,6 +549715,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutAwardInput = {
@@ -545696,6 +549770,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -545808,6 +549883,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -546087,6 +550163,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAwardInput = {
@@ -546286,6 +550364,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutAwardsInput = {
@@ -546345,6 +550425,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -546457,6 +550538,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -546720,6 +550802,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutCourseInput = {
@@ -546919,6 +551003,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutCourseInput = {
@@ -546972,6 +551058,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -547084,6 +551171,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -547446,6 +551534,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutCourseInput = {
@@ -547645,6 +551735,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutCoursesInput = {
@@ -547704,6 +551796,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -547816,6 +551909,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -548670,6 +552764,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutStudyMaterialInput = {
@@ -548869,6 +552965,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutStudyMaterialInput = {
@@ -549059,6 +553157,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -549171,6 +553270,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -549449,6 +553549,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStudyMaterialInput = {
@@ -549648,6 +553750,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolClassUpsertWithoutStudyMaterialInput = {
@@ -549856,6 +553960,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -549968,6 +554073,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -550230,6 +554336,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutWebsiteSettingsInput = {
@@ -550429,6 +554537,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutWebsiteSettingsInput = {
@@ -550644,6 +554754,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutWebsiteSettingsInput = {
@@ -550843,6 +554955,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutWebsiteInquiriesInput = {
@@ -551042,6 +555156,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutWebsiteInquiriesInput = {
@@ -551241,6 +555357,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutWebsiteInquiriesInput = {
@@ -551456,6 +555574,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutWebsiteInquiriesInput = {
@@ -551655,6 +555775,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutNoticeboardsInput = {
@@ -551854,6 +555976,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutNoticeboardsInput = {
@@ -552053,6 +556177,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutNoticeboardsInput = {
@@ -552268,6 +556394,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutNoticeboardsInput = {
@@ -552467,6 +556595,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutVacanciesInput = {
@@ -552666,6 +556796,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutVacanciesInput = {
@@ -552865,6 +556997,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutVacanciesInput = {
@@ -552963,6 +557097,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -553075,6 +557210,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -553402,6 +557538,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutVacanciesInput = {
@@ -553601,6 +557739,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type DepartmentUpsertWithoutVacanciesInput = {
@@ -553711,6 +557851,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -553823,6 +557964,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -554102,6 +558244,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutJobApplicationsInput = {
@@ -554301,6 +558445,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutJobApplicationsInput = {
@@ -554575,6 +558721,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutJobApplicationsInput = {
@@ -554774,6 +558922,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type VacancyUpsertWithoutApplicationsInput = {
@@ -555038,6 +559188,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutSchoolVehicleInput = {
@@ -555237,6 +559389,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutSchoolVehicleInput = {
@@ -555552,6 +559706,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSchoolVehicleInput = {
@@ -555751,6 +559907,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolTransportUpsertWithWhereUniqueWithoutVehicleInput = {
@@ -555982,6 +560140,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutSchoolTransportInput = {
@@ -556181,6 +560341,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutSchoolTransportInput = {
@@ -556512,6 +560674,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSchoolTransportInput = {
@@ -556711,6 +560875,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TransportRouteUpsertWithoutSchoolTransportsInput = {
@@ -557008,6 +561174,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutMeetingMinutesInput = {
@@ -557207,6 +561375,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutMeetingMinutesInput = {
@@ -557422,6 +561592,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutMeetingMinutesInput = {
@@ -557621,6 +561793,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutProjectFundingsInput = {
@@ -557820,6 +561994,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutProjectFundingsInput = {
@@ -558019,6 +562195,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutProjectFundingsInput = {
@@ -558234,6 +562412,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutProjectFundingsInput = {
@@ -558433,6 +562613,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutClinicPatientInput = {
@@ -558632,6 +562814,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicPatientInput = {
@@ -558831,6 +563015,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicPatientInput = {
@@ -558885,6 +563071,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -558997,6 +563184,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -559619,6 +563807,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicPatientInput = {
@@ -559818,6 +564008,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutClinicPatientInput = {
@@ -559878,6 +564070,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -559990,6 +564183,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -560262,6 +564456,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -560374,6 +564569,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -560563,6 +564759,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -560675,6 +564872,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -560854,6 +565052,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -560966,6 +565165,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -561155,6 +565355,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -561267,6 +565468,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -561574,6 +565776,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -561686,6 +565889,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -561875,6 +566079,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -561987,6 +566192,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -562166,6 +566372,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -562278,6 +566485,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -562467,6 +566675,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -562579,6 +566788,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -562758,6 +566968,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -562870,6 +567081,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -563198,6 +567410,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicVisitsInput = {
@@ -563397,6 +567611,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicVisitsInput = {
@@ -563487,6 +567703,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -563599,6 +567816,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -563716,6 +567934,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -563828,6 +568047,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -564161,6 +568381,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -564273,6 +568494,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -564613,6 +568835,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicVisitsInput = {
@@ -564812,6 +569036,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ClinicDispensingLogUpsertWithWhereUniqueWithoutVisitInput = {
@@ -564888,6 +569114,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -565000,6 +569227,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -565123,6 +569351,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -565235,6 +569464,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -565614,6 +569844,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicInventoryItemsInput = {
@@ -565813,6 +570045,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicInventoryItemsInput = {
@@ -566064,6 +570298,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicInventoryItemsInput = {
@@ -566263,6 +570499,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ClinicDispensingLogUpsertWithWhereUniqueWithoutItemInput = {
@@ -566716,6 +570954,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -566828,6 +571067,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -567156,6 +571396,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicHospitalizationsInput = {
@@ -567355,6 +571597,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicHospitalizationsInput = {
@@ -567420,6 +571664,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -567532,6 +571777,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -567872,6 +572118,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicHospitalizationsInput = {
@@ -568071,6 +572319,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutFarmLivestockBatchesInput = {
@@ -568270,6 +572520,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutFarmLivestockBatchesInput = {
@@ -568469,6 +572721,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutFarmLivestockBatchesInput = {
@@ -568684,6 +572938,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutFarmLivestockBatchesInput = {
@@ -568883,6 +573139,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutFarmCropCyclesInput = {
@@ -569082,6 +573340,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutFarmCropCyclesInput = {
@@ -569281,6 +573541,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutFarmCropCyclesInput = {
@@ -569496,6 +573758,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutFarmCropCyclesInput = {
@@ -569695,6 +573959,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutFarmInventoryItemsInput = {
@@ -569894,6 +574160,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutFarmInventoryItemsInput = {
@@ -570093,6 +574361,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutFarmInventoryItemsInput = {
@@ -570308,6 +574578,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutFarmInventoryItemsInput = {
@@ -570507,6 +574779,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserCreateWithoutDiningHallReportsInput = {
@@ -570555,6 +574829,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -570667,6 +574942,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -570935,6 +575211,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutDiningHallReportsInput = {
@@ -571134,6 +575412,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutDiningHallReportsInput = {
@@ -571198,6 +575478,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -571310,6 +575591,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -571584,6 +575866,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutDiningHallReportsInput = {
@@ -571783,6 +576067,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutPrefectDutiesInput = {
@@ -571982,6 +576268,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutPrefectDutiesInput = {
@@ -572181,6 +576469,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutPrefectDutiesInput = {
@@ -572396,6 +576686,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPrefectDutiesInput = {
@@ -572595,6 +576887,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutPrefectMeetingsInput = {
@@ -572794,6 +577088,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutPrefectMeetingsInput = {
@@ -572993,6 +577289,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutPrefectMeetingsInput = {
@@ -573208,6 +577506,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPrefectMeetingsInput = {
@@ -573407,6 +577707,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserCreateWithoutPrefectReportsInput = {
@@ -573455,6 +577757,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -573567,6 +577870,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -573835,6 +578139,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutPrefectReportsInput = {
@@ -574034,6 +578340,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutPrefectReportsInput = {
@@ -574098,6 +578406,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -574210,6 +578519,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -574484,6 +578794,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPrefectReportsInput = {
@@ -574683,6 +578995,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentCreateWithoutWalletInput = {
@@ -575486,6 +579800,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutChartOfAccountsInput = {
@@ -575685,6 +580001,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutChartOfAccountsInput = {
@@ -576069,6 +580387,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutChartOfAccountsInput = {
@@ -576268,6 +580588,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ChartOfAccountUpsertWithoutChildrenInput = {
@@ -576588,6 +580910,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutJournalEntriesInput = {
@@ -576787,6 +581111,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutJournalEntriesInput = {
@@ -577229,6 +581555,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutJournalEntriesInput = {
@@ -577428,6 +581756,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type JournalEntryUpsertWithoutReversalOfInput = {
@@ -577940,6 +582270,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutAccountingPeriodsInput = {
@@ -578139,6 +582471,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutAccountingPeriodsInput = {
@@ -578354,6 +582688,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAccountingPeriodsInput = {
@@ -578553,6 +582889,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutExchangeRatesInput = {
@@ -578752,6 +583090,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutExchangeRatesInput = {
@@ -578951,6 +583291,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutExchangeRatesInput = {
@@ -579166,6 +583508,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutExchangeRatesInput = {
@@ -579365,6 +583709,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutApprovalsInput = {
@@ -579564,6 +583910,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutApprovalsInput = {
@@ -579763,6 +584111,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutApprovalsInput = {
@@ -579978,6 +584328,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutApprovalsInput = {
@@ -580177,6 +584529,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutBudgetsInput = {
@@ -580376,6 +584730,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutBudgetsInput = {
@@ -580575,6 +584931,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutBudgetsInput = {
@@ -580790,6 +585148,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutBudgetsInput = {
@@ -580989,6 +585349,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutStockMovementsInput = {
@@ -581188,6 +585550,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutStockMovementsInput = {
@@ -581387,6 +585751,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutStockMovementsInput = {
@@ -581602,6 +585968,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStockMovementsInput = {
@@ -581801,6 +586169,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutTaxBracketsInput = {
@@ -582000,6 +586370,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutTaxBracketsInput = {
@@ -582199,6 +586571,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutTaxBracketsInput = {
@@ -582414,6 +586788,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutTaxBracketsInput = {
@@ -582613,6 +586989,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutUniformStockMovementsInput = {
@@ -582812,6 +587190,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutUniformStockMovementsInput = {
@@ -583011,6 +587391,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutUniformStockMovementsInput = {
@@ -583257,6 +587639,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutUniformStockMovementsInput = {
@@ -583456,6 +587840,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UniformItemUpsertWithoutStockMovementsInput = {
@@ -583692,6 +588078,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutBankStatementsInput = {
@@ -583891,6 +588279,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutBankStatementsInput = {
@@ -584183,6 +588573,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutBankStatementsInput = {
@@ -584382,6 +588774,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ChartOfAccountUpsertWithoutBankStatementsInput = {
@@ -584769,6 +589163,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutStudentHealthProfilesInput = {
@@ -584968,6 +589364,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutStudentHealthProfilesInput = {
@@ -585388,6 +589786,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStudentHealthProfilesInput = {
@@ -585587,6 +589987,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentUpsertWithoutHealthProfileInput = {
@@ -585997,6 +590399,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicVitalsInput = {
@@ -586196,6 +590600,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicVitalsInput = {
@@ -586335,6 +590741,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -586447,6 +590854,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -586725,6 +591133,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicVitalsInput = {
@@ -586924,6 +591334,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ClinicVisitUpsertWithoutVitalsRecordInput = {
@@ -587075,6 +591487,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -587187,6 +591600,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -587449,6 +591863,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicDiagnosesInput = {
@@ -587648,6 +592064,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicDiagnosesInput = {
@@ -587973,6 +592391,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicDiagnosesInput = {
@@ -588172,6 +592592,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ClinicVisitUpsertWithoutDiagnosesListInput = {
@@ -588493,6 +592915,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicPrescriptionsInput = {
@@ -588692,6 +593116,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicPrescriptionsInput = {
@@ -588831,6 +593257,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -588943,6 +593370,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -589221,6 +593649,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicPrescriptionsInput = {
@@ -589420,6 +593850,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ClinicVisitUpsertWithoutPrescriptionsListInput = {
@@ -589571,6 +594003,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -589683,6 +594116,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -589945,6 +594379,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutPharmacyStocksInput = {
@@ -590144,6 +594580,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutPharmacyStocksInput = {
@@ -590419,6 +594857,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPharmacyStocksInput = {
@@ -590618,6 +595058,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type PharmacyBatchUpsertWithWhereUniqueWithoutStockInput = {
@@ -590976,6 +595418,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutPharmacyDispensingsInput = {
@@ -591175,6 +595619,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutPharmacyDispensingsInput = {
@@ -591370,6 +595816,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -591482,6 +595929,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -591760,6 +596208,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPharmacyDispensingsInput = {
@@ -591959,6 +596409,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ClinicVisitUpsertWithoutPharmacyDispensingsInput = {
@@ -592178,6 +596630,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -592290,6 +596743,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -592552,6 +597006,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicBedsInput = {
@@ -592751,6 +597207,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicBedsInput = {
@@ -593006,6 +597464,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicBedsInput = {
@@ -593205,6 +597665,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ClinicAdmissionUpsertWithWhereUniqueWithoutBedInput = {
@@ -593420,6 +597882,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicAdmissionsInput = {
@@ -593619,6 +598083,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicAdmissionsInput = {
@@ -594185,6 +598651,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicAdmissionsInput = {
@@ -594384,6 +598852,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ClinicBedUpsertWithoutAdmissionsInput = {
@@ -594934,6 +599404,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicMonitoringLogsInput = {
@@ -595133,6 +599605,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicMonitoringLogsInput = {
@@ -595222,6 +599696,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -595334,6 +599809,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -595612,6 +600088,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicMonitoringLogsInput = {
@@ -595811,6 +600289,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ClinicAdmissionUpsertWithoutLogsInput = {
@@ -595912,6 +600392,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -596024,6 +600505,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -596286,6 +600768,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicAccessAuditsInput = {
@@ -596485,6 +600969,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicAccessAuditsInput = {
@@ -596744,6 +601230,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -596856,6 +601343,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -597134,6 +601622,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicAccessAuditsInput = {
@@ -597333,6 +601823,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentUpsertWithoutClinicAccessAuditsInput = {
@@ -597604,6 +602096,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -597716,6 +602209,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -597978,6 +602472,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicEmergencyLogsInput = {
@@ -598177,6 +602673,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicEmergencyLogsInput = {
@@ -598521,6 +603019,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -598633,6 +603132,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -598911,6 +603411,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicEmergencyLogsInput = {
@@ -599110,6 +603612,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type ClinicVisitUpsertWithoutEmergencyLogsListInput = {
@@ -599472,6 +603976,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -599584,6 +604089,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -599846,6 +604352,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutClinicSettingsInput = {
@@ -600045,6 +604553,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutClinicSettingsInput = {
@@ -600260,6 +604770,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutClinicSettingsInput = {
@@ -600459,6 +604971,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutFiscalDevicesInput = {
@@ -600658,6 +605172,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutFiscalDevicesInput = {
@@ -600857,6 +605373,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutFiscalDevicesInput = {
@@ -601203,6 +605721,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutFiscalDevicesInput = {
@@ -601402,6 +605922,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type FiscalInvoiceUpsertWithWhereUniqueWithoutDeviceInput = {
@@ -601734,6 +606256,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutFiscalInvoicesInput = {
@@ -601933,6 +606457,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutFiscalInvoicesInput = {
@@ -602391,6 +606917,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutFiscalInvoicesInput = {
@@ -602590,6 +607118,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type JournalEntryUpsertWithoutFiscalInvoicesInput = {
@@ -602980,6 +607510,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutDocumentSequencesInput = {
@@ -603179,6 +607711,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutDocumentSequencesInput = {
@@ -603394,6 +607928,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutDocumentSequencesInput = {
@@ -603593,6 +608129,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutCreditNotesInput = {
@@ -603792,6 +608330,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutCreditNotesInput = {
@@ -603991,6 +608531,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutCreditNotesInput = {
@@ -604293,6 +608835,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutCreditNotesInput = {
@@ -604492,6 +609036,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type FiscalInvoiceUpsertWithoutCreditNotesInput = {
@@ -604866,6 +609412,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutTillSessionsInput = {
@@ -605065,6 +609613,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutTillSessionsInput = {
@@ -605373,6 +609923,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutTillSessionsInput = {
@@ -605572,6 +610124,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type FiscalDeviceUpsertWithoutTillSessionsInput = {
@@ -606062,6 +610616,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutStudentClearancesInput = {
@@ -606261,6 +610817,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutStudentClearancesInput = {
@@ -606681,6 +611239,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStudentClearancesInput = {
@@ -606880,6 +611440,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentUpsertWithoutClearancesInput = {
@@ -607408,6 +611970,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutSyllabusesInput = {
@@ -607607,6 +612171,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutSyllabusesInput = {
@@ -607735,6 +612301,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -607847,6 +612414,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -608396,6 +612964,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSyllabusesInput = {
@@ -608595,6 +613165,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SubjectUpsertWithoutSyllabusesInput = {
@@ -608735,6 +613307,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -608847,6 +613420,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -609066,6 +613640,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -609178,6 +613753,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -609539,6 +614115,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -609651,6 +614228,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -609978,6 +614556,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutSchemesOfWorkInput = {
@@ -610177,6 +614757,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutSchemesOfWorkInput = {
@@ -610522,6 +615104,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -610634,6 +615217,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -611030,6 +615614,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSchemesOfWorkInput = {
@@ -611229,6 +615815,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type TeacherUpsertWithoutSchemesOfWorkInput = {
@@ -611610,6 +616198,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -611722,6 +616311,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -612016,6 +616606,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutSchemeItemsInput = {
@@ -612215,6 +616807,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutSchemeItemsInput = {
@@ -612604,6 +617198,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSchemeItemsInput = {
@@ -612803,6 +617399,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchemeOfWorkUpsertWithoutItemsInput = {
@@ -613130,6 +617728,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutLessonPlansInput = {
@@ -613329,6 +617929,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutLessonPlansInput = {
@@ -613723,6 +618325,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -613835,6 +618438,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -614141,6 +618745,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutLessonPlansInput = {
@@ -614340,6 +618946,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchemeOfWorkUpsertWithoutLessonPlansInput = {
@@ -614776,6 +619384,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -614888,6 +619497,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -615166,6 +619776,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutLessonPlanResourcesInput = {
@@ -615365,6 +619977,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutLessonPlanResourcesInput = {
@@ -615649,6 +620263,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutLessonPlanResourcesInput = {
@@ -615848,6 +620464,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type LessonPlanUpsertWithoutResourcesListInput = {
@@ -616122,6 +620740,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutAssessmentTypesInput = {
@@ -616321,6 +620941,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutAssessmentTypesInput = {
@@ -616604,6 +621226,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAssessmentTypesInput = {
@@ -616803,6 +621427,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type AssessmentUpsertWithWhereUniqueWithoutAssessmentTypeInput = {
@@ -617018,6 +621644,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutAssessmentsInput = {
@@ -617217,6 +621845,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutAssessmentsInput = {
@@ -617436,6 +622066,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -617548,6 +622179,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -617665,6 +622297,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -617777,6 +622410,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -618185,6 +622819,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAssessmentsInput = {
@@ -618384,6 +623020,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SubjectUpsertWithoutAssessmentsInput = {
@@ -618627,6 +623265,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -618739,6 +623378,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -618862,6 +623502,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -618974,6 +623615,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -619284,6 +623926,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutAssessmentQuestionsInput = {
@@ -619483,6 +624127,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutAssessmentQuestionsInput = {
@@ -619855,6 +624501,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAssessmentQuestionsInput = {
@@ -620054,6 +624702,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type AssessmentUpsertWithoutQuestionsInput = {
@@ -620428,6 +625078,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutQuestionBanksInput = {
@@ -620627,6 +625279,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutQuestionBanksInput = {
@@ -620809,6 +625463,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -620921,6 +625576,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -621241,6 +625897,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutQuestionBanksInput = {
@@ -621440,6 +626098,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SubjectUpsertWithoutQuestionBanksInput = {
@@ -621640,6 +626300,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -621752,6 +626413,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -622030,6 +626692,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutExamTimetablesInput = {
@@ -622229,6 +626893,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutExamTimetablesInput = {
@@ -622627,6 +627293,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutExamTimetablesInput = {
@@ -622826,6 +627494,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type AssessmentUpsertWithoutTimetablesInput = {
@@ -623226,6 +627896,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutStudentAssessmentsInput = {
@@ -623425,6 +628097,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutStudentAssessmentsInput = {
@@ -623747,6 +628421,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -623859,6 +628534,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -624137,6 +628813,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStudentAssessmentsInput = {
@@ -624336,6 +629014,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type AssessmentUpsertWithoutStudentAssessmentsInput = {
@@ -624676,6 +629356,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -624788,6 +629469,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -624975,6 +629657,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -625087,6 +629770,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -625354,6 +630038,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutQuestionsInput = {
@@ -625553,6 +630239,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutQuestionsInput = {
@@ -625699,6 +630387,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -625811,6 +630500,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -626084,6 +630774,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutQuestionsInput = {
@@ -626283,6 +630975,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolClassCreateWithoutCbtExamsInput = {
@@ -626468,6 +631162,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -626580,6 +631275,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -626847,6 +631543,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutCbtExamsInput = {
@@ -627046,6 +631744,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutCbtExamsInput = {
@@ -627291,6 +631991,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -627403,6 +632104,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -627676,6 +632378,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutCbtExamsInput = {
@@ -627875,6 +632579,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type CbtAttemptUpsertWithWhereUniqueWithoutExamInput = {
@@ -628852,6 +633558,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutDisciplineRecordInput = {
@@ -629051,6 +633759,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutDisciplineRecordInput = {
@@ -629520,6 +634230,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutDisciplineRecordInput = {
@@ -629719,6 +634431,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutCalendarEventInput = {
@@ -629918,6 +634632,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutCalendarEventInput = {
@@ -630117,6 +634833,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutCalendarEventInput = {
@@ -630332,6 +635050,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutCalendarEventInput = {
@@ -630531,6 +635251,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutSportsEventInput = {
@@ -630730,6 +635452,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutSportsEventInput = {
@@ -630929,6 +635653,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutSportsEventInput = {
@@ -631144,6 +635870,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSportsEventInput = {
@@ -631343,6 +636071,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutTransportRequestInput = {
@@ -631542,6 +636272,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutTransportRequestInput = {
@@ -631741,6 +636473,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutTransportRequestInput = {
@@ -631956,6 +636690,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutTransportRequestInput = {
@@ -632155,6 +636891,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutFacilitiesRequestInput = {
@@ -632354,6 +637092,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutFacilitiesRequestInput = {
@@ -632553,6 +637293,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutFacilitiesRequestInput = {
@@ -632768,6 +637510,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutFacilitiesRequestInput = {
@@ -632967,6 +637711,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutCateringRequestInput = {
@@ -633166,6 +637912,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutCateringRequestInput = {
@@ -633365,6 +638113,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutCateringRequestInput = {
@@ -633580,6 +638330,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutCateringRequestInput = {
@@ -633779,6 +638531,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutAwardConfigsInput = {
@@ -633978,6 +638732,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutAwardConfigsInput = {
@@ -634177,6 +638933,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutAwardConfigsInput = {
@@ -634392,6 +639150,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAwardConfigsInput = {
@@ -634591,6 +639351,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutStudentAwardsInput = {
@@ -634790,6 +639552,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutStudentAwardsInput = {
@@ -634989,6 +639753,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutStudentAwardsInput = {
@@ -635248,6 +640014,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -635360,6 +640127,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -635477,6 +640245,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -635589,6 +640358,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -635867,6 +640637,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStudentAwardsInput = {
@@ -636066,6 +640838,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentUpsertWithoutAwardsInput = {
@@ -636337,6 +641111,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -636449,6 +641224,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -636572,6 +641348,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -636684,6 +641461,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -636946,6 +641724,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutBursaryTypesInput = {
@@ -637145,6 +641925,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutBursaryTypesInput = {
@@ -637360,6 +642142,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutBursaryTypesInput = {
@@ -637559,6 +642343,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutStudentBursariesInput = {
@@ -637758,6 +642544,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutStudentBursariesInput = {
@@ -637957,6 +642745,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutStudentBursariesInput = {
@@ -638216,6 +643006,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -638328,6 +643119,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -638606,6 +643398,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStudentBursariesInput = {
@@ -638805,6 +643599,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentUpsertWithoutBursariesInput = {
@@ -639076,6 +643872,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -639188,6 +643985,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -639450,6 +644248,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutBedAllocationsInput = {
@@ -639649,6 +644449,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutBedAllocationsInput = {
@@ -640196,6 +644998,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutBedAllocationsInput = {
@@ -640395,6 +645199,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentUpsertWithoutBedAllocationsInput = {
@@ -640950,6 +645756,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutTransportAllocationsInput = {
@@ -641149,6 +645957,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutTransportAllocationsInput = {
@@ -641627,6 +646437,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutTransportAllocationsInput = {
@@ -641826,6 +646638,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentUpsertWithoutTransportAllocationsInput = {
@@ -642306,6 +647120,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutSchoolTripsInput = {
@@ -642505,6 +647321,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutSchoolTripsInput = {
@@ -642598,6 +647416,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -642710,6 +647529,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -642827,6 +647647,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -642939,6 +647760,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -643275,6 +648097,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutSchoolTripsInput = {
@@ -643474,6 +648298,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolVehicleUpsertWithoutTripsInput = {
@@ -643579,6 +648405,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -643691,6 +648518,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -643814,6 +648642,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -643926,6 +648755,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -644204,6 +649034,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutTripConsentsInput = {
@@ -644403,6 +649235,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutTripConsentsInput = {
@@ -644725,6 +649559,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -644837,6 +649672,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -645115,6 +649951,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutTripConsentsInput = {
@@ -645314,6 +650152,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolTripUpsertWithoutConsentsInput = {
@@ -645654,6 +650494,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -645766,6 +650607,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -646028,6 +650870,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutMedicalConsentsInput = {
@@ -646227,6 +651071,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutMedicalConsentsInput = {
@@ -646486,6 +651332,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -646598,6 +651445,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -646876,6 +651724,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutMedicalConsentsInput = {
@@ -647075,6 +651925,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentUpsertWithoutMedicalConsentsInput = {
@@ -647346,6 +652198,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -647458,6 +652311,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -647720,6 +652574,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutBookLoanFinesInput = {
@@ -647919,6 +652775,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutBookLoanFinesInput = {
@@ -648386,6 +653244,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutBookLoanFinesInput = {
@@ -648585,6 +653445,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type BookLoanUpsertWithoutFinesInput = {
@@ -649048,6 +653910,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutBoardingRollCallsInput = {
@@ -649247,6 +654111,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutBoardingRollCallsInput = {
@@ -649549,6 +654415,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -649661,6 +654528,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -649939,6 +654807,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutBoardingRollCallsInput = {
@@ -650138,6 +655008,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type HostelUpsertWithoutBoardingRollCallsInput = {
@@ -650458,6 +655330,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -650570,6 +655443,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -650832,6 +655706,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutExeatsInput = {
@@ -651031,6 +655907,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutExeatsInput = {
@@ -651290,6 +656168,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -651402,6 +656281,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -651680,6 +656560,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutExeatsInput = {
@@ -651879,6 +656761,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentUpsertWithoutExeatsInput = {
@@ -652150,6 +657034,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -652262,6 +657147,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -652524,6 +657410,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutDiningPantryItemsInput = {
@@ -652723,6 +657611,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutDiningPantryItemsInput = {
@@ -652938,6 +657828,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutDiningPantryItemsInput = {
@@ -653137,6 +658029,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutDiningRecipesInput = {
@@ -653336,6 +658230,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutDiningRecipesInput = {
@@ -653535,6 +658431,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutDiningRecipesInput = {
@@ -653750,6 +658648,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutDiningRecipesInput = {
@@ -653949,6 +658849,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutUniformCategoriesInput = {
@@ -654148,6 +659050,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutUniformCategoriesInput = {
@@ -654347,6 +659251,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutUniformCategoriesInput = {
@@ -654606,6 +659512,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutUniformCategoriesInput = {
@@ -654805,6 +659713,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UniformProductUpsertWithWhereUniqueWithoutCategoryInput = {
@@ -655020,6 +659930,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutUniformProductsInput = {
@@ -655219,6 +660131,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutUniformProductsInput = {
@@ -655489,6 +660403,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutUniformProductsInput = {
@@ -655688,6 +660604,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UniformCategoryUpsertWithoutProductsInput = {
@@ -655930,6 +660848,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutUniformKitsInput = {
@@ -656129,6 +661049,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutUniformKitsInput = {
@@ -656344,6 +661266,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutUniformKitsInput = {
@@ -656543,6 +661467,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolCreateWithoutUniformIssuancesInput = {
@@ -656742,6 +661668,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutUniformIssuancesInput = {
@@ -656941,6 +661869,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutUniformIssuancesInput = {
@@ -657255,6 +662185,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -657367,6 +662298,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -657645,6 +662577,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutUniformIssuancesInput = {
@@ -657844,6 +662778,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentUpsertWithoutUniformIssuancesInput = {
@@ -658176,6 +663112,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -658288,6 +663225,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -658550,6 +663488,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutUniformStockLedgersInput = {
@@ -658749,6 +663689,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutUniformStockLedgersInput = {
@@ -659003,6 +663945,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutUniformStockLedgersInput = {
@@ -659202,6 +664146,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UniformProductUpsertWithoutLedgerEntriesInput = {
@@ -659446,6 +664392,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutAttendanceSessionsInput = {
@@ -659645,6 +664593,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutAttendanceSessionsInput = {
@@ -659760,6 +664710,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -659872,6 +664823,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -660184,6 +665136,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutAttendanceSessionsInput = {
@@ -660383,6 +665337,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolClassUpsertWithoutAttendanceSessionsInput = {
@@ -660510,6 +665466,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -660622,6 +665579,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -660986,6 +665944,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -661098,6 +666057,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -661474,6 +666434,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -661586,6 +666547,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -661848,6 +666810,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutStaffAttendanceDailiesInput = {
@@ -662047,6 +667011,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutStaffAttendanceDailiesInput = {
@@ -662101,6 +667067,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -662213,6 +667180,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -662491,6 +667459,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStaffAttendanceDailiesInput = {
@@ -662690,6 +667660,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutStaffAttendanceDailiesInput = {
@@ -662750,6 +667722,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -662862,6 +667835,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -663124,6 +668098,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutBiometricRawLogsInput = {
@@ -663323,6 +668299,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutBiometricRawLogsInput = {
@@ -663377,6 +668355,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -663489,6 +668468,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -663767,6 +668747,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutBiometricRawLogsInput = {
@@ -663966,6 +668948,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutBiometricRawLogsInput = {
@@ -664026,6 +669010,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -664138,6 +669123,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -664400,6 +669386,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutHrTardinessLogsInput = {
@@ -664599,6 +669587,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutHrTardinessLogsInput = {
@@ -664653,6 +669643,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -664765,6 +669756,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -665043,6 +670035,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutHrTardinessLogsInput = {
@@ -665242,6 +670236,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutHrTardinessLogsInput = {
@@ -665302,6 +670298,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -665414,6 +670411,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -665676,6 +670674,8 @@ export namespace Prisma {
     studentAssessments?: StudentAssessmentCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutStudentQrCodesInput = {
@@ -665875,6 +670875,8 @@ export namespace Prisma {
     studentAssessments?: StudentAssessmentUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutStudentQrCodesInput = {
@@ -666295,6 +671297,8 @@ export namespace Prisma {
     studentAssessments?: StudentAssessmentUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStudentQrCodesInput = {
@@ -666494,6 +671498,8 @@ export namespace Prisma {
     studentAssessments?: StudentAssessmentUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentUpsertWithoutQrCodesInput = {
@@ -666904,6 +671910,8 @@ export namespace Prisma {
     studentAssessments?: StudentAssessmentCreateNestedManyWithoutSchoolInput
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutStaffQrCodesInput = {
@@ -667103,6 +672111,8 @@ export namespace Prisma {
     studentAssessments?: StudentAssessmentUncheckedCreateNestedManyWithoutSchoolInput
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutStaffQrCodesInput = {
@@ -667156,6 +672166,7 @@ export namespace Prisma {
     prefectReports?: PrefectReportCreateNestedManyWithoutReportedByInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -667268,6 +672279,7 @@ export namespace Prisma {
     prefectReports?: PrefectReportUncheckedCreateNestedManyWithoutReportedByInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -667547,6 +672559,8 @@ export namespace Prisma {
     studentAssessments?: StudentAssessmentUpdateManyWithoutSchoolNestedInput
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutStaffQrCodesInput = {
@@ -667746,6 +672760,8 @@ export namespace Prisma {
     studentAssessments?: StudentAssessmentUncheckedUpdateManyWithoutSchoolNestedInput
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type UserUpsertWithoutStaffQrCodesInput = {
@@ -667805,6 +672821,7 @@ export namespace Prisma {
     prefectReports?: PrefectReportUpdateManyWithoutReportedByNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -667917,6 +672934,7 @@ export namespace Prisma {
     prefectReports?: PrefectReportUncheckedUpdateManyWithoutReportedByNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -668180,6 +673198,8 @@ export namespace Prisma {
     studentAssessments?: StudentAssessmentCreateNestedManyWithoutSchoolInput
     studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolUncheckedCreateWithoutGateLogsInput = {
@@ -668379,6 +673399,8 @@ export namespace Prisma {
     studentAssessments?: StudentAssessmentUncheckedCreateNestedManyWithoutSchoolInput
     studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
   }
 
   export type SchoolCreateOrConnectWithoutGateLogsInput = {
@@ -668637,6 +673659,7 @@ export namespace Prisma {
     prefectReports?: PrefectReportCreateNestedManyWithoutReportedByInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -668749,6 +673772,7 @@ export namespace Prisma {
     prefectReports?: PrefectReportUncheckedCreateNestedManyWithoutReportedByInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -668866,6 +673890,7 @@ export namespace Prisma {
     prefectReports?: PrefectReportCreateNestedManyWithoutReportedByInput
     staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
     gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
@@ -668978,6 +674003,7 @@ export namespace Prisma {
     prefectReports?: PrefectReportUncheckedCreateNestedManyWithoutReportedByInput
     staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
     gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutScannerUserInput
     assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
     registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
     assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
@@ -669292,6 +674318,8 @@ export namespace Prisma {
     studentAssessments?: StudentAssessmentUpdateManyWithoutSchoolNestedInput
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutGateLogsInput = {
@@ -669491,6 +674519,8 @@ export namespace Prisma {
     studentAssessments?: StudentAssessmentUncheckedUpdateManyWithoutSchoolNestedInput
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type StudentUpsertWithoutGateLogsInput = {
@@ -669761,6 +674791,7 @@ export namespace Prisma {
     prefectReports?: PrefectReportUpdateManyWithoutReportedByNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -669873,6 +674904,7 @@ export namespace Prisma {
     prefectReports?: PrefectReportUncheckedUpdateManyWithoutReportedByNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -669996,6 +675028,7 @@ export namespace Prisma {
     prefectReports?: PrefectReportUpdateManyWithoutReportedByNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -670108,6 +675141,7 @@ export namespace Prisma {
     prefectReports?: PrefectReportUncheckedUpdateManyWithoutReportedByNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -670213,6 +675247,2114 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     installments?: PaymentPlanInstallmentUncheckedUpdateManyWithoutPlanNestedInput
+  }
+
+  export type SchoolCreateWithoutTenantKeysInput = {
+    id?: string
+    code: string
+    name: string
+    type: string
+    isCombined?: boolean
+    levels?: SchoolCreatelevelsInput | string[]
+    address?: string | null
+    country?: string | null
+    email: string
+    phone?: string | null
+    website?: string | null
+    status?: string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    idCardTemplate?: string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    subscription?: NullableJsonNullValueInput | InputJsonValue
+    syllabuses?: SyllabusCreateNestedManyWithoutSchoolInput
+    schemesOfWork?: SchemeOfWorkCreateNestedManyWithoutSchoolInput
+    lessonPlans?: LessonPlanCreateNestedManyWithoutSchoolInput
+    plan: PlanCreateNestedOneWithoutSchoolsInput
+    users?: UserCreateNestedManyWithoutSchoolInput
+    students?: StudentCreateNestedManyWithoutSchoolInput
+    teachers?: TeacherCreateNestedManyWithoutSchoolInput
+    news?: NewsCreateNestedManyWithoutSchoolInput
+    websiteInquiries?: WebsiteInquiryCreateNestedManyWithoutSchoolInput
+    noticeboards?: NoticeboardCreateNestedManyWithoutSchoolInput
+    clinicVisits?: ClinicVisitCreateNestedManyWithoutSchoolInput
+    clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutSchoolInput
+    vacancies?: VacancyCreateNestedManyWithoutSchoolInput
+    jobApplications?: JobApplicationCreateNestedManyWithoutSchoolInput
+    gallery?: GalleryCreateNestedManyWithoutSchoolInput
+    clubs?: ClubCreateNestedManyWithoutSchoolInput
+    sports?: SportCreateNestedManyWithoutSchoolInput
+    applications?: ApplicationCreateNestedManyWithoutSchoolInput
+    announcements?: AnnouncementCreateNestedManyWithoutSchoolInput
+    chaplaincyEvents?: ChaplaincyEventCreateNestedManyWithoutSchoolInput
+    diningHallReports?: DiningHallReportCreateNestedManyWithoutSchoolInput
+    farmLivestockBatches?: FarmLivestockBatchCreateNestedManyWithoutSchoolInput
+    farmCropCycles?: FarmCropCycleCreateNestedManyWithoutSchoolInput
+    farmInventoryItems?: FarmInventoryItemCreateNestedManyWithoutSchoolInput
+    prefectDuties?: PrefectDutyCreateNestedManyWithoutSchoolInput
+    prefectMeetings?: PrefectMeetingCreateNestedManyWithoutSchoolInput
+    prefectReports?: PrefectReportCreateNestedManyWithoutSchoolInput
+    staffAttendances?: StaffAttendanceCreateNestedManyWithoutSchoolInput
+    timetableSlots?: TimetableSlotCreateNestedManyWithoutSchoolInput
+    classes?: SchoolClassCreateNestedManyWithoutSchoolInput
+    subjects?: SubjectCreateNestedManyWithoutSchoolInput
+    books?: BookCreateNestedManyWithoutSchoolInput
+    grades?: GradeCreateNestedManyWithoutSchoolInput
+    attendance?: AttendanceCreateNestedManyWithoutSchoolInput
+    fees?: FeeCreateNestedManyWithoutSchoolInput
+    assignments?: AssignmentCreateNestedManyWithoutSchoolInput
+    bookLoans?: BookLoanCreateNestedManyWithoutSchoolInput
+    bookReservations?: BookReservationCreateNestedManyWithoutSchoolInput
+    librarySetting?: LibrarySettingCreateNestedOneWithoutSchoolInput
+    libraryDigitalResources?: LibraryDigitalResourceCreateNestedManyWithoutSchoolInput
+    assignmentSubmissions?: AssignmentSubmissionCreateNestedManyWithoutSchoolInput
+    supervisorAssignments?: SupervisorAssignmentCreateNestedManyWithoutSchoolInput
+    extensionRequests?: ExtensionRequestCreateNestedManyWithoutSchoolInput
+    progressReports?: ProgressReportCreateNestedManyWithoutSchoolInput
+    tuckshopItems?: TuckshopItemCreateNestedManyWithoutSchoolInput
+    suppliers?: SchoolSupplierCreateNestedManyWithoutSchoolInput
+    assets?: AssetCreateNestedManyWithoutSchoolInput
+    reportTemplate?: ReportTemplateCreateNestedOneWithoutSchoolInput
+    websiteSettings?: WebsiteSettingsCreateNestedOneWithoutSchoolInput
+    requisitions?: RequisitionCreateNestedManyWithoutSchoolInput
+    auditLogs?: AuditLogCreateNestedManyWithoutSchoolInput
+    leadershipAssignments?: LeadershipAssignmentCreateNestedManyWithoutSchoolInput
+    studentAllowedItems?: StudentAllowedItemCreateNestedManyWithoutSchoolInput
+    departments?: DepartmentCreateNestedManyWithoutSchoolInput
+    hostels?: HostelCreateNestedManyWithoutSchoolInput
+    weeklyMenus?: WeeklyMenuCreateNestedManyWithoutSchoolInput
+    clinicSettings?: ClinicSettingCreateNestedOneWithoutSchoolInput
+    clinicBeds?: ClinicBedCreateNestedManyWithoutSchoolInput
+    clinicAdmissions?: ClinicAdmissionCreateNestedManyWithoutSchoolInput
+    pharmacyStocks?: PharmacyStockCreateNestedManyWithoutSchoolInput
+    studentHealthProfiles?: StudentHealthProfileCreateNestedManyWithoutSchoolInput
+    clinicAccessAudits?: ClinicAccessAuditCreateNestedManyWithoutSchoolInput
+    clinicEmergencyLogs?: ClinicEmergencyLogCreateNestedManyWithoutSchoolInput
+    clinicDiagnoses?: ClinicDiagnosisCreateNestedManyWithoutSchoolInput
+    clinicPrescriptions?: ClinicPrescriptionCreateNestedManyWithoutSchoolInput
+    pharmacyDispensings?: PharmacyDispenseCreateNestedManyWithoutSchoolInput
+    clinicMonitoringLogs?: ClinicMonitoringLogCreateNestedManyWithoutSchoolInput
+    clinicVitals?: ClinicVitalCreateNestedManyWithoutSchoolInput
+    originTransfers?: TransferAuthorizationCreateNestedManyWithoutOriginSchoolInput
+    targetTransfers?: TransferAuthorizationCreateNestedManyWithoutTargetSchoolInput
+    faculties?: FacultyCreateNestedManyWithoutSchoolInput
+    paymentMethods?: PaymentMethodCreateNestedManyWithoutSchoolInput
+    feeGroups?: FeeGroupCreateNestedManyWithoutSchoolInput
+    revenueAllocations?: RevenueAllocationCreateNestedManyWithoutSchoolInput
+    allowanceTypes?: PayrollAllowanceCreateNestedManyWithoutSchoolInput
+    deductionTypes?: PayrollDeductionCreateNestedManyWithoutSchoolInput
+    taxTables?: TaxTableCreateNestedManyWithoutSchoolInput
+    employeeProfiles?: EmployeeProfileCreateNestedManyWithoutSchoolInput
+    accountCategories?: AccountCategoryCreateNestedManyWithoutSchoolInput
+    liabilities?: LiabilityCreateNestedManyWithoutSchoolInput
+    incomes?: IncomeCreateNestedManyWithoutSchoolInput
+    expenses?: ExpenseCreateNestedManyWithoutSchoolInput
+    uniformItems?: UniformItemCreateNestedManyWithoutSchoolInput
+    uniformStockOrders?: UniformStockOrderCreateNestedManyWithoutSchoolInput
+    uniformSales?: UniformSaleCreateNestedManyWithoutSchoolInput
+    uniformSupplierPayments?: UniformSupplierPaymentCreateNestedManyWithoutSchoolInput
+    physicalProducts?: PhysicalProductCreateNestedManyWithoutSchoolInput
+    physicalProductConsumptions?: PhysicalProductConsumptionCreateNestedManyWithoutSchoolInput
+    feeReminderLogs?: FeeReminderLogCreateNestedManyWithoutSchoolInput
+    termlyComments?: TermlyCommentCreateNestedManyWithoutSchoolInput
+    payrollRuns?: PayrollRunCreateNestedManyWithoutSchoolInput
+    questionPapers?: QuestionPaperCreateNestedManyWithoutSchoolInput
+    payrollEntries?: PayrollEntryCreateNestedManyWithoutSchoolInput
+    gradingScales?: GradingScaleCreateNestedManyWithoutSchoolInput
+    studentPayments?: StudentPaymentCreateNestedManyWithoutSchoolInput
+    communicationLogs?: CommunicationLogCreateNestedManyWithoutSchoolInput
+    libraryCategories?: LibraryCategoryCreateNestedManyWithoutSchoolInput
+    sections?: SectionCreateNestedManyWithoutSchoolInput
+    studentHouses?: StudentHouseCreateNestedManyWithoutSchoolInput
+    holidays?: HolidayCreateNestedManyWithoutSchoolInput
+    schoolSetting?: SchoolSettingCreateNestedOneWithoutSchoolInput
+    CBTExam?: CBTExamCreateNestedManyWithoutSchoolInput
+    LiveClass?: LiveClassCreateNestedManyWithoutSchoolInput
+    Award?: AwardCreateNestedManyWithoutSchoolInput
+    Course?: CourseCreateNestedManyWithoutSchoolInput
+    StudyMaterial?: StudyMaterialCreateNestedManyWithoutSchoolInput
+    hostelCategories?: HostelCategoryCreateNestedManyWithoutSchoolInput
+    hostelRooms?: HostelRoomCreateNestedManyWithoutSchoolInput
+    SchoolVehicle?: SchoolVehicleCreateNestedManyWithoutSchoolInput
+    SchoolTransport?: SchoolTransportCreateNestedManyWithoutSchoolInput
+    paymentPlans?: PaymentPlanCreateNestedManyWithoutSchoolInput
+    meetingMinutes?: MeetingMinutesCreateNestedManyWithoutSchoolInput
+    projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
+    sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
+    ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
+    chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
+    journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
+    accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
+    uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
+    bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
+    fiscalDevices?: FiscalDeviceCreateNestedManyWithoutSchoolInput
+    fiscalInvoices?: FiscalInvoiceCreateNestedManyWithoutSchoolInput
+    documentSequences?: DocumentSequenceCreateNestedManyWithoutSchoolInput
+    creditNotes?: CreditNoteCreateNestedManyWithoutSchoolInput
+    tillSessions?: TillSessionCreateNestedManyWithoutSchoolInput
+    studentClearances?: StudentClearanceCreateNestedManyWithoutSchoolInput
+    leaveBalances?: LeaveBalanceCreateNestedManyWithoutSchoolInput
+    questions?: QuestionCreateNestedManyWithoutSchoolInput
+    cbtExams?: CbtExamCreateNestedManyWithoutSchoolInput
+    DisciplineRecord?: DisciplineRecordCreateNestedManyWithoutSchoolInput
+    CalendarEvent?: CalendarEventCreateNestedManyWithoutSchoolInput
+    SportsEvent?: SportsEventCreateNestedManyWithoutSchoolInput
+    TransportRequest?: TransportRequestCreateNestedManyWithoutSchoolInput
+    FacilitiesRequest?: FacilitiesRequestCreateNestedManyWithoutSchoolInput
+    CateringRequest?: CateringRequestCreateNestedManyWithoutSchoolInput
+    awardConfigs?: AwardConfigCreateNestedManyWithoutSchoolInput
+    studentAwards?: StudentAwardCreateNestedManyWithoutSchoolInput
+    bursaryTypes?: BursaryTypeCreateNestedManyWithoutSchoolInput
+    studentBursaries?: StudentBursaryCreateNestedManyWithoutSchoolInput
+    studentInvoices?: StudentInvoiceCreateNestedManyWithoutSchoolInput
+    receipts?: ReceiptCreateNestedManyWithoutSchoolInput
+    bedAllocations?: HostelBedAllocationCreateNestedManyWithoutSchoolInput
+    transportAllocations?: StudentTransportAllocationCreateNestedManyWithoutSchoolInput
+    schoolTrips?: SchoolTripCreateNestedManyWithoutSchoolInput
+    tripConsents?: TripConsentCreateNestedManyWithoutSchoolInput
+    medicalConsents?: MedicalConsentCreateNestedManyWithoutSchoolInput
+    bookLoanFines?: BookLoanFineCreateNestedManyWithoutSchoolInput
+    boardingRollCalls?: BoardingRollCallCreateNestedManyWithoutSchoolInput
+    exeats?: ExeatCreateNestedManyWithoutSchoolInput
+    diningPantryItems?: DiningPantryItemCreateNestedManyWithoutSchoolInput
+    diningRecipes?: DiningRecipeCreateNestedManyWithoutSchoolInput
+    uniformCategories?: UniformCategoryCreateNestedManyWithoutSchoolInput
+    uniformProducts?: UniformProductCreateNestedManyWithoutSchoolInput
+    uniformKits?: UniformKitCreateNestedManyWithoutSchoolInput
+    uniformIssuances?: UniformIssuanceCreateNestedManyWithoutSchoolInput
+    uniformStockLedgers?: UniformStockLedgerCreateNestedManyWithoutSchoolInput
+    attendanceSessions?: AttendanceSessionCreateNestedManyWithoutSchoolInput
+    staffAttendanceDailies?: StaffAttendanceDailyCreateNestedManyWithoutSchoolInput
+    biometricRawLogs?: BiometricRawLogCreateNestedManyWithoutSchoolInput
+    hrTardinessLogs?: HrTardinessLogCreateNestedManyWithoutSchoolInput
+    schemeItems?: SchemeItemCreateNestedManyWithoutSchoolInput
+    lessonPlanResources?: LessonPlanResourceCreateNestedManyWithoutSchoolInput
+    assessmentTypes?: AssessmentTypeCreateNestedManyWithoutSchoolInput
+    assessments?: AssessmentCreateNestedManyWithoutSchoolInput
+    assessmentQuestions?: AssessmentQuestionCreateNestedManyWithoutSchoolInput
+    questionBanks?: QuestionBankCreateNestedManyWithoutSchoolInput
+    examTimetables?: ExamTimetableCreateNestedManyWithoutSchoolInput
+    studentAssessments?: StudentAssessmentCreateNestedManyWithoutSchoolInput
+    studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
+    staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
+    gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogCreateNestedManyWithoutTenantInput
+  }
+
+  export type SchoolUncheckedCreateWithoutTenantKeysInput = {
+    id?: string
+    code: string
+    name: string
+    type: string
+    isCombined?: boolean
+    levels?: SchoolCreatelevelsInput | string[]
+    address?: string | null
+    country?: string | null
+    email: string
+    phone?: string | null
+    website?: string | null
+    status?: string
+    planId: string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    idCardTemplate?: string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    subscription?: NullableJsonNullValueInput | InputJsonValue
+    syllabuses?: SyllabusUncheckedCreateNestedManyWithoutSchoolInput
+    schemesOfWork?: SchemeOfWorkUncheckedCreateNestedManyWithoutSchoolInput
+    lessonPlans?: LessonPlanUncheckedCreateNestedManyWithoutSchoolInput
+    users?: UserUncheckedCreateNestedManyWithoutSchoolInput
+    students?: StudentUncheckedCreateNestedManyWithoutSchoolInput
+    teachers?: TeacherUncheckedCreateNestedManyWithoutSchoolInput
+    news?: NewsUncheckedCreateNestedManyWithoutSchoolInput
+    websiteInquiries?: WebsiteInquiryUncheckedCreateNestedManyWithoutSchoolInput
+    noticeboards?: NoticeboardUncheckedCreateNestedManyWithoutSchoolInput
+    clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutSchoolInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutSchoolInput
+    vacancies?: VacancyUncheckedCreateNestedManyWithoutSchoolInput
+    jobApplications?: JobApplicationUncheckedCreateNestedManyWithoutSchoolInput
+    gallery?: GalleryUncheckedCreateNestedManyWithoutSchoolInput
+    clubs?: ClubUncheckedCreateNestedManyWithoutSchoolInput
+    sports?: SportUncheckedCreateNestedManyWithoutSchoolInput
+    applications?: ApplicationUncheckedCreateNestedManyWithoutSchoolInput
+    announcements?: AnnouncementUncheckedCreateNestedManyWithoutSchoolInput
+    chaplaincyEvents?: ChaplaincyEventUncheckedCreateNestedManyWithoutSchoolInput
+    diningHallReports?: DiningHallReportUncheckedCreateNestedManyWithoutSchoolInput
+    farmLivestockBatches?: FarmLivestockBatchUncheckedCreateNestedManyWithoutSchoolInput
+    farmCropCycles?: FarmCropCycleUncheckedCreateNestedManyWithoutSchoolInput
+    farmInventoryItems?: FarmInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
+    prefectDuties?: PrefectDutyUncheckedCreateNestedManyWithoutSchoolInput
+    prefectMeetings?: PrefectMeetingUncheckedCreateNestedManyWithoutSchoolInput
+    prefectReports?: PrefectReportUncheckedCreateNestedManyWithoutSchoolInput
+    staffAttendances?: StaffAttendanceUncheckedCreateNestedManyWithoutSchoolInput
+    timetableSlots?: TimetableSlotUncheckedCreateNestedManyWithoutSchoolInput
+    classes?: SchoolClassUncheckedCreateNestedManyWithoutSchoolInput
+    subjects?: SubjectUncheckedCreateNestedManyWithoutSchoolInput
+    books?: BookUncheckedCreateNestedManyWithoutSchoolInput
+    grades?: GradeUncheckedCreateNestedManyWithoutSchoolInput
+    attendance?: AttendanceUncheckedCreateNestedManyWithoutSchoolInput
+    fees?: FeeUncheckedCreateNestedManyWithoutSchoolInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    bookLoans?: BookLoanUncheckedCreateNestedManyWithoutSchoolInput
+    bookReservations?: BookReservationUncheckedCreateNestedManyWithoutSchoolInput
+    librarySetting?: LibrarySettingUncheckedCreateNestedOneWithoutSchoolInput
+    libraryDigitalResources?: LibraryDigitalResourceUncheckedCreateNestedManyWithoutSchoolInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedCreateNestedManyWithoutSchoolInput
+    supervisorAssignments?: SupervisorAssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    extensionRequests?: ExtensionRequestUncheckedCreateNestedManyWithoutSchoolInput
+    progressReports?: ProgressReportUncheckedCreateNestedManyWithoutSchoolInput
+    tuckshopItems?: TuckshopItemUncheckedCreateNestedManyWithoutSchoolInput
+    suppliers?: SchoolSupplierUncheckedCreateNestedManyWithoutSchoolInput
+    assets?: AssetUncheckedCreateNestedManyWithoutSchoolInput
+    reportTemplate?: ReportTemplateUncheckedCreateNestedOneWithoutSchoolInput
+    websiteSettings?: WebsiteSettingsUncheckedCreateNestedOneWithoutSchoolInput
+    requisitions?: RequisitionUncheckedCreateNestedManyWithoutSchoolInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutSchoolInput
+    leadershipAssignments?: LeadershipAssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    studentAllowedItems?: StudentAllowedItemUncheckedCreateNestedManyWithoutSchoolInput
+    departments?: DepartmentUncheckedCreateNestedManyWithoutSchoolInput
+    hostels?: HostelUncheckedCreateNestedManyWithoutSchoolInput
+    weeklyMenus?: WeeklyMenuUncheckedCreateNestedManyWithoutSchoolInput
+    clinicSettings?: ClinicSettingUncheckedCreateNestedOneWithoutSchoolInput
+    clinicBeds?: ClinicBedUncheckedCreateNestedManyWithoutSchoolInput
+    clinicAdmissions?: ClinicAdmissionUncheckedCreateNestedManyWithoutSchoolInput
+    pharmacyStocks?: PharmacyStockUncheckedCreateNestedManyWithoutSchoolInput
+    studentHealthProfiles?: StudentHealthProfileUncheckedCreateNestedManyWithoutSchoolInput
+    clinicAccessAudits?: ClinicAccessAuditUncheckedCreateNestedManyWithoutSchoolInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUncheckedCreateNestedManyWithoutSchoolInput
+    clinicDiagnoses?: ClinicDiagnosisUncheckedCreateNestedManyWithoutSchoolInput
+    clinicPrescriptions?: ClinicPrescriptionUncheckedCreateNestedManyWithoutSchoolInput
+    pharmacyDispensings?: PharmacyDispenseUncheckedCreateNestedManyWithoutSchoolInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUncheckedCreateNestedManyWithoutSchoolInput
+    clinicVitals?: ClinicVitalUncheckedCreateNestedManyWithoutSchoolInput
+    originTransfers?: TransferAuthorizationUncheckedCreateNestedManyWithoutOriginSchoolInput
+    targetTransfers?: TransferAuthorizationUncheckedCreateNestedManyWithoutTargetSchoolInput
+    faculties?: FacultyUncheckedCreateNestedManyWithoutSchoolInput
+    paymentMethods?: PaymentMethodUncheckedCreateNestedManyWithoutSchoolInput
+    feeGroups?: FeeGroupUncheckedCreateNestedManyWithoutSchoolInput
+    revenueAllocations?: RevenueAllocationUncheckedCreateNestedManyWithoutSchoolInput
+    allowanceTypes?: PayrollAllowanceUncheckedCreateNestedManyWithoutSchoolInput
+    deductionTypes?: PayrollDeductionUncheckedCreateNestedManyWithoutSchoolInput
+    taxTables?: TaxTableUncheckedCreateNestedManyWithoutSchoolInput
+    employeeProfiles?: EmployeeProfileUncheckedCreateNestedManyWithoutSchoolInput
+    accountCategories?: AccountCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    liabilities?: LiabilityUncheckedCreateNestedManyWithoutSchoolInput
+    incomes?: IncomeUncheckedCreateNestedManyWithoutSchoolInput
+    expenses?: ExpenseUncheckedCreateNestedManyWithoutSchoolInput
+    uniformItems?: UniformItemUncheckedCreateNestedManyWithoutSchoolInput
+    uniformStockOrders?: UniformStockOrderUncheckedCreateNestedManyWithoutSchoolInput
+    uniformSales?: UniformSaleUncheckedCreateNestedManyWithoutSchoolInput
+    uniformSupplierPayments?: UniformSupplierPaymentUncheckedCreateNestedManyWithoutSchoolInput
+    physicalProducts?: PhysicalProductUncheckedCreateNestedManyWithoutSchoolInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUncheckedCreateNestedManyWithoutSchoolInput
+    feeReminderLogs?: FeeReminderLogUncheckedCreateNestedManyWithoutSchoolInput
+    termlyComments?: TermlyCommentUncheckedCreateNestedManyWithoutSchoolInput
+    payrollRuns?: PayrollRunUncheckedCreateNestedManyWithoutSchoolInput
+    questionPapers?: QuestionPaperUncheckedCreateNestedManyWithoutSchoolInput
+    payrollEntries?: PayrollEntryUncheckedCreateNestedManyWithoutSchoolInput
+    gradingScales?: GradingScaleUncheckedCreateNestedManyWithoutSchoolInput
+    studentPayments?: StudentPaymentUncheckedCreateNestedManyWithoutSchoolInput
+    communicationLogs?: CommunicationLogUncheckedCreateNestedManyWithoutSchoolInput
+    libraryCategories?: LibraryCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    sections?: SectionUncheckedCreateNestedManyWithoutSchoolInput
+    studentHouses?: StudentHouseUncheckedCreateNestedManyWithoutSchoolInput
+    holidays?: HolidayUncheckedCreateNestedManyWithoutSchoolInput
+    schoolSetting?: SchoolSettingUncheckedCreateNestedOneWithoutSchoolInput
+    CBTExam?: CBTExamUncheckedCreateNestedManyWithoutSchoolInput
+    LiveClass?: LiveClassUncheckedCreateNestedManyWithoutSchoolInput
+    Award?: AwardUncheckedCreateNestedManyWithoutSchoolInput
+    Course?: CourseUncheckedCreateNestedManyWithoutSchoolInput
+    StudyMaterial?: StudyMaterialUncheckedCreateNestedManyWithoutSchoolInput
+    hostelCategories?: HostelCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    hostelRooms?: HostelRoomUncheckedCreateNestedManyWithoutSchoolInput
+    SchoolVehicle?: SchoolVehicleUncheckedCreateNestedManyWithoutSchoolInput
+    SchoolTransport?: SchoolTransportUncheckedCreateNestedManyWithoutSchoolInput
+    paymentPlans?: PaymentPlanUncheckedCreateNestedManyWithoutSchoolInput
+    meetingMinutes?: MeetingMinutesUncheckedCreateNestedManyWithoutSchoolInput
+    projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
+    sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
+    ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
+    chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
+    journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
+    accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
+    uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
+    fiscalDevices?: FiscalDeviceUncheckedCreateNestedManyWithoutSchoolInput
+    fiscalInvoices?: FiscalInvoiceUncheckedCreateNestedManyWithoutSchoolInput
+    documentSequences?: DocumentSequenceUncheckedCreateNestedManyWithoutSchoolInput
+    creditNotes?: CreditNoteUncheckedCreateNestedManyWithoutSchoolInput
+    tillSessions?: TillSessionUncheckedCreateNestedManyWithoutSchoolInput
+    studentClearances?: StudentClearanceUncheckedCreateNestedManyWithoutSchoolInput
+    leaveBalances?: LeaveBalanceUncheckedCreateNestedManyWithoutSchoolInput
+    questions?: QuestionUncheckedCreateNestedManyWithoutSchoolInput
+    cbtExams?: CbtExamUncheckedCreateNestedManyWithoutSchoolInput
+    DisciplineRecord?: DisciplineRecordUncheckedCreateNestedManyWithoutSchoolInput
+    CalendarEvent?: CalendarEventUncheckedCreateNestedManyWithoutSchoolInput
+    SportsEvent?: SportsEventUncheckedCreateNestedManyWithoutSchoolInput
+    TransportRequest?: TransportRequestUncheckedCreateNestedManyWithoutSchoolInput
+    FacilitiesRequest?: FacilitiesRequestUncheckedCreateNestedManyWithoutSchoolInput
+    CateringRequest?: CateringRequestUncheckedCreateNestedManyWithoutSchoolInput
+    awardConfigs?: AwardConfigUncheckedCreateNestedManyWithoutSchoolInput
+    studentAwards?: StudentAwardUncheckedCreateNestedManyWithoutSchoolInput
+    bursaryTypes?: BursaryTypeUncheckedCreateNestedManyWithoutSchoolInput
+    studentBursaries?: StudentBursaryUncheckedCreateNestedManyWithoutSchoolInput
+    studentInvoices?: StudentInvoiceUncheckedCreateNestedManyWithoutSchoolInput
+    receipts?: ReceiptUncheckedCreateNestedManyWithoutSchoolInput
+    bedAllocations?: HostelBedAllocationUncheckedCreateNestedManyWithoutSchoolInput
+    transportAllocations?: StudentTransportAllocationUncheckedCreateNestedManyWithoutSchoolInput
+    schoolTrips?: SchoolTripUncheckedCreateNestedManyWithoutSchoolInput
+    tripConsents?: TripConsentUncheckedCreateNestedManyWithoutSchoolInput
+    medicalConsents?: MedicalConsentUncheckedCreateNestedManyWithoutSchoolInput
+    bookLoanFines?: BookLoanFineUncheckedCreateNestedManyWithoutSchoolInput
+    boardingRollCalls?: BoardingRollCallUncheckedCreateNestedManyWithoutSchoolInput
+    exeats?: ExeatUncheckedCreateNestedManyWithoutSchoolInput
+    diningPantryItems?: DiningPantryItemUncheckedCreateNestedManyWithoutSchoolInput
+    diningRecipes?: DiningRecipeUncheckedCreateNestedManyWithoutSchoolInput
+    uniformCategories?: UniformCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    uniformProducts?: UniformProductUncheckedCreateNestedManyWithoutSchoolInput
+    uniformKits?: UniformKitUncheckedCreateNestedManyWithoutSchoolInput
+    uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutSchoolInput
+    uniformStockLedgers?: UniformStockLedgerUncheckedCreateNestedManyWithoutSchoolInput
+    attendanceSessions?: AttendanceSessionUncheckedCreateNestedManyWithoutSchoolInput
+    staffAttendanceDailies?: StaffAttendanceDailyUncheckedCreateNestedManyWithoutSchoolInput
+    biometricRawLogs?: BiometricRawLogUncheckedCreateNestedManyWithoutSchoolInput
+    hrTardinessLogs?: HrTardinessLogUncheckedCreateNestedManyWithoutSchoolInput
+    schemeItems?: SchemeItemUncheckedCreateNestedManyWithoutSchoolInput
+    lessonPlanResources?: LessonPlanResourceUncheckedCreateNestedManyWithoutSchoolInput
+    assessmentTypes?: AssessmentTypeUncheckedCreateNestedManyWithoutSchoolInput
+    assessments?: AssessmentUncheckedCreateNestedManyWithoutSchoolInput
+    assessmentQuestions?: AssessmentQuestionUncheckedCreateNestedManyWithoutSchoolInput
+    questionBanks?: QuestionBankUncheckedCreateNestedManyWithoutSchoolInput
+    examTimetables?: ExamTimetableUncheckedCreateNestedManyWithoutSchoolInput
+    studentAssessments?: StudentAssessmentUncheckedCreateNestedManyWithoutSchoolInput
+    studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
+    staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
+    gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    scanLogs?: ScanLogUncheckedCreateNestedManyWithoutTenantInput
+  }
+
+  export type SchoolCreateOrConnectWithoutTenantKeysInput = {
+    where: SchoolWhereUniqueInput
+    create: XOR<SchoolCreateWithoutTenantKeysInput, SchoolUncheckedCreateWithoutTenantKeysInput>
+  }
+
+  export type SchoolUpsertWithoutTenantKeysInput = {
+    update: XOR<SchoolUpdateWithoutTenantKeysInput, SchoolUncheckedUpdateWithoutTenantKeysInput>
+    create: XOR<SchoolCreateWithoutTenantKeysInput, SchoolUncheckedCreateWithoutTenantKeysInput>
+    where?: SchoolWhereInput
+  }
+
+  export type SchoolUpdateToOneWithWhereWithoutTenantKeysInput = {
+    where?: SchoolWhereInput
+    data: XOR<SchoolUpdateWithoutTenantKeysInput, SchoolUncheckedUpdateWithoutTenantKeysInput>
+  }
+
+  export type SchoolUpdateWithoutTenantKeysInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    isCombined?: BoolFieldUpdateOperationsInput | boolean
+    levels?: SchoolUpdatelevelsInput | string[]
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    idCardTemplate?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    subscription?: NullableJsonNullValueInput | InputJsonValue
+    syllabuses?: SyllabusUpdateManyWithoutSchoolNestedInput
+    schemesOfWork?: SchemeOfWorkUpdateManyWithoutSchoolNestedInput
+    lessonPlans?: LessonPlanUpdateManyWithoutSchoolNestedInput
+    plan?: PlanUpdateOneRequiredWithoutSchoolsNestedInput
+    users?: UserUpdateManyWithoutSchoolNestedInput
+    students?: StudentUpdateManyWithoutSchoolNestedInput
+    teachers?: TeacherUpdateManyWithoutSchoolNestedInput
+    news?: NewsUpdateManyWithoutSchoolNestedInput
+    websiteInquiries?: WebsiteInquiryUpdateManyWithoutSchoolNestedInput
+    noticeboards?: NoticeboardUpdateManyWithoutSchoolNestedInput
+    clinicVisits?: ClinicVisitUpdateManyWithoutSchoolNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutSchoolNestedInput
+    vacancies?: VacancyUpdateManyWithoutSchoolNestedInput
+    jobApplications?: JobApplicationUpdateManyWithoutSchoolNestedInput
+    gallery?: GalleryUpdateManyWithoutSchoolNestedInput
+    clubs?: ClubUpdateManyWithoutSchoolNestedInput
+    sports?: SportUpdateManyWithoutSchoolNestedInput
+    applications?: ApplicationUpdateManyWithoutSchoolNestedInput
+    announcements?: AnnouncementUpdateManyWithoutSchoolNestedInput
+    chaplaincyEvents?: ChaplaincyEventUpdateManyWithoutSchoolNestedInput
+    diningHallReports?: DiningHallReportUpdateManyWithoutSchoolNestedInput
+    farmLivestockBatches?: FarmLivestockBatchUpdateManyWithoutSchoolNestedInput
+    farmCropCycles?: FarmCropCycleUpdateManyWithoutSchoolNestedInput
+    farmInventoryItems?: FarmInventoryItemUpdateManyWithoutSchoolNestedInput
+    prefectDuties?: PrefectDutyUpdateManyWithoutSchoolNestedInput
+    prefectMeetings?: PrefectMeetingUpdateManyWithoutSchoolNestedInput
+    prefectReports?: PrefectReportUpdateManyWithoutSchoolNestedInput
+    staffAttendances?: StaffAttendanceUpdateManyWithoutSchoolNestedInput
+    timetableSlots?: TimetableSlotUpdateManyWithoutSchoolNestedInput
+    classes?: SchoolClassUpdateManyWithoutSchoolNestedInput
+    subjects?: SubjectUpdateManyWithoutSchoolNestedInput
+    books?: BookUpdateManyWithoutSchoolNestedInput
+    grades?: GradeUpdateManyWithoutSchoolNestedInput
+    attendance?: AttendanceUpdateManyWithoutSchoolNestedInput
+    fees?: FeeUpdateManyWithoutSchoolNestedInput
+    assignments?: AssignmentUpdateManyWithoutSchoolNestedInput
+    bookLoans?: BookLoanUpdateManyWithoutSchoolNestedInput
+    bookReservations?: BookReservationUpdateManyWithoutSchoolNestedInput
+    librarySetting?: LibrarySettingUpdateOneWithoutSchoolNestedInput
+    libraryDigitalResources?: LibraryDigitalResourceUpdateManyWithoutSchoolNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUpdateManyWithoutSchoolNestedInput
+    supervisorAssignments?: SupervisorAssignmentUpdateManyWithoutSchoolNestedInput
+    extensionRequests?: ExtensionRequestUpdateManyWithoutSchoolNestedInput
+    progressReports?: ProgressReportUpdateManyWithoutSchoolNestedInput
+    tuckshopItems?: TuckshopItemUpdateManyWithoutSchoolNestedInput
+    suppliers?: SchoolSupplierUpdateManyWithoutSchoolNestedInput
+    assets?: AssetUpdateManyWithoutSchoolNestedInput
+    reportTemplate?: ReportTemplateUpdateOneWithoutSchoolNestedInput
+    websiteSettings?: WebsiteSettingsUpdateOneWithoutSchoolNestedInput
+    requisitions?: RequisitionUpdateManyWithoutSchoolNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutSchoolNestedInput
+    leadershipAssignments?: LeadershipAssignmentUpdateManyWithoutSchoolNestedInput
+    studentAllowedItems?: StudentAllowedItemUpdateManyWithoutSchoolNestedInput
+    departments?: DepartmentUpdateManyWithoutSchoolNestedInput
+    hostels?: HostelUpdateManyWithoutSchoolNestedInput
+    weeklyMenus?: WeeklyMenuUpdateManyWithoutSchoolNestedInput
+    clinicSettings?: ClinicSettingUpdateOneWithoutSchoolNestedInput
+    clinicBeds?: ClinicBedUpdateManyWithoutSchoolNestedInput
+    clinicAdmissions?: ClinicAdmissionUpdateManyWithoutSchoolNestedInput
+    pharmacyStocks?: PharmacyStockUpdateManyWithoutSchoolNestedInput
+    studentHealthProfiles?: StudentHealthProfileUpdateManyWithoutSchoolNestedInput
+    clinicAccessAudits?: ClinicAccessAuditUpdateManyWithoutSchoolNestedInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUpdateManyWithoutSchoolNestedInput
+    clinicDiagnoses?: ClinicDiagnosisUpdateManyWithoutSchoolNestedInput
+    clinicPrescriptions?: ClinicPrescriptionUpdateManyWithoutSchoolNestedInput
+    pharmacyDispensings?: PharmacyDispenseUpdateManyWithoutSchoolNestedInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUpdateManyWithoutSchoolNestedInput
+    clinicVitals?: ClinicVitalUpdateManyWithoutSchoolNestedInput
+    originTransfers?: TransferAuthorizationUpdateManyWithoutOriginSchoolNestedInput
+    targetTransfers?: TransferAuthorizationUpdateManyWithoutTargetSchoolNestedInput
+    faculties?: FacultyUpdateManyWithoutSchoolNestedInput
+    paymentMethods?: PaymentMethodUpdateManyWithoutSchoolNestedInput
+    feeGroups?: FeeGroupUpdateManyWithoutSchoolNestedInput
+    revenueAllocations?: RevenueAllocationUpdateManyWithoutSchoolNestedInput
+    allowanceTypes?: PayrollAllowanceUpdateManyWithoutSchoolNestedInput
+    deductionTypes?: PayrollDeductionUpdateManyWithoutSchoolNestedInput
+    taxTables?: TaxTableUpdateManyWithoutSchoolNestedInput
+    employeeProfiles?: EmployeeProfileUpdateManyWithoutSchoolNestedInput
+    accountCategories?: AccountCategoryUpdateManyWithoutSchoolNestedInput
+    liabilities?: LiabilityUpdateManyWithoutSchoolNestedInput
+    incomes?: IncomeUpdateManyWithoutSchoolNestedInput
+    expenses?: ExpenseUpdateManyWithoutSchoolNestedInput
+    uniformItems?: UniformItemUpdateManyWithoutSchoolNestedInput
+    uniformStockOrders?: UniformStockOrderUpdateManyWithoutSchoolNestedInput
+    uniformSales?: UniformSaleUpdateManyWithoutSchoolNestedInput
+    uniformSupplierPayments?: UniformSupplierPaymentUpdateManyWithoutSchoolNestedInput
+    physicalProducts?: PhysicalProductUpdateManyWithoutSchoolNestedInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUpdateManyWithoutSchoolNestedInput
+    feeReminderLogs?: FeeReminderLogUpdateManyWithoutSchoolNestedInput
+    termlyComments?: TermlyCommentUpdateManyWithoutSchoolNestedInput
+    payrollRuns?: PayrollRunUpdateManyWithoutSchoolNestedInput
+    questionPapers?: QuestionPaperUpdateManyWithoutSchoolNestedInput
+    payrollEntries?: PayrollEntryUpdateManyWithoutSchoolNestedInput
+    gradingScales?: GradingScaleUpdateManyWithoutSchoolNestedInput
+    studentPayments?: StudentPaymentUpdateManyWithoutSchoolNestedInput
+    communicationLogs?: CommunicationLogUpdateManyWithoutSchoolNestedInput
+    libraryCategories?: LibraryCategoryUpdateManyWithoutSchoolNestedInput
+    sections?: SectionUpdateManyWithoutSchoolNestedInput
+    studentHouses?: StudentHouseUpdateManyWithoutSchoolNestedInput
+    holidays?: HolidayUpdateManyWithoutSchoolNestedInput
+    schoolSetting?: SchoolSettingUpdateOneWithoutSchoolNestedInput
+    CBTExam?: CBTExamUpdateManyWithoutSchoolNestedInput
+    LiveClass?: LiveClassUpdateManyWithoutSchoolNestedInput
+    Award?: AwardUpdateManyWithoutSchoolNestedInput
+    Course?: CourseUpdateManyWithoutSchoolNestedInput
+    StudyMaterial?: StudyMaterialUpdateManyWithoutSchoolNestedInput
+    hostelCategories?: HostelCategoryUpdateManyWithoutSchoolNestedInput
+    hostelRooms?: HostelRoomUpdateManyWithoutSchoolNestedInput
+    SchoolVehicle?: SchoolVehicleUpdateManyWithoutSchoolNestedInput
+    SchoolTransport?: SchoolTransportUpdateManyWithoutSchoolNestedInput
+    paymentPlans?: PaymentPlanUpdateManyWithoutSchoolNestedInput
+    meetingMinutes?: MeetingMinutesUpdateManyWithoutSchoolNestedInput
+    projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
+    sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
+    ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
+    chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
+    journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
+    accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
+    uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
+    bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
+    fiscalDevices?: FiscalDeviceUpdateManyWithoutSchoolNestedInput
+    fiscalInvoices?: FiscalInvoiceUpdateManyWithoutSchoolNestedInput
+    documentSequences?: DocumentSequenceUpdateManyWithoutSchoolNestedInput
+    creditNotes?: CreditNoteUpdateManyWithoutSchoolNestedInput
+    tillSessions?: TillSessionUpdateManyWithoutSchoolNestedInput
+    studentClearances?: StudentClearanceUpdateManyWithoutSchoolNestedInput
+    leaveBalances?: LeaveBalanceUpdateManyWithoutSchoolNestedInput
+    questions?: QuestionUpdateManyWithoutSchoolNestedInput
+    cbtExams?: CbtExamUpdateManyWithoutSchoolNestedInput
+    DisciplineRecord?: DisciplineRecordUpdateManyWithoutSchoolNestedInput
+    CalendarEvent?: CalendarEventUpdateManyWithoutSchoolNestedInput
+    SportsEvent?: SportsEventUpdateManyWithoutSchoolNestedInput
+    TransportRequest?: TransportRequestUpdateManyWithoutSchoolNestedInput
+    FacilitiesRequest?: FacilitiesRequestUpdateManyWithoutSchoolNestedInput
+    CateringRequest?: CateringRequestUpdateManyWithoutSchoolNestedInput
+    awardConfigs?: AwardConfigUpdateManyWithoutSchoolNestedInput
+    studentAwards?: StudentAwardUpdateManyWithoutSchoolNestedInput
+    bursaryTypes?: BursaryTypeUpdateManyWithoutSchoolNestedInput
+    studentBursaries?: StudentBursaryUpdateManyWithoutSchoolNestedInput
+    studentInvoices?: StudentInvoiceUpdateManyWithoutSchoolNestedInput
+    receipts?: ReceiptUpdateManyWithoutSchoolNestedInput
+    bedAllocations?: HostelBedAllocationUpdateManyWithoutSchoolNestedInput
+    transportAllocations?: StudentTransportAllocationUpdateManyWithoutSchoolNestedInput
+    schoolTrips?: SchoolTripUpdateManyWithoutSchoolNestedInput
+    tripConsents?: TripConsentUpdateManyWithoutSchoolNestedInput
+    medicalConsents?: MedicalConsentUpdateManyWithoutSchoolNestedInput
+    bookLoanFines?: BookLoanFineUpdateManyWithoutSchoolNestedInput
+    boardingRollCalls?: BoardingRollCallUpdateManyWithoutSchoolNestedInput
+    exeats?: ExeatUpdateManyWithoutSchoolNestedInput
+    diningPantryItems?: DiningPantryItemUpdateManyWithoutSchoolNestedInput
+    diningRecipes?: DiningRecipeUpdateManyWithoutSchoolNestedInput
+    uniformCategories?: UniformCategoryUpdateManyWithoutSchoolNestedInput
+    uniformProducts?: UniformProductUpdateManyWithoutSchoolNestedInput
+    uniformKits?: UniformKitUpdateManyWithoutSchoolNestedInput
+    uniformIssuances?: UniformIssuanceUpdateManyWithoutSchoolNestedInput
+    uniformStockLedgers?: UniformStockLedgerUpdateManyWithoutSchoolNestedInput
+    attendanceSessions?: AttendanceSessionUpdateManyWithoutSchoolNestedInput
+    staffAttendanceDailies?: StaffAttendanceDailyUpdateManyWithoutSchoolNestedInput
+    biometricRawLogs?: BiometricRawLogUpdateManyWithoutSchoolNestedInput
+    hrTardinessLogs?: HrTardinessLogUpdateManyWithoutSchoolNestedInput
+    schemeItems?: SchemeItemUpdateManyWithoutSchoolNestedInput
+    lessonPlanResources?: LessonPlanResourceUpdateManyWithoutSchoolNestedInput
+    assessmentTypes?: AssessmentTypeUpdateManyWithoutSchoolNestedInput
+    assessments?: AssessmentUpdateManyWithoutSchoolNestedInput
+    assessmentQuestions?: AssessmentQuestionUpdateManyWithoutSchoolNestedInput
+    questionBanks?: QuestionBankUpdateManyWithoutSchoolNestedInput
+    examTimetables?: ExamTimetableUpdateManyWithoutSchoolNestedInput
+    studentAssessments?: StudentAssessmentUpdateManyWithoutSchoolNestedInput
+    studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
+    staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
+    gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
+  }
+
+  export type SchoolUncheckedUpdateWithoutTenantKeysInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    isCombined?: BoolFieldUpdateOperationsInput | boolean
+    levels?: SchoolUpdatelevelsInput | string[]
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    planId?: StringFieldUpdateOperationsInput | string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    idCardTemplate?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    subscription?: NullableJsonNullValueInput | InputJsonValue
+    syllabuses?: SyllabusUncheckedUpdateManyWithoutSchoolNestedInput
+    schemesOfWork?: SchemeOfWorkUncheckedUpdateManyWithoutSchoolNestedInput
+    lessonPlans?: LessonPlanUncheckedUpdateManyWithoutSchoolNestedInput
+    users?: UserUncheckedUpdateManyWithoutSchoolNestedInput
+    students?: StudentUncheckedUpdateManyWithoutSchoolNestedInput
+    teachers?: TeacherUncheckedUpdateManyWithoutSchoolNestedInput
+    news?: NewsUncheckedUpdateManyWithoutSchoolNestedInput
+    websiteInquiries?: WebsiteInquiryUncheckedUpdateManyWithoutSchoolNestedInput
+    noticeboards?: NoticeboardUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutSchoolNestedInput
+    vacancies?: VacancyUncheckedUpdateManyWithoutSchoolNestedInput
+    jobApplications?: JobApplicationUncheckedUpdateManyWithoutSchoolNestedInput
+    gallery?: GalleryUncheckedUpdateManyWithoutSchoolNestedInput
+    clubs?: ClubUncheckedUpdateManyWithoutSchoolNestedInput
+    sports?: SportUncheckedUpdateManyWithoutSchoolNestedInput
+    applications?: ApplicationUncheckedUpdateManyWithoutSchoolNestedInput
+    announcements?: AnnouncementUncheckedUpdateManyWithoutSchoolNestedInput
+    chaplaincyEvents?: ChaplaincyEventUncheckedUpdateManyWithoutSchoolNestedInput
+    diningHallReports?: DiningHallReportUncheckedUpdateManyWithoutSchoolNestedInput
+    farmLivestockBatches?: FarmLivestockBatchUncheckedUpdateManyWithoutSchoolNestedInput
+    farmCropCycles?: FarmCropCycleUncheckedUpdateManyWithoutSchoolNestedInput
+    farmInventoryItems?: FarmInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectDuties?: PrefectDutyUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectMeetings?: PrefectMeetingUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectReports?: PrefectReportUncheckedUpdateManyWithoutSchoolNestedInput
+    staffAttendances?: StaffAttendanceUncheckedUpdateManyWithoutSchoolNestedInput
+    timetableSlots?: TimetableSlotUncheckedUpdateManyWithoutSchoolNestedInput
+    classes?: SchoolClassUncheckedUpdateManyWithoutSchoolNestedInput
+    subjects?: SubjectUncheckedUpdateManyWithoutSchoolNestedInput
+    books?: BookUncheckedUpdateManyWithoutSchoolNestedInput
+    grades?: GradeUncheckedUpdateManyWithoutSchoolNestedInput
+    attendance?: AttendanceUncheckedUpdateManyWithoutSchoolNestedInput
+    fees?: FeeUncheckedUpdateManyWithoutSchoolNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    bookLoans?: BookLoanUncheckedUpdateManyWithoutSchoolNestedInput
+    bookReservations?: BookReservationUncheckedUpdateManyWithoutSchoolNestedInput
+    librarySetting?: LibrarySettingUncheckedUpdateOneWithoutSchoolNestedInput
+    libraryDigitalResources?: LibraryDigitalResourceUncheckedUpdateManyWithoutSchoolNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedUpdateManyWithoutSchoolNestedInput
+    supervisorAssignments?: SupervisorAssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    extensionRequests?: ExtensionRequestUncheckedUpdateManyWithoutSchoolNestedInput
+    progressReports?: ProgressReportUncheckedUpdateManyWithoutSchoolNestedInput
+    tuckshopItems?: TuckshopItemUncheckedUpdateManyWithoutSchoolNestedInput
+    suppliers?: SchoolSupplierUncheckedUpdateManyWithoutSchoolNestedInput
+    assets?: AssetUncheckedUpdateManyWithoutSchoolNestedInput
+    reportTemplate?: ReportTemplateUncheckedUpdateOneWithoutSchoolNestedInput
+    websiteSettings?: WebsiteSettingsUncheckedUpdateOneWithoutSchoolNestedInput
+    requisitions?: RequisitionUncheckedUpdateManyWithoutSchoolNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutSchoolNestedInput
+    leadershipAssignments?: LeadershipAssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    studentAllowedItems?: StudentAllowedItemUncheckedUpdateManyWithoutSchoolNestedInput
+    departments?: DepartmentUncheckedUpdateManyWithoutSchoolNestedInput
+    hostels?: HostelUncheckedUpdateManyWithoutSchoolNestedInput
+    weeklyMenus?: WeeklyMenuUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicSettings?: ClinicSettingUncheckedUpdateOneWithoutSchoolNestedInput
+    clinicBeds?: ClinicBedUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicAdmissions?: ClinicAdmissionUncheckedUpdateManyWithoutSchoolNestedInput
+    pharmacyStocks?: PharmacyStockUncheckedUpdateManyWithoutSchoolNestedInput
+    studentHealthProfiles?: StudentHealthProfileUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicAccessAudits?: ClinicAccessAuditUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicDiagnoses?: ClinicDiagnosisUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicPrescriptions?: ClinicPrescriptionUncheckedUpdateManyWithoutSchoolNestedInput
+    pharmacyDispensings?: PharmacyDispenseUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicVitals?: ClinicVitalUncheckedUpdateManyWithoutSchoolNestedInput
+    originTransfers?: TransferAuthorizationUncheckedUpdateManyWithoutOriginSchoolNestedInput
+    targetTransfers?: TransferAuthorizationUncheckedUpdateManyWithoutTargetSchoolNestedInput
+    faculties?: FacultyUncheckedUpdateManyWithoutSchoolNestedInput
+    paymentMethods?: PaymentMethodUncheckedUpdateManyWithoutSchoolNestedInput
+    feeGroups?: FeeGroupUncheckedUpdateManyWithoutSchoolNestedInput
+    revenueAllocations?: RevenueAllocationUncheckedUpdateManyWithoutSchoolNestedInput
+    allowanceTypes?: PayrollAllowanceUncheckedUpdateManyWithoutSchoolNestedInput
+    deductionTypes?: PayrollDeductionUncheckedUpdateManyWithoutSchoolNestedInput
+    taxTables?: TaxTableUncheckedUpdateManyWithoutSchoolNestedInput
+    employeeProfiles?: EmployeeProfileUncheckedUpdateManyWithoutSchoolNestedInput
+    accountCategories?: AccountCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    liabilities?: LiabilityUncheckedUpdateManyWithoutSchoolNestedInput
+    incomes?: IncomeUncheckedUpdateManyWithoutSchoolNestedInput
+    expenses?: ExpenseUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformItems?: UniformItemUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformStockOrders?: UniformStockOrderUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformSales?: UniformSaleUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformSupplierPayments?: UniformSupplierPaymentUncheckedUpdateManyWithoutSchoolNestedInput
+    physicalProducts?: PhysicalProductUncheckedUpdateManyWithoutSchoolNestedInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUncheckedUpdateManyWithoutSchoolNestedInput
+    feeReminderLogs?: FeeReminderLogUncheckedUpdateManyWithoutSchoolNestedInput
+    termlyComments?: TermlyCommentUncheckedUpdateManyWithoutSchoolNestedInput
+    payrollRuns?: PayrollRunUncheckedUpdateManyWithoutSchoolNestedInput
+    questionPapers?: QuestionPaperUncheckedUpdateManyWithoutSchoolNestedInput
+    payrollEntries?: PayrollEntryUncheckedUpdateManyWithoutSchoolNestedInput
+    gradingScales?: GradingScaleUncheckedUpdateManyWithoutSchoolNestedInput
+    studentPayments?: StudentPaymentUncheckedUpdateManyWithoutSchoolNestedInput
+    communicationLogs?: CommunicationLogUncheckedUpdateManyWithoutSchoolNestedInput
+    libraryCategories?: LibraryCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    sections?: SectionUncheckedUpdateManyWithoutSchoolNestedInput
+    studentHouses?: StudentHouseUncheckedUpdateManyWithoutSchoolNestedInput
+    holidays?: HolidayUncheckedUpdateManyWithoutSchoolNestedInput
+    schoolSetting?: SchoolSettingUncheckedUpdateOneWithoutSchoolNestedInput
+    CBTExam?: CBTExamUncheckedUpdateManyWithoutSchoolNestedInput
+    LiveClass?: LiveClassUncheckedUpdateManyWithoutSchoolNestedInput
+    Award?: AwardUncheckedUpdateManyWithoutSchoolNestedInput
+    Course?: CourseUncheckedUpdateManyWithoutSchoolNestedInput
+    StudyMaterial?: StudyMaterialUncheckedUpdateManyWithoutSchoolNestedInput
+    hostelCategories?: HostelCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    hostelRooms?: HostelRoomUncheckedUpdateManyWithoutSchoolNestedInput
+    SchoolVehicle?: SchoolVehicleUncheckedUpdateManyWithoutSchoolNestedInput
+    SchoolTransport?: SchoolTransportUncheckedUpdateManyWithoutSchoolNestedInput
+    paymentPlans?: PaymentPlanUncheckedUpdateManyWithoutSchoolNestedInput
+    meetingMinutes?: MeetingMinutesUncheckedUpdateManyWithoutSchoolNestedInput
+    projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
+    sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
+    ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
+    chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
+    journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
+    accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
+    fiscalDevices?: FiscalDeviceUncheckedUpdateManyWithoutSchoolNestedInput
+    fiscalInvoices?: FiscalInvoiceUncheckedUpdateManyWithoutSchoolNestedInput
+    documentSequences?: DocumentSequenceUncheckedUpdateManyWithoutSchoolNestedInput
+    creditNotes?: CreditNoteUncheckedUpdateManyWithoutSchoolNestedInput
+    tillSessions?: TillSessionUncheckedUpdateManyWithoutSchoolNestedInput
+    studentClearances?: StudentClearanceUncheckedUpdateManyWithoutSchoolNestedInput
+    leaveBalances?: LeaveBalanceUncheckedUpdateManyWithoutSchoolNestedInput
+    questions?: QuestionUncheckedUpdateManyWithoutSchoolNestedInput
+    cbtExams?: CbtExamUncheckedUpdateManyWithoutSchoolNestedInput
+    DisciplineRecord?: DisciplineRecordUncheckedUpdateManyWithoutSchoolNestedInput
+    CalendarEvent?: CalendarEventUncheckedUpdateManyWithoutSchoolNestedInput
+    SportsEvent?: SportsEventUncheckedUpdateManyWithoutSchoolNestedInput
+    TransportRequest?: TransportRequestUncheckedUpdateManyWithoutSchoolNestedInput
+    FacilitiesRequest?: FacilitiesRequestUncheckedUpdateManyWithoutSchoolNestedInput
+    CateringRequest?: CateringRequestUncheckedUpdateManyWithoutSchoolNestedInput
+    awardConfigs?: AwardConfigUncheckedUpdateManyWithoutSchoolNestedInput
+    studentAwards?: StudentAwardUncheckedUpdateManyWithoutSchoolNestedInput
+    bursaryTypes?: BursaryTypeUncheckedUpdateManyWithoutSchoolNestedInput
+    studentBursaries?: StudentBursaryUncheckedUpdateManyWithoutSchoolNestedInput
+    studentInvoices?: StudentInvoiceUncheckedUpdateManyWithoutSchoolNestedInput
+    receipts?: ReceiptUncheckedUpdateManyWithoutSchoolNestedInput
+    bedAllocations?: HostelBedAllocationUncheckedUpdateManyWithoutSchoolNestedInput
+    transportAllocations?: StudentTransportAllocationUncheckedUpdateManyWithoutSchoolNestedInput
+    schoolTrips?: SchoolTripUncheckedUpdateManyWithoutSchoolNestedInput
+    tripConsents?: TripConsentUncheckedUpdateManyWithoutSchoolNestedInput
+    medicalConsents?: MedicalConsentUncheckedUpdateManyWithoutSchoolNestedInput
+    bookLoanFines?: BookLoanFineUncheckedUpdateManyWithoutSchoolNestedInput
+    boardingRollCalls?: BoardingRollCallUncheckedUpdateManyWithoutSchoolNestedInput
+    exeats?: ExeatUncheckedUpdateManyWithoutSchoolNestedInput
+    diningPantryItems?: DiningPantryItemUncheckedUpdateManyWithoutSchoolNestedInput
+    diningRecipes?: DiningRecipeUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformCategories?: UniformCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformProducts?: UniformProductUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformKits?: UniformKitUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformStockLedgers?: UniformStockLedgerUncheckedUpdateManyWithoutSchoolNestedInput
+    attendanceSessions?: AttendanceSessionUncheckedUpdateManyWithoutSchoolNestedInput
+    staffAttendanceDailies?: StaffAttendanceDailyUncheckedUpdateManyWithoutSchoolNestedInput
+    biometricRawLogs?: BiometricRawLogUncheckedUpdateManyWithoutSchoolNestedInput
+    hrTardinessLogs?: HrTardinessLogUncheckedUpdateManyWithoutSchoolNestedInput
+    schemeItems?: SchemeItemUncheckedUpdateManyWithoutSchoolNestedInput
+    lessonPlanResources?: LessonPlanResourceUncheckedUpdateManyWithoutSchoolNestedInput
+    assessmentTypes?: AssessmentTypeUncheckedUpdateManyWithoutSchoolNestedInput
+    assessments?: AssessmentUncheckedUpdateManyWithoutSchoolNestedInput
+    assessmentQuestions?: AssessmentQuestionUncheckedUpdateManyWithoutSchoolNestedInput
+    questionBanks?: QuestionBankUncheckedUpdateManyWithoutSchoolNestedInput
+    examTimetables?: ExamTimetableUncheckedUpdateManyWithoutSchoolNestedInput
+    studentAssessments?: StudentAssessmentUncheckedUpdateManyWithoutSchoolNestedInput
+    studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
+    staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
+    gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
+  }
+
+  export type SchoolCreateWithoutScanLogsInput = {
+    id?: string
+    code: string
+    name: string
+    type: string
+    isCombined?: boolean
+    levels?: SchoolCreatelevelsInput | string[]
+    address?: string | null
+    country?: string | null
+    email: string
+    phone?: string | null
+    website?: string | null
+    status?: string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    idCardTemplate?: string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    subscription?: NullableJsonNullValueInput | InputJsonValue
+    syllabuses?: SyllabusCreateNestedManyWithoutSchoolInput
+    schemesOfWork?: SchemeOfWorkCreateNestedManyWithoutSchoolInput
+    lessonPlans?: LessonPlanCreateNestedManyWithoutSchoolInput
+    plan: PlanCreateNestedOneWithoutSchoolsInput
+    users?: UserCreateNestedManyWithoutSchoolInput
+    students?: StudentCreateNestedManyWithoutSchoolInput
+    teachers?: TeacherCreateNestedManyWithoutSchoolInput
+    news?: NewsCreateNestedManyWithoutSchoolInput
+    websiteInquiries?: WebsiteInquiryCreateNestedManyWithoutSchoolInput
+    noticeboards?: NoticeboardCreateNestedManyWithoutSchoolInput
+    clinicVisits?: ClinicVisitCreateNestedManyWithoutSchoolInput
+    clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutSchoolInput
+    vacancies?: VacancyCreateNestedManyWithoutSchoolInput
+    jobApplications?: JobApplicationCreateNestedManyWithoutSchoolInput
+    gallery?: GalleryCreateNestedManyWithoutSchoolInput
+    clubs?: ClubCreateNestedManyWithoutSchoolInput
+    sports?: SportCreateNestedManyWithoutSchoolInput
+    applications?: ApplicationCreateNestedManyWithoutSchoolInput
+    announcements?: AnnouncementCreateNestedManyWithoutSchoolInput
+    chaplaincyEvents?: ChaplaincyEventCreateNestedManyWithoutSchoolInput
+    diningHallReports?: DiningHallReportCreateNestedManyWithoutSchoolInput
+    farmLivestockBatches?: FarmLivestockBatchCreateNestedManyWithoutSchoolInput
+    farmCropCycles?: FarmCropCycleCreateNestedManyWithoutSchoolInput
+    farmInventoryItems?: FarmInventoryItemCreateNestedManyWithoutSchoolInput
+    prefectDuties?: PrefectDutyCreateNestedManyWithoutSchoolInput
+    prefectMeetings?: PrefectMeetingCreateNestedManyWithoutSchoolInput
+    prefectReports?: PrefectReportCreateNestedManyWithoutSchoolInput
+    staffAttendances?: StaffAttendanceCreateNestedManyWithoutSchoolInput
+    timetableSlots?: TimetableSlotCreateNestedManyWithoutSchoolInput
+    classes?: SchoolClassCreateNestedManyWithoutSchoolInput
+    subjects?: SubjectCreateNestedManyWithoutSchoolInput
+    books?: BookCreateNestedManyWithoutSchoolInput
+    grades?: GradeCreateNestedManyWithoutSchoolInput
+    attendance?: AttendanceCreateNestedManyWithoutSchoolInput
+    fees?: FeeCreateNestedManyWithoutSchoolInput
+    assignments?: AssignmentCreateNestedManyWithoutSchoolInput
+    bookLoans?: BookLoanCreateNestedManyWithoutSchoolInput
+    bookReservations?: BookReservationCreateNestedManyWithoutSchoolInput
+    librarySetting?: LibrarySettingCreateNestedOneWithoutSchoolInput
+    libraryDigitalResources?: LibraryDigitalResourceCreateNestedManyWithoutSchoolInput
+    assignmentSubmissions?: AssignmentSubmissionCreateNestedManyWithoutSchoolInput
+    supervisorAssignments?: SupervisorAssignmentCreateNestedManyWithoutSchoolInput
+    extensionRequests?: ExtensionRequestCreateNestedManyWithoutSchoolInput
+    progressReports?: ProgressReportCreateNestedManyWithoutSchoolInput
+    tuckshopItems?: TuckshopItemCreateNestedManyWithoutSchoolInput
+    suppliers?: SchoolSupplierCreateNestedManyWithoutSchoolInput
+    assets?: AssetCreateNestedManyWithoutSchoolInput
+    reportTemplate?: ReportTemplateCreateNestedOneWithoutSchoolInput
+    websiteSettings?: WebsiteSettingsCreateNestedOneWithoutSchoolInput
+    requisitions?: RequisitionCreateNestedManyWithoutSchoolInput
+    auditLogs?: AuditLogCreateNestedManyWithoutSchoolInput
+    leadershipAssignments?: LeadershipAssignmentCreateNestedManyWithoutSchoolInput
+    studentAllowedItems?: StudentAllowedItemCreateNestedManyWithoutSchoolInput
+    departments?: DepartmentCreateNestedManyWithoutSchoolInput
+    hostels?: HostelCreateNestedManyWithoutSchoolInput
+    weeklyMenus?: WeeklyMenuCreateNestedManyWithoutSchoolInput
+    clinicSettings?: ClinicSettingCreateNestedOneWithoutSchoolInput
+    clinicBeds?: ClinicBedCreateNestedManyWithoutSchoolInput
+    clinicAdmissions?: ClinicAdmissionCreateNestedManyWithoutSchoolInput
+    pharmacyStocks?: PharmacyStockCreateNestedManyWithoutSchoolInput
+    studentHealthProfiles?: StudentHealthProfileCreateNestedManyWithoutSchoolInput
+    clinicAccessAudits?: ClinicAccessAuditCreateNestedManyWithoutSchoolInput
+    clinicEmergencyLogs?: ClinicEmergencyLogCreateNestedManyWithoutSchoolInput
+    clinicDiagnoses?: ClinicDiagnosisCreateNestedManyWithoutSchoolInput
+    clinicPrescriptions?: ClinicPrescriptionCreateNestedManyWithoutSchoolInput
+    pharmacyDispensings?: PharmacyDispenseCreateNestedManyWithoutSchoolInput
+    clinicMonitoringLogs?: ClinicMonitoringLogCreateNestedManyWithoutSchoolInput
+    clinicVitals?: ClinicVitalCreateNestedManyWithoutSchoolInput
+    originTransfers?: TransferAuthorizationCreateNestedManyWithoutOriginSchoolInput
+    targetTransfers?: TransferAuthorizationCreateNestedManyWithoutTargetSchoolInput
+    faculties?: FacultyCreateNestedManyWithoutSchoolInput
+    paymentMethods?: PaymentMethodCreateNestedManyWithoutSchoolInput
+    feeGroups?: FeeGroupCreateNestedManyWithoutSchoolInput
+    revenueAllocations?: RevenueAllocationCreateNestedManyWithoutSchoolInput
+    allowanceTypes?: PayrollAllowanceCreateNestedManyWithoutSchoolInput
+    deductionTypes?: PayrollDeductionCreateNestedManyWithoutSchoolInput
+    taxTables?: TaxTableCreateNestedManyWithoutSchoolInput
+    employeeProfiles?: EmployeeProfileCreateNestedManyWithoutSchoolInput
+    accountCategories?: AccountCategoryCreateNestedManyWithoutSchoolInput
+    liabilities?: LiabilityCreateNestedManyWithoutSchoolInput
+    incomes?: IncomeCreateNestedManyWithoutSchoolInput
+    expenses?: ExpenseCreateNestedManyWithoutSchoolInput
+    uniformItems?: UniformItemCreateNestedManyWithoutSchoolInput
+    uniformStockOrders?: UniformStockOrderCreateNestedManyWithoutSchoolInput
+    uniformSales?: UniformSaleCreateNestedManyWithoutSchoolInput
+    uniformSupplierPayments?: UniformSupplierPaymentCreateNestedManyWithoutSchoolInput
+    physicalProducts?: PhysicalProductCreateNestedManyWithoutSchoolInput
+    physicalProductConsumptions?: PhysicalProductConsumptionCreateNestedManyWithoutSchoolInput
+    feeReminderLogs?: FeeReminderLogCreateNestedManyWithoutSchoolInput
+    termlyComments?: TermlyCommentCreateNestedManyWithoutSchoolInput
+    payrollRuns?: PayrollRunCreateNestedManyWithoutSchoolInput
+    questionPapers?: QuestionPaperCreateNestedManyWithoutSchoolInput
+    payrollEntries?: PayrollEntryCreateNestedManyWithoutSchoolInput
+    gradingScales?: GradingScaleCreateNestedManyWithoutSchoolInput
+    studentPayments?: StudentPaymentCreateNestedManyWithoutSchoolInput
+    communicationLogs?: CommunicationLogCreateNestedManyWithoutSchoolInput
+    libraryCategories?: LibraryCategoryCreateNestedManyWithoutSchoolInput
+    sections?: SectionCreateNestedManyWithoutSchoolInput
+    studentHouses?: StudentHouseCreateNestedManyWithoutSchoolInput
+    holidays?: HolidayCreateNestedManyWithoutSchoolInput
+    schoolSetting?: SchoolSettingCreateNestedOneWithoutSchoolInput
+    CBTExam?: CBTExamCreateNestedManyWithoutSchoolInput
+    LiveClass?: LiveClassCreateNestedManyWithoutSchoolInput
+    Award?: AwardCreateNestedManyWithoutSchoolInput
+    Course?: CourseCreateNestedManyWithoutSchoolInput
+    StudyMaterial?: StudyMaterialCreateNestedManyWithoutSchoolInput
+    hostelCategories?: HostelCategoryCreateNestedManyWithoutSchoolInput
+    hostelRooms?: HostelRoomCreateNestedManyWithoutSchoolInput
+    SchoolVehicle?: SchoolVehicleCreateNestedManyWithoutSchoolInput
+    SchoolTransport?: SchoolTransportCreateNestedManyWithoutSchoolInput
+    paymentPlans?: PaymentPlanCreateNestedManyWithoutSchoolInput
+    meetingMinutes?: MeetingMinutesCreateNestedManyWithoutSchoolInput
+    projectFundings?: ProjectFundingCreateNestedManyWithoutSchoolInput
+    sportingEquipment?: SportingEquipmentCreateNestedManyWithoutSchoolInput
+    ClinicPatient?: ClinicPatientCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemCreateNestedManyWithoutSchoolInput
+    chartOfAccounts?: ChartOfAccountCreateNestedManyWithoutSchoolInput
+    journalEntries?: JournalEntryCreateNestedManyWithoutSchoolInput
+    accountingPeriods?: AccountingPeriodCreateNestedManyWithoutSchoolInput
+    uniformStockMovements?: UniformStockMovementCreateNestedManyWithoutSchoolInput
+    bankStatements?: BankStatementCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketCreateNestedManyWithoutSchoolInput
+    fiscalDevices?: FiscalDeviceCreateNestedManyWithoutSchoolInput
+    fiscalInvoices?: FiscalInvoiceCreateNestedManyWithoutSchoolInput
+    documentSequences?: DocumentSequenceCreateNestedManyWithoutSchoolInput
+    creditNotes?: CreditNoteCreateNestedManyWithoutSchoolInput
+    tillSessions?: TillSessionCreateNestedManyWithoutSchoolInput
+    studentClearances?: StudentClearanceCreateNestedManyWithoutSchoolInput
+    leaveBalances?: LeaveBalanceCreateNestedManyWithoutSchoolInput
+    questions?: QuestionCreateNestedManyWithoutSchoolInput
+    cbtExams?: CbtExamCreateNestedManyWithoutSchoolInput
+    DisciplineRecord?: DisciplineRecordCreateNestedManyWithoutSchoolInput
+    CalendarEvent?: CalendarEventCreateNestedManyWithoutSchoolInput
+    SportsEvent?: SportsEventCreateNestedManyWithoutSchoolInput
+    TransportRequest?: TransportRequestCreateNestedManyWithoutSchoolInput
+    FacilitiesRequest?: FacilitiesRequestCreateNestedManyWithoutSchoolInput
+    CateringRequest?: CateringRequestCreateNestedManyWithoutSchoolInput
+    awardConfigs?: AwardConfigCreateNestedManyWithoutSchoolInput
+    studentAwards?: StudentAwardCreateNestedManyWithoutSchoolInput
+    bursaryTypes?: BursaryTypeCreateNestedManyWithoutSchoolInput
+    studentBursaries?: StudentBursaryCreateNestedManyWithoutSchoolInput
+    studentInvoices?: StudentInvoiceCreateNestedManyWithoutSchoolInput
+    receipts?: ReceiptCreateNestedManyWithoutSchoolInput
+    bedAllocations?: HostelBedAllocationCreateNestedManyWithoutSchoolInput
+    transportAllocations?: StudentTransportAllocationCreateNestedManyWithoutSchoolInput
+    schoolTrips?: SchoolTripCreateNestedManyWithoutSchoolInput
+    tripConsents?: TripConsentCreateNestedManyWithoutSchoolInput
+    medicalConsents?: MedicalConsentCreateNestedManyWithoutSchoolInput
+    bookLoanFines?: BookLoanFineCreateNestedManyWithoutSchoolInput
+    boardingRollCalls?: BoardingRollCallCreateNestedManyWithoutSchoolInput
+    exeats?: ExeatCreateNestedManyWithoutSchoolInput
+    diningPantryItems?: DiningPantryItemCreateNestedManyWithoutSchoolInput
+    diningRecipes?: DiningRecipeCreateNestedManyWithoutSchoolInput
+    uniformCategories?: UniformCategoryCreateNestedManyWithoutSchoolInput
+    uniformProducts?: UniformProductCreateNestedManyWithoutSchoolInput
+    uniformKits?: UniformKitCreateNestedManyWithoutSchoolInput
+    uniformIssuances?: UniformIssuanceCreateNestedManyWithoutSchoolInput
+    uniformStockLedgers?: UniformStockLedgerCreateNestedManyWithoutSchoolInput
+    attendanceSessions?: AttendanceSessionCreateNestedManyWithoutSchoolInput
+    staffAttendanceDailies?: StaffAttendanceDailyCreateNestedManyWithoutSchoolInput
+    biometricRawLogs?: BiometricRawLogCreateNestedManyWithoutSchoolInput
+    hrTardinessLogs?: HrTardinessLogCreateNestedManyWithoutSchoolInput
+    schemeItems?: SchemeItemCreateNestedManyWithoutSchoolInput
+    lessonPlanResources?: LessonPlanResourceCreateNestedManyWithoutSchoolInput
+    assessmentTypes?: AssessmentTypeCreateNestedManyWithoutSchoolInput
+    assessments?: AssessmentCreateNestedManyWithoutSchoolInput
+    assessmentQuestions?: AssessmentQuestionCreateNestedManyWithoutSchoolInput
+    questionBanks?: QuestionBankCreateNestedManyWithoutSchoolInput
+    examTimetables?: ExamTimetableCreateNestedManyWithoutSchoolInput
+    studentAssessments?: StudentAssessmentCreateNestedManyWithoutSchoolInput
+    studentQrCodes?: StudentQrCodeCreateNestedManyWithoutSchoolInput
+    staffQrCodes?: StaffQrCodeCreateNestedManyWithoutSchoolInput
+    gateLogs?: GateLogCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyCreateNestedManyWithoutSchoolInput
+  }
+
+  export type SchoolUncheckedCreateWithoutScanLogsInput = {
+    id?: string
+    code: string
+    name: string
+    type: string
+    isCombined?: boolean
+    levels?: SchoolCreatelevelsInput | string[]
+    address?: string | null
+    country?: string | null
+    email: string
+    phone?: string | null
+    website?: string | null
+    status?: string
+    planId: string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    idCardTemplate?: string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    subscription?: NullableJsonNullValueInput | InputJsonValue
+    syllabuses?: SyllabusUncheckedCreateNestedManyWithoutSchoolInput
+    schemesOfWork?: SchemeOfWorkUncheckedCreateNestedManyWithoutSchoolInput
+    lessonPlans?: LessonPlanUncheckedCreateNestedManyWithoutSchoolInput
+    users?: UserUncheckedCreateNestedManyWithoutSchoolInput
+    students?: StudentUncheckedCreateNestedManyWithoutSchoolInput
+    teachers?: TeacherUncheckedCreateNestedManyWithoutSchoolInput
+    news?: NewsUncheckedCreateNestedManyWithoutSchoolInput
+    websiteInquiries?: WebsiteInquiryUncheckedCreateNestedManyWithoutSchoolInput
+    noticeboards?: NoticeboardUncheckedCreateNestedManyWithoutSchoolInput
+    clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutSchoolInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutSchoolInput
+    vacancies?: VacancyUncheckedCreateNestedManyWithoutSchoolInput
+    jobApplications?: JobApplicationUncheckedCreateNestedManyWithoutSchoolInput
+    gallery?: GalleryUncheckedCreateNestedManyWithoutSchoolInput
+    clubs?: ClubUncheckedCreateNestedManyWithoutSchoolInput
+    sports?: SportUncheckedCreateNestedManyWithoutSchoolInput
+    applications?: ApplicationUncheckedCreateNestedManyWithoutSchoolInput
+    announcements?: AnnouncementUncheckedCreateNestedManyWithoutSchoolInput
+    chaplaincyEvents?: ChaplaincyEventUncheckedCreateNestedManyWithoutSchoolInput
+    diningHallReports?: DiningHallReportUncheckedCreateNestedManyWithoutSchoolInput
+    farmLivestockBatches?: FarmLivestockBatchUncheckedCreateNestedManyWithoutSchoolInput
+    farmCropCycles?: FarmCropCycleUncheckedCreateNestedManyWithoutSchoolInput
+    farmInventoryItems?: FarmInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
+    prefectDuties?: PrefectDutyUncheckedCreateNestedManyWithoutSchoolInput
+    prefectMeetings?: PrefectMeetingUncheckedCreateNestedManyWithoutSchoolInput
+    prefectReports?: PrefectReportUncheckedCreateNestedManyWithoutSchoolInput
+    staffAttendances?: StaffAttendanceUncheckedCreateNestedManyWithoutSchoolInput
+    timetableSlots?: TimetableSlotUncheckedCreateNestedManyWithoutSchoolInput
+    classes?: SchoolClassUncheckedCreateNestedManyWithoutSchoolInput
+    subjects?: SubjectUncheckedCreateNestedManyWithoutSchoolInput
+    books?: BookUncheckedCreateNestedManyWithoutSchoolInput
+    grades?: GradeUncheckedCreateNestedManyWithoutSchoolInput
+    attendance?: AttendanceUncheckedCreateNestedManyWithoutSchoolInput
+    fees?: FeeUncheckedCreateNestedManyWithoutSchoolInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    bookLoans?: BookLoanUncheckedCreateNestedManyWithoutSchoolInput
+    bookReservations?: BookReservationUncheckedCreateNestedManyWithoutSchoolInput
+    librarySetting?: LibrarySettingUncheckedCreateNestedOneWithoutSchoolInput
+    libraryDigitalResources?: LibraryDigitalResourceUncheckedCreateNestedManyWithoutSchoolInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedCreateNestedManyWithoutSchoolInput
+    supervisorAssignments?: SupervisorAssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    extensionRequests?: ExtensionRequestUncheckedCreateNestedManyWithoutSchoolInput
+    progressReports?: ProgressReportUncheckedCreateNestedManyWithoutSchoolInput
+    tuckshopItems?: TuckshopItemUncheckedCreateNestedManyWithoutSchoolInput
+    suppliers?: SchoolSupplierUncheckedCreateNestedManyWithoutSchoolInput
+    assets?: AssetUncheckedCreateNestedManyWithoutSchoolInput
+    reportTemplate?: ReportTemplateUncheckedCreateNestedOneWithoutSchoolInput
+    websiteSettings?: WebsiteSettingsUncheckedCreateNestedOneWithoutSchoolInput
+    requisitions?: RequisitionUncheckedCreateNestedManyWithoutSchoolInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutSchoolInput
+    leadershipAssignments?: LeadershipAssignmentUncheckedCreateNestedManyWithoutSchoolInput
+    studentAllowedItems?: StudentAllowedItemUncheckedCreateNestedManyWithoutSchoolInput
+    departments?: DepartmentUncheckedCreateNestedManyWithoutSchoolInput
+    hostels?: HostelUncheckedCreateNestedManyWithoutSchoolInput
+    weeklyMenus?: WeeklyMenuUncheckedCreateNestedManyWithoutSchoolInput
+    clinicSettings?: ClinicSettingUncheckedCreateNestedOneWithoutSchoolInput
+    clinicBeds?: ClinicBedUncheckedCreateNestedManyWithoutSchoolInput
+    clinicAdmissions?: ClinicAdmissionUncheckedCreateNestedManyWithoutSchoolInput
+    pharmacyStocks?: PharmacyStockUncheckedCreateNestedManyWithoutSchoolInput
+    studentHealthProfiles?: StudentHealthProfileUncheckedCreateNestedManyWithoutSchoolInput
+    clinicAccessAudits?: ClinicAccessAuditUncheckedCreateNestedManyWithoutSchoolInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUncheckedCreateNestedManyWithoutSchoolInput
+    clinicDiagnoses?: ClinicDiagnosisUncheckedCreateNestedManyWithoutSchoolInput
+    clinicPrescriptions?: ClinicPrescriptionUncheckedCreateNestedManyWithoutSchoolInput
+    pharmacyDispensings?: PharmacyDispenseUncheckedCreateNestedManyWithoutSchoolInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUncheckedCreateNestedManyWithoutSchoolInput
+    clinicVitals?: ClinicVitalUncheckedCreateNestedManyWithoutSchoolInput
+    originTransfers?: TransferAuthorizationUncheckedCreateNestedManyWithoutOriginSchoolInput
+    targetTransfers?: TransferAuthorizationUncheckedCreateNestedManyWithoutTargetSchoolInput
+    faculties?: FacultyUncheckedCreateNestedManyWithoutSchoolInput
+    paymentMethods?: PaymentMethodUncheckedCreateNestedManyWithoutSchoolInput
+    feeGroups?: FeeGroupUncheckedCreateNestedManyWithoutSchoolInput
+    revenueAllocations?: RevenueAllocationUncheckedCreateNestedManyWithoutSchoolInput
+    allowanceTypes?: PayrollAllowanceUncheckedCreateNestedManyWithoutSchoolInput
+    deductionTypes?: PayrollDeductionUncheckedCreateNestedManyWithoutSchoolInput
+    taxTables?: TaxTableUncheckedCreateNestedManyWithoutSchoolInput
+    employeeProfiles?: EmployeeProfileUncheckedCreateNestedManyWithoutSchoolInput
+    accountCategories?: AccountCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    liabilities?: LiabilityUncheckedCreateNestedManyWithoutSchoolInput
+    incomes?: IncomeUncheckedCreateNestedManyWithoutSchoolInput
+    expenses?: ExpenseUncheckedCreateNestedManyWithoutSchoolInput
+    uniformItems?: UniformItemUncheckedCreateNestedManyWithoutSchoolInput
+    uniformStockOrders?: UniformStockOrderUncheckedCreateNestedManyWithoutSchoolInput
+    uniformSales?: UniformSaleUncheckedCreateNestedManyWithoutSchoolInput
+    uniformSupplierPayments?: UniformSupplierPaymentUncheckedCreateNestedManyWithoutSchoolInput
+    physicalProducts?: PhysicalProductUncheckedCreateNestedManyWithoutSchoolInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUncheckedCreateNestedManyWithoutSchoolInput
+    feeReminderLogs?: FeeReminderLogUncheckedCreateNestedManyWithoutSchoolInput
+    termlyComments?: TermlyCommentUncheckedCreateNestedManyWithoutSchoolInput
+    payrollRuns?: PayrollRunUncheckedCreateNestedManyWithoutSchoolInput
+    questionPapers?: QuestionPaperUncheckedCreateNestedManyWithoutSchoolInput
+    payrollEntries?: PayrollEntryUncheckedCreateNestedManyWithoutSchoolInput
+    gradingScales?: GradingScaleUncheckedCreateNestedManyWithoutSchoolInput
+    studentPayments?: StudentPaymentUncheckedCreateNestedManyWithoutSchoolInput
+    communicationLogs?: CommunicationLogUncheckedCreateNestedManyWithoutSchoolInput
+    libraryCategories?: LibraryCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    sections?: SectionUncheckedCreateNestedManyWithoutSchoolInput
+    studentHouses?: StudentHouseUncheckedCreateNestedManyWithoutSchoolInput
+    holidays?: HolidayUncheckedCreateNestedManyWithoutSchoolInput
+    schoolSetting?: SchoolSettingUncheckedCreateNestedOneWithoutSchoolInput
+    CBTExam?: CBTExamUncheckedCreateNestedManyWithoutSchoolInput
+    LiveClass?: LiveClassUncheckedCreateNestedManyWithoutSchoolInput
+    Award?: AwardUncheckedCreateNestedManyWithoutSchoolInput
+    Course?: CourseUncheckedCreateNestedManyWithoutSchoolInput
+    StudyMaterial?: StudyMaterialUncheckedCreateNestedManyWithoutSchoolInput
+    hostelCategories?: HostelCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    hostelRooms?: HostelRoomUncheckedCreateNestedManyWithoutSchoolInput
+    SchoolVehicle?: SchoolVehicleUncheckedCreateNestedManyWithoutSchoolInput
+    SchoolTransport?: SchoolTransportUncheckedCreateNestedManyWithoutSchoolInput
+    paymentPlans?: PaymentPlanUncheckedCreateNestedManyWithoutSchoolInput
+    meetingMinutes?: MeetingMinutesUncheckedCreateNestedManyWithoutSchoolInput
+    projectFundings?: ProjectFundingUncheckedCreateNestedManyWithoutSchoolInput
+    sportingEquipment?: SportingEquipmentUncheckedCreateNestedManyWithoutSchoolInput
+    ClinicPatient?: ClinicPatientUncheckedCreateNestedManyWithoutSchoolInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedCreateNestedManyWithoutSchoolInput
+    chartOfAccounts?: ChartOfAccountUncheckedCreateNestedManyWithoutSchoolInput
+    journalEntries?: JournalEntryUncheckedCreateNestedManyWithoutSchoolInput
+    accountingPeriods?: AccountingPeriodUncheckedCreateNestedManyWithoutSchoolInput
+    uniformStockMovements?: UniformStockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    bankStatements?: BankStatementUncheckedCreateNestedManyWithoutSchoolInput
+    exchangeRates?: ExchangeRateUncheckedCreateNestedManyWithoutSchoolInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutSchoolInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutSchoolInput
+    stockMovements?: StockMovementUncheckedCreateNestedManyWithoutSchoolInput
+    taxBrackets?: TaxBracketUncheckedCreateNestedManyWithoutSchoolInput
+    fiscalDevices?: FiscalDeviceUncheckedCreateNestedManyWithoutSchoolInput
+    fiscalInvoices?: FiscalInvoiceUncheckedCreateNestedManyWithoutSchoolInput
+    documentSequences?: DocumentSequenceUncheckedCreateNestedManyWithoutSchoolInput
+    creditNotes?: CreditNoteUncheckedCreateNestedManyWithoutSchoolInput
+    tillSessions?: TillSessionUncheckedCreateNestedManyWithoutSchoolInput
+    studentClearances?: StudentClearanceUncheckedCreateNestedManyWithoutSchoolInput
+    leaveBalances?: LeaveBalanceUncheckedCreateNestedManyWithoutSchoolInput
+    questions?: QuestionUncheckedCreateNestedManyWithoutSchoolInput
+    cbtExams?: CbtExamUncheckedCreateNestedManyWithoutSchoolInput
+    DisciplineRecord?: DisciplineRecordUncheckedCreateNestedManyWithoutSchoolInput
+    CalendarEvent?: CalendarEventUncheckedCreateNestedManyWithoutSchoolInput
+    SportsEvent?: SportsEventUncheckedCreateNestedManyWithoutSchoolInput
+    TransportRequest?: TransportRequestUncheckedCreateNestedManyWithoutSchoolInput
+    FacilitiesRequest?: FacilitiesRequestUncheckedCreateNestedManyWithoutSchoolInput
+    CateringRequest?: CateringRequestUncheckedCreateNestedManyWithoutSchoolInput
+    awardConfigs?: AwardConfigUncheckedCreateNestedManyWithoutSchoolInput
+    studentAwards?: StudentAwardUncheckedCreateNestedManyWithoutSchoolInput
+    bursaryTypes?: BursaryTypeUncheckedCreateNestedManyWithoutSchoolInput
+    studentBursaries?: StudentBursaryUncheckedCreateNestedManyWithoutSchoolInput
+    studentInvoices?: StudentInvoiceUncheckedCreateNestedManyWithoutSchoolInput
+    receipts?: ReceiptUncheckedCreateNestedManyWithoutSchoolInput
+    bedAllocations?: HostelBedAllocationUncheckedCreateNestedManyWithoutSchoolInput
+    transportAllocations?: StudentTransportAllocationUncheckedCreateNestedManyWithoutSchoolInput
+    schoolTrips?: SchoolTripUncheckedCreateNestedManyWithoutSchoolInput
+    tripConsents?: TripConsentUncheckedCreateNestedManyWithoutSchoolInput
+    medicalConsents?: MedicalConsentUncheckedCreateNestedManyWithoutSchoolInput
+    bookLoanFines?: BookLoanFineUncheckedCreateNestedManyWithoutSchoolInput
+    boardingRollCalls?: BoardingRollCallUncheckedCreateNestedManyWithoutSchoolInput
+    exeats?: ExeatUncheckedCreateNestedManyWithoutSchoolInput
+    diningPantryItems?: DiningPantryItemUncheckedCreateNestedManyWithoutSchoolInput
+    diningRecipes?: DiningRecipeUncheckedCreateNestedManyWithoutSchoolInput
+    uniformCategories?: UniformCategoryUncheckedCreateNestedManyWithoutSchoolInput
+    uniformProducts?: UniformProductUncheckedCreateNestedManyWithoutSchoolInput
+    uniformKits?: UniformKitUncheckedCreateNestedManyWithoutSchoolInput
+    uniformIssuances?: UniformIssuanceUncheckedCreateNestedManyWithoutSchoolInput
+    uniformStockLedgers?: UniformStockLedgerUncheckedCreateNestedManyWithoutSchoolInput
+    attendanceSessions?: AttendanceSessionUncheckedCreateNestedManyWithoutSchoolInput
+    staffAttendanceDailies?: StaffAttendanceDailyUncheckedCreateNestedManyWithoutSchoolInput
+    biometricRawLogs?: BiometricRawLogUncheckedCreateNestedManyWithoutSchoolInput
+    hrTardinessLogs?: HrTardinessLogUncheckedCreateNestedManyWithoutSchoolInput
+    schemeItems?: SchemeItemUncheckedCreateNestedManyWithoutSchoolInput
+    lessonPlanResources?: LessonPlanResourceUncheckedCreateNestedManyWithoutSchoolInput
+    assessmentTypes?: AssessmentTypeUncheckedCreateNestedManyWithoutSchoolInput
+    assessments?: AssessmentUncheckedCreateNestedManyWithoutSchoolInput
+    assessmentQuestions?: AssessmentQuestionUncheckedCreateNestedManyWithoutSchoolInput
+    questionBanks?: QuestionBankUncheckedCreateNestedManyWithoutSchoolInput
+    examTimetables?: ExamTimetableUncheckedCreateNestedManyWithoutSchoolInput
+    studentAssessments?: StudentAssessmentUncheckedCreateNestedManyWithoutSchoolInput
+    studentQrCodes?: StudentQrCodeUncheckedCreateNestedManyWithoutSchoolInput
+    staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutSchoolInput
+    gateLogs?: GateLogUncheckedCreateNestedManyWithoutSchoolInput
+    tenantKeys?: TenantKeyUncheckedCreateNestedManyWithoutSchoolInput
+  }
+
+  export type SchoolCreateOrConnectWithoutScanLogsInput = {
+    where: SchoolWhereUniqueInput
+    create: XOR<SchoolCreateWithoutScanLogsInput, SchoolUncheckedCreateWithoutScanLogsInput>
+  }
+
+  export type UserCreateWithoutScanLogsInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    role: string
+    secondaryRoles?: UserCreatesecondaryRolesInput | string[]
+    avatar?: string | null
+    religion?: string | null
+    phone?: string | null
+    preferredLanguage?: string | null
+    staffId?: string | null
+    gatePin?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isLocked?: boolean
+    mustChangePassword?: boolean
+    passwordLastChanged?: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    uploadedSyllabuses?: SyllabusCreateNestedManyWithoutUploadedByInput
+    coveredTopics?: SyllabusTopicCreateNestedManyWithoutCoveredByInput
+    recruitedVacancies?: VacancyCreateNestedManyWithoutRecruiterInput
+    sessions?: UserSessionCreateNestedManyWithoutUserInput
+    school?: SchoolCreateNestedOneWithoutUsersInput
+    teacher?: TeacherCreateNestedOneWithoutUserInput
+    student?: StudentCreateNestedOneWithoutUserInput
+    parent?: ParentCreateNestedOneWithoutUserInput
+    supplier?: SupplierCreateNestedOneWithoutUserInput
+    salaryStubs?: SalaryStubCreateNestedManyWithoutUserInput
+    shiftAssignments?: ShiftAssignmentCreateNestedManyWithoutUserInput
+    employeeProfile?: EmployeeProfileCreateNestedOneWithoutUserInput
+    awards?: AwardCreateNestedManyWithoutUserInput
+    courses?: CourseCreateNestedManyWithoutTeacherInput
+    bookLoans?: BookLoanCreateNestedManyWithoutUserInput
+    bookReservations?: BookReservationCreateNestedManyWithoutUserInput
+    libraryDigitalResources?: LibraryDigitalResourceCreateNestedManyWithoutAddedByInput
+    dept?: DepartmentCreateNestedOneWithoutUsersInput
+    headedDepartments?: DepartmentCreateNestedManyWithoutHeadInput
+    authorizedBoardingLogs?: BoardingLogCreateNestedManyWithoutAuthorizedByInput
+    visitorLogs?: VisitorLogCreateNestedManyWithoutGuardInput
+    securityIncidents?: SecurityIncidentCreateNestedManyWithoutReportedByInput
+    auditLogs?: AuditLogCreateNestedManyWithoutActorInput
+    diningHallReports?: DiningHallReportCreateNestedManyWithoutReportedByInput
+    prefectReports?: PrefectReportCreateNestedManyWithoutReportedByInput
+    staffQrCodes?: StaffQrCodeCreateNestedManyWithoutStaffInput
+    scannedGateLogs?: GateLogCreateNestedManyWithoutScannedByGuardInput
+    gateLogs?: GateLogCreateNestedManyWithoutStaffInput
+    assignedAssets?: AssetCreateNestedManyWithoutCustodianInput
+    registeredAssets?: AssetCreateNestedManyWithoutRegisteredByInput
+    assignedSportingEquipments?: SportingEquipmentCreateNestedManyWithoutCustodianInput
+    reportedIncidents?: AssetIncidentCreateNestedManyWithoutReporterInput
+    supportTickets?: SupportTicketCreateNestedManyWithoutRequesterInput
+    reports?: AcademicReportCreateNestedManyWithoutStudentInput
+    requisitions?: RequisitionCreateNestedManyWithoutRequesterInput
+    hodRequisitions?: RequisitionCreateNestedManyWithoutHodInput
+    bursarRequisitions?: RequisitionCreateNestedManyWithoutBursarInput
+    adminRequisitions?: RequisitionCreateNestedManyWithoutAdminInput
+    transfers?: TransferAuthorizationCreateNestedManyWithoutStudentUserInput
+    leadershipAssigned?: LeadershipAssignmentCreateNestedManyWithoutAssignedByInput
+    wardenOfHostels?: HostelCreateNestedManyWithoutWardenInput
+    matronApprovedRequisitions?: RequisitionCreateNestedManyWithoutMatronApprovedByInput
+    issuedRequisitions?: RequisitionCreateNestedManyWithoutIssuedByInput
+    communicationLogs?: CommunicationLogCreateNestedManyWithoutSenderInput
+    staffAttendances?: StaffAttendanceCreateNestedManyWithoutStaffInput
+    LiveClass?: LiveClassCreateNestedManyWithoutTeacherInput
+    StudyMaterial?: StudyMaterialCreateNestedManyWithoutTeacherInput
+    paymentPlans?: PaymentPlanCreateNestedManyWithoutParentUserInput
+    payrollEntries?: PayrollEntryCreateNestedManyWithoutUserInput
+    clinicAppointments?: ClinicAppointmentCreateNestedManyWithoutUserInput
+    clinicComplaints?: ClinicComplaintCreateNestedManyWithoutUserInput
+    clinicImmunizations?: ClinicImmunizationCreateNestedManyWithoutUserInput
+    clinicReferrals?: ClinicReferralCreateNestedManyWithoutUserInput
+    clinicVisits?: ClinicVisitCreateNestedManyWithoutUserInput
+    clinicHospitalizations?: ClinicHospitalizationCreateNestedManyWithoutUserInput
+    clinicPatient?: ClinicPatientCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectCreateNestedManyWithoutCreatedByInput
+    vitalsRecorded?: ClinicVitalCreateNestedManyWithoutRecordedByInput
+    prescriptionsWritten?: ClinicPrescriptionCreateNestedManyWithoutPrescribedByInput
+    pharmacyDispensingsMade?: PharmacyDispenseCreateNestedManyWithoutDispensedByInput
+    monitoringLogsRecorded?: ClinicMonitoringLogCreateNestedManyWithoutRecordedByInput
+    emergencyLogsRecorded?: ClinicEmergencyLogCreateNestedManyWithoutLoggedByInput
+    clinicAccessAudits?: ClinicAccessAuditCreateNestedManyWithoutUserInput
+    visitsTriaged?: ClinicVisitCreateNestedManyWithoutTriageByInput
+    visitsConsulted?: ClinicVisitCreateNestedManyWithoutConsultedByInput
+    leaveBalances?: LeaveBalanceCreateNestedManyWithoutUserInput
+    announcementsCreated?: AnnouncementCreateNestedManyWithoutCreatedByInput
+    announcementReads?: AnnouncementReadCreateNestedManyWithoutUserInput
+    createdQuestions?: QuestionCreateNestedManyWithoutCreatedByInput
+    createdCbtExams?: CbtExamCreateNestedManyWithoutCreatedByInput
+    nominatedAwards?: StudentAwardCreateNestedManyWithoutNominatorInput
+    approvedAwards?: StudentAwardCreateNestedManyWithoutApproverInput
+    approvedBursaries?: StudentBursaryCreateNestedManyWithoutApproverInput
+    approvedExeats?: ExeatCreateNestedManyWithoutApprovedByHousemasterInput
+    markedBoardingRollCalls?: BoardingRollCallCreateNestedManyWithoutMarkedByInput
+    uniformsIssued?: UniformIssuanceCreateNestedManyWithoutIssuedByInput
+    markedAttendanceSessions?: AttendanceSessionCreateNestedManyWithoutTeacherInput
+    markedSessionRecords?: AttendanceSessionRecordCreateNestedManyWithoutMarkedByInput
+    staffAttendanceDailies?: StaffAttendanceDailyCreateNestedManyWithoutStaffInput
+    biometricRawLogs?: BiometricRawLogCreateNestedManyWithoutStaffInput
+    hrTardinessLogs?: HrTardinessLogCreateNestedManyWithoutStaffInput
+    tripLeadTrips?: SchoolTripCreateNestedManyWithoutStaffInput
+    tripNurseTrips?: SchoolTripCreateNestedManyWithoutNurseStaffInput
+    parentTripConsents?: TripConsentCreateNestedManyWithoutParentInput
+    parentMedicalConsents?: MedicalConsentCreateNestedManyWithoutParentInput
+    schemesHodApproved?: SchemeOfWorkCreateNestedManyWithoutHodApprovedByInput
+    lessonPlansHodReviewed?: LessonPlanCreateNestedManyWithoutHodReviewedByInput
+    assessmentsCreated?: AssessmentCreateNestedManyWithoutCreatedByInput
+    assessmentsModerated?: AssessmentCreateNestedManyWithoutModeratedByInput
+    questionBankCreated?: QuestionBankCreateNestedManyWithoutCreatedByInput
+    assessmentsMarked?: StudentAssessmentCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteCreateNestedManyWithoutReceivedByInput
+  }
+
+  export type UserUncheckedCreateWithoutScanLogsInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    role: string
+    secondaryRoles?: UserCreatesecondaryRolesInput | string[]
+    avatar?: string | null
+    religion?: string | null
+    phone?: string | null
+    preferredLanguage?: string | null
+    staffId?: string | null
+    schoolId?: string | null
+    departmentId?: string | null
+    gatePin?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isLocked?: boolean
+    mustChangePassword?: boolean
+    passwordLastChanged?: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    uploadedSyllabuses?: SyllabusUncheckedCreateNestedManyWithoutUploadedByInput
+    coveredTopics?: SyllabusTopicUncheckedCreateNestedManyWithoutCoveredByInput
+    recruitedVacancies?: VacancyUncheckedCreateNestedManyWithoutRecruiterInput
+    sessions?: UserSessionUncheckedCreateNestedManyWithoutUserInput
+    teacher?: TeacherUncheckedCreateNestedOneWithoutUserInput
+    student?: StudentUncheckedCreateNestedOneWithoutUserInput
+    parent?: ParentUncheckedCreateNestedOneWithoutUserInput
+    supplier?: SupplierUncheckedCreateNestedOneWithoutUserInput
+    salaryStubs?: SalaryStubUncheckedCreateNestedManyWithoutUserInput
+    shiftAssignments?: ShiftAssignmentUncheckedCreateNestedManyWithoutUserInput
+    employeeProfile?: EmployeeProfileUncheckedCreateNestedOneWithoutUserInput
+    awards?: AwardUncheckedCreateNestedManyWithoutUserInput
+    courses?: CourseUncheckedCreateNestedManyWithoutTeacherInput
+    bookLoans?: BookLoanUncheckedCreateNestedManyWithoutUserInput
+    bookReservations?: BookReservationUncheckedCreateNestedManyWithoutUserInput
+    libraryDigitalResources?: LibraryDigitalResourceUncheckedCreateNestedManyWithoutAddedByInput
+    headedDepartments?: DepartmentUncheckedCreateNestedManyWithoutHeadInput
+    authorizedBoardingLogs?: BoardingLogUncheckedCreateNestedManyWithoutAuthorizedByInput
+    visitorLogs?: VisitorLogUncheckedCreateNestedManyWithoutGuardInput
+    securityIncidents?: SecurityIncidentUncheckedCreateNestedManyWithoutReportedByInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
+    diningHallReports?: DiningHallReportUncheckedCreateNestedManyWithoutReportedByInput
+    prefectReports?: PrefectReportUncheckedCreateNestedManyWithoutReportedByInput
+    staffQrCodes?: StaffQrCodeUncheckedCreateNestedManyWithoutStaffInput
+    scannedGateLogs?: GateLogUncheckedCreateNestedManyWithoutScannedByGuardInput
+    gateLogs?: GateLogUncheckedCreateNestedManyWithoutStaffInput
+    assignedAssets?: AssetUncheckedCreateNestedManyWithoutCustodianInput
+    registeredAssets?: AssetUncheckedCreateNestedManyWithoutRegisteredByInput
+    assignedSportingEquipments?: SportingEquipmentUncheckedCreateNestedManyWithoutCustodianInput
+    reportedIncidents?: AssetIncidentUncheckedCreateNestedManyWithoutReporterInput
+    supportTickets?: SupportTicketUncheckedCreateNestedManyWithoutRequesterInput
+    reports?: AcademicReportUncheckedCreateNestedManyWithoutStudentInput
+    requisitions?: RequisitionUncheckedCreateNestedManyWithoutRequesterInput
+    hodRequisitions?: RequisitionUncheckedCreateNestedManyWithoutHodInput
+    bursarRequisitions?: RequisitionUncheckedCreateNestedManyWithoutBursarInput
+    adminRequisitions?: RequisitionUncheckedCreateNestedManyWithoutAdminInput
+    transfers?: TransferAuthorizationUncheckedCreateNestedManyWithoutStudentUserInput
+    leadershipAssigned?: LeadershipAssignmentUncheckedCreateNestedManyWithoutAssignedByInput
+    wardenOfHostels?: HostelUncheckedCreateNestedManyWithoutWardenInput
+    matronApprovedRequisitions?: RequisitionUncheckedCreateNestedManyWithoutMatronApprovedByInput
+    issuedRequisitions?: RequisitionUncheckedCreateNestedManyWithoutIssuedByInput
+    communicationLogs?: CommunicationLogUncheckedCreateNestedManyWithoutSenderInput
+    staffAttendances?: StaffAttendanceUncheckedCreateNestedManyWithoutStaffInput
+    LiveClass?: LiveClassUncheckedCreateNestedManyWithoutTeacherInput
+    StudyMaterial?: StudyMaterialUncheckedCreateNestedManyWithoutTeacherInput
+    paymentPlans?: PaymentPlanUncheckedCreateNestedManyWithoutParentUserInput
+    payrollEntries?: PayrollEntryUncheckedCreateNestedManyWithoutUserInput
+    clinicAppointments?: ClinicAppointmentUncheckedCreateNestedManyWithoutUserInput
+    clinicComplaints?: ClinicComplaintUncheckedCreateNestedManyWithoutUserInput
+    clinicImmunizations?: ClinicImmunizationUncheckedCreateNestedManyWithoutUserInput
+    clinicReferrals?: ClinicReferralUncheckedCreateNestedManyWithoutUserInput
+    clinicVisits?: ClinicVisitUncheckedCreateNestedManyWithoutUserInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedCreateNestedManyWithoutUserInput
+    clinicPatient?: ClinicPatientUncheckedCreateNestedOneWithoutUserInput
+    createdSubjects?: SubjectUncheckedCreateNestedManyWithoutCreatedByInput
+    vitalsRecorded?: ClinicVitalUncheckedCreateNestedManyWithoutRecordedByInput
+    prescriptionsWritten?: ClinicPrescriptionUncheckedCreateNestedManyWithoutPrescribedByInput
+    pharmacyDispensingsMade?: PharmacyDispenseUncheckedCreateNestedManyWithoutDispensedByInput
+    monitoringLogsRecorded?: ClinicMonitoringLogUncheckedCreateNestedManyWithoutRecordedByInput
+    emergencyLogsRecorded?: ClinicEmergencyLogUncheckedCreateNestedManyWithoutLoggedByInput
+    clinicAccessAudits?: ClinicAccessAuditUncheckedCreateNestedManyWithoutUserInput
+    visitsTriaged?: ClinicVisitUncheckedCreateNestedManyWithoutTriageByInput
+    visitsConsulted?: ClinicVisitUncheckedCreateNestedManyWithoutConsultedByInput
+    leaveBalances?: LeaveBalanceUncheckedCreateNestedManyWithoutUserInput
+    announcementsCreated?: AnnouncementUncheckedCreateNestedManyWithoutCreatedByInput
+    announcementReads?: AnnouncementReadUncheckedCreateNestedManyWithoutUserInput
+    createdQuestions?: QuestionUncheckedCreateNestedManyWithoutCreatedByInput
+    createdCbtExams?: CbtExamUncheckedCreateNestedManyWithoutCreatedByInput
+    nominatedAwards?: StudentAwardUncheckedCreateNestedManyWithoutNominatorInput
+    approvedAwards?: StudentAwardUncheckedCreateNestedManyWithoutApproverInput
+    approvedBursaries?: StudentBursaryUncheckedCreateNestedManyWithoutApproverInput
+    approvedExeats?: ExeatUncheckedCreateNestedManyWithoutApprovedByHousemasterInput
+    markedBoardingRollCalls?: BoardingRollCallUncheckedCreateNestedManyWithoutMarkedByInput
+    uniformsIssued?: UniformIssuanceUncheckedCreateNestedManyWithoutIssuedByInput
+    markedAttendanceSessions?: AttendanceSessionUncheckedCreateNestedManyWithoutTeacherInput
+    markedSessionRecords?: AttendanceSessionRecordUncheckedCreateNestedManyWithoutMarkedByInput
+    staffAttendanceDailies?: StaffAttendanceDailyUncheckedCreateNestedManyWithoutStaffInput
+    biometricRawLogs?: BiometricRawLogUncheckedCreateNestedManyWithoutStaffInput
+    hrTardinessLogs?: HrTardinessLogUncheckedCreateNestedManyWithoutStaffInput
+    tripLeadTrips?: SchoolTripUncheckedCreateNestedManyWithoutStaffInput
+    tripNurseTrips?: SchoolTripUncheckedCreateNestedManyWithoutNurseStaffInput
+    parentTripConsents?: TripConsentUncheckedCreateNestedManyWithoutParentInput
+    parentMedicalConsents?: MedicalConsentUncheckedCreateNestedManyWithoutParentInput
+    schemesHodApproved?: SchemeOfWorkUncheckedCreateNestedManyWithoutHodApprovedByInput
+    lessonPlansHodReviewed?: LessonPlanUncheckedCreateNestedManyWithoutHodReviewedByInput
+    assessmentsCreated?: AssessmentUncheckedCreateNestedManyWithoutCreatedByInput
+    assessmentsModerated?: AssessmentUncheckedCreateNestedManyWithoutModeratedByInput
+    questionBankCreated?: QuestionBankUncheckedCreateNestedManyWithoutCreatedByInput
+    assessmentsMarked?: StudentAssessmentUncheckedCreateNestedManyWithoutMarkedByInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedCreateNestedManyWithoutReceivedByInput
+  }
+
+  export type UserCreateOrConnectWithoutScanLogsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutScanLogsInput, UserUncheckedCreateWithoutScanLogsInput>
+  }
+
+  export type SchoolUpsertWithoutScanLogsInput = {
+    update: XOR<SchoolUpdateWithoutScanLogsInput, SchoolUncheckedUpdateWithoutScanLogsInput>
+    create: XOR<SchoolCreateWithoutScanLogsInput, SchoolUncheckedCreateWithoutScanLogsInput>
+    where?: SchoolWhereInput
+  }
+
+  export type SchoolUpdateToOneWithWhereWithoutScanLogsInput = {
+    where?: SchoolWhereInput
+    data: XOR<SchoolUpdateWithoutScanLogsInput, SchoolUncheckedUpdateWithoutScanLogsInput>
+  }
+
+  export type SchoolUpdateWithoutScanLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    isCombined?: BoolFieldUpdateOperationsInput | boolean
+    levels?: SchoolUpdatelevelsInput | string[]
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    idCardTemplate?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    subscription?: NullableJsonNullValueInput | InputJsonValue
+    syllabuses?: SyllabusUpdateManyWithoutSchoolNestedInput
+    schemesOfWork?: SchemeOfWorkUpdateManyWithoutSchoolNestedInput
+    lessonPlans?: LessonPlanUpdateManyWithoutSchoolNestedInput
+    plan?: PlanUpdateOneRequiredWithoutSchoolsNestedInput
+    users?: UserUpdateManyWithoutSchoolNestedInput
+    students?: StudentUpdateManyWithoutSchoolNestedInput
+    teachers?: TeacherUpdateManyWithoutSchoolNestedInput
+    news?: NewsUpdateManyWithoutSchoolNestedInput
+    websiteInquiries?: WebsiteInquiryUpdateManyWithoutSchoolNestedInput
+    noticeboards?: NoticeboardUpdateManyWithoutSchoolNestedInput
+    clinicVisits?: ClinicVisitUpdateManyWithoutSchoolNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutSchoolNestedInput
+    vacancies?: VacancyUpdateManyWithoutSchoolNestedInput
+    jobApplications?: JobApplicationUpdateManyWithoutSchoolNestedInput
+    gallery?: GalleryUpdateManyWithoutSchoolNestedInput
+    clubs?: ClubUpdateManyWithoutSchoolNestedInput
+    sports?: SportUpdateManyWithoutSchoolNestedInput
+    applications?: ApplicationUpdateManyWithoutSchoolNestedInput
+    announcements?: AnnouncementUpdateManyWithoutSchoolNestedInput
+    chaplaincyEvents?: ChaplaincyEventUpdateManyWithoutSchoolNestedInput
+    diningHallReports?: DiningHallReportUpdateManyWithoutSchoolNestedInput
+    farmLivestockBatches?: FarmLivestockBatchUpdateManyWithoutSchoolNestedInput
+    farmCropCycles?: FarmCropCycleUpdateManyWithoutSchoolNestedInput
+    farmInventoryItems?: FarmInventoryItemUpdateManyWithoutSchoolNestedInput
+    prefectDuties?: PrefectDutyUpdateManyWithoutSchoolNestedInput
+    prefectMeetings?: PrefectMeetingUpdateManyWithoutSchoolNestedInput
+    prefectReports?: PrefectReportUpdateManyWithoutSchoolNestedInput
+    staffAttendances?: StaffAttendanceUpdateManyWithoutSchoolNestedInput
+    timetableSlots?: TimetableSlotUpdateManyWithoutSchoolNestedInput
+    classes?: SchoolClassUpdateManyWithoutSchoolNestedInput
+    subjects?: SubjectUpdateManyWithoutSchoolNestedInput
+    books?: BookUpdateManyWithoutSchoolNestedInput
+    grades?: GradeUpdateManyWithoutSchoolNestedInput
+    attendance?: AttendanceUpdateManyWithoutSchoolNestedInput
+    fees?: FeeUpdateManyWithoutSchoolNestedInput
+    assignments?: AssignmentUpdateManyWithoutSchoolNestedInput
+    bookLoans?: BookLoanUpdateManyWithoutSchoolNestedInput
+    bookReservations?: BookReservationUpdateManyWithoutSchoolNestedInput
+    librarySetting?: LibrarySettingUpdateOneWithoutSchoolNestedInput
+    libraryDigitalResources?: LibraryDigitalResourceUpdateManyWithoutSchoolNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUpdateManyWithoutSchoolNestedInput
+    supervisorAssignments?: SupervisorAssignmentUpdateManyWithoutSchoolNestedInput
+    extensionRequests?: ExtensionRequestUpdateManyWithoutSchoolNestedInput
+    progressReports?: ProgressReportUpdateManyWithoutSchoolNestedInput
+    tuckshopItems?: TuckshopItemUpdateManyWithoutSchoolNestedInput
+    suppliers?: SchoolSupplierUpdateManyWithoutSchoolNestedInput
+    assets?: AssetUpdateManyWithoutSchoolNestedInput
+    reportTemplate?: ReportTemplateUpdateOneWithoutSchoolNestedInput
+    websiteSettings?: WebsiteSettingsUpdateOneWithoutSchoolNestedInput
+    requisitions?: RequisitionUpdateManyWithoutSchoolNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutSchoolNestedInput
+    leadershipAssignments?: LeadershipAssignmentUpdateManyWithoutSchoolNestedInput
+    studentAllowedItems?: StudentAllowedItemUpdateManyWithoutSchoolNestedInput
+    departments?: DepartmentUpdateManyWithoutSchoolNestedInput
+    hostels?: HostelUpdateManyWithoutSchoolNestedInput
+    weeklyMenus?: WeeklyMenuUpdateManyWithoutSchoolNestedInput
+    clinicSettings?: ClinicSettingUpdateOneWithoutSchoolNestedInput
+    clinicBeds?: ClinicBedUpdateManyWithoutSchoolNestedInput
+    clinicAdmissions?: ClinicAdmissionUpdateManyWithoutSchoolNestedInput
+    pharmacyStocks?: PharmacyStockUpdateManyWithoutSchoolNestedInput
+    studentHealthProfiles?: StudentHealthProfileUpdateManyWithoutSchoolNestedInput
+    clinicAccessAudits?: ClinicAccessAuditUpdateManyWithoutSchoolNestedInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUpdateManyWithoutSchoolNestedInput
+    clinicDiagnoses?: ClinicDiagnosisUpdateManyWithoutSchoolNestedInput
+    clinicPrescriptions?: ClinicPrescriptionUpdateManyWithoutSchoolNestedInput
+    pharmacyDispensings?: PharmacyDispenseUpdateManyWithoutSchoolNestedInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUpdateManyWithoutSchoolNestedInput
+    clinicVitals?: ClinicVitalUpdateManyWithoutSchoolNestedInput
+    originTransfers?: TransferAuthorizationUpdateManyWithoutOriginSchoolNestedInput
+    targetTransfers?: TransferAuthorizationUpdateManyWithoutTargetSchoolNestedInput
+    faculties?: FacultyUpdateManyWithoutSchoolNestedInput
+    paymentMethods?: PaymentMethodUpdateManyWithoutSchoolNestedInput
+    feeGroups?: FeeGroupUpdateManyWithoutSchoolNestedInput
+    revenueAllocations?: RevenueAllocationUpdateManyWithoutSchoolNestedInput
+    allowanceTypes?: PayrollAllowanceUpdateManyWithoutSchoolNestedInput
+    deductionTypes?: PayrollDeductionUpdateManyWithoutSchoolNestedInput
+    taxTables?: TaxTableUpdateManyWithoutSchoolNestedInput
+    employeeProfiles?: EmployeeProfileUpdateManyWithoutSchoolNestedInput
+    accountCategories?: AccountCategoryUpdateManyWithoutSchoolNestedInput
+    liabilities?: LiabilityUpdateManyWithoutSchoolNestedInput
+    incomes?: IncomeUpdateManyWithoutSchoolNestedInput
+    expenses?: ExpenseUpdateManyWithoutSchoolNestedInput
+    uniformItems?: UniformItemUpdateManyWithoutSchoolNestedInput
+    uniformStockOrders?: UniformStockOrderUpdateManyWithoutSchoolNestedInput
+    uniformSales?: UniformSaleUpdateManyWithoutSchoolNestedInput
+    uniformSupplierPayments?: UniformSupplierPaymentUpdateManyWithoutSchoolNestedInput
+    physicalProducts?: PhysicalProductUpdateManyWithoutSchoolNestedInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUpdateManyWithoutSchoolNestedInput
+    feeReminderLogs?: FeeReminderLogUpdateManyWithoutSchoolNestedInput
+    termlyComments?: TermlyCommentUpdateManyWithoutSchoolNestedInput
+    payrollRuns?: PayrollRunUpdateManyWithoutSchoolNestedInput
+    questionPapers?: QuestionPaperUpdateManyWithoutSchoolNestedInput
+    payrollEntries?: PayrollEntryUpdateManyWithoutSchoolNestedInput
+    gradingScales?: GradingScaleUpdateManyWithoutSchoolNestedInput
+    studentPayments?: StudentPaymentUpdateManyWithoutSchoolNestedInput
+    communicationLogs?: CommunicationLogUpdateManyWithoutSchoolNestedInput
+    libraryCategories?: LibraryCategoryUpdateManyWithoutSchoolNestedInput
+    sections?: SectionUpdateManyWithoutSchoolNestedInput
+    studentHouses?: StudentHouseUpdateManyWithoutSchoolNestedInput
+    holidays?: HolidayUpdateManyWithoutSchoolNestedInput
+    schoolSetting?: SchoolSettingUpdateOneWithoutSchoolNestedInput
+    CBTExam?: CBTExamUpdateManyWithoutSchoolNestedInput
+    LiveClass?: LiveClassUpdateManyWithoutSchoolNestedInput
+    Award?: AwardUpdateManyWithoutSchoolNestedInput
+    Course?: CourseUpdateManyWithoutSchoolNestedInput
+    StudyMaterial?: StudyMaterialUpdateManyWithoutSchoolNestedInput
+    hostelCategories?: HostelCategoryUpdateManyWithoutSchoolNestedInput
+    hostelRooms?: HostelRoomUpdateManyWithoutSchoolNestedInput
+    SchoolVehicle?: SchoolVehicleUpdateManyWithoutSchoolNestedInput
+    SchoolTransport?: SchoolTransportUpdateManyWithoutSchoolNestedInput
+    paymentPlans?: PaymentPlanUpdateManyWithoutSchoolNestedInput
+    meetingMinutes?: MeetingMinutesUpdateManyWithoutSchoolNestedInput
+    projectFundings?: ProjectFundingUpdateManyWithoutSchoolNestedInput
+    sportingEquipment?: SportingEquipmentUpdateManyWithoutSchoolNestedInput
+    ClinicPatient?: ClinicPatientUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUpdateManyWithoutSchoolNestedInput
+    chartOfAccounts?: ChartOfAccountUpdateManyWithoutSchoolNestedInput
+    journalEntries?: JournalEntryUpdateManyWithoutSchoolNestedInput
+    accountingPeriods?: AccountingPeriodUpdateManyWithoutSchoolNestedInput
+    uniformStockMovements?: UniformStockMovementUpdateManyWithoutSchoolNestedInput
+    bankStatements?: BankStatementUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUpdateManyWithoutSchoolNestedInput
+    fiscalDevices?: FiscalDeviceUpdateManyWithoutSchoolNestedInput
+    fiscalInvoices?: FiscalInvoiceUpdateManyWithoutSchoolNestedInput
+    documentSequences?: DocumentSequenceUpdateManyWithoutSchoolNestedInput
+    creditNotes?: CreditNoteUpdateManyWithoutSchoolNestedInput
+    tillSessions?: TillSessionUpdateManyWithoutSchoolNestedInput
+    studentClearances?: StudentClearanceUpdateManyWithoutSchoolNestedInput
+    leaveBalances?: LeaveBalanceUpdateManyWithoutSchoolNestedInput
+    questions?: QuestionUpdateManyWithoutSchoolNestedInput
+    cbtExams?: CbtExamUpdateManyWithoutSchoolNestedInput
+    DisciplineRecord?: DisciplineRecordUpdateManyWithoutSchoolNestedInput
+    CalendarEvent?: CalendarEventUpdateManyWithoutSchoolNestedInput
+    SportsEvent?: SportsEventUpdateManyWithoutSchoolNestedInput
+    TransportRequest?: TransportRequestUpdateManyWithoutSchoolNestedInput
+    FacilitiesRequest?: FacilitiesRequestUpdateManyWithoutSchoolNestedInput
+    CateringRequest?: CateringRequestUpdateManyWithoutSchoolNestedInput
+    awardConfigs?: AwardConfigUpdateManyWithoutSchoolNestedInput
+    studentAwards?: StudentAwardUpdateManyWithoutSchoolNestedInput
+    bursaryTypes?: BursaryTypeUpdateManyWithoutSchoolNestedInput
+    studentBursaries?: StudentBursaryUpdateManyWithoutSchoolNestedInput
+    studentInvoices?: StudentInvoiceUpdateManyWithoutSchoolNestedInput
+    receipts?: ReceiptUpdateManyWithoutSchoolNestedInput
+    bedAllocations?: HostelBedAllocationUpdateManyWithoutSchoolNestedInput
+    transportAllocations?: StudentTransportAllocationUpdateManyWithoutSchoolNestedInput
+    schoolTrips?: SchoolTripUpdateManyWithoutSchoolNestedInput
+    tripConsents?: TripConsentUpdateManyWithoutSchoolNestedInput
+    medicalConsents?: MedicalConsentUpdateManyWithoutSchoolNestedInput
+    bookLoanFines?: BookLoanFineUpdateManyWithoutSchoolNestedInput
+    boardingRollCalls?: BoardingRollCallUpdateManyWithoutSchoolNestedInput
+    exeats?: ExeatUpdateManyWithoutSchoolNestedInput
+    diningPantryItems?: DiningPantryItemUpdateManyWithoutSchoolNestedInput
+    diningRecipes?: DiningRecipeUpdateManyWithoutSchoolNestedInput
+    uniformCategories?: UniformCategoryUpdateManyWithoutSchoolNestedInput
+    uniformProducts?: UniformProductUpdateManyWithoutSchoolNestedInput
+    uniformKits?: UniformKitUpdateManyWithoutSchoolNestedInput
+    uniformIssuances?: UniformIssuanceUpdateManyWithoutSchoolNestedInput
+    uniformStockLedgers?: UniformStockLedgerUpdateManyWithoutSchoolNestedInput
+    attendanceSessions?: AttendanceSessionUpdateManyWithoutSchoolNestedInput
+    staffAttendanceDailies?: StaffAttendanceDailyUpdateManyWithoutSchoolNestedInput
+    biometricRawLogs?: BiometricRawLogUpdateManyWithoutSchoolNestedInput
+    hrTardinessLogs?: HrTardinessLogUpdateManyWithoutSchoolNestedInput
+    schemeItems?: SchemeItemUpdateManyWithoutSchoolNestedInput
+    lessonPlanResources?: LessonPlanResourceUpdateManyWithoutSchoolNestedInput
+    assessmentTypes?: AssessmentTypeUpdateManyWithoutSchoolNestedInput
+    assessments?: AssessmentUpdateManyWithoutSchoolNestedInput
+    assessmentQuestions?: AssessmentQuestionUpdateManyWithoutSchoolNestedInput
+    questionBanks?: QuestionBankUpdateManyWithoutSchoolNestedInput
+    examTimetables?: ExamTimetableUpdateManyWithoutSchoolNestedInput
+    studentAssessments?: StudentAssessmentUpdateManyWithoutSchoolNestedInput
+    studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
+    staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
+    gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+  }
+
+  export type SchoolUncheckedUpdateWithoutScanLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    code?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    isCombined?: BoolFieldUpdateOperationsInput | boolean
+    levels?: SchoolUpdatelevelsInput | string[]
+    address?: NullableStringFieldUpdateOperationsInput | string | null
+    country?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    website?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: StringFieldUpdateOperationsInput | string
+    planId?: StringFieldUpdateOperationsInput | string
+    branding?: NullableJsonNullValueInput | InputJsonValue
+    customContent?: NullableJsonNullValueInput | InputJsonValue
+    hexcoCenterNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    idCardTemplate?: NullableStringFieldUpdateOperationsInput | string | null
+    settings?: NullableJsonNullValueInput | InputJsonValue
+    subscription?: NullableJsonNullValueInput | InputJsonValue
+    syllabuses?: SyllabusUncheckedUpdateManyWithoutSchoolNestedInput
+    schemesOfWork?: SchemeOfWorkUncheckedUpdateManyWithoutSchoolNestedInput
+    lessonPlans?: LessonPlanUncheckedUpdateManyWithoutSchoolNestedInput
+    users?: UserUncheckedUpdateManyWithoutSchoolNestedInput
+    students?: StudentUncheckedUpdateManyWithoutSchoolNestedInput
+    teachers?: TeacherUncheckedUpdateManyWithoutSchoolNestedInput
+    news?: NewsUncheckedUpdateManyWithoutSchoolNestedInput
+    websiteInquiries?: WebsiteInquiryUncheckedUpdateManyWithoutSchoolNestedInput
+    noticeboards?: NoticeboardUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutSchoolNestedInput
+    vacancies?: VacancyUncheckedUpdateManyWithoutSchoolNestedInput
+    jobApplications?: JobApplicationUncheckedUpdateManyWithoutSchoolNestedInput
+    gallery?: GalleryUncheckedUpdateManyWithoutSchoolNestedInput
+    clubs?: ClubUncheckedUpdateManyWithoutSchoolNestedInput
+    sports?: SportUncheckedUpdateManyWithoutSchoolNestedInput
+    applications?: ApplicationUncheckedUpdateManyWithoutSchoolNestedInput
+    announcements?: AnnouncementUncheckedUpdateManyWithoutSchoolNestedInput
+    chaplaincyEvents?: ChaplaincyEventUncheckedUpdateManyWithoutSchoolNestedInput
+    diningHallReports?: DiningHallReportUncheckedUpdateManyWithoutSchoolNestedInput
+    farmLivestockBatches?: FarmLivestockBatchUncheckedUpdateManyWithoutSchoolNestedInput
+    farmCropCycles?: FarmCropCycleUncheckedUpdateManyWithoutSchoolNestedInput
+    farmInventoryItems?: FarmInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectDuties?: PrefectDutyUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectMeetings?: PrefectMeetingUncheckedUpdateManyWithoutSchoolNestedInput
+    prefectReports?: PrefectReportUncheckedUpdateManyWithoutSchoolNestedInput
+    staffAttendances?: StaffAttendanceUncheckedUpdateManyWithoutSchoolNestedInput
+    timetableSlots?: TimetableSlotUncheckedUpdateManyWithoutSchoolNestedInput
+    classes?: SchoolClassUncheckedUpdateManyWithoutSchoolNestedInput
+    subjects?: SubjectUncheckedUpdateManyWithoutSchoolNestedInput
+    books?: BookUncheckedUpdateManyWithoutSchoolNestedInput
+    grades?: GradeUncheckedUpdateManyWithoutSchoolNestedInput
+    attendance?: AttendanceUncheckedUpdateManyWithoutSchoolNestedInput
+    fees?: FeeUncheckedUpdateManyWithoutSchoolNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    bookLoans?: BookLoanUncheckedUpdateManyWithoutSchoolNestedInput
+    bookReservations?: BookReservationUncheckedUpdateManyWithoutSchoolNestedInput
+    librarySetting?: LibrarySettingUncheckedUpdateOneWithoutSchoolNestedInput
+    libraryDigitalResources?: LibraryDigitalResourceUncheckedUpdateManyWithoutSchoolNestedInput
+    assignmentSubmissions?: AssignmentSubmissionUncheckedUpdateManyWithoutSchoolNestedInput
+    supervisorAssignments?: SupervisorAssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    extensionRequests?: ExtensionRequestUncheckedUpdateManyWithoutSchoolNestedInput
+    progressReports?: ProgressReportUncheckedUpdateManyWithoutSchoolNestedInput
+    tuckshopItems?: TuckshopItemUncheckedUpdateManyWithoutSchoolNestedInput
+    suppliers?: SchoolSupplierUncheckedUpdateManyWithoutSchoolNestedInput
+    assets?: AssetUncheckedUpdateManyWithoutSchoolNestedInput
+    reportTemplate?: ReportTemplateUncheckedUpdateOneWithoutSchoolNestedInput
+    websiteSettings?: WebsiteSettingsUncheckedUpdateOneWithoutSchoolNestedInput
+    requisitions?: RequisitionUncheckedUpdateManyWithoutSchoolNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutSchoolNestedInput
+    leadershipAssignments?: LeadershipAssignmentUncheckedUpdateManyWithoutSchoolNestedInput
+    studentAllowedItems?: StudentAllowedItemUncheckedUpdateManyWithoutSchoolNestedInput
+    departments?: DepartmentUncheckedUpdateManyWithoutSchoolNestedInput
+    hostels?: HostelUncheckedUpdateManyWithoutSchoolNestedInput
+    weeklyMenus?: WeeklyMenuUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicSettings?: ClinicSettingUncheckedUpdateOneWithoutSchoolNestedInput
+    clinicBeds?: ClinicBedUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicAdmissions?: ClinicAdmissionUncheckedUpdateManyWithoutSchoolNestedInput
+    pharmacyStocks?: PharmacyStockUncheckedUpdateManyWithoutSchoolNestedInput
+    studentHealthProfiles?: StudentHealthProfileUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicAccessAudits?: ClinicAccessAuditUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicEmergencyLogs?: ClinicEmergencyLogUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicDiagnoses?: ClinicDiagnosisUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicPrescriptions?: ClinicPrescriptionUncheckedUpdateManyWithoutSchoolNestedInput
+    pharmacyDispensings?: PharmacyDispenseUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicMonitoringLogs?: ClinicMonitoringLogUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicVitals?: ClinicVitalUncheckedUpdateManyWithoutSchoolNestedInput
+    originTransfers?: TransferAuthorizationUncheckedUpdateManyWithoutOriginSchoolNestedInput
+    targetTransfers?: TransferAuthorizationUncheckedUpdateManyWithoutTargetSchoolNestedInput
+    faculties?: FacultyUncheckedUpdateManyWithoutSchoolNestedInput
+    paymentMethods?: PaymentMethodUncheckedUpdateManyWithoutSchoolNestedInput
+    feeGroups?: FeeGroupUncheckedUpdateManyWithoutSchoolNestedInput
+    revenueAllocations?: RevenueAllocationUncheckedUpdateManyWithoutSchoolNestedInput
+    allowanceTypes?: PayrollAllowanceUncheckedUpdateManyWithoutSchoolNestedInput
+    deductionTypes?: PayrollDeductionUncheckedUpdateManyWithoutSchoolNestedInput
+    taxTables?: TaxTableUncheckedUpdateManyWithoutSchoolNestedInput
+    employeeProfiles?: EmployeeProfileUncheckedUpdateManyWithoutSchoolNestedInput
+    accountCategories?: AccountCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    liabilities?: LiabilityUncheckedUpdateManyWithoutSchoolNestedInput
+    incomes?: IncomeUncheckedUpdateManyWithoutSchoolNestedInput
+    expenses?: ExpenseUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformItems?: UniformItemUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformStockOrders?: UniformStockOrderUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformSales?: UniformSaleUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformSupplierPayments?: UniformSupplierPaymentUncheckedUpdateManyWithoutSchoolNestedInput
+    physicalProducts?: PhysicalProductUncheckedUpdateManyWithoutSchoolNestedInput
+    physicalProductConsumptions?: PhysicalProductConsumptionUncheckedUpdateManyWithoutSchoolNestedInput
+    feeReminderLogs?: FeeReminderLogUncheckedUpdateManyWithoutSchoolNestedInput
+    termlyComments?: TermlyCommentUncheckedUpdateManyWithoutSchoolNestedInput
+    payrollRuns?: PayrollRunUncheckedUpdateManyWithoutSchoolNestedInput
+    questionPapers?: QuestionPaperUncheckedUpdateManyWithoutSchoolNestedInput
+    payrollEntries?: PayrollEntryUncheckedUpdateManyWithoutSchoolNestedInput
+    gradingScales?: GradingScaleUncheckedUpdateManyWithoutSchoolNestedInput
+    studentPayments?: StudentPaymentUncheckedUpdateManyWithoutSchoolNestedInput
+    communicationLogs?: CommunicationLogUncheckedUpdateManyWithoutSchoolNestedInput
+    libraryCategories?: LibraryCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    sections?: SectionUncheckedUpdateManyWithoutSchoolNestedInput
+    studentHouses?: StudentHouseUncheckedUpdateManyWithoutSchoolNestedInput
+    holidays?: HolidayUncheckedUpdateManyWithoutSchoolNestedInput
+    schoolSetting?: SchoolSettingUncheckedUpdateOneWithoutSchoolNestedInput
+    CBTExam?: CBTExamUncheckedUpdateManyWithoutSchoolNestedInput
+    LiveClass?: LiveClassUncheckedUpdateManyWithoutSchoolNestedInput
+    Award?: AwardUncheckedUpdateManyWithoutSchoolNestedInput
+    Course?: CourseUncheckedUpdateManyWithoutSchoolNestedInput
+    StudyMaterial?: StudyMaterialUncheckedUpdateManyWithoutSchoolNestedInput
+    hostelCategories?: HostelCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    hostelRooms?: HostelRoomUncheckedUpdateManyWithoutSchoolNestedInput
+    SchoolVehicle?: SchoolVehicleUncheckedUpdateManyWithoutSchoolNestedInput
+    SchoolTransport?: SchoolTransportUncheckedUpdateManyWithoutSchoolNestedInput
+    paymentPlans?: PaymentPlanUncheckedUpdateManyWithoutSchoolNestedInput
+    meetingMinutes?: MeetingMinutesUncheckedUpdateManyWithoutSchoolNestedInput
+    projectFundings?: ProjectFundingUncheckedUpdateManyWithoutSchoolNestedInput
+    sportingEquipment?: SportingEquipmentUncheckedUpdateManyWithoutSchoolNestedInput
+    ClinicPatient?: ClinicPatientUncheckedUpdateManyWithoutSchoolNestedInput
+    clinicInventoryItems?: ClinicInventoryItemUncheckedUpdateManyWithoutSchoolNestedInput
+    chartOfAccounts?: ChartOfAccountUncheckedUpdateManyWithoutSchoolNestedInput
+    journalEntries?: JournalEntryUncheckedUpdateManyWithoutSchoolNestedInput
+    accountingPeriods?: AccountingPeriodUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformStockMovements?: UniformStockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    bankStatements?: BankStatementUncheckedUpdateManyWithoutSchoolNestedInput
+    exchangeRates?: ExchangeRateUncheckedUpdateManyWithoutSchoolNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutSchoolNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutSchoolNestedInput
+    stockMovements?: StockMovementUncheckedUpdateManyWithoutSchoolNestedInput
+    taxBrackets?: TaxBracketUncheckedUpdateManyWithoutSchoolNestedInput
+    fiscalDevices?: FiscalDeviceUncheckedUpdateManyWithoutSchoolNestedInput
+    fiscalInvoices?: FiscalInvoiceUncheckedUpdateManyWithoutSchoolNestedInput
+    documentSequences?: DocumentSequenceUncheckedUpdateManyWithoutSchoolNestedInput
+    creditNotes?: CreditNoteUncheckedUpdateManyWithoutSchoolNestedInput
+    tillSessions?: TillSessionUncheckedUpdateManyWithoutSchoolNestedInput
+    studentClearances?: StudentClearanceUncheckedUpdateManyWithoutSchoolNestedInput
+    leaveBalances?: LeaveBalanceUncheckedUpdateManyWithoutSchoolNestedInput
+    questions?: QuestionUncheckedUpdateManyWithoutSchoolNestedInput
+    cbtExams?: CbtExamUncheckedUpdateManyWithoutSchoolNestedInput
+    DisciplineRecord?: DisciplineRecordUncheckedUpdateManyWithoutSchoolNestedInput
+    CalendarEvent?: CalendarEventUncheckedUpdateManyWithoutSchoolNestedInput
+    SportsEvent?: SportsEventUncheckedUpdateManyWithoutSchoolNestedInput
+    TransportRequest?: TransportRequestUncheckedUpdateManyWithoutSchoolNestedInput
+    FacilitiesRequest?: FacilitiesRequestUncheckedUpdateManyWithoutSchoolNestedInput
+    CateringRequest?: CateringRequestUncheckedUpdateManyWithoutSchoolNestedInput
+    awardConfigs?: AwardConfigUncheckedUpdateManyWithoutSchoolNestedInput
+    studentAwards?: StudentAwardUncheckedUpdateManyWithoutSchoolNestedInput
+    bursaryTypes?: BursaryTypeUncheckedUpdateManyWithoutSchoolNestedInput
+    studentBursaries?: StudentBursaryUncheckedUpdateManyWithoutSchoolNestedInput
+    studentInvoices?: StudentInvoiceUncheckedUpdateManyWithoutSchoolNestedInput
+    receipts?: ReceiptUncheckedUpdateManyWithoutSchoolNestedInput
+    bedAllocations?: HostelBedAllocationUncheckedUpdateManyWithoutSchoolNestedInput
+    transportAllocations?: StudentTransportAllocationUncheckedUpdateManyWithoutSchoolNestedInput
+    schoolTrips?: SchoolTripUncheckedUpdateManyWithoutSchoolNestedInput
+    tripConsents?: TripConsentUncheckedUpdateManyWithoutSchoolNestedInput
+    medicalConsents?: MedicalConsentUncheckedUpdateManyWithoutSchoolNestedInput
+    bookLoanFines?: BookLoanFineUncheckedUpdateManyWithoutSchoolNestedInput
+    boardingRollCalls?: BoardingRollCallUncheckedUpdateManyWithoutSchoolNestedInput
+    exeats?: ExeatUncheckedUpdateManyWithoutSchoolNestedInput
+    diningPantryItems?: DiningPantryItemUncheckedUpdateManyWithoutSchoolNestedInput
+    diningRecipes?: DiningRecipeUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformCategories?: UniformCategoryUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformProducts?: UniformProductUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformKits?: UniformKitUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformIssuances?: UniformIssuanceUncheckedUpdateManyWithoutSchoolNestedInput
+    uniformStockLedgers?: UniformStockLedgerUncheckedUpdateManyWithoutSchoolNestedInput
+    attendanceSessions?: AttendanceSessionUncheckedUpdateManyWithoutSchoolNestedInput
+    staffAttendanceDailies?: StaffAttendanceDailyUncheckedUpdateManyWithoutSchoolNestedInput
+    biometricRawLogs?: BiometricRawLogUncheckedUpdateManyWithoutSchoolNestedInput
+    hrTardinessLogs?: HrTardinessLogUncheckedUpdateManyWithoutSchoolNestedInput
+    schemeItems?: SchemeItemUncheckedUpdateManyWithoutSchoolNestedInput
+    lessonPlanResources?: LessonPlanResourceUncheckedUpdateManyWithoutSchoolNestedInput
+    assessmentTypes?: AssessmentTypeUncheckedUpdateManyWithoutSchoolNestedInput
+    assessments?: AssessmentUncheckedUpdateManyWithoutSchoolNestedInput
+    assessmentQuestions?: AssessmentQuestionUncheckedUpdateManyWithoutSchoolNestedInput
+    questionBanks?: QuestionBankUncheckedUpdateManyWithoutSchoolNestedInput
+    examTimetables?: ExamTimetableUncheckedUpdateManyWithoutSchoolNestedInput
+    studentAssessments?: StudentAssessmentUncheckedUpdateManyWithoutSchoolNestedInput
+    studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
+    staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
+    gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+  }
+
+  export type UserUpsertWithoutScanLogsInput = {
+    update: XOR<UserUpdateWithoutScanLogsInput, UserUncheckedUpdateWithoutScanLogsInput>
+    create: XOR<UserCreateWithoutScanLogsInput, UserUncheckedCreateWithoutScanLogsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutScanLogsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutScanLogsInput, UserUncheckedUpdateWithoutScanLogsInput>
+  }
+
+  export type UserUpdateWithoutScanLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    secondaryRoles?: UserUpdatesecondaryRolesInput | string[]
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    religion?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredLanguage?: NullableStringFieldUpdateOperationsInput | string | null
+    staffId?: NullableStringFieldUpdateOperationsInput | string | null
+    gatePin?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isLocked?: BoolFieldUpdateOperationsInput | boolean
+    mustChangePassword?: BoolFieldUpdateOperationsInput | boolean
+    passwordLastChanged?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploadedSyllabuses?: SyllabusUpdateManyWithoutUploadedByNestedInput
+    coveredTopics?: SyllabusTopicUpdateManyWithoutCoveredByNestedInput
+    recruitedVacancies?: VacancyUpdateManyWithoutRecruiterNestedInput
+    sessions?: UserSessionUpdateManyWithoutUserNestedInput
+    school?: SchoolUpdateOneWithoutUsersNestedInput
+    teacher?: TeacherUpdateOneWithoutUserNestedInput
+    student?: StudentUpdateOneWithoutUserNestedInput
+    parent?: ParentUpdateOneWithoutUserNestedInput
+    supplier?: SupplierUpdateOneWithoutUserNestedInput
+    salaryStubs?: SalaryStubUpdateManyWithoutUserNestedInput
+    shiftAssignments?: ShiftAssignmentUpdateManyWithoutUserNestedInput
+    employeeProfile?: EmployeeProfileUpdateOneWithoutUserNestedInput
+    awards?: AwardUpdateManyWithoutUserNestedInput
+    courses?: CourseUpdateManyWithoutTeacherNestedInput
+    bookLoans?: BookLoanUpdateManyWithoutUserNestedInput
+    bookReservations?: BookReservationUpdateManyWithoutUserNestedInput
+    libraryDigitalResources?: LibraryDigitalResourceUpdateManyWithoutAddedByNestedInput
+    dept?: DepartmentUpdateOneWithoutUsersNestedInput
+    headedDepartments?: DepartmentUpdateManyWithoutHeadNestedInput
+    authorizedBoardingLogs?: BoardingLogUpdateManyWithoutAuthorizedByNestedInput
+    visitorLogs?: VisitorLogUpdateManyWithoutGuardNestedInput
+    securityIncidents?: SecurityIncidentUpdateManyWithoutReportedByNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
+    diningHallReports?: DiningHallReportUpdateManyWithoutReportedByNestedInput
+    prefectReports?: PrefectReportUpdateManyWithoutReportedByNestedInput
+    staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
+    scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
+    gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
+    registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
+    assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
+    reportedIncidents?: AssetIncidentUpdateManyWithoutReporterNestedInput
+    supportTickets?: SupportTicketUpdateManyWithoutRequesterNestedInput
+    reports?: AcademicReportUpdateManyWithoutStudentNestedInput
+    requisitions?: RequisitionUpdateManyWithoutRequesterNestedInput
+    hodRequisitions?: RequisitionUpdateManyWithoutHodNestedInput
+    bursarRequisitions?: RequisitionUpdateManyWithoutBursarNestedInput
+    adminRequisitions?: RequisitionUpdateManyWithoutAdminNestedInput
+    transfers?: TransferAuthorizationUpdateManyWithoutStudentUserNestedInput
+    leadershipAssigned?: LeadershipAssignmentUpdateManyWithoutAssignedByNestedInput
+    wardenOfHostels?: HostelUpdateManyWithoutWardenNestedInput
+    matronApprovedRequisitions?: RequisitionUpdateManyWithoutMatronApprovedByNestedInput
+    issuedRequisitions?: RequisitionUpdateManyWithoutIssuedByNestedInput
+    communicationLogs?: CommunicationLogUpdateManyWithoutSenderNestedInput
+    staffAttendances?: StaffAttendanceUpdateManyWithoutStaffNestedInput
+    LiveClass?: LiveClassUpdateManyWithoutTeacherNestedInput
+    StudyMaterial?: StudyMaterialUpdateManyWithoutTeacherNestedInput
+    paymentPlans?: PaymentPlanUpdateManyWithoutParentUserNestedInput
+    payrollEntries?: PayrollEntryUpdateManyWithoutUserNestedInput
+    clinicAppointments?: ClinicAppointmentUpdateManyWithoutUserNestedInput
+    clinicComplaints?: ClinicComplaintUpdateManyWithoutUserNestedInput
+    clinicImmunizations?: ClinicImmunizationUpdateManyWithoutUserNestedInput
+    clinicReferrals?: ClinicReferralUpdateManyWithoutUserNestedInput
+    clinicVisits?: ClinicVisitUpdateManyWithoutUserNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUpdateManyWithoutUserNestedInput
+    clinicPatient?: ClinicPatientUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUpdateManyWithoutCreatedByNestedInput
+    vitalsRecorded?: ClinicVitalUpdateManyWithoutRecordedByNestedInput
+    prescriptionsWritten?: ClinicPrescriptionUpdateManyWithoutPrescribedByNestedInput
+    pharmacyDispensingsMade?: PharmacyDispenseUpdateManyWithoutDispensedByNestedInput
+    monitoringLogsRecorded?: ClinicMonitoringLogUpdateManyWithoutRecordedByNestedInput
+    emergencyLogsRecorded?: ClinicEmergencyLogUpdateManyWithoutLoggedByNestedInput
+    clinicAccessAudits?: ClinicAccessAuditUpdateManyWithoutUserNestedInput
+    visitsTriaged?: ClinicVisitUpdateManyWithoutTriageByNestedInput
+    visitsConsulted?: ClinicVisitUpdateManyWithoutConsultedByNestedInput
+    leaveBalances?: LeaveBalanceUpdateManyWithoutUserNestedInput
+    announcementsCreated?: AnnouncementUpdateManyWithoutCreatedByNestedInput
+    announcementReads?: AnnouncementReadUpdateManyWithoutUserNestedInput
+    createdQuestions?: QuestionUpdateManyWithoutCreatedByNestedInput
+    createdCbtExams?: CbtExamUpdateManyWithoutCreatedByNestedInput
+    nominatedAwards?: StudentAwardUpdateManyWithoutNominatorNestedInput
+    approvedAwards?: StudentAwardUpdateManyWithoutApproverNestedInput
+    approvedBursaries?: StudentBursaryUpdateManyWithoutApproverNestedInput
+    approvedExeats?: ExeatUpdateManyWithoutApprovedByHousemasterNestedInput
+    markedBoardingRollCalls?: BoardingRollCallUpdateManyWithoutMarkedByNestedInput
+    uniformsIssued?: UniformIssuanceUpdateManyWithoutIssuedByNestedInput
+    markedAttendanceSessions?: AttendanceSessionUpdateManyWithoutTeacherNestedInput
+    markedSessionRecords?: AttendanceSessionRecordUpdateManyWithoutMarkedByNestedInput
+    staffAttendanceDailies?: StaffAttendanceDailyUpdateManyWithoutStaffNestedInput
+    biometricRawLogs?: BiometricRawLogUpdateManyWithoutStaffNestedInput
+    hrTardinessLogs?: HrTardinessLogUpdateManyWithoutStaffNestedInput
+    tripLeadTrips?: SchoolTripUpdateManyWithoutStaffNestedInput
+    tripNurseTrips?: SchoolTripUpdateManyWithoutNurseStaffNestedInput
+    parentTripConsents?: TripConsentUpdateManyWithoutParentNestedInput
+    parentMedicalConsents?: MedicalConsentUpdateManyWithoutParentNestedInput
+    schemesHodApproved?: SchemeOfWorkUpdateManyWithoutHodApprovedByNestedInput
+    lessonPlansHodReviewed?: LessonPlanUpdateManyWithoutHodReviewedByNestedInput
+    assessmentsCreated?: AssessmentUpdateManyWithoutCreatedByNestedInput
+    assessmentsModerated?: AssessmentUpdateManyWithoutModeratedByNestedInput
+    questionBankCreated?: QuestionBankUpdateManyWithoutCreatedByNestedInput
+    assessmentsMarked?: StudentAssessmentUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUpdateManyWithoutReceivedByNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutScanLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    secondaryRoles?: UserUpdatesecondaryRolesInput | string[]
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    religion?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    preferredLanguage?: NullableStringFieldUpdateOperationsInput | string | null
+    staffId?: NullableStringFieldUpdateOperationsInput | string | null
+    schoolId?: NullableStringFieldUpdateOperationsInput | string | null
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    gatePin?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    isLocked?: BoolFieldUpdateOperationsInput | boolean
+    mustChangePassword?: BoolFieldUpdateOperationsInput | boolean
+    passwordLastChanged?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    uploadedSyllabuses?: SyllabusUncheckedUpdateManyWithoutUploadedByNestedInput
+    coveredTopics?: SyllabusTopicUncheckedUpdateManyWithoutCoveredByNestedInput
+    recruitedVacancies?: VacancyUncheckedUpdateManyWithoutRecruiterNestedInput
+    sessions?: UserSessionUncheckedUpdateManyWithoutUserNestedInput
+    teacher?: TeacherUncheckedUpdateOneWithoutUserNestedInput
+    student?: StudentUncheckedUpdateOneWithoutUserNestedInput
+    parent?: ParentUncheckedUpdateOneWithoutUserNestedInput
+    supplier?: SupplierUncheckedUpdateOneWithoutUserNestedInput
+    salaryStubs?: SalaryStubUncheckedUpdateManyWithoutUserNestedInput
+    shiftAssignments?: ShiftAssignmentUncheckedUpdateManyWithoutUserNestedInput
+    employeeProfile?: EmployeeProfileUncheckedUpdateOneWithoutUserNestedInput
+    awards?: AwardUncheckedUpdateManyWithoutUserNestedInput
+    courses?: CourseUncheckedUpdateManyWithoutTeacherNestedInput
+    bookLoans?: BookLoanUncheckedUpdateManyWithoutUserNestedInput
+    bookReservations?: BookReservationUncheckedUpdateManyWithoutUserNestedInput
+    libraryDigitalResources?: LibraryDigitalResourceUncheckedUpdateManyWithoutAddedByNestedInput
+    headedDepartments?: DepartmentUncheckedUpdateManyWithoutHeadNestedInput
+    authorizedBoardingLogs?: BoardingLogUncheckedUpdateManyWithoutAuthorizedByNestedInput
+    visitorLogs?: VisitorLogUncheckedUpdateManyWithoutGuardNestedInput
+    securityIncidents?: SecurityIncidentUncheckedUpdateManyWithoutReportedByNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
+    diningHallReports?: DiningHallReportUncheckedUpdateManyWithoutReportedByNestedInput
+    prefectReports?: PrefectReportUncheckedUpdateManyWithoutReportedByNestedInput
+    staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
+    scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
+    gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
+    registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
+    assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
+    reportedIncidents?: AssetIncidentUncheckedUpdateManyWithoutReporterNestedInput
+    supportTickets?: SupportTicketUncheckedUpdateManyWithoutRequesterNestedInput
+    reports?: AcademicReportUncheckedUpdateManyWithoutStudentNestedInput
+    requisitions?: RequisitionUncheckedUpdateManyWithoutRequesterNestedInput
+    hodRequisitions?: RequisitionUncheckedUpdateManyWithoutHodNestedInput
+    bursarRequisitions?: RequisitionUncheckedUpdateManyWithoutBursarNestedInput
+    adminRequisitions?: RequisitionUncheckedUpdateManyWithoutAdminNestedInput
+    transfers?: TransferAuthorizationUncheckedUpdateManyWithoutStudentUserNestedInput
+    leadershipAssigned?: LeadershipAssignmentUncheckedUpdateManyWithoutAssignedByNestedInput
+    wardenOfHostels?: HostelUncheckedUpdateManyWithoutWardenNestedInput
+    matronApprovedRequisitions?: RequisitionUncheckedUpdateManyWithoutMatronApprovedByNestedInput
+    issuedRequisitions?: RequisitionUncheckedUpdateManyWithoutIssuedByNestedInput
+    communicationLogs?: CommunicationLogUncheckedUpdateManyWithoutSenderNestedInput
+    staffAttendances?: StaffAttendanceUncheckedUpdateManyWithoutStaffNestedInput
+    LiveClass?: LiveClassUncheckedUpdateManyWithoutTeacherNestedInput
+    StudyMaterial?: StudyMaterialUncheckedUpdateManyWithoutTeacherNestedInput
+    paymentPlans?: PaymentPlanUncheckedUpdateManyWithoutParentUserNestedInput
+    payrollEntries?: PayrollEntryUncheckedUpdateManyWithoutUserNestedInput
+    clinicAppointments?: ClinicAppointmentUncheckedUpdateManyWithoutUserNestedInput
+    clinicComplaints?: ClinicComplaintUncheckedUpdateManyWithoutUserNestedInput
+    clinicImmunizations?: ClinicImmunizationUncheckedUpdateManyWithoutUserNestedInput
+    clinicReferrals?: ClinicReferralUncheckedUpdateManyWithoutUserNestedInput
+    clinicVisits?: ClinicVisitUncheckedUpdateManyWithoutUserNestedInput
+    clinicHospitalizations?: ClinicHospitalizationUncheckedUpdateManyWithoutUserNestedInput
+    clinicPatient?: ClinicPatientUncheckedUpdateOneWithoutUserNestedInput
+    createdSubjects?: SubjectUncheckedUpdateManyWithoutCreatedByNestedInput
+    vitalsRecorded?: ClinicVitalUncheckedUpdateManyWithoutRecordedByNestedInput
+    prescriptionsWritten?: ClinicPrescriptionUncheckedUpdateManyWithoutPrescribedByNestedInput
+    pharmacyDispensingsMade?: PharmacyDispenseUncheckedUpdateManyWithoutDispensedByNestedInput
+    monitoringLogsRecorded?: ClinicMonitoringLogUncheckedUpdateManyWithoutRecordedByNestedInput
+    emergencyLogsRecorded?: ClinicEmergencyLogUncheckedUpdateManyWithoutLoggedByNestedInput
+    clinicAccessAudits?: ClinicAccessAuditUncheckedUpdateManyWithoutUserNestedInput
+    visitsTriaged?: ClinicVisitUncheckedUpdateManyWithoutTriageByNestedInput
+    visitsConsulted?: ClinicVisitUncheckedUpdateManyWithoutConsultedByNestedInput
+    leaveBalances?: LeaveBalanceUncheckedUpdateManyWithoutUserNestedInput
+    announcementsCreated?: AnnouncementUncheckedUpdateManyWithoutCreatedByNestedInput
+    announcementReads?: AnnouncementReadUncheckedUpdateManyWithoutUserNestedInput
+    createdQuestions?: QuestionUncheckedUpdateManyWithoutCreatedByNestedInput
+    createdCbtExams?: CbtExamUncheckedUpdateManyWithoutCreatedByNestedInput
+    nominatedAwards?: StudentAwardUncheckedUpdateManyWithoutNominatorNestedInput
+    approvedAwards?: StudentAwardUncheckedUpdateManyWithoutApproverNestedInput
+    approvedBursaries?: StudentBursaryUncheckedUpdateManyWithoutApproverNestedInput
+    approvedExeats?: ExeatUncheckedUpdateManyWithoutApprovedByHousemasterNestedInput
+    markedBoardingRollCalls?: BoardingRollCallUncheckedUpdateManyWithoutMarkedByNestedInput
+    uniformsIssued?: UniformIssuanceUncheckedUpdateManyWithoutIssuedByNestedInput
+    markedAttendanceSessions?: AttendanceSessionUncheckedUpdateManyWithoutTeacherNestedInput
+    markedSessionRecords?: AttendanceSessionRecordUncheckedUpdateManyWithoutMarkedByNestedInput
+    staffAttendanceDailies?: StaffAttendanceDailyUncheckedUpdateManyWithoutStaffNestedInput
+    biometricRawLogs?: BiometricRawLogUncheckedUpdateManyWithoutStaffNestedInput
+    hrTardinessLogs?: HrTardinessLogUncheckedUpdateManyWithoutStaffNestedInput
+    tripLeadTrips?: SchoolTripUncheckedUpdateManyWithoutStaffNestedInput
+    tripNurseTrips?: SchoolTripUncheckedUpdateManyWithoutNurseStaffNestedInput
+    parentTripConsents?: TripConsentUncheckedUpdateManyWithoutParentNestedInput
+    parentMedicalConsents?: MedicalConsentUncheckedUpdateManyWithoutParentNestedInput
+    schemesHodApproved?: SchemeOfWorkUncheckedUpdateManyWithoutHodApprovedByNestedInput
+    lessonPlansHodReviewed?: LessonPlanUncheckedUpdateManyWithoutHodReviewedByNestedInput
+    assessmentsCreated?: AssessmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    assessmentsModerated?: AssessmentUncheckedUpdateManyWithoutModeratedByNestedInput
+    questionBankCreated?: QuestionBankUncheckedUpdateManyWithoutCreatedByNestedInput
+    assessmentsMarked?: StudentAssessmentUncheckedUpdateManyWithoutMarkedByNestedInput
+    receivedGRNs?: GoodsReceivedNoteUncheckedUpdateManyWithoutReceivedByNestedInput
   }
 
   export type SchoolCreateManyPlanInput = {
@@ -670435,6 +677577,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateWithoutPlanInput = {
@@ -670634,6 +677778,8 @@ export namespace Prisma {
     studentQrCodes?: StudentQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutSchoolNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutSchoolNestedInput
+    tenantKeys?: TenantKeyUncheckedUpdateManyWithoutSchoolNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutTenantNestedInput
   }
 
   export type SchoolUncheckedUpdateManyWithoutPlanInput = {
@@ -673199,6 +680345,33 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type TenantKeyCreateManySchoolInput = {
+    id?: string
+    schoolCode: string
+    keyId: string
+    algorithm?: string
+    publicKey: string
+    encryptedPrivateKey: string
+    isActive?: boolean
+    expiresAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ScanLogCreateManyTenantInput = {
+    id?: string
+    type: string
+    entityId: string
+    scannerUserId?: string | null
+    result: string
+    reason?: string | null
+    scannedAt?: Date | string
+    deviceId?: string | null
+    syncedAt?: Date | string | null
+    offline?: boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+  }
+
   export type SyllabusUpdateWithoutSchoolInput = {
     id?: StringFieldUpdateOperationsInput | string
     form?: StringFieldUpdateOperationsInput | string
@@ -673454,6 +680627,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -673566,6 +680740,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -681429,6 +688604,87 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type TenantKeyUpdateWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolCode?: StringFieldUpdateOperationsInput | string
+    keyId?: StringFieldUpdateOperationsInput | string
+    algorithm?: StringFieldUpdateOperationsInput | string
+    publicKey?: StringFieldUpdateOperationsInput | string
+    encryptedPrivateKey?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantKeyUncheckedUpdateWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolCode?: StringFieldUpdateOperationsInput | string
+    keyId?: StringFieldUpdateOperationsInput | string
+    algorithm?: StringFieldUpdateOperationsInput | string
+    publicKey?: StringFieldUpdateOperationsInput | string
+    encryptedPrivateKey?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TenantKeyUncheckedUpdateManyWithoutSchoolInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    schoolCode?: StringFieldUpdateOperationsInput | string
+    keyId?: StringFieldUpdateOperationsInput | string
+    algorithm?: StringFieldUpdateOperationsInput | string
+    publicKey?: StringFieldUpdateOperationsInput | string
+    encryptedPrivateKey?: StringFieldUpdateOperationsInput | string
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    expiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ScanLogUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    result?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    scannedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    syncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    offline?: BoolFieldUpdateOperationsInput | boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    scannerUser?: UserUpdateOneWithoutScanLogsNestedInput
+  }
+
+  export type ScanLogUncheckedUpdateWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    scannerUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    result?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    scannedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    syncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    offline?: BoolFieldUpdateOperationsInput | boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type ScanLogUncheckedUpdateManyWithoutTenantInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    scannerUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    result?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    scannedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    syncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    offline?: BoolFieldUpdateOperationsInput | boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+  }
+
   export type HostelCreateManyCategoryInput = {
     id?: string
     name: string
@@ -682226,6 +689482,20 @@ export namespace Prisma {
     overrideByStaffId?: string | null
     overrideReason?: string | null
     createdAt?: Date | string
+  }
+
+  export type ScanLogCreateManyScannerUserInput = {
+    id?: string
+    tenantId: string
+    type: string
+    entityId: string
+    result: string
+    reason?: string | null
+    scannedAt?: Date | string
+    deviceId?: string | null
+    syncedAt?: Date | string | null
+    offline?: boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type AssetCreateManyCustodianInput = {
@@ -684436,6 +691706,48 @@ export namespace Prisma {
     overrideByStaffId?: NullableStringFieldUpdateOperationsInput | string | null
     overrideReason?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ScanLogUpdateWithoutScannerUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    result?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    scannedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    syncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    offline?: BoolFieldUpdateOperationsInput | boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    tenant?: SchoolUpdateOneRequiredWithoutScanLogsNestedInput
+  }
+
+  export type ScanLogUncheckedUpdateWithoutScannerUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    result?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    scannedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    syncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    offline?: BoolFieldUpdateOperationsInput | boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type ScanLogUncheckedUpdateManyWithoutScannerUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tenantId?: StringFieldUpdateOperationsInput | string
+    type?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    result?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    scannedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    deviceId?: NullableStringFieldUpdateOperationsInput | string | null
+    syncedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    offline?: BoolFieldUpdateOperationsInput | boolean
+    metadata?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type AssetUpdateWithoutCustodianInput = {
@@ -695560,6 +702872,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUpdateManyWithoutCustodianNestedInput
@@ -695672,6 +702985,7 @@ export namespace Prisma {
     staffQrCodes?: StaffQrCodeUncheckedUpdateManyWithoutStaffNestedInput
     scannedGateLogs?: GateLogUncheckedUpdateManyWithoutScannedByGuardNestedInput
     gateLogs?: GateLogUncheckedUpdateManyWithoutStaffNestedInput
+    scanLogs?: ScanLogUncheckedUpdateManyWithoutScannerUserNestedInput
     assignedAssets?: AssetUncheckedUpdateManyWithoutCustodianNestedInput
     registeredAssets?: AssetUncheckedUpdateManyWithoutRegisteredByNestedInput
     assignedSportingEquipments?: SportingEquipmentUncheckedUpdateManyWithoutCustodianNestedInput
@@ -705944,6 +713258,14 @@ export namespace Prisma {
      * @deprecated Use GateLogDefaultArgs instead
      */
     export type GateLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = GateLogDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use TenantKeyDefaultArgs instead
+     */
+    export type TenantKeyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = TenantKeyDefaultArgs<ExtArgs>
+    /**
+     * @deprecated Use ScanLogDefaultArgs instead
+     */
+    export type ScanLogArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = ScanLogDefaultArgs<ExtArgs>
 
   /**
    * Batch Payload for updateMany & deleteMany & createMany

@@ -373,12 +373,24 @@ router.get('/qr-cards', requireAuth, async (req: AuthRequest, res: Response) => 
     }> = [];
     const tokenByStudentId = new Map<string, string>();
 
+    const { QrCryptoService } = await import('../lib/qr-crypto');
+    const activeKey = await QrCryptoService.getOrCreateActiveKey(schoolId, school?.code || 'global');
+
     for (const student of students) {
       const existingToken = student.qrCodes[0]?.qrToken;
       if (existingToken) {
         tokenByStudentId.set(student.id, existingToken);
       } else {
-        const newToken = GateService.signToken(schoolId, student.studentId || student.id);
+        const newToken = QrCryptoService.sign(
+          {
+            type: 'GATE',
+            schoolCode: school?.code || 'global',
+            entityId: student.studentId || student.id,
+            keyId: activeKey.keyId
+          },
+          activeKey.privateKey,
+          activeKey.algorithm
+        );
         tokenByStudentId.set(student.id, newToken);
         missingTokenRecords.push({
           schoolId,
