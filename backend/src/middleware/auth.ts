@@ -8,6 +8,29 @@ if (!JWT_SECRET) {
   console.error('CRITICAL ERROR: JWT_SECRET not set in environment. Authentication will fail.');
 }
 
+// Short-lived in-memory auth verification cache (30s TTL) to prevent N*2 DB queries on parallel requests
+interface CachedAuthStatus {
+  isLocked: boolean;
+  passwordLastChangedMs: number;
+  schoolStatus?: string;
+  sessionValid: boolean;
+  cachedAt: number;
+}
+const authVerificationCache = new Map<string, CachedAuthStatus>();
+const AUTH_CACHE_TTL_MS = 30 * 1000;
+
+export const invalidateAuthCache = (userId?: string) => {
+  if (!userId) {
+    authVerificationCache.clear();
+    return;
+  }
+  for (const key of authVerificationCache.keys()) {
+    if (key.startsWith(`${userId}:`)) {
+      authVerificationCache.delete(key);
+    }
+  }
+};
+
 export interface AuthRequest extends Request {
   user?: {
     id: string;
@@ -47,53 +70,71 @@ export const requireAuth = async (req: AuthRequest, res: Response, next: NextFun
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as AuthRequest['user'] & { iat?: number; isImpersonated?: boolean; impersonatorId?: string };
-    
-    const user = await prisma.user.findFirst({
-      where: { id: decoded.id },
-      select: { 
-        isLocked: true, 
-        passwordLastChanged: true,
-        school: { select: { status: true } }
-      }
-    });
+    const cacheKey = `${decoded.id}:${decoded.sessionId || 'nosess'}`;
+    const now = Date.now();
+    let cached = authVerificationCache.get(cacheKey);
 
-    if (!user) {
-      res.status(401).json({ error: 'User no longer exists' });
-      return;
+    if (!cached || now - cached.cachedAt > AUTH_CACHE_TTL_MS) {
+      const [user, session] = await Promise.all([
+        prisma.user.findFirst({
+          where: { id: decoded.id },
+          select: {
+            isLocked: true,
+            passwordLastChanged: true,
+            school: { select: { status: true } }
+          }
+        }),
+        !decoded.isImpersonated && decoded.sessionId
+          ? prisma.userSession.findFirst({ where: { id: decoded.sessionId } })
+          : Promise.resolve(null)
+      ]);
+
+      if (!user) {
+        authVerificationCache.delete(cacheKey);
+        res.status(401).json({ error: 'User no longer exists' });
+        return;
+      }
+
+      const sessionValid = decoded.isImpersonated || !decoded.sessionId
+        ? true
+        : Boolean(session && session.isValid);
+
+      if (session && session.isValid && now - session.lastActiveAt.getTime() > 5 * 60 * 1000) {
+        prisma.userSession.update({ where: { id: session.id }, data: { lastActiveAt: new Date() } }).catch(() => {});
+      }
+
+      cached = {
+        isLocked: Boolean(user.isLocked),
+        passwordLastChangedMs: user.passwordLastChanged ? user.passwordLastChanged.getTime() : 0,
+        schoolStatus: user.school?.status,
+        sessionValid,
+        cachedAt: now
+      };
+      authVerificationCache.set(cacheKey, cached);
     }
-    if (user.isLocked) {
+
+    if (cached.isLocked) {
       res.status(401).json({ error: 'Account is locked' });
       return;
     }
-    if (user.school?.status === 'suspended') {
+    if (cached.schoolStatus === 'suspended') {
       res.status(403).json({ error: 'Your school account has been suspended. Please contact support.' });
       return;
     }
-    if (user.school?.status === 'deleted') {
+    if (cached.schoolStatus === 'deleted') {
       res.status(403).json({ error: 'Your school account has been deleted.' });
       return;
     }
-    if (decoded.iat && user.passwordLastChanged) {
-      const iatDate = new Date(decoded.iat * 1000);
-      // Add a small buffer (5 seconds) to handle timestamp precision issues
-      if (iatDate.getTime() < user.passwordLastChanged.getTime() - 5000) {
+    if (decoded.iat && cached.passwordLastChangedMs) {
+      const iatMs = decoded.iat * 1000;
+      if (iatMs < cached.passwordLastChangedMs - 5000) {
         res.status(401).json({ error: 'Token expired due to password change' });
         return;
       }
     }
-    
-    if (!decoded.isImpersonated && decoded.sessionId) {
-      const session = await prisma.userSession.findFirst({
-        where: { id: decoded.sessionId }
-      });
-      if (!session || !session.isValid) {
-        res.status(401).json({ error: 'Session revoked or invalid' });
-        return;
-      }
-      // Update last active periodically
-      if (Date.now() - session.lastActiveAt.getTime() > 5 * 60 * 1000) {
-         prisma.userSession.update({ where: { id: session.id }, data: { lastActiveAt: new Date() } }).catch(e => console.error(e));
-      }
+    if (!cached.sessionValid) {
+      res.status(401).json({ error: 'Session revoked or invalid' });
+      return;
     }
 
     req.user = decoded;

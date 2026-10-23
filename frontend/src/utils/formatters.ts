@@ -46,7 +46,22 @@ export const getAvatarUrl = (avatar?: string | null, schoolCode?: string | null,
     clean = clean.replace(/^(api\/)?storage\/media\//, '');
     // If it starts with images/ followed by a path or filename, remove the redundant images/ prefix
     clean = clean.replace(/^images\//, '');
-    const code = schoolCode || 'global';
+
+    // Check if the path itself begins with a valid school code (e.g. AX-GOXN5P/avatars/...)
+    const embeddedCodeMatch = clean.match(/^([A-Za-z]{2,4}-[A-Za-z0-9_-]+)\/(.+)$/);
+    const isValidSchoolCode = (val?: string | null) =>
+      Boolean(val && (/^[A-Za-z]{2,4}-[A-Za-z0-9_-]+$/i.test(val.trim()) || val.trim().toLowerCase() === 'global'));
+
+    let code = isValidSchoolCode(schoolCode) ? schoolCode!.trim() : '';
+    if (embeddedCodeMatch) {
+      if (!code || code.toLowerCase() === 'global') {
+        code = embeddedCodeMatch[1];
+      }
+      clean = embeddedCodeMatch[2];
+    }
+    if (!code) {
+      code = 'global';
+    }
     if (clean.toLowerCase().startsWith(`${code.toLowerCase()}/`)) {
       clean = clean.slice(code.length + 1);
     }

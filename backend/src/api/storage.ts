@@ -6,6 +6,17 @@ import { requireAuth, AuthRequest } from '../middleware/auth';
 const router = Router();
 const STORAGE_ROOT = path.join(__dirname, '../../storage');
 
+// In-memory resolution cache to prevent repeated recursive fs.readdirSync scans on high-traffic pages
+const resolvedPathCache = new Map<string, string>();
+const missingPathCache = new Map<string, number>();
+const MISSING_CACHE_TTL_MS = 60 * 1000;
+
+const DEFAULT_AVATAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
+  <rect width="128" height="128" rx="64" fill="#E2E8F0"/>
+  <circle cx="64" cy="48" r="22" fill="#94A3B8"/>
+  <path d="M24 112C24 91.0132 41.0132 74 62 74H66C86.9868 74 104 91.0132 104 112V128H24V112Z" fill="#94A3B8"/>
+</svg>`;
+
 const collapseDuplicateFolders = (filePath: string): string => {
     const parts = filePath.split('/');
     const cleanParts: string[] = [];
@@ -67,6 +78,8 @@ router.post('/upload', optionalAuthForUpload, uploadMiddleware.single('file'), (
     if (!req.file) {
         return res.status(400).json({ error: 'No file uploaded' });
     }
+    // Clear negative cache when a new file is uploaded
+    missingPathCache.clear();
     const schoolCode = req.user?.schoolCode || (req.query.schoolCode as string) || 'global';
     const subDir = req.query.dir ? String(req.query.dir) : 'uploads';
     const relativePath = path.join(schoolCode, subDir, req.file.filename).replace(/\\/g, '/');
@@ -127,20 +140,14 @@ router.get(/\/file\/(.*)/, requireAuth, (req: AuthRequest, res: Response) => {
     }
 
     // 4. RBAC Check (Sub-Folder specific)
-    const isAcademic = filePath.includes('/academic/');
     const isFinance = filePath.includes('/finance/');
     
     if (isFinance && !['BURSAR', 'SCHOOL_ADMIN'].includes(req.user!.role)) {
         return res.status(403).json({ error: 'Access denied: Financial clearance required' });
     }
 
-    // 5. Caching Strategy for Branding
-    const isBranding = filePath.includes('/images/') || filePath.includes('/logo.');
-    if (isBranding) {
-        res.setHeader('Cache-Control', 'no-cache, must-revalidate'); // Cache for 1 hour
-    } else {
-        res.setHeader('Cache-Control', 'no-cache');
-    }
+    // 5. Caching Strategy
+    res.setHeader('Cache-Control', 'private, max-age=300');
 
     // 6. Serve File (with download support if requested)
     if (req.query.download === 'true') {
@@ -163,7 +170,7 @@ router.get(/\/public\/(.*)/, (req, res) => {
         return res.status(404).send('Not Found');
     }
 
-    res.setHeader('Cache-Control', 'no-cache, must-revalidate'); // Cache for 24h
+    res.setHeader('Cache-Control', 'public, max-age=3600');
     res.sendFile(fullPath);
 });
 
@@ -173,7 +180,7 @@ router.get(/\/public\/(.*)/, (req, res) => {
  * @example /api/storage/media/AX-EMBAKWE/staff/STAFF-001/avatars/file.jpg
  */
 router.get(/\/media\/([^\/]+)\/(.*)/, (req, res) => {
-    const schoolCode = req.params[0];
+    let schoolCode = decodeURIComponent(req.params[0]);
     let filePath = decodeURIComponent(req.params[1]);
     
     // 1. Security Check: Prevent path traversal
@@ -181,16 +188,23 @@ router.get(/\/media\/([^\/]+)\/(.*)/, (req, res) => {
         return res.status(400).json({ error: 'Illegal characters in path' });
     }
 
-    // 2. Normalize path: Remove schoolCode prefix if it exists (handles both "AX-E/..." and "images/AX-E/...")
+    // If schoolCode was mistakenly passed as a person's name (e.g. "Alan Guerra") and filePath starts with AX-..., extract the real schoolCode
+    const embeddedSchoolMatch = filePath.match(/^([A-Za-z]{2,4}-[A-Za-z0-9_-]+)\/(.+)$/);
+    if (embeddedSchoolMatch && (schoolCode.includes(' ') || !/^[A-Za-z]{2,4}-[A-Za-z0-9_-]+$/i.test(schoolCode))) {
+        schoolCode = embeddedSchoolMatch[1];
+        filePath = embeddedSchoolMatch[2];
+    }
+
+    // 2. Normalize path: Remove schoolCode prefix if it exists
     filePath = filePath.replace(/^submissions\/(students\/|[A-Za-z0-9_-]+\/students\/)/i, "$1");
-    const escapedCode = schoolCode.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape for regex
-    filePath = filePath.replace(new RegExp(`^${escapedCode}/`), '');
-    filePath = filePath.replace(new RegExp(`^([^/]+)/${escapedCode}/`), '$1/');
+    const escapedCode = schoolCode.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    filePath = filePath.replace(new RegExp(`^${escapedCode}/`, 'i'), '');
+    filePath = filePath.replace(new RegExp(`^([^/]+)/${escapedCode}/`, 'i'), '$1/');
 
     // Collapse duplicate adjacent folders
     filePath = collapseDuplicateFolders(filePath);
 
-    // 2. Extension Check: Allow images, safe educational documents, and media to be served
+    // 3. Extension Check: Allow images, safe educational documents, and media to be served
     const ext = path.extname(filePath).toLowerCase();
     const allowedExtensions = [
         '.jpg', '.jpeg', '.png', '.webp', '.svg', '.gif', '.ico',
@@ -199,6 +213,26 @@ router.get(/\/media\/([^\/]+)\/(.*)/, (req, res) => {
     ];
     if (!allowedExtensions.includes(ext)) {
         return res.status(403).json({ error: 'Access denied: Targeted resource type is not allowed' });
+    }
+
+    const cacheKey = `${schoolCode}:${filePath}`;
+
+    // Fast path: check positive in-memory cache
+    const cachedFullPath = resolvedPathCache.get(cacheKey);
+    if (cachedFullPath && fs.existsSync(cachedFullPath)) {
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+        return res.sendFile(cachedFullPath);
+    }
+
+    // Fast path: check negative cache so missing files never trigger repeated directory walks
+    const missingTs = missingPathCache.get(cacheKey);
+    if (missingTs && Date.now() - missingTs < MISSING_CACHE_TTL_MS) {
+        if (filePath.includes('avatar') || ['.jpg', '.jpeg', '.png', '.webp'].includes(ext)) {
+            res.setHeader('Content-Type', 'image/svg+xml');
+            res.setHeader('Cache-Control', 'public, max-age=300');
+            return res.status(200).send(DEFAULT_AVATAR_SVG);
+        }
+        return res.status(404).json({ error: 'Media not found' });
     }
 
     // Helper to find file by exact filename within a directory (max depth 4)
@@ -245,16 +279,17 @@ router.get(/\/media\/([^\/]+)\/(.*)/, (req, res) => {
 
     for (const cp of candidatePaths) {
         if (fs.existsSync(cp) && !fs.lstatSync(cp).isDirectory()) {
-            res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+            resolvedPathCache.set(cacheKey, cp);
+            res.setHeader('Cache-Control', 'public, max-age=3600');
             return res.sendFile(cp);
         }
     }
 
     const filename = path.basename(filePath);
-    console.log(`[Storage API] Direct paths not found for ${filePath}. Searching by filename: ${filename}`);
 
     // Fallback: Check common silos first
     const fallbacks = [
+        path.join(STORAGE_ROOT, schoolCode, 'avatars', filename),
         path.join(STORAGE_ROOT, schoolCode, 'global', 'library', 'catalog', filename),
         path.join(STORAGE_ROOT, schoolCode, 'global', 'assets', 'inventory', filename),
         path.join(STORAGE_ROOT, schoolCode, 'global', 'academic', 'clubs', filename),
@@ -267,7 +302,8 @@ router.get(/\/media\/([^\/]+)\/(.*)/, (req, res) => {
 
     for (const fallbackPath of fallbacks) {
         if (fs.existsSync(fallbackPath) && !fs.lstatSync(fallbackPath).isDirectory()) {
-            res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+            resolvedPathCache.set(cacheKey, fallbackPath);
+            res.setHeader('Cache-Control', 'public, max-age=3600');
             return res.sendFile(fallbackPath);
         }
     }
@@ -275,20 +311,21 @@ router.get(/\/media\/([^\/]+)\/(.*)/, (req, res) => {
     // Dynamic search within school directory
     const schoolMatch = findFileInDir(path.join(STORAGE_ROOT, schoolCode), filename);
     if (schoolMatch) {
-        res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+        resolvedPathCache.set(cacheKey, schoolMatch);
+        res.setHeader('Cache-Control', 'public, max-age=3600');
         return res.sendFile(schoolMatch);
     }
 
     // Dynamic search within global directory
     const globalMatch = findFileInDir(path.join(STORAGE_ROOT, 'global'), filename);
     if (globalMatch) {
-        res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+        resolvedPathCache.set(cacheKey, globalMatch);
+        res.setHeader('Cache-Control', 'public, max-age=3600');
         return res.sendFile(globalMatch);
     }
 
     // Robust dynamic fallback for any logo files (fuzzy matching)
     if (filename.toLowerCase().startsWith('logo')) {
-        console.log(`[Storage API] Logo requested: ${filename}. Searching dirs...`);
         const logoDirs = [
             path.join(STORAGE_ROOT, schoolCode, 'global', 'branding'),
             path.join(STORAGE_ROOT, schoolCode, 'global', 'academic', 'branding'),
@@ -301,12 +338,23 @@ router.get(/\/media\/([^\/]+)\/(.*)/, (req, res) => {
                 if (matchingFile) {
                     const matchedPath = path.join(dir, matchingFile);
                     if (!fs.lstatSync(matchedPath).isDirectory()) {
-                        res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+                        resolvedPathCache.set(cacheKey, matchedPath);
+                        res.setHeader('Cache-Control', 'public, max-age=3600');
                         return res.sendFile(matchedPath);
                     }
                 }
             }
         }
+    }
+
+    // Record in negative cache to prevent repeated disk scans
+    missingPathCache.set(cacheKey, Date.now());
+
+    // Return clean SVG placeholder for missing avatars/images so UI never breaks or logs 404s
+    if (filePath.includes('avatar') || ['.jpg', '.jpeg', '.png', '.webp'].includes(ext)) {
+        res.setHeader('Content-Type', 'image/svg+xml');
+        res.setHeader('Cache-Control', 'public, max-age=300');
+        return res.status(200).send(DEFAULT_AVATAR_SVG);
     }
     
     return res.status(404).json({ error: 'Media not found' });

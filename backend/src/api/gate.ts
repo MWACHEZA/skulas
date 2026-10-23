@@ -363,26 +363,51 @@ router.get('/qr-cards', requireAuth, async (req: AuthRequest, res: Response) => 
       where: { id: schoolId }
     });
 
-    // Ensure all students have an active QR token
-    const cards = [];
-    for (const student of students) {
-      let qrToken = student.qrCodes[0]?.qrToken;
-      if (!qrToken) {
-        qrToken = await GateService.issueStudentQrToken(schoolId, student.id);
-      }
+    // Batch-issue QR tokens for any students missing an active token (eliminates N+1 DB calls)
+    const missingTokenRecords: Array<{
+      schoolId: string;
+      studentId: string;
+      qrToken: string;
+      isActive: boolean;
+      printedAt: Date;
+    }> = [];
+    const tokenByStudentId = new Map<string, string>();
 
-      cards.push({
-        id: student.id,
-        regNo: student.studentId,
-        name: student.name,
-        className: student.class?.name || 'Unassigned',
-        avatar: student.user?.avatar || null,
-        boardingStatus: student.boardingStatus,
-        qrToken,
-        schoolName: school?.name || 'Skulas Academy',
-        schoolCode: school?.code || ''
+    for (const student of students) {
+      const existingToken = student.qrCodes[0]?.qrToken;
+      if (existingToken) {
+        tokenByStudentId.set(student.id, existingToken);
+      } else {
+        const newToken = GateService.signToken(schoolId, student.studentId || student.id);
+        tokenByStudentId.set(student.id, newToken);
+        missingTokenRecords.push({
+          schoolId,
+          studentId: student.id,
+          qrToken: newToken,
+          isActive: true,
+          printedAt: new Date()
+        });
+      }
+    }
+
+    if (missingTokenRecords.length > 0) {
+      await prisma.studentQrCode.createMany({
+        data: missingTokenRecords,
+        skipDuplicates: true
       });
     }
+
+    const cards = students.map(student => ({
+      id: student.id,
+      regNo: student.studentId,
+      name: student.name,
+      className: student.class?.name || 'Unassigned',
+      avatar: student.user?.avatar || null,
+      boardingStatus: student.boardingStatus,
+      qrToken: tokenByStudentId.get(student.id) || '',
+      schoolName: school?.name || 'Skulas Academy',
+      schoolCode: school?.code || ''
+    }));
 
     res.json({ success: true, count: cards.length, cards });
   } catch (error) {

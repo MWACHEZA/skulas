@@ -26,6 +26,8 @@ export default function AdminQrCards() {
   const [reissuingId, setReissuingId] = useState<string | null>(null);
   const [activePrintCardId, setActivePrintCardId] = useState<string | null>(null);
   const [uploadingStudentId, setUploadingStudentId] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const CARDS_PER_PAGE = 24;
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const targetStudentIdRef = useRef<string | null>(null);
 
@@ -133,6 +135,11 @@ export default function AdminQrCards() {
     const q = search.toLowerCase();
     return c.name.toLowerCase().includes(q) || c.regNo.toLowerCase().includes(q) || c.className.toLowerCase().includes(q);
   });
+
+  const totalPages = Math.max(1, Math.ceil(filteredCards.length / CARDS_PER_PAGE));
+  const paginatedCards = activePrintCardId
+    ? filteredCards.filter(c => c.id === activePrintCardId)
+    : filteredCards.slice((currentPage - 1) * CARDS_PER_PAGE, currentPage * CARDS_PER_PAGE);
 
   return (
     <div style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto', fontFamily: 'Inter, system-ui, sans-serif' }}>
@@ -293,7 +300,7 @@ export default function AdminQrCards() {
             No student cards found for this selection.
           </div>
         ) : (
-          filteredCards.map(card => {
+          paginatedCards.map(card => {
             const resolvedAvatar = getAvatarUrl(card.avatar, card.schoolCode);
             return (
               <div
@@ -358,6 +365,8 @@ export default function AdminQrCards() {
                       <img
                         src={resolvedAvatar}
                         alt={card.name}
+                        loading="lazy"
+                        decoding="async"
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                         onError={(e) => {
                           // If remote image fails, show placeholder
@@ -494,6 +503,61 @@ export default function AdminQrCards() {
           })
         )}
       </div>
+
+      {/* Pagination Controls */}
+      {!loading && filteredCards.length > CARDS_PER_PAGE && (
+        <div className="no-print" style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginTop: '24px',
+          padding: '14px 20px',
+          background: '#fff',
+          borderRadius: '12px',
+          border: '1px solid #cbd5e1'
+        }}>
+          <span style={{ fontSize: '13px', color: '#475569', fontWeight: 600 }}>
+            Showing {((currentPage - 1) * CARDS_PER_PAGE) + 1}–{Math.min(currentPage * CARDS_PER_PAGE, filteredCards.length)} of {filteredCards.length} student ID cards
+          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button
+              disabled={currentPage <= 1}
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              style={{
+                padding: '6px 14px',
+                borderRadius: '6px',
+                border: '1px solid #cbd5e1',
+                background: '#fff',
+                fontWeight: 700,
+                fontSize: '13px',
+                cursor: currentPage <= 1 ? 'not-allowed' : 'pointer',
+                color: currentPage <= 1 ? '#94a3b8' : '#0f172a'
+              }}
+            >
+              Previous
+            </button>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', padding: '0 8px' }}>
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              disabled={currentPage >= totalPages}
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              style={{
+                padding: '6px 14px',
+                borderRadius: '6px',
+                border: '1px solid #cbd5e1',
+                background: '#fff',
+                fontWeight: 700,
+                fontSize: '13px',
+                cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
+                color: currentPage >= totalPages ? '#94a3b8' : '#0f172a'
+              }}
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
