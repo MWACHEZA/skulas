@@ -22,9 +22,9 @@ const MODULE_ACCESS_MAP: Record<string, {
     secondaryRequestRoles: ['teacher', 'TEACHER', 'student', 'STUDENT', 'parent', 'PARENT', 'bursar', 'BURSAR', 'ancillary', 'ANCILLARY']
   },
   farm: {
-    fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN', 'TEACHER'],
-    secondaryFullRoles: ['farm_manager', 'FARM_MANAGER', 'FARM_MGT', 'Agriculture Teacher', 'Farm Assistant', 'agric_teacher', 'AGRIC_TEACHER'],
-    secondaryScopedRoles: ['agric_teacher', 'AGRIC_TEACHER', 'AGRI_ACADEMIC', 'Agriculture Teacher', 'Farm Assistant', 'teacher', 'TEACHER'],
+    fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN', 'TEACHER', 'FARM_MANAGER', 'ANCILLARY', 'STAFF'],
+    secondaryFullRoles: ['farm_manager', 'Farm Manager', 'FARM_MANAGER', 'FARM_MGT', 'Agriculture Teacher', 'Farm Assistant', 'agric_teacher', 'AGRIC_TEACHER', 'ancillary', 'ANCILLARY', 'staff', 'STAFF', 'groundsman', 'GROUNDSMAN'],
+    secondaryScopedRoles: ['farm_manager', 'Farm Manager', 'agric_teacher', 'AGRIC_TEACHER', 'AGRI_ACADEMIC', 'Agriculture Teacher', 'Farm Assistant', 'teacher', 'TEACHER', 'ancillary', 'ANCILLARY', 'staff', 'STAFF'],
     secondaryRequestRoles: []
   },
   prefects: {
@@ -35,14 +35,14 @@ const MODULE_ACCESS_MAP: Record<string, {
   },
   dining: {
     fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN'],
-    secondaryFullRoles: ['catering_manager', 'CATERING_MANAGER', 'KITCHEN'],
-    secondaryScopedRoles: ['matron', 'MATRON', 'BOARDING'],
+    secondaryFullRoles: ['catering_manager', 'CATERING_MANAGER', 'KITCHEN', 'Head Chef', 'Cook', 'Catering Supervisor', 'Kitchen Assistant'],
+    secondaryScopedRoles: ['matron', 'MATRON', 'BOARDING', 'Hostel Matron', 'Hostel Supervisor'],
     secondaryRequestRoles: []
   },
   sports: {
     fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN'],
-    secondaryFullRoles: ['sports_master', 'SPORTS_MASTER', 'SPORTS'],
-    secondaryScopedRoles: ['pe_teacher', 'PE_TEACHER', 'house_master', 'HOUSE_MASTER', 'HOUSE', 'hod_sports', 'HOD_SPORTS', 'sports_tech', 'SPORTS_TECH'],
+    secondaryFullRoles: ['sports_master', 'SPORTS_MASTER', 'SPORTS', 'Sports Coordinator'],
+    secondaryScopedRoles: ['pe_teacher', 'PE_TEACHER', 'house_master', 'HOUSE_MASTER', 'HOUSE', 'hod_sports', 'HOD_SPORTS', 'sports_tech', 'SPORTS_TECH', 'Sports Captain'],
     secondaryRequestRoles: []
   }
 };
@@ -53,15 +53,16 @@ export function getModuleAccess(user: any, module: string): ModuleAccessResult {
 
   const primaryRole = (user.role || '').toUpperCase();
   const secondaryRoles: string[] = Array.isArray(user.secondaryRoles) ? user.secondaryRoles : [];
+  const normalize = (str: string) => (str || '').toLowerCase().replace(/[\s_-]+/g, '');
 
   // Full access via primary role
-  if (map.fullRoles.some(r => r.toUpperCase() === primaryRole)) {
+  if (map.fullRoles.some(r => normalize(r) === normalize(primaryRole))) {
     return { level: 'full' };
   }
 
-  // Full access via secondary role (case-insensitive)
+  // Full access via secondary role (case/spacing/underscore agnostic)
   const fullSecondary = secondaryRoles.find((r: string) => 
-    map.secondaryFullRoles.some(s => s.toLowerCase() === (r || '').toLowerCase())
+    map.secondaryFullRoles.some(s => normalize(s) === normalize(r))
   );
   if (fullSecondary) {
     return { level: 'full', actingAs: fullSecondary };
@@ -69,7 +70,7 @@ export function getModuleAccess(user: any, module: string): ModuleAccessResult {
 
   // Scoped access via secondary role
   const scopedSecondary = secondaryRoles.find((r: string) => 
-    map.secondaryScopedRoles.some(s => s.toLowerCase() === (r || '').toLowerCase())
+    map.secondaryScopedRoles.some(s => normalize(s) === normalize(r))
   );
   if (scopedSecondary) {
     return { level: 'scoped', actingAs: scopedSecondary };
@@ -77,7 +78,7 @@ export function getModuleAccess(user: any, module: string): ModuleAccessResult {
 
   // Request-only access via secondary role
   const requestSecondary = secondaryRoles.find((r: string) => 
-    map.secondaryRequestRoles.some(s => s.toLowerCase() === (r || '').toLowerCase())
+    map.secondaryRequestRoles.some(s => normalize(s) === normalize(r))
   );
   if (requestSecondary) {
     return { level: 'request_only', actingAs: requestSecondary };

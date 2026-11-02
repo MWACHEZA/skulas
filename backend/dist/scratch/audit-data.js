@@ -24,4 +24,3 @@ async function audit() {
     console.log('Total Reports in DB:', await prisma.academicReport.count());
 }
 audit().catch(console.error).finally(() => prisma.$disconnect());
-//# sourceMappingURL=audit-data.js.map

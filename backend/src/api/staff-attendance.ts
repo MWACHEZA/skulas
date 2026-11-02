@@ -87,7 +87,7 @@ router.post('/clock-in', requireAuth, async (req: AuthRequest, res) => {
     const { image } = req.body;
     const today = new Date();
 
-    // Check if already clocked in today
+    // Check if attendance record exists today
     const existing = await prisma.staffAttendance.findFirst({
       where: {
         schoolId: req.user!.schoolId!,
@@ -100,7 +100,23 @@ router.post('/clock-in', requireAuth, async (req: AuthRequest, res) => {
     });
 
     if (existing) {
-      return res.status(400).json({ error: 'Already clocked in today' });
+      if (existing.timeIn) {
+        return res.json({
+          success: true,
+          message: 'Already clocked in today',
+          attendance: existing
+        });
+      }
+
+      const updated = await prisma.staffAttendance.update({
+        where: { id: existing.id },
+        data: {
+          timeIn: today,
+          clockInImage: image || existing.clockInImage,
+          status: 'FULL DAY'
+        }
+      });
+      return res.json({ success: true, attendance: updated });
     }
 
     const attendance = await prisma.staffAttendance.create({
@@ -141,9 +157,13 @@ router.post('/clock-out', requireAuth, async (req: AuthRequest, res) => {
     if (!existing) {
       return res.status(400).json({ error: 'Have not clocked in today' });
     }
-    
+
     if (existing.timeOut) {
-      return res.status(400).json({ error: 'Already clocked out' });
+      return res.json({
+        success: true,
+        message: 'Already clocked out today',
+        attendance: existing
+      });
     }
 
     const attendance = await prisma.staffAttendance.update({

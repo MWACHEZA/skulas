@@ -2497,4 +2497,3 @@ router.patch('/settings', auth_1.requireAuth, async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=clinic.js.map

@@ -293,4 +293,3 @@ async function seedUsers(prisma, school, emailPrefix) {
     });
     return { dbTeachers, dbStudents, adminUser, bursarUser, parent, supplier, alumniUser, clinicUser, nurseUser, doctorUser };
 }
-//# sourceMappingURL=seedUsers.js.map

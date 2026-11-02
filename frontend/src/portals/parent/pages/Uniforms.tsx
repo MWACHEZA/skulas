@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { useAuth } from '../../../contexts/AuthContext';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useAuth, type LinkedEntity } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
 import { SkeletonLoader, Pagination } from '../../../components/shared';
@@ -54,9 +54,18 @@ interface UniformsSummary {
   orderHistory: OrderHistoryItem[];
 }
 
+type StoreFilterType = 'ALL' | 'UNIFORM' | 'SPORTS' | 'ACCESSORIES' | 'MISSING';
+type PaymentMethodType = 'paynow' | 'innbucks' | 'zig' | 'cash';
+
+interface ExtendedChildEntity extends LinkedEntity {
+  studentId?: string;
+  code?: string;
+  className?: string;
+}
+
 export default function ParentUniforms() {
   const { user, activeEntity } = useAuth();
-  const currentChild = activeEntity || user?.linkedEntities?.[0];
+  const currentChild = (activeEntity || user?.linkedEntities?.[0]) as ExtendedChildEntity | undefined;
   const { showToast } = useToast();
 
   const [loading, setLoading] = useState(true);
@@ -64,7 +73,7 @@ export default function ParentUniforms() {
   const [activeTab, setActiveTab] = useState<'requirements' | 'store' | 'orders'>('requirements');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
-  const [storeFilter, setStoreFilter] = useState<'ALL' | 'UNIFORM' | 'SPORTS' | 'ACCESSORIES' | 'MISSING'>('ALL');
+  const [storeFilter, setStoreFilter] = useState<StoreFilterType>('ALL');
   const [storeSearch, setStoreSearch] = useState('');
 
   // Orders Pagination
@@ -73,15 +82,11 @@ export default function ParentUniforms() {
 
   // Checkout Modal State
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'paynow' | 'innbucks' | 'zig' | 'cash'>('paynow');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>('paynow');
   const [isSubmittingOrder, setIsSubmittingOrder] = useState(false);
   const [selectedOrderForVoucher, setSelectedOrderForVoucher] = useState<OrderHistoryItem | null>(null);
 
-  useEffect(() => {
-    fetchUniforms();
-  }, [currentChild?.id]);
-
-  const fetchUniforms = async () => {
+  const fetchUniforms = useCallback(async () => {
     setLoading(true);
     try {
       const studentId = currentChild?.id;
@@ -94,8 +99,8 @@ export default function ParentUniforms() {
           student: {
             id: currentChild?.id || '',
             name: currentChild?.name || 'Student',
-            studentId: (currentChild as any)?.studentId || currentChild?.code || '',
-            gradeLevel: (currentChild as any)?.className || 'Current Class',
+            studentId: currentChild?.studentId || currentChild?.code || '',
+            gradeLevel: currentChild?.className || 'Current Class',
             schoolName: currentChild?.schoolName || 'School'
           },
           requirements: [],
@@ -103,15 +108,15 @@ export default function ParentUniforms() {
           orderHistory: []
         });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to fetch uniforms data from database:', err);
       showToast('Could not load uniform catalog from server.', 'error');
       setData({
         student: {
           id: currentChild?.id || '',
           name: currentChild?.name || 'Student',
-          studentId: (currentChild as any)?.studentId || currentChild?.code || '',
-          gradeLevel: (currentChild as any)?.className || 'Current Class',
+          studentId: currentChild?.studentId || currentChild?.code || '',
+          gradeLevel: currentChild?.className || 'Current Class',
           schoolName: currentChild?.schoolName || 'School'
         },
         requirements: [],
@@ -121,7 +126,11 @@ export default function ParentUniforms() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentChild, showToast]);
+
+  useEffect(() => {
+    fetchUniforms();
+  }, [fetchUniforms]);
 
   const handleAddToCart = (item: ShopItem, defaultSize?: string) => {
     const size = defaultSize || selectedSizes[item.id] || 'Medium';
@@ -171,18 +180,19 @@ export default function ParentUniforms() {
       // Immediately refresh live database summary
       fetchUniforms();
       setActiveTab('orders');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Order submission failed:', err);
-      showToast(err.response?.data?.error || 'Order could not be processed. Please try again.', 'error');
+      const apiError = err as { response?: { data?: { error?: string } } };
+      showToast(apiError.response?.data?.error || 'Order could not be processed. Please try again.', 'error');
     } finally {
       setIsSubmittingOrder(false);
     }
   };
 
   const student = data?.student;
-  const requirements = data?.requirements || [];
-  const shopItems = data?.shopItems || [];
-  const orderHistory = data?.orderHistory || [];
+  const requirements = useMemo(() => data?.requirements || [], [data?.requirements]);
+  const shopItems = useMemo(() => data?.shopItems || [], [data?.shopItems]);
+  const orderHistory = useMemo(() => data?.orderHistory || [], [data?.orderHistory]);
 
   const fulfilledCount = requirements.filter(r => r.status === 'FULFILLED').length;
   const missingCount = requirements.filter(r => r.status === 'MISSING').length;
@@ -612,17 +622,17 @@ export default function ParentUniforms() {
             }}
           >
             <div style={{ display: 'flex', gap: 8, overflowX: 'auto', alignItems: 'center' }}>
-              {[
+              {([
                 { key: 'ALL', label: 'All Store Items' },
                 { key: 'MISSING', label: 'Missing for Child' },
                 { key: 'UNIFORM', label: 'Uniforms & Shirts' },
                 { key: 'SPORTS', label: 'Sportswear & Kits' },
                 { key: 'ACCESSORIES', label: 'Ties & Accessories' }
-              ].map(f => (
+              ] as const).map(f => (
                 <button
                   key={f.key}
                   type="button"
-                  onClick={() => setStoreFilter(f.key as any)}
+                  onClick={() => setStoreFilter(f.key)}
                   style={{
                     border: '1px solid',
                     borderColor: storeFilter === f.key ? '#2563eb' : '#e2e8f0',
@@ -990,16 +1000,16 @@ export default function ParentUniforms() {
                   Choose Settlement Method:
                 </label>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  {[
+                  {([
                     { id: 'paynow', label: 'Paynow / Ecocash' },
                     { id: 'innbucks', label: 'InnBucks Voucher' },
                     { id: 'zig', label: 'ZiG / POS Debit' },
                     { id: 'cash', label: 'Pay at Tuckshop Counter' }
-                  ].map(m => (
+                  ] as const).map(m => (
                     <button
                       key={m.id}
                       type="button"
-                      onClick={() => setPaymentMethod(m.id as any)}
+                      onClick={() => setPaymentMethod(m.id)}
                       style={{
                         padding: '10px 12px',
                         borderRadius: 8,

@@ -169,4 +169,3 @@ main()
     process.exit(1);
 })
     .finally(() => prisma_1.default.$disconnect());
-//# sourceMappingURL=setup-accounting-views.js.map

@@ -132,4 +132,3 @@ router.patch('/:id', auth_1.requireAuth, (0, features_1.requireFeature)('Postgra
     }
 });
 exports.default = router;
-//# sourceMappingURL=extensions.js.map

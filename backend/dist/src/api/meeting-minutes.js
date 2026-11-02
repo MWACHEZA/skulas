@@ -69,4 +69,3 @@ router.delete('/:id', auth_1.requireAuth, async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=meeting-minutes.js.map

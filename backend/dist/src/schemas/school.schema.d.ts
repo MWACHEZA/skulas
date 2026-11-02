@@ -38,6 +38,9 @@ export declare const UpdateBrandingSchema: z.ZodObject<{
     body: z.ZodObject<{
         primaryColor: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         accentColor: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        sidebarTheme: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        headerTheme: z.ZodNullable<z.ZodOptional<z.ZodString>>;
+        mode: z.ZodNullable<z.ZodOptional<z.ZodString>>;
         motto: z.ZodNullable<z.ZodOptional<z.ZodString>>;
     }, z.core.$strip>;
 }, z.core.$strip>;

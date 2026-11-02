@@ -21,11 +21,11 @@ export declare const RegisterUserSchema: z.ZodObject<{
             TEACHER: "TEACHER";
             ANCILLARY: "ANCILLARY";
             CLINIC: "CLINIC";
-            LIBRARIAN: "LIBRARIAN";
             SCHOOL_ADMIN: "SCHOOL_ADMIN";
             SUPER_ADMIN: "SUPER_ADMIN";
             STUDENT: "STUDENT";
             BURSAR: "BURSAR";
+            LIBRARIAN: "LIBRARIAN";
             ALUMNI: "ALUMNI";
             SUPPLIER: "SUPPLIER";
             PARENT: "PARENT";

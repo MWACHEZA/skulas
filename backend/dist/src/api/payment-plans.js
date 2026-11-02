@@ -298,4 +298,3 @@ router.delete('/templates/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCH
     res.json({ success: true, templates: current });
 });
 exports.default = router;
-//# sourceMappingURL=payment-plans.js.map

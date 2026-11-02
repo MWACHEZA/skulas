@@ -418,4 +418,3 @@ router.patch('/documents/:id', auth_1.requireAuth, async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=applications.js.map

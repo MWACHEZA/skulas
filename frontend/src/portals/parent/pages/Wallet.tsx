@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import { useAccountingQuery, invalidateAllAccountingKeys } from '../../../hooks/useAccountingQuery';
 import EmptyState from '../../../components/shared/EmptyState';
-import { Pagination, usePagination, PaginatedTable } from '../../../components/shared';
+import { Pagination, usePagination, PaginatedTable, PaynowCheckoutModal } from '../../../components/shared';
 
 interface WalletTransaction {
   id: string;
@@ -40,8 +41,6 @@ export default function ParentWallet() {
 
   // Top-up state
   const [amount, setAmount] = useState<string>('20');
-  const [paymentChannel, setPaymentChannel] = useState<'Paynow Online Gateway' | 'EcoCash Mobile Money' | 'Instant Bank Transfer'>('Paynow Online Gateway');
-  const [isProcessing, setIsProcessing] = useState(false);
   const [showPayModal, setShowPayModal] = useState(false);
 
   // Daily limit state & modal
@@ -65,7 +64,7 @@ export default function ParentWallet() {
   // Transaction filter state
   const [filterType, setFilterType] = useState<'ALL' | 'PURCHASE' | 'DEPOSIT'>('ALL');
 
-  const { data: wallet = null, isLoading: loading, refetch: fetchWallet } = useAccountingQuery<WalletData | null>({
+  const { data: wallet = null, refetch: fetchWallet } = useAccountingQuery<WalletData | null>({
     key: `wallets:${currentChild?.id}`,
     enabled: !!currentChild?.id,
     fetcher: async () => {
@@ -98,30 +97,6 @@ export default function ParentWallet() {
     }
   };
 
-  const handleTopup = async () => {
-    const val = parseFloat(amount);
-    if (isNaN(val) || val <= 0) {
-      return showToast('Please enter a valid top-up amount', 'warning');
-    }
-
-    setIsProcessing(true);
-    try {
-      await api.post('/api/wallets/fund', {
-        studentId: currentChild?.id,
-        amount: val,
-        paymentMethod: paymentChannel
-      });
-      showToast(`$${val.toFixed(2)} added to ${currentChild?.name}'s tuckshop wallet!`, 'success');
-      setAmount('20');
-      setShowPayModal(false);
-      invalidateAllAccountingKeys();
-      fetchWallet();
-    } catch (e: any) {
-      showToast(e.response?.data?.error || 'Failed to process wallet top-up', 'error');
-    } finally {
-      setIsProcessing(false);
-    }
-  };
 
   const handleSaveDailyLimit = async (customLimit?: number) => {
     const val = customLimit !== undefined ? customLimit : parseFloat(dailyLimitInput);
@@ -139,8 +114,9 @@ export default function ParentWallet() {
       setShowLimitModal(false);
       invalidateAllAccountingKeys();
       fetchWallet();
-    } catch (e: any) {
-      showToast(e.response?.data?.error || 'Failed to update daily limit', 'error');
+    } catch (e) {
+      const errorMsg = axios.isAxiosError(e) ? e.response?.data?.error : undefined;
+      showToast(errorMsg || 'Failed to update daily limit', 'error');
     } finally {
       setIsSavingLimit(false);
     }
@@ -365,32 +341,18 @@ export default function ParentWallet() {
               </div>
 
               <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', marginBottom: 6, fontSize: '0.78rem', color: '#64748b', fontWeight: 700 }}>
-                  Payment Method
-                </label>
-                <select
-                  className="portal-input"
-                  style={{ width: '100%', fontSize: '0.88rem', fontWeight: 600 }}
-                  value={paymentChannel}
-                  onChange={e => setPaymentChannel(e.target.value as any)}
-                >
-                  <option value="Paynow Online Gateway">Paynow Instant Gateway (Visa / EcoCash / Innbucks)</option>
-                  <option value="EcoCash Mobile Money">EcoCash Direct USD</option>
-                  <option value="Instant Bank Transfer">Bank Transfer / ZIPIT</option>
-                </select>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', color: '#64748b', fontWeight: 600 }}>
+                  <i className="fas fa-shield-alt" style={{ color: '#2563eb' }} /> Supported: Paynow, Visa, Mastercard, EcoCash, OneMoney
+                </div>
               </div>
 
               <button
                 className="portal-btn-primary"
                 style={{ width: '100%', justifyContent: 'center', padding: '13px', fontSize: '0.95rem', fontWeight: 800 }}
-                onClick={handleTopup}
-                disabled={isProcessing || !amount}
+                onClick={() => setShowPayModal(true)}
+                disabled={!amount}
               >
-                {isProcessing ? (
-                  <><i className="fas fa-spinner fa-spin" style={{ marginRight: 8 }}></i>Processing Deposit...</>
-                ) : (
-                  <><i className="fas fa-lock" style={{ marginRight: 8 }}></i>Fund ${amount || '0'} Now</>
-                )}
+                <i className="fas fa-lock" style={{ marginRight: 8 }}></i>Fund ${amount || '0'} Now
               </button>
 
               <div style={{ textAlign: 'center', marginTop: 12, fontSize: '0.75rem', color: '#64748b' }}>
@@ -736,10 +698,10 @@ export default function ParentWallet() {
         <div className="portal-card-body" style={{ padding: 20 }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: 14 }}>
             {[
-              { id: 'noPeanuts', label: 'Nut Allergy Alert (No Peanuts)', desc: 'Blocks nut-based snacks at the till' },
-              { id: 'noPork', label: 'Halaal / No Pork Products', desc: 'Flags non-compliant items at checkout' },
-              { id: 'limitSweets', label: 'Restrict Fizzy & Sugary Drinks', desc: 'Permits water and 100% fruit juice only' },
-              { id: 'healthyFirst', label: 'Warm Meal Priority', desc: 'Prioritizes lunch meals over confectionery' }
+              { id: 'noPeanuts' as const, label: 'Nut Allergy Alert (No Peanuts)', desc: 'Blocks nut-based snacks at the till' },
+              { id: 'noPork' as const, label: 'Halaal / No Pork Products', desc: 'Flags non-compliant items at checkout' },
+              { id: 'limitSweets' as const, label: 'Restrict Fizzy & Sugary Drinks', desc: 'Permits water and 100% fruit juice only' },
+              { id: 'healthyFirst' as const, label: 'Warm Meal Priority', desc: 'Prioritizes lunch meals over confectionery' }
             ].map(ctrl => (
               <label
                 key={ctrl.id}
@@ -749,15 +711,15 @@ export default function ParentWallet() {
                   gap: 12,
                   padding: 14,
                   borderRadius: 12,
-                  border: (dietaryPrefs as any)[ctrl.id] ? '1px solid #86efac' : '1px solid #e2e8f0',
-                  background: (dietaryPrefs as any)[ctrl.id] ? '#f0fdf4' : '#f8fafc',
+                  border: dietaryPrefs[ctrl.id] ? '1px solid #86efac' : '1px solid #e2e8f0',
+                  background: dietaryPrefs[ctrl.id] ? '#f0fdf4' : '#f8fafc',
                   cursor: 'pointer',
                   transition: 'all 0.15s ease'
                 }}
               >
                 <input
                   type="checkbox"
-                  checked={(dietaryPrefs as any)[ctrl.id]}
+                  checked={dietaryPrefs[ctrl.id]}
                   onChange={e => {
                     setDietaryPrefs(prev => ({ ...prev, [ctrl.id]: e.target.checked }));
                     showToast(`Dietary control updated: ${ctrl.label}`, 'success');
@@ -827,95 +789,22 @@ export default function ParentWallet() {
         </div>
       )}
 
-      {/* ── MODAL: TOP UP WALLET ── */}
-      {showPayModal && (
-        <div className="portal-modal-overlay" onClick={() => setShowPayModal(false)}>
-          <div className="portal-modal-card" style={{ maxWidth: 460 }} onClick={e => e.stopPropagation()}>
-            <div className="portal-modal-header">
-              <h2><i className="fas fa-wallet" style={{ marginRight: 8, color: '#10b981' }}></i>Top Up Tuckshop Wallet</h2>
-              <button onClick={() => setShowPayModal(false)} className="portal-btn-ghost">&times;</button>
-            </div>
-            <div className="portal-modal-body">
-              <div
-                style={{
-                  background: '#f8fafc',
-                  padding: 14,
-                  borderRadius: 10,
-                  marginBottom: 16,
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  border: '1px solid #e2e8f0'
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Student Wallet</div>
-                  <div style={{ fontWeight: 800, color: '#1e293b' }}>{currentChild.name}</div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Current Balance</div>
-                  <div style={{ fontWeight: 800, color: '#16a34a' }}>${currentBalance.toFixed(2)}</div>
-                </div>
-              </div>
-
-              <div className="portal-form-group">
-                <label>Select Amount ($)</label>
-                <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-                  {[5, 10, 20, 50].map(val => (
-                    <button
-                      key={val}
-                      type="button"
-                      className="portal-btn-secondary"
-                      style={{
-                        flex: 1,
-                        justifyContent: 'center',
-                        background: amount === val.toString() ? '#eff6ff' : '#fff',
-                        borderColor: amount === val.toString() ? '#2563eb' : '#cbd5e1',
-                        color: amount === val.toString() ? '#2563eb' : '#1e293b',
-                        fontWeight: 700
-                      }}
-                      onClick={() => setAmount(val.toString())}
-                    >
-                      +${val}
-                    </button>
-                  ))}
-                </div>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  className="portal-input"
-                  value={amount}
-                  onChange={e => setAmount(e.target.value)}
-                  placeholder="Enter custom amount..."
-                />
-              </div>
-
-              <div className="portal-form-group" style={{ marginTop: 14 }}>
-                <label>Payment Channel</label>
-                <select
-                  className="portal-input"
-                  value={paymentChannel}
-                  onChange={e => setPaymentChannel(e.target.value as any)}
-                >
-                  <option value="Paynow Online Gateway">Paynow Instant Gateway (EcoCash / Visa / InnBucks)</option>
-                  <option value="EcoCash Mobile Money">EcoCash USD Direct</option>
-                  <option value="Instant Bank Transfer">Bank Transfer / ZIPIT</option>
-                </select>
-              </div>
-            </div>
-            <div className="portal-modal-footer">
-              <button className="portal-btn-ghost" onClick={() => setShowPayModal(false)}>Cancel</button>
-              <button
-                className="portal-btn-primary"
-                onClick={handleTopup}
-                disabled={isProcessing}
-              >
-                {isProcessing ? 'Processing...' : `Confirm & Pay $${amount || '0'}`}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── PAYNOW CHECKOUT MODAL ── */}
+      <PaynowCheckoutModal
+        isOpen={showPayModal}
+        onClose={() => setShowPayModal(false)}
+        studentId={currentChild?.id || ''}
+        studentName={currentChild?.name}
+        purpose="WALLET"
+        defaultAmount={parseFloat(amount) || 20}
+        currency="USD"
+        userPhone={user?.phone}
+        userEmail={user?.email}
+        onSuccess={() => {
+          invalidateAllAccountingKeys();
+          fetchWallet();
+        }}
+      />
     </div>
   );
 }

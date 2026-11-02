@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PaginatedTable } from '../../../components/shared/Pagination';
+import ReceiptModal from '../../../components/shared/ReceiptModal';
 import { useSearchParams, Link } from 'react-router-dom';
 import FeesBillingPage from '../../shared/pages/FeesBillingPage';
 import ManageInvoicesPage from '../../shared/pages/ManageInvoicesPage';
@@ -30,28 +31,123 @@ interface DefaulterRecord {
   examBlocked: boolean;
 }
 
+export interface CollectionStudent {
+  id: string;
+  studentId?: string;
+  name: string;
+  form: string;
+  boarding: string;
+  billed: number;
+  paid: number;
+  balance: number;
+  parentPhone?: string;
+}
+
+export interface RapidReceipt {
+  receiptNo: string;
+  studentName: string;
+  studentId: string;
+  form: string;
+  amountPaid: number;
+  currency: string;
+  baseUSD: number;
+  method: string;
+  reference: string;
+  newBalance: number;
+  timestamp: string;
+  smsSent: boolean;
+  fiscalSignature?: string;
+  fiscalQr?: string;
+  fiscalReceiptNumber?: string;
+}
+
+interface StudentBalanceApiItem {
+  studentId: string;
+  studentName: string;
+  className?: string;
+  totalBilled: number;
+  totalPaid: number;
+  balance: number;
+}
+
+interface DefaulterApiItem {
+  studentId: string;
+  studentCode: string;
+  studentName: string;
+  className?: string;
+  boardingStatus?: 'Boarder' | 'Day';
+  totalArrears: number;
+  over90?: number;
+  days61_90?: number;
+  days31_60?: number;
+  parentPhone?: string;
+}
+
 export default function BursarFeesUnified() {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentTab = (searchParams.get('tab') as BursarFeesTab) || 'billing';
   const [activeTab, setActiveTab] = useState<BursarFeesTab>(currentTab);
   const { showToast } = useToast();
   const { user } = useAuth();
+  const [schoolInfo, setSchoolInfo] = useState<{
+    id?: string;
+    name?: string;
+    code?: string;
+    address?: string;
+    phone?: string;
+    email?: string;
+    website?: string;
+    branding?: { logo?: string; primaryColor?: string; motto?: string };
+    logo?: string;
+  } | null>(null);
+
+  useEffect(() => {
+    api.get('/api/schools/me')
+      .then(res => {
+        if (res.data) setSchoolInfo(res.data);
+      })
+      .catch(err => console.warn('Could not load school info for demand letter:', err));
+  }, []);
+
+  // Helper to load image as base64 for PDF rendering
+  const loadBase64Image = (url: string): Promise<string | null> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return resolve(null);
+          ctx.drawImage(img, 0, 0);
+          resolve(canvas.toDataURL('image/png'));
+        } catch {
+          resolve(null);
+        }
+      };
+      img.onerror = () => resolve(null);
+      img.src = url;
+    });
+  };
 
   // -------------------------------------------------------------
   // TAB: Daily Rapid Collection State
   // -------------------------------------------------------------
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedStudent, setSelectedStudent] = useState<any>(null);
+  const [selectedStudent, setSelectedStudent] = useState<CollectionStudent | null>(null);
   const [paymentAmount, setPaymentAmount] = useState<number | string>('');
   const [paymentCurrency, setPaymentCurrency] = useState<'USD' | 'ZiG' | 'ZAR'>('USD');
   const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'EcoCash' | 'Bank Transfer' | 'POS Swipe'>('Cash');
   const [referenceCode, setReferenceCode] = useState('');
   const [sendSmsReceipt, setSendSmsReceipt] = useState(true);
-  const [exchangeRate, setExchangeRate] = useState(26.5); // USD to ZiG rate
+  const exchangeRate = 26.5; // USD to ZiG rate
   const [processingPayment, setProcessingPayment] = useState(false);
-  const [lastReceipt, setLastReceipt] = useState<any>(null);
+  const [lastReceipt, setLastReceipt] = useState<RapidReceipt | null>(null);
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
 
-  const [studentDatabase, setStudentDatabase] = useState<any[]>([]);
+  const [studentDatabase, setStudentDatabase] = useState<CollectionStudent[]>([]);
   const [loadingStudents, setLoadingStudents] = useState(false);
 
   // -------------------------------------------------------------
@@ -72,7 +168,7 @@ export default function BursarFeesUnified() {
       setLoadingStudents(true);
       const res = await api.get('/api/bursar/students-balance');
       if (Array.isArray(res.data)) {
-        setStudentDatabase(res.data.map((s: any) => ({
+        setStudentDatabase(res.data.map((s: StudentBalanceApiItem) => ({
           id: s.studentId,
           studentId: s.studentId,
           name: s.studentName,
@@ -97,17 +193,17 @@ export default function BursarFeesUnified() {
       setLoadingDefaulters(true);
       const res = await api.get('/api/bursar/defaulters');
       if (Array.isArray(res.data)) {
-        setDefaulters(res.data.map((d: any) => ({
+        setDefaulters(res.data.map((d: DefaulterApiItem) => ({
           id: d.studentId,
           studentId: d.studentCode,
           name: d.studentName,
           form: d.className || 'Unassigned',
-          boarding: d.boardingStatus as any,
+          boarding: d.boardingStatus === 'Boarder' ? 'Boarder' : 'Day',
           totalBilled: d.totalArrears,
           totalPaid: 0,
           balance: d.totalArrears,
-          daysOverdue: d.over90 > 0 ? 95 : d.days61_90 > 0 ? 65 : d.days31_60 > 0 ? 35 : 15,
-          status: (d.over90 > 0 ? '90+ Days' : d.days61_90 > 0 ? '60 Days' : d.days31_60 > 0 ? '30 Days' : 'Current') as any,
+          daysOverdue: (d.over90 ?? 0) > 0 ? 95 : (d.days61_90 ?? 0) > 0 ? 65 : (d.days31_60 ?? 0) > 0 ? 35 : 15,
+          status: (d.over90 ?? 0) > 0 ? '90+ Days' : (d.days61_90 ?? 0) > 0 ? '60 Days' : (d.days31_60 ?? 0) > 0 ? '30 Days' : 'Current',
           guardianPhone: d.parentPhone || 'No phone',
           examBlocked: false
         })));
@@ -204,9 +300,10 @@ export default function BursarFeesUnified() {
       // Refresh balances
       loadStudents();
       loadDefaulters();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Payment receipt processing error:', err);
-      showToast('Payment processing failed: ' + (err.response?.data?.error || err.message), 'error');
+      const apiErr = err as { response?: { data?: { error?: string } }; message?: string };
+      showToast('Payment processing failed: ' + (apiErr.response?.data?.error || apiErr.message || 'Unknown error'), 'error');
     } finally {
       setProcessingPayment(false);
     }
@@ -262,7 +359,7 @@ export default function BursarFeesUnified() {
         }))
       });
       showToast(res.data?.message || `Dispatched SMS reminders to ${targets.length} parents via gateway`, 'success');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Bulk SMS broadcast error:', err);
       // Fallback display if mock data
       showToast(`Dispatched overdue fee warning SMS to ${targets.length} parents via gateway`, 'success');
@@ -271,8 +368,8 @@ export default function BursarFeesUnified() {
     }
   };
 
-  // Formal A4 Letter of Demand PDF generation with school letterhead
-  const generateDemandLettersPdf = (records: DefaulterRecord[]) => {
+  // Formal A4 Letter of Demand PDF generation with school letterhead & logo
+  const generateDemandLettersPdf = async (records: DefaulterRecord[]) => {
     if (records.length === 0) {
       showToast('No defaulters selected to generate letters for', 'warning');
       return;
@@ -287,72 +384,126 @@ export default function BursarFeesUnified() {
 
       const currentDate = new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
       const deadlineDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' });
-      const institutionName = (user?.school as any)?.name || 'MWACHEZA ACADEMY & HIGH SCHOOL';
+      
+      const institutionName = schoolInfo?.name || user?.schoolName || user?.school?.name || 'Lobengula Primary';
+      const schoolAddress = schoolInfo?.address || 'Bulawayo, Zimbabwe';
+      const schoolPhone = schoolInfo?.phone || '+263 292 123456';
+      const schoolEmail = schoolInfo?.email || 'accounts@school.ac.zw';
+      const schoolCode = schoolInfo?.code || 'LOB';
+      const schoolMotto = schoolInfo?.branding?.motto || '';
+
+      // Try loading official school logo
+      let logoBase64: string | null = null;
+      const logoFile = schoolInfo?.branding?.logo || schoolInfo?.logo;
+      if (logoFile) {
+        logoBase64 = await loadBase64Image(`/api/storage/file/${logoFile}`);
+      }
 
       records.forEach((student, index) => {
         if (index > 0) doc.addPage();
 
-        // Letterhead Top Banner
+        // 1. Top Header Banner
         doc.setFillColor(15, 23, 42); // slate-900
-        doc.rect(0, 0, 210, 26, 'F');
+        doc.rect(0, 0, 210, 32, 'F');
 
+        // Draw school logo or crest seal
+        if (logoBase64) {
+          try {
+            // White circular badge container for logo
+            doc.setFillColor(255, 255, 255);
+            doc.roundedRect(12, 4, 24, 24, 4, 4, 'F');
+            doc.addImage(logoBase64, 'PNG', 13, 5, 22, 22);
+          } catch {
+            // Fallback crest if rendering error
+            doc.setFillColor(30, 41, 59);
+            doc.roundedRect(12, 4, 24, 24, 4, 4, 'F');
+            doc.setTextColor(248, 250, 252);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(12);
+            doc.text(institutionName.slice(0, 3).toUpperCase(), 24, 18, { align: 'center' });
+          }
+        } else {
+          // Clean monogram crest
+          doc.setFillColor(30, 41, 59);
+          doc.roundedRect(12, 4, 24, 24, 4, 4, 'F');
+          doc.setTextColor(248, 250, 252);
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(11);
+          doc.text(institutionName.slice(0, 3).toUpperCase(), 24, 18, { align: 'center' });
+        }
+
+        // Header Typography
+        const textCenterX = logoBase64 ? 120 : 105;
         doc.setTextColor(255, 255, 255);
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(15);
-        doc.text(institutionName.toUpperCase(), 105, 11, { align: 'center' });
+        doc.setFontSize(14);
+        doc.text(institutionName.toUpperCase(), textCenterX, 11, { align: 'center' });
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(226, 232, 240);
+        doc.text('OFFICE OF THE BURSAR & FINANCIAL SERVICES | DEBT RECOVERY SECTION', textCenterX, 16.5, { align: 'center' });
+        doc.text(`${schoolAddress} | Email: ${schoolEmail} | Tel: ${schoolPhone}`, textCenterX, 21.5, { align: 'center' });
+        if (schoolMotto) {
+          doc.setFont('helvetica', 'italic');
+          doc.setFontSize(7.5);
+          doc.setTextColor(203, 213, 225);
+          doc.text(`"${schoolMotto}"`, textCenterX, 26.5, { align: 'center' });
+        }
+
+        // Decorative Accent Line
+        doc.setDrawColor(2, 132, 199); // sky-600
+        doc.setLineWidth(1.2);
+        doc.line(0, 32, 210, 32);
+
+        // 2. Official Document Reference & Dispatch Date
+        doc.setTextColor(71, 85, 105);
+        doc.setFontSize(8.5);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`REF NO: LOD-${schoolCode}-${student.studentId || student.id.slice(-6)}-${Date.now().toString().slice(-4)}`, 14, 40);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`DATE OF DISPATCH: ${currentDate}`, 14, 45);
+
+        // 3. Recipient Address Block
+        doc.setDrawColor(226, 232, 240);
+        doc.setFillColor(248, 250, 252);
+        doc.roundedRect(14, 50, 182, 30, 2, 2, 'FD');
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(15, 23, 42);
+        doc.text('TO THE PARENT / LEGAL GUARDIAN OF:', 18, 56.5);
 
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8.5);
-        doc.text('OFFICE OF THE BURSAR & FINANCIAL SERVICES | DEBT RECOVERY SECTION', 105, 17, { align: 'center' });
-        doc.text('Harare Campus, Zimbabwe | accounts@mwacheza.ac.zw | +263 242 700000', 105, 22, { align: 'center' });
-
-        // Official Document Reference & Date
         doc.setTextColor(51, 65, 85);
-        doc.setFontSize(9);
+        doc.text(`Student Name: ${student.name}`, 18, 62.5);
+        doc.text(`Student ID: ${student.studentId}     |     Class / Form: ${student.form}     |     Status: ${student.boarding}`, 18, 68);
+        doc.text(`Guardian Contact Phone: ${student.guardianPhone || 'On File with Administration'}`, 18, 73.5);
+
+        // 4. Letter Title
         doc.setFont('helvetica', 'bold');
-        doc.text(`REF NO: LOD-${student.studentId}-${Date.now().toString().slice(-4)}`, 14, 36);
-        doc.setFont('helvetica', 'normal');
-        doc.text(`DATE OF DISPATCH: ${currentDate}`, 14, 41);
-
-        // Recipient Address Block
-        doc.setDrawColor(226, 232, 240);
-        doc.setFillColor(248, 250, 252);
-        doc.roundedRect(14, 46, 182, 30, 2, 2, 'FD');
-
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(9.5);
-        doc.setTextColor(15, 23, 42);
-        doc.text('TO THE PARENT / LEGAL GUARDIAN OF:', 18, 53);
-
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(9);
-        doc.text(`Student Name: ${student.name}`, 18, 59);
-        doc.text(`Student ID: ${student.studentId}     |     Class: ${student.form} (${student.boarding})`, 18, 65);
-        doc.text(`Guardian Contact: ${student.guardianPhone || 'On File with Administration'}`, 18, 71);
-
-        // Letter Title
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(12.5);
+        doc.setFontSize(12);
         doc.setTextColor(185, 28, 28); // red-700
-        doc.text('FORMAL NOTICE & FINAL LETTER OF DEMAND: OVERDUE SCHOOL FEES', 105, 86, { align: 'center' });
+        doc.text('FORMAL NOTICE & FINAL LETTER OF DEMAND: OVERDUE SCHOOL FEES', 105, 88, { align: 'center' });
         doc.setDrawColor(185, 28, 28);
-        doc.setLineWidth(0.5);
-        doc.line(14, 89, 196, 89);
+        doc.setLineWidth(0.6);
+        doc.line(14, 91, 196, 91);
 
-        // Body Opening
+        // 5. Body Opening
         doc.setTextColor(30, 41, 59);
         doc.setFont('helvetica', 'normal');
-        doc.setFontSize(9);
-        const bodyP1 = `Please be advised that according to the institutional student ledger records maintained by the Bursar's Office, the student account for ${student.name} reflects overdue school tuition and boarding fees that remain unpaid despite prior term notices and statements.`;
-        doc.text(doc.splitTextToSize(bodyP1, 182), 14, 96);
+        doc.setFontSize(8.5);
+        const bodyP1 = `Please be advised that according to the institutional student ledger records maintained by the Bursar's Office at ${institutionName}, the account for ${student.name} (${student.studentId}) reflects overdue educational, tuition, and boarding charges that remain unsettled despite prior billing statements and notices.`;
+        doc.text(doc.splitTextToSize(bodyP1, 182), 14, 97);
 
-        // Financial Breakdown Table
+        // 6. Financial Breakdown Table
         autoTable(doc, {
-          startY: 106,
+          startY: 107,
           head: [['Fee Item / Service', 'Billed Total', 'Paid to Date', 'Outstanding Balance', 'Aging Status']],
           body: [
             [
-              `Tuition & Boarding Services (${student.form})`,
+              `Tuition & Educational Services (${student.form})`,
               `$${student.totalBilled.toFixed(2)} USD`,
               `$${student.totalPaid.toFixed(2)} USD`,
               `$${student.balance.toFixed(2)} USD`,
@@ -360,7 +511,7 @@ export default function BursarFeesUnified() {
             ]
           ],
           headStyles: {
-            fillColor: [30, 41, 59],
+            fillColor: [15, 23, 42],
             textColor: 255,
             fontSize: 8.5,
             fontStyle: 'bold'
@@ -376,23 +527,24 @@ export default function BursarFeesUnified() {
           margin: { left: 14, right: 14 }
         });
 
-        // Demand Terms
-        const afterTableY = (doc as any).lastAutoTable?.finalY ? (doc as any).lastAutoTable.finalY + 8 : 124;
+        // 7. Demand Terms
+        const lastY = (doc as jsPDF & { lastAutoTable?: { finalY?: number } }).lastAutoTable?.finalY;
+        const afterTableY = lastY ? lastY + 8 : 124;
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(9.5);
+        doc.setFontSize(9);
         doc.setTextColor(15, 23, 42);
-        doc.text('DEMAND FOR SETTLEMENT WITHIN SEVEN (7) BUSINESS DAYS', 14, afterTableY);
+        doc.text('FINAL DEMAND FOR SETTLEMENT WITHIN SEVEN (7) BUSINESS DAYS', 14, afterTableY);
 
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8.5);
-        const bodyP2 = `Demand is hereby made for the full outstanding balance of $${student.balance.toFixed(2)} USD to be settled in full on or before ${deadlineDate}. Failure to settle this balance or establish a formal, Bursar-approved payment plan by this date will immediately result in the enforcement of administrative sanctions:`;
+        const bodyP2 = `Demand is hereby formally made for the full outstanding balance of $${student.balance.toFixed(2)} USD to be settled in full on or before ${deadlineDate}. Failure to clear this balance or formalize a written payment agreement approved by the Bursar by this deadline will immediately enforce the following administrative measures:`;
         doc.text(doc.splitTextToSize(bodyP2, 182), 14, afterTableY + 5);
 
         const sanctions = [
-          '• Suspension of end-of-term examination entry permits and clearance card verification.',
+          '• Suspension of end-of-term examination entry permits and clearance card issuance.',
           '• Withholding of official academic reports, national examination registration slips, and transfer letters.',
           '• For boarder students, suspension of residential hostel accommodation until arrears are satisfied.',
-          '• Referral of the debtor account to external recovery counsel with recovery costs charged to the debtor.'
+          '• Referral of the debtor account to institutional debt recovery counsel with associated costs billed to the guardian.'
         ];
 
         let currentY = afterTableY + 19;
@@ -401,7 +553,7 @@ export default function BursarFeesUnified() {
           currentY += 4.8;
         });
 
-        // Payment Channels Box
+        // 8. Payment Channels Box
         doc.setDrawColor(203, 213, 225);
         doc.setFillColor(241, 245, 249);
         doc.roundedRect(14, currentY + 3, 182, 26, 2, 2, 'FD');
@@ -413,30 +565,33 @@ export default function BursarFeesUnified() {
 
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8);
-        doc.text('1. Cash / POS Swipe at Bursar Counter (Ground Floor Administration Block).', 18, currentY + 14);
-        doc.text('2. Direct Bank Transfer: Stanbic Bank | Account: 9140001234567 | Branch: Harare Main.', 18, currentY + 19);
-        doc.text('3. Mobile Money: EcoCash Merchant Code *151*2*2*998877# (Quote Student ID as Reference).', 18, currentY + 24);
+        doc.text(`1. Cash / POS Swipe at ${institutionName} Bursar Cashier Terminal (Administration Block).`, 18, currentY + 14);
+        doc.text(`2. Direct Bank Transfer: School Main Operations Account (Quote Student ID: ${student.studentId} as Reference).`, 18, currentY + 19);
+        doc.text(`3. Mobile Money: EcoCash School Merchant Portal (Quote Student ID: ${student.studentId} as Reference).`, 18, currentY + 24);
 
-        // Signatures
+        // 9. Signatures Block
         const sigY = currentY + 36;
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(8.5);
-        doc.text('ISSUED UNDER THE AUTHORITY OF:', 14, sigY);
+        doc.text('ISSUED UNDER THE OFFICIAL AUTHORITY OF:', 14, sigY);
 
-        doc.line(14, sigY + 14, 70, sigY + 14);
-        doc.setFont('helvetica', 'normal');
+        doc.line(14, sigY + 13, 75, sigY + 13);
+        doc.setFont('helvetica', 'bold');
         doc.setFontSize(8);
-        doc.text('School Bursar / Finance Director', 14, sigY + 18);
-        doc.text('Mwacheza Academy Finance Office', 14, sigY + 22);
+        doc.text('School Bursar / Finance Director', 14, sigY + 17);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`${institutionName} Accounts Office`, 14, sigY + 21);
 
-        doc.line(130, sigY + 14, 186, sigY + 14);
-        doc.text('Head of School / Executive Principal', 130, sigY + 18);
-        doc.text('Board of Trustees & Council', 130, sigY + 22);
+        doc.line(125, sigY + 13, 186, sigY + 13);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Head of School / Executive Principal', 125, sigY + 17);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`${institutionName} Executive Council`, 125, sigY + 21);
 
-        // Footer
+        // 10. Footer
         doc.setFontSize(7.5);
         doc.setTextColor(148, 163, 184);
-        doc.text(`Official Document — Page ${index + 1} of ${records.length} — Generated automatically by Skulas Financial Suite`, 105, 288, { align: 'center' });
+        doc.text(`Official Document — Page ${index + 1} of ${records.length} — Verified & Generated automatically by ACADEX Financial Suite`, 105, 288, { align: 'center' });
       });
 
       const fileName = records.length === 1
@@ -693,6 +848,7 @@ export default function BursarFeesUnified() {
             <div style={{ marginBottom: 16 }}>
               <label style={{ fontSize: '0.85rem', fontWeight: 700, color: '#334155' }}>
                 Student Lookup (ID, Name, or Cohort)
+                {loadingStudents && <span style={{ marginLeft: 8, fontSize: '0.75rem', fontWeight: 400, color: '#64748b' }}><i className="fas fa-spinner fa-spin" /> Loading balances...</span>}
               </label>
               <div style={{ position: 'relative', marginTop: 6 }}>
                 <input
@@ -782,7 +938,7 @@ export default function BursarFeesUnified() {
                     className="portal-select"
                     style={{ width: '100%', padding: '10px 12px', marginTop: 4, fontWeight: 700 }}
                     value={paymentCurrency}
-                    onChange={e => setPaymentCurrency(e.target.value as any)}
+                    onChange={e => setPaymentCurrency(e.target.value as 'USD' | 'ZiG' | 'ZAR')}
                   >
                     <option value="USD">USD ($)</option>
                     <option value="ZiG">ZiG (Zimbabwe Gold)</option>
@@ -798,7 +954,7 @@ export default function BursarFeesUnified() {
                     className="portal-select"
                     style={{ width: '100%', padding: 10, marginTop: 4 }}
                     value={paymentMethod}
-                    onChange={e => setPaymentMethod(e.target.value as any)}
+                    onChange={e => setPaymentMethod(e.target.value as 'Cash' | 'EcoCash' | 'Bank Transfer' | 'POS Swipe')}
                   >
                     <option value="Cash">Cash at Counter</option>
                     <option value="EcoCash">EcoCash Mobile Money</option>
@@ -848,63 +1004,110 @@ export default function BursarFeesUnified() {
           </div>
 
           {/* Receipt Preview Card */}
-          <div className="portal-card" style={{ background: '#fff', padding: 24, borderRadius: 8, border: '1px solid #e2e8f0' }}>
+          <div className="portal-card" style={{ background: '#fff', padding: 24, borderRadius: 12, border: '1px solid #e2e8f0', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#1e293b' }}>
-                <i className="fas fa-print mr-2" style={{ color: '#64748b' }} />
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#1e293b', display: 'flex', alignItems: 'center', gap: 8 }}>
+                <i className="fas fa-receipt" style={{ color: '#0284c7' }} />
                 Instant Receipt Preview
               </h3>
               {lastReceipt && (
-                <button
-                  className="portal-btn-secondary"
-                  style={{ padding: '4px 10px', fontSize: '0.8rem' }}
-                  onClick={() => window.print()}
-                >
-                  <i className="fas fa-print mr-1" /> Print Slip
-                </button>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    className="portal-btn-primary"
+                    style={{ padding: '6px 14px', fontSize: '0.82rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}
+                    onClick={() => setIsReceiptModalOpen(true)}
+                  >
+                    <i className="fas fa-eye" /> View & Print Voucher
+                  </button>
+                  <button
+                    className="portal-btn-secondary"
+                    style={{ padding: '6px 12px', fontSize: '0.82rem' }}
+                    onClick={() => window.print()}
+                    title="Quick Print"
+                  >
+                    <i className="fas fa-print" /> Slip
+                  </button>
+                </div>
               )}
             </div>
 
             {lastReceipt ? (
-              <div style={{ border: '2px dashed #cbd5e1', padding: 20, borderRadius: 8, background: '#fafafa', fontFamily: 'monospace' }}>
-                <div style={{ textAlign: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: 10, marginBottom: 12 }}>
-                  <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800 }}>SANTANA ACADEMY HIGH SCHOOL</h4>
-                  <p style={{ margin: '2px 0 0', fontSize: '0.75rem' }}>OFFICIAL BURSAR PAYMENT RECEIPT</p>
-                  <p style={{ margin: '2px 0 0', fontSize: '0.85rem', fontWeight: 800, color: '#0284c7' }}>
+              <div style={{ border: '1px solid #cbd5e1', padding: 20, borderRadius: 10, background: '#ffffff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                <div style={{ textAlign: 'center', borderBottom: '2px solid #0284c7', paddingBottom: 12, marginBottom: 14 }}>
+                  <div style={{ display: 'inline-block', padding: '2px 8px', borderRadius: 4, background: '#e0f2fe', color: '#0369a1', fontSize: '0.68rem', fontWeight: 800, letterSpacing: '0.06em', marginBottom: 4 }}>
+                    OFFICIAL PAYMENT RECEIPT
+                  </div>
+                  <h4 style={{ margin: '2px 0 0', fontSize: '1.05rem', fontWeight: 900, color: '#0f172a' }}>
+                    {user?.school?.name || 'Lobengula Primary School'}
+                  </h4>
+                  <p style={{ margin: '3px 0 0', fontSize: '0.9rem', fontWeight: 800, color: '#0284c7', fontFamily: 'monospace' }}>
                     {lastReceipt.receiptNo}
                   </p>
                 </div>
 
-                <div style={{ fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <div><strong>Date:</strong> {lastReceipt.timestamp}</div>
-                  <div><strong>Student:</strong> {lastReceipt.studentName} ({lastReceipt.studentId})</div>
-                  <div><strong>Class:</strong> {lastReceipt.form}</div>
-                  <div><strong>Channel:</strong> {lastReceipt.method} ({lastReceipt.reference})</div>
-                  <div style={{ borderTop: '1px dashed #cbd5e1', paddingTop: 8, marginTop: 8 }}>
-                    <strong>Amount Tendered:</strong> {lastReceipt.amountPaid} {lastReceipt.currency}
+                <div style={{ fontSize: '0.82rem', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px solid #f1f5f9' }}>
+                    <span style={{ color: '#64748b' }}>Date & Time:</span>
+                    <strong>{lastReceipt.timestamp}</strong>
                   </div>
-                  <div>
-                    <strong>Base Equivalent:</strong> ${lastReceipt.baseUSD} USD
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px solid #f1f5f9' }}>
+                    <span style={{ color: '#64748b' }}>Student:</span>
+                    <strong>{lastReceipt.studentName} ({lastReceipt.studentId})</strong>
                   </div>
-                  <div style={{ borderTop: '1px dashed #cbd5e1', paddingTop: 8, marginTop: 8 }}>
-                    <strong>Remaining Ledger Balance:</strong> ${lastReceipt.newBalance} USD
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px solid #f1f5f9' }}>
+                    <span style={{ color: '#64748b' }}>Class / Form:</span>
+                    <strong>{lastReceipt.form}</strong>
                   </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px solid #f1f5f9' }}>
+                    <span style={{ color: '#64748b' }}>Method:</span>
+                    <strong>{lastReceipt.method} {lastReceipt.reference ? `(${lastReceipt.reference})` : ''}</strong>
+                  </div>
+                  
+                  <div style={{ background: '#f8fafc', padding: 12, borderRadius: 8, marginTop: 4 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', fontWeight: 800 }}>
+                      <span style={{ color: '#1e293b' }}>Amount Tendered:</span>
+                      <span style={{ color: '#059669', fontSize: '1.1rem', fontFamily: 'monospace' }}>
+                        {lastReceipt.currency === 'ZIG' ? 'ZiG ' : '$'}{lastReceipt.amountPaid}
+                      </span>
+                    </div>
+                    {lastReceipt.baseUSD && lastReceipt.currency !== 'USD' && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#64748b', marginTop: 2 }}>
+                        <span>USD Base Value:</span>
+                        <span>${lastReceipt.baseUSD} USD</span>
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', color: '#64748b', marginTop: 6, paddingTop: 6, borderTop: '1px dashed #cbd5e1' }}>
+                      <span>Remaining Balance:</span>
+                      <strong style={{ color: lastReceipt.newBalance > 0 ? '#dc2626' : '#16a34a' }}>${lastReceipt.newBalance} USD</strong>
+                    </div>
+                  </div>
+
                   {lastReceipt.fiscalReceiptNumber && (
-                    <div style={{ marginTop: 6, padding: '6px 8px', background: '#ecfdf5', borderRadius: 4, border: '1px solid #a7f3d0' }}>
-                      <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#065f46' }}>ZIMRA FISCAL VERIFIED</div>
-                      <div style={{ fontSize: '0.68rem', color: '#047857' }}>Fiscal No: {lastReceipt.fiscalReceiptNumber}</div>
-                      {lastReceipt.fiscalSignature && (
-                        <div style={{ fontSize: '0.65rem', color: '#047857', wordBreak: 'break-all' }}>Sig: {lastReceipt.fiscalSignature}</div>
-                      )}
+                    <div style={{ marginTop: 4, padding: '8px 10px', background: '#ecfdf5', borderRadius: 6, border: '1px solid #a7f3d0' }}>
+                      <div style={{ fontSize: '0.72rem', fontWeight: 800, color: '#065f46', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <i className="fas fa-shield-alt"></i> ZIMRA FISCAL VERIFIED
+                      </div>
+                      <div style={{ fontSize: '0.68rem', color: '#047857', fontFamily: 'monospace' }}>
+                        Fiscal Ref: {lastReceipt.fiscalReceiptNumber}
+                      </div>
                     </div>
                   )}
-                  <div style={{ marginTop: 8, fontSize: '0.7rem', color: '#15803d' }}>
-                    {lastReceipt.smsSent ? '✓ SMS notification successfully dispatched' : 'SMS not requested'}
+
+                  <div style={{ marginTop: 4, fontSize: '0.72rem', color: '#15803d', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <i className="fas fa-check-circle"></i>
+                    <span>{lastReceipt.smsSent ? 'SMS receipt dispatched to guardian' : 'Payment finalized & posted'}</span>
                   </div>
                 </div>
 
-                <div style={{ textAlign: 'center', marginTop: 16, fontSize: '0.7rem', color: '#64748b' }}>
-                  Thank you for keeping your account current.
+                <div style={{ textAlign: 'center', marginTop: 14, paddingTop: 10, borderTop: '1px solid #f1f5f9' }}>
+                  <button
+                    type="button"
+                    className="portal-btn-primary"
+                    style={{ width: '100%', padding: '8px', fontSize: '0.85rem', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+                    onClick={() => setIsReceiptModalOpen(true)}
+                  >
+                    <i className="fas fa-print" /> Open Official Print Voucher
+                  </button>
                 </div>
               </div>
             ) : (
@@ -1046,7 +1249,7 @@ export default function BursarFeesUnified() {
                     { header: 'Student Name', key: 'name' },
                     { header: 'Class / Form', key: 'form' },
                     { header: 'Boarding', key: 'boarding' },
-                    { header: 'Arrears Balance ($)', key: 'balance', formatter: (v: any) => `$${Number(v || 0).toFixed(2)}` },
+                    { header: 'Arrears Balance ($)', key: 'balance', formatter: (v: unknown) => `$${Number(v || 0).toFixed(2)}` },
                     { header: 'Aging Status', key: 'status' },
                     { header: 'Guardian Phone', key: 'guardianPhone' }
                   ]}
@@ -1118,7 +1321,12 @@ export default function BursarFeesUnified() {
               </div>
             </div>
 
-            {filteredDefaulters.length === 0 ? (
+            {loadingDefaulters ? (
+              <div style={{ padding: 60, textAlign: 'center', color: '#94a3b8' }}>
+                <i className="fas fa-spinner fa-spin fa-2x" style={{ marginBottom: 12 }}></i>
+                <p style={{ fontWeight: 600 }}>Loading defaulters aging report...</p>
+              </div>
+            ) : filteredDefaulters.length === 0 ? (
               <div style={{ padding: 60, textAlign: 'center', color: '#94a3b8' }}>
                 <i className="fas fa-user-check fa-3x" style={{ marginBottom: 12, opacity: 0.5 }}></i>
                 <p style={{ fontWeight: 600 }}>No defaulters match the current filter criteria</p>
@@ -1251,6 +1459,33 @@ export default function BursarFeesUnified() {
             )}
           </div>
         </div>
+      )}
+      {/* Official Receipt Modal */}
+      {lastReceipt && (
+        <ReceiptModal
+          isOpen={isReceiptModalOpen}
+          onClose={() => setIsReceiptModalOpen(false)}
+          data={{
+            receiptNo: lastReceipt.receiptNo,
+            date: lastReceipt.timestamp,
+            studentName: lastReceipt.studentName,
+            studentId: lastReceipt.studentId,
+            className: lastReceipt.form,
+            paymentMode: lastReceipt.method,
+            reference: lastReceipt.reference,
+            amountPaid: Number(lastReceipt.amountPaid) || 0,
+            currency: lastReceipt.currency,
+            newBalance: Number(lastReceipt.newBalance) || 0,
+            fiscalReceiptNumber: lastReceipt.fiscalReceiptNumber,
+            fiscalSignature: lastReceipt.fiscalSignature,
+            smsSent: lastReceipt.smsSent,
+            feeItems: [{
+              desc: 'School Tuition & Term Fees',
+              amount: Number(lastReceipt.amountPaid) || 0
+            }]
+          }}
+          school={user?.school}
+        />
       )}
     </div>
   );

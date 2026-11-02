@@ -2696,4 +2696,3 @@ router.get('/syllabus/:syllabusId/resources', auth_1.requireAuth, (0, moduleAcce
     }
 });
 exports.default = router;
-//# sourceMappingURL=library.js.map

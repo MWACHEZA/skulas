@@ -56,4 +56,3 @@ const getSantaResponse = async (schoolId, message, history) => {
     }
 };
 exports.getSantaResponse = getSantaResponse;
-//# sourceMappingURL=ai.js.map

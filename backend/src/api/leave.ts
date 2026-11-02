@@ -392,18 +392,19 @@ router.patch('/:id/reject', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMI
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Cover-teacher Suggestion based on Shared Timetable
+// Cover-staff Suggestion based on Shared Role Group & Availability
 // ─────────────────────────────────────────────────────────────────────────────
 router.get('/suggest-cover', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
     const schoolId = req.user!.schoolId!;
-    const { startDate, endDate, department } = req.query;
+    const userRole = req.user!.role || 'TEACHER';
+    const { startDate, endDate } = req.query;
 
-    // Find teachers in the same school/department
-    const teachers = await prisma.user.findMany({
+    // Find peers in the same school and role group (teachers relieve teachers, ancillary staff relieves ancillary staff, etc.)
+    const peers = await prisma.user.findMany({
       where: {
         schoolId,
-        role: 'TEACHER',
+        role: userRole,
         isLocked: false,
         id: { not: req.user!.id }
       },
@@ -411,12 +412,16 @@ router.get('/suggest-cover', requireAuth, async (req: AuthRequest, res: Response
         id: true,
         name: true,
         email: true,
-        teacher: { select: { id: true, department: true } }
+        role: true,
+        teacher: { select: { id: true, department: true } },
+        dept: { select: { id: true, name: true } },
+        metadata: true,
+        secondaryRoles: true
       }
     });
 
-    // Also check teachers who already have approved leaves overlapping these dates
-    const busyTeachers = await prisma.staffLeave.findMany({
+    // Also check staff who already have approved leaves overlapping these dates
+    const busyStaff = await prisma.staffLeave.findMany({
       where: {
         schoolId,
         status: 'approved',
@@ -427,18 +432,28 @@ router.get('/suggest-cover', requireAuth, async (req: AuthRequest, res: Response
       },
       select: { userId: true }
     });
-    const busyIds = new Set(busyTeachers.map(b => b.userId));
+    const busyIds = new Set(busyStaff.map(b => b.userId));
 
-    const suggestions = teachers.map(t => ({
-      userId: t.id,
-      name: t.name,
-      department: t.teacher?.department || 'General',
-      isAvailable: !busyIds.has(t.id)
-    })).sort((a, b) => Number(b.isAvailable) - Number(a.isAvailable));
+    const suggestions = peers.map(p => {
+      const meta = (p.metadata as any) || {};
+      const deptName = p.teacher?.department ||
+        p.dept?.name ||
+        meta.designation ||
+        meta.jobTitle ||
+        (Array.isArray(p.secondaryRoles) && p.secondaryRoles.length > 0 ? p.secondaryRoles.join(', ') : '') ||
+        (p.role === 'TEACHER' ? 'Academics' : p.role === 'ANCILLARY' ? 'Ancillary Staff' : 'General');
+
+      return {
+        userId: p.id,
+        name: p.name,
+        department: deptName,
+        isAvailable: !busyIds.has(p.id)
+      };
+    }).sort((a, b) => Number(b.isAvailable) - Number(a.isAvailable));
 
     res.json(suggestions);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to suggest cover teachers' });
+    res.status(500).json({ error: 'Failed to suggest relief staff' });
   }
 });
 

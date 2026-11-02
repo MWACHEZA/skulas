@@ -10,7 +10,7 @@ const router = express_1.default.Router();
 router.get('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'STUDENT', 'TEACHER', 'PARENT'), async (req, res) => {
     try {
         const noticeboards = await prisma_1.default.noticeboard.findMany({
-            where: { schoolId: req.user.schoolId },
+            where: (req.user?.schoolId ? { schoolId: req.user.schoolId } : {}),
             orderBy: { date: 'desc' }
         });
         res.json(noticeboards);
@@ -51,4 +51,3 @@ router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'
     }
 });
 exports.default = router;
-//# sourceMappingURL=website-settings-noticeboard.js.map

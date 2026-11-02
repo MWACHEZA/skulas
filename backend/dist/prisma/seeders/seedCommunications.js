@@ -77,4 +77,3 @@ async function seedCommunications(prisma, school) {
         });
     }
 }
-//# sourceMappingURL=seedCommunications.js.map

@@ -135,4 +135,3 @@ main()
     .finally(async () => {
     await prisma.$disconnect();
 });
-//# sourceMappingURL=migrate_junctions.js.map

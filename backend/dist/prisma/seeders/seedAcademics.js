@@ -155,4 +155,3 @@ async function seedAcademics(prisma, school, teachers, students) {
     }
     return { schoolClass, dbSubjects };
 }
-//# sourceMappingURL=seedAcademics.js.map

@@ -263,7 +263,7 @@ async function runPhase6Tests() {
     assert(consent1.status === 'pending', 'TripConsent 1 initialized with status "pending"');
     assert(consent2.status === 'pending', 'TripConsent 2 initialized with status "pending"');
     assert(inviteSms.status === 'PENDING', 'Parent legal consent SMS queued in notificationQueue');
-    assert(commLog.status === 'SENT', 'CommunicationLog entry recorded for excursion invitation');
+    assert(commLog?.status === 'SENT', 'CommunicationLog entry recorded for excursion invitation');
     assert(publishedTrip.status === 'PUBLISHED', 'Trip transitioned to PUBLISHED state');
 
     // -------------------------------------------------------------------------
@@ -487,7 +487,7 @@ async function runPhase6Tests() {
     await prisma.studentInvoiceItem.deleteMany({ where: { invoiceId: tripInvoiceRes.invoice.id } });
     await prisma.studentInvoice.deleteMany({ where: { id: tripInvoiceRes.invoice.id } });
     await prisma.auditLog.deleteMany({ where: { id: auditEntry.id } });
-    await prisma.communicationLog.deleteMany({ where: { id: commLog.id } });
+    if (commLog) await prisma.communicationLog.deleteMany({ where: { id: commLog.id } });
     await prisma.notificationQueue.deleteMany({ where: { id: inviteSms.id } });
     await prisma.disciplineRecord.deleteMany({ where: { id: disciplineRecord.id } });
     await prisma.clinicPatient.deleteMany({ where: { id: clinicPatient.id } });

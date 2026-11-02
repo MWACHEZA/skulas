@@ -160,4 +160,3 @@ exports.UpdateProfileSchema = zod_1.z.object({
         metadata: zod_1.z.any().optional(),
     }),
 });
-//# sourceMappingURL=auth.schema.js.map

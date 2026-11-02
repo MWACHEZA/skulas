@@ -59,8 +59,36 @@ export class NotificationService {
     providerMsgId?: string;
     errorDetails?: string;
   }) {
-    return prisma.communicationLog.create({
-      data
-    });
+    try {
+      // Ensure senderId points to an existing User to prevent foreign key constraint violations
+      let resolvedSenderId = data.senderId;
+      const userExists = resolvedSenderId && resolvedSenderId !== 'system'
+        ? await prisma.user.findUnique({ where: { id: resolvedSenderId }, select: { id: true } })
+        : null;
+
+      if (!userExists) {
+        // Find an admin or staff member in this school as fallback
+        const fallbackUser = await prisma.user.findFirst({
+          where: { ...(data.schoolId && data.schoolId !== 'system' ? { schoolId: data.schoolId } : {}) },
+          select: { id: true }
+        });
+        if (fallbackUser) {
+          resolvedSenderId = fallbackUser.id;
+        } else {
+          console.warn(`[NotificationService] Skipped CommunicationLog: no valid User found for senderId "${data.senderId}".`);
+          return null;
+        }
+      }
+
+      return await prisma.communicationLog.create({
+        data: {
+          ...data,
+          senderId: resolvedSenderId
+        }
+      });
+    } catch (err: any) {
+      console.warn('[NotificationService] Failed to create CommunicationLog entry:', err.message);
+      return null;
+    }
   }
 }

@@ -118,4 +118,3 @@ router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'AN
     }
 });
 exports.default = router;
-//# sourceMappingURL=hr-applications.js.map

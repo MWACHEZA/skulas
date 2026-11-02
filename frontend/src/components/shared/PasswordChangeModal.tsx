@@ -75,7 +75,6 @@ const PasswordChangeModal: React.FC<PasswordChangeModalProps> = ({ isOpen, onSuc
       }, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
-      showToast('Password updated successfully! You can now access your dashboard.', 'success');
       onSuccess();
     } catch (err: any) {
       showToast(err.response?.data?.error || 'Failed to update password', 'error');

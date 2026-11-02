@@ -269,4 +269,3 @@ function checkUniversityEligibility(criteria) {
         flags
     };
 }
-//# sourceMappingURL=academic.js.map

@@ -93,4 +93,3 @@ router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SC
     }
 });
 exports.default = router;
-//# sourceMappingURL=live-class.js.map

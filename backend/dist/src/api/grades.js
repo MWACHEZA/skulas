@@ -378,4 +378,3 @@ router.post('/bulk', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCH
     }
 });
 exports.default = router;
-//# sourceMappingURL=grades.js.map

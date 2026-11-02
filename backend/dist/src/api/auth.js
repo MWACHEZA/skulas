@@ -45,6 +45,7 @@ router.post('/impersonate/:userId', auth_1.requireAuth, (0, auth_1.requireRole)(
             email: targetUser.email,
             name: targetUser.name,
             role: targetUser.role,
+            secondaryRoles: targetUser.secondaryRoles || [],
             schoolId: targetUser.schoolId,
             schoolCode: targetUser.school?.code,
             isImpersonated: true,
@@ -478,6 +479,7 @@ router.post('/login', rate_limit_1.authLimiter, (0, validation_1.validate)(auth_
             email: user.email,
             name: user.name,
             role: user.role,
+            secondaryRoles: user.secondaryRoles || [],
             schoolId: user.schoolId,
             schoolCode: user.school?.code,
             staffId: user.staffId,
@@ -962,4 +964,3 @@ router.post('/link-entity', auth_1.requireAuth, async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=auth.js.map

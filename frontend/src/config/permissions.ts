@@ -5,15 +5,43 @@
 
 export type PermissionAction = 'view' | 'create' | 'edit' | 'delete' | 'approve';
 
+export interface UserSchoolContext {
+  id?: string;
+  name?: string;
+  code?: string;
+  logo?: string;
+  modules?: Record<string, boolean>;
+  subscription?: {
+    modules?: Record<string, boolean>;
+    [key: string]: unknown;
+  } | null;
+  [key: string]: unknown;
+}
+
+export interface LeadershipAssignment {
+  id?: string;
+  title?: string;
+  role?: string;
+  [key: string]: unknown;
+}
+
+export interface UserMetadata {
+  secondaryRoles?: string[];
+  designation?: string;
+  jobTitle?: string;
+  [key: string]: unknown;
+}
+
 export interface UserContext {
   id?: string;
   role?: string;
   secondaryRoles?: string[];
   schoolId?: string;
-  school?: any;
+  school?: UserSchoolContext | null;
   modules?: Record<string, boolean>;
   isLeader?: boolean;
-  leadershipAssignment?: any;
+  leadershipAssignment?: LeadershipAssignment | null;
+  metadata?: UserMetadata | null;
 }
 
 export const PERMISSIONS = {
@@ -224,7 +252,6 @@ export const ROLE_PERMISSIONS: Record<string, string[]> = {
     PERMISSIONS.STUDENT_LIFE_SPORTS,
     PERMISSIONS.TRANSPORT_ROUTES_MANAGE,
     PERMISSIONS.TRANSPORT_VEHICLES_MANAGE,
-    PERMISSIONS.STUDENT_LIFE_CLOCK_LOGS,
     PERMISSIONS.FARM_PROJECTS_MANAGE,
     PERMISSIONS.ACADEMICS_WORK_SCHEDULE,
     PERMISSIONS.COMMUNICATION_MESSAGES,
@@ -289,6 +316,21 @@ export const SECONDARY_ROLE_PERMISSIONS: Record<string, string[]> = {
   ],
   'Receptionist': [
     PERMISSIONS.COMMUNICATION_ANNOUNCEMENTS
+  ],
+  'Security Guard': [
+    PERMISSIONS.STUDENT_LIFE_CLOCK_LOGS
+  ],
+  'Security Officer': [
+    PERMISSIONS.STUDENT_LIFE_CLOCK_LOGS
+  ],
+  'Gate Officer': [
+    PERMISSIONS.STUDENT_LIFE_CLOCK_LOGS
+  ],
+  'Security Supervisor': [
+    PERMISSIONS.STUDENT_LIFE_CLOCK_LOGS
+  ],
+  'Night Watchman': [
+    PERMISSIONS.STUDENT_LIFE_CLOCK_LOGS
   ]
 };
 

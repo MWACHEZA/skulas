@@ -164,4 +164,3 @@ router.post('/papers/:id/convert-to-cbt', auth_1.requireAuth, async (req, res) =
     }
 });
 exports.default = router;
-//# sourceMappingURL=question-bank.js.map

@@ -169,7 +169,13 @@ export class BursarService {
 
       // 2. Validate Student & Tenant
       const student = await db.student.findFirst({
-        where: { id: studentId, schoolId },
+        where: {
+          schoolId,
+          OR: [
+            { id: studentId },
+            { studentId: studentId }
+          ]
+        },
         include: { class: true }
       });
       if (!student) {
@@ -233,7 +239,7 @@ export class BursarService {
       const invoice = await db.studentInvoice.create({
         data: {
           schoolId,
-          studentId,
+          studentId: student.id,
           termId: termId || null,
           term: term || (termId ? `Term ${termId}` : 'Term 1'),
           year,
@@ -273,7 +279,7 @@ export class BursarService {
           debit: invoiceTotal,
           credit: 0,
           description: `Fee Invoice ${invoiceNumber} — ${student.name}`,
-          studentId,
+          studentId: student.id,
           currency
         }
       ];
@@ -288,7 +294,7 @@ export class BursarService {
           debit: 0,
           credit: item.totalAmount,
           description: `${item.description} (${invoiceNumber})`,
-          studentId,
+          studentId: student.id,
           currency
         });
       }
@@ -348,7 +354,7 @@ export class BursarService {
       LedgerEvents.broadcast({
         type: 'LEDGER_POSTED',
         schoolId,
-        studentId,
+        studentId: student.id,
         sourceType: 'invoice',
         sourceId: invoice.id,
         timestamp: new Date().toISOString()
@@ -419,7 +425,13 @@ export class BursarService {
 
       // 2. Validate Student
       const student = await db.student.findFirst({
-        where: { id: studentId, schoolId },
+        where: {
+          schoolId,
+          OR: [
+            { id: studentId },
+            { studentId: studentId }
+          ]
+        },
         include: {
           class: true,
           user: { select: { name: true, phone: true } },
@@ -478,7 +490,7 @@ export class BursarService {
       const receipt = await db.receipt.create({
         data: {
           schoolId,
-          studentId,
+          studentId: student.id,
           receiptNumber,
           amount: round2(amount),
           paymentCurrency,
@@ -506,7 +518,7 @@ export class BursarService {
       // A) Handle specific invoice if provided
       if (allocateStrategy === 'specific_invoice' && specificInvoiceId) {
         const specificInv = await db.studentInvoice.findFirst({
-          where: { id: specificInvoiceId, studentId, schoolId, status: { not: 'cancelled' } },
+          where: { id: specificInvoiceId, studentId: student.id, schoolId, status: { not: 'cancelled' } },
           include: { allocations: true }
         });
 
@@ -538,7 +550,7 @@ export class BursarService {
       if (remainingToAllocate > 0) {
         const openInvoices = await db.studentInvoice.findMany({
           where: {
-            studentId,
+            studentId: student.id,
             schoolId,
             status: { in: ['posted', 'partial'] },
             ...(specificInvoiceId ? { id: { not: specificInvoiceId } } : {})
@@ -590,6 +602,66 @@ export class BursarService {
         });
       }
 
+      // Synchronize with Fee records & StudentPayment for full compatibility across Admin & Bursar portals
+      try {
+        let paymentToDistribute = allocatableAmount;
+        const openFees = await db.fee.findMany({
+          where: {
+            studentId: student.id,
+            status: { in: ['unpaid', 'partial', 'overdue'] }
+          },
+          orderBy: { createdAt: 'asc' }
+        });
+
+        const modeMap: Record<string, string> = {
+          'cash_usd': 'USD Cash',
+          'cash_zig': 'ZiG Cash',
+          'ecocash': 'EcoCash',
+          'bank_usd': 'Bank USD',
+          'bank_zig': 'Bank ZiG',
+          'wallet': 'Student Wallet'
+        };
+        const paymentModeStr = modeMap[paymentMethod] || paymentMethod || 'Cash';
+
+        let firstTargetFeeId: string | null = null;
+        for (const fee of openFees) {
+          if (paymentToDistribute <= 0) break;
+          const due = Math.max(0, round2(fee.amount - (fee.discount || 0) - fee.paid));
+          if (due <= 0) continue;
+
+          const toPay = Math.min(paymentToDistribute, due);
+          const newFeePaid = round2(fee.paid + toPay);
+          const newFeeStatus = newFeePaid >= round2(fee.amount - (fee.discount || 0)) ? 'paid' : 'partial';
+
+          await db.fee.update({
+            where: { id: fee.id },
+            data: {
+              paid: newFeePaid,
+              status: newFeeStatus
+            }
+          });
+
+          if (!firstTargetFeeId) firstTargetFeeId = fee.id;
+          paymentToDistribute = round2(paymentToDistribute - toPay);
+        }
+
+        // Create StudentPayment record
+        await db.studentPayment.create({
+          data: {
+            studentId: student.id,
+            feeId: firstTargetFeeId,
+            amount: round2(amount),
+            paymentMode: paymentModeStr,
+            reference: receiptNumber,
+            status: 'Commit',
+            date: new Date(),
+            schoolId
+          }
+        });
+      } catch (syncErr) {
+        console.warn('Fee sync during receivePayment error (non-fatal):', syncErr);
+      }
+
       // 8. Ledger Double-Entry Posting
       // DR Payment Account (Cash/Bank/Wallet)
       const debitCode = getPaymentMethodAccountCode(paymentMethod);
@@ -612,7 +684,7 @@ export class BursarService {
             debit: round2(amount),
             credit: 0,
             description: `Payment received via ${paymentMethod}`,
-            studentId,
+            studentId: student.id,
             currency: paymentCurrency,
             exchangeRate
           },
@@ -622,7 +694,7 @@ export class BursarService {
             debit: 0,
             credit: round2(amount),
             description: `Credit Debtors — ${student.name}`,
-            studentId,
+            studentId: student.id,
             currency: paymentCurrency,
             exchangeRate
           }
@@ -636,9 +708,9 @@ export class BursarService {
       // 9. If paid via Student Wallet, deduct wallet liability transaction
       if ((paymentMethod || '').toLowerCase() === 'wallet') {
         const wallet = await db.studentWallet.upsert({
-          where: { studentId },
+          where: { studentId: student.id },
           update: {},
-          create: { studentId }
+          create: { studentId: student.id }
         });
         await db.walletTransaction.create({
           data: {
@@ -691,7 +763,7 @@ export class BursarService {
             type: 'SMS',
             schoolId,
             senderId: receivedBy || 'SYSTEM',
-            studentId,
+            studentId: student.id,
             recipientPhone: parentPhone,
             payload: {
               message: `Receipt ${receiptNumber}: Received ${paymentCurrency} ${amount.toFixed(2)} for ${student.name}. Thank you.`
@@ -706,7 +778,7 @@ export class BursarService {
       LedgerEvents.broadcast({
         type: 'PAYMENT_RECEIVED',
         schoolId,
-        studentId,
+        studentId: student.id,
         sourceType: 'receipt',
         sourceId: receipt.id,
         timestamp: new Date().toISOString()
@@ -734,7 +806,13 @@ export class BursarService {
    */
   static async getStudentBalance(schoolId: string, studentId: string): Promise<StudentBalanceResult> {
     const student = await prisma.student.findFirst({
-      where: { id: studentId, schoolId },
+      where: {
+        schoolId,
+        OR: [
+          { id: studentId },
+          { studentId: studentId }
+        ]
+      },
       include: { class: true }
     });
     if (!student) {
@@ -743,14 +821,14 @@ export class BursarService {
 
     // 1. Sum of all non-cancelled invoices
     const invoices = await prisma.studentInvoice.findMany({
-      where: { studentId, schoolId, status: { not: 'cancelled' } },
+      where: { studentId: student.id, schoolId, status: { not: 'cancelled' } },
       select: { totalAmount: true }
     });
     const totalBilled = round2(invoices.reduce((s, i) => s + i.totalAmount, 0));
 
     // 2. Sum of all allocations
     const allocations = await prisma.paymentAllocation.findMany({
-      where: { receipt: { studentId, schoolId } },
+      where: { receipt: { studentId: student.id, schoolId } },
       select: { allocatedAmount: true, type: true }
     });
 

@@ -276,4 +276,3 @@ router.delete('/:id/subject-teachers/:recordId', auth_1.requireAuth, (0, auth_1.
     }
 });
 exports.default = router;
-//# sourceMappingURL=classes.js.map

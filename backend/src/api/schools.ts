@@ -42,6 +42,7 @@ router.get('/settings', requireAuth, async (req: AuthRequest, res: Response) => 
     if (req.user!.role !== 'SCHOOL_ADMIN') {
       delete responsePayload.smtpPassword;
       delete responsePayload.whatsAppApiKey;
+      delete responsePayload.paynowMerchantKey;
     }
     
     res.json(responsePayload);
@@ -147,7 +148,9 @@ router.patch('/settings', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), va
       'defaultCashAccountId',
       'defaultExpenseAccountId',
       'exchangeRate',
-      'autoPostToLedger'
+      'autoPostToLedger',
+      'paynowMerchantId',
+      'paynowMerchantKey'
     ];
 
     const accountingData: Record<string, any> = {};
@@ -328,12 +331,15 @@ router.patch('/modules', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN')
 
 /**
  * @route   GET /api/schools/me
- * @desc    [SCHOOL_ADMIN] Get own school details with plan and subscription modules
+ * @desc    Get own school details with plan and subscription modules
  */
-router.get('/me', requireAuth, requireRole('SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
+router.get('/me', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
+    const schoolId = req.user?.schoolId;
+    if (!schoolId) return res.status(400).json({ error: 'No school context for user' });
+
     const school = await prisma.school.findUnique({
-      where: { id: req.user!.schoolId! },
+      where: { id: schoolId },
       include: {
         plan: true,
         _count: { select: { students: true, teachers: true, classes: true } }
@@ -1855,16 +1861,18 @@ router.get('/connections/pending', requireAuth, requireRole('SCHOOL_ADMIN', 'SUP
       
       return res.json(pendingParents.map(p => ({
         ...p.parent.user,
+        id: p.id,
+        connectionId: p.id,
         parentUserId: p.parent.userId,
         parentRecordId: p.parent.id,
-        connectionId: p.id,
         linkStatus: p.status,
         createdAt: p.createdAt,
         studentRecordId: p.student.id,
         studentName: p.student.name,
         studentId: p.student.studentId,
         studentClass: p.student.class?.name || 'Unassigned',
-        relation: p.relation
+        relation: p.relation,
+        isPrimaryPayer: p.isPrimaryPayer
       })));
     }
 
@@ -2059,4 +2067,105 @@ router.patch('/connections/:id/reject', requireAuth, requireRole('SCHOOL_ADMIN',
     res.status(500).json({ error: 'Failed to reject connection' });
   }
 });
+
+/**
+ * @route   POST /api/schools/connections/parent-student
+ * @desc    [SCHOOL_ADMIN] Manually create an approved parent-student link
+ */
+router.post('/connections/parent-student', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN', 'PRINCIPAL'), async (req: AuthRequest, res) => {
+  try {
+    const schoolId = req.user!.schoolId!;
+    const { parentUserId, studentId, relation, isPrimaryPayer } = req.body;
+
+    if (!parentUserId || !studentId) {
+      return res.status(400).json({ error: 'Both Parent and Student are required' });
+    }
+
+    const student = await prisma.student.findFirst({
+      where: { id: studentId, schoolId }
+    });
+    if (!student) {
+      return res.status(404).json({ error: 'Student not found in this school' });
+    }
+
+    const parentUser = await prisma.user.findFirst({
+      where: { id: parentUserId }
+    });
+    if (!parentUser) {
+      return res.status(404).json({ error: 'Parent user not found' });
+    }
+
+    let parent = await prisma.parent.findUnique({
+      where: { userId: parentUser.id }
+    });
+    if (!parent) {
+      parent = await prisma.parent.create({
+        data: { userId: parentUser.id }
+      });
+    }
+
+    const link = await prisma.parentStudent.upsert({
+      where: {
+        parentId_studentId: {
+          parentId: parent.id,
+          studentId: student.id
+        }
+      },
+      update: {
+        relation: relation || 'Guardian',
+        isPrimaryPayer: !!isPrimaryPayer,
+        status: 'APPROVED'
+      },
+      create: {
+        parentId: parent.id,
+        studentId: student.id,
+        relation: relation || 'Guardian',
+        isPrimaryPayer: !!isPrimaryPayer,
+        status: 'APPROVED'
+      }
+    });
+
+    return res.json({ success: true, message: 'Parent linked to student successfully!', link });
+  } catch (error) {
+    console.error('Error creating parent-student link:', error);
+    res.status(500).json({ error: 'Failed to create parent-student link' });
+  }
+});
+
+/**
+ * @route   DELETE /api/schools/connections/:id
+ * @desc    [SCHOOL_ADMIN] Permanently unlink/delete a parent-student or supplier connection
+ */
+router.delete('/connections/:id', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN', 'PRINCIPAL'), async (req: AuthRequest, res) => {
+  try {
+    const targetId = req.params.id as string;
+    const schoolId = req.user!.schoolId!;
+
+    const parentConn = await prisma.parentStudent.findFirst({
+      where: {
+        id: targetId,
+        student: { schoolId }
+      }
+    });
+
+    if (parentConn) {
+      await prisma.parentStudent.delete({ where: { id: parentConn.id } });
+      return res.json({ success: true, message: 'Parent-student linkage removed successfully' });
+    }
+
+    const supplierConn = await prisma.schoolSupplier.findFirst({
+      where: { id: targetId, schoolId }
+    });
+
+    if (supplierConn) {
+      await prisma.schoolSupplier.delete({ where: { id: supplierConn.id } });
+      return res.json({ success: true, message: 'Supplier connection removed successfully' });
+    }
+
+    return res.status(404).json({ error: 'Connection not found' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to remove connection' });
+  }
+});
+
 export default router;

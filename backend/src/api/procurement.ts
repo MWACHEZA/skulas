@@ -33,7 +33,7 @@ router.get('/requisitions', requireAuth, async (req: AuthRequest, res: Response)
     // Role-based visibility logic
     if (user.role === 'SCHOOL_ADMIN' || user.role === 'SUPER_ADMIN' || user.role === 'BURSAR' || isProcurementOrBuyer) {
       // Sees everything in the school
-    } else if (Array.isArray(user.secondaryRoles) && user.secondaryRoles.includes('HOD')) {
+    } else if (Array.isArray(user.secondaryRoles) && user.secondaryRoles.some((r: string) => ['HOD', 'HEAD OF DEPARTMENT', 'HEAD OF DEPARTMENT (HOD)', 'DEPARTMENT_HEAD'].includes(r.toUpperCase()))) {
       // Find HOD's department
       const teacher = await prisma.teacher.findFirst({ where: { userId: user.id } });
       whereClause = {

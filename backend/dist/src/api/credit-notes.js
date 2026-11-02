@@ -65,4 +65,3 @@ router.get('/:id', async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=credit-notes.js.map

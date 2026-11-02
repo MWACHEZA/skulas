@@ -849,4 +849,3 @@ router.post('/depreciate-all', auth_1.requireAuth, (0, auth_1.requireRole)('BURS
     }
 });
 exports.default = router;
-//# sourceMappingURL=assets.js.map

@@ -66,4 +66,3 @@ router.post('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), as
     }
 });
 exports.default = router;
-//# sourceMappingURL=grading.js.map

@@ -305,4 +305,3 @@ router.get('/calculate-zimbabwe-weighted', auth_1.requireAuth, async (req, res) 
     }
 });
 exports.default = router;
-//# sourceMappingURL=marks.js.map

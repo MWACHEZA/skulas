@@ -43,4 +43,3 @@ exports.PaymentMethodSchema = zod_1.z.object({
     }).optional(),
     isActive: zod_1.z.boolean().default(true),
 });
-//# sourceMappingURL=accounts.schema.js.map

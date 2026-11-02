@@ -24,4 +24,7 @@ export {
   SkeletonStats,
   SkeletonProfile
 } from './SkeletonLoader';
-export type { SkeletonLoaderProps } from './SkeletonLoader';
+export { default as PaynowCheckoutModal } from './PaynowCheckoutModal';
+export type { PaynowCheckoutModalProps, PaymentGatewayMethod, PaymentPurpose } from './PaynowCheckoutModal';
+export { default as ReceiptModal } from './ReceiptModal';
+export type { ReceiptModalData, ReceiptLineItem, ReceiptTemplateConfig, ReceiptSchoolInfo } from './ReceiptModal';

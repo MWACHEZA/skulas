@@ -63,4 +63,3 @@ exports.QuestionPaperSchema = zod_1.z.object({
         }))
     })).min(1, 'At least one section is required'),
 });
-//# sourceMappingURL=academic.schema.js.map

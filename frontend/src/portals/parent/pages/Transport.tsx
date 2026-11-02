@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { PaginatedTable } from '../../../components/shared/Pagination';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../../contexts/AuthContext';
+import { useAuth, type LinkedEntity } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
 import SkeletonLoader from '../../../components/shared/SkeletonLoader';
@@ -14,6 +14,44 @@ interface ProgressStep {
   isChildStop?: boolean;
 }
 
+export interface TransportAllocation {
+  id: string;
+  studentId: string;
+  transportId?: string | null;
+  routeId?: string | null;
+  termId?: string;
+  year?: number;
+  feeAmount?: number;
+  status?: string;
+  stopName?: string | null;
+  route?: {
+    id: string;
+    name: string;
+    description?: string | null;
+  } | null;
+  transport?: {
+    id: string;
+    vehicle?: {
+      id: string;
+      name: string;
+      number?: string;
+      model?: string;
+      driverName?: string;
+      driverContact?: string;
+    } | null;
+    route?: {
+      id: string;
+      name: string;
+    } | null;
+  } | null;
+}
+
+interface ExtendedChildEntity extends LinkedEntity {
+  studentId?: string;
+  code?: string;
+  className?: string;
+}
+
 interface TransportSummary {
   student: {
     id: string;
@@ -22,7 +60,7 @@ interface TransportSummary {
     gradeLevel: string;
   };
   isEnrolled?: boolean;
-  allocation?: any;
+  allocation?: TransportAllocation | null;
   availableVehicles?: {
     id: string;
     name: string;
@@ -61,7 +99,7 @@ interface TransportSummary {
 
 export default function ParentTransport() {
   const { user, activeEntity } = useAuth();
-  const currentChild = activeEntity || user?.linkedEntities?.[0];
+  const currentChild = (activeEntity || user?.linkedEntities?.[0]) as ExtendedChildEntity | undefined;
   const { showToast } = useToast();
 
   const [loading, setLoading] = useState(true);
@@ -86,11 +124,7 @@ export default function ParentTransport() {
   // Urgent alert banner state
   const [urgentAlertMessage, setUrgentAlertMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchTransportSummary();
-  }, [currentChild?.id]);
-
-  const fetchTransportSummary = async () => {
+  const fetchTransportSummary = useCallback(async () => {
     try {
       setLoading(true);
       const studentId = currentChild?.id;
@@ -101,14 +135,14 @@ export default function ParentTransport() {
       if (res.data.availableRoutes?.length > 0) {
         setRequestedRouteId(res.data.availableRoutes[0].id);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to load transport details:', err);
       setData({
         student: {
           id: currentChild?.id || 'stu-1',
           name: currentChild?.name || 'Student',
-          studentId: (currentChild as any)?.studentId || currentChild?.code || '',
-          gradeLevel: (currentChild as any)?.className || 'Primary School'
+          studentId: currentChild?.studentId || currentChild?.code || '',
+          gradeLevel: currentChild?.className || 'Primary School'
         },
         isEnrolled: false,
         gpsEnabled: false,
@@ -146,7 +180,11 @@ export default function ParentTransport() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentChild]);
+
+  useEffect(() => {
+    fetchTransportSummary();
+  }, [fetchTransportSummary]);
 
   const handleSubmitEnrollment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -165,8 +203,9 @@ export default function ParentTransport() {
       setPickupPoint('');
       setRouteChangeReason('');
       fetchTransportSummary();
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Transport enrolment request recorded.', 'success');
+    } catch (err: unknown) {
+      const apiError = err as { response?: { data?: { error?: string } } };
+      showToast(apiError.response?.data?.error || 'Transport enrolment request recorded.', 'success');
       setIsEnrollModalOpen(false);
     } finally {
       setIsSubmitting(false);
@@ -203,7 +242,7 @@ export default function ParentTransport() {
         setIsChangeStopOpen(false);
         setTargetStopToday('');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to report issue:', err);
       if (issueType === 'CHILD_LEFT_ON_BUS') {
         const msg = `Alert sent to Driver ${data.route.driverName} and Transport Office. They have been notified to check the vehicle immediately.`;
@@ -233,7 +272,7 @@ export default function ParentTransport() {
       showToast(res.data.message || 'Change route request submitted to Transport Coordinator.', 'success');
       setIsChangeRouteOpen(false);
       setRouteChangeReason('');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to submit route change:', err);
       showToast('Change route request submitted to Transport Coordinator.', 'success');
       setIsChangeRouteOpen(false);
@@ -259,8 +298,6 @@ export default function ParentTransport() {
       </div>
     );
   }
-
-  const childFirstName = data.student.name.split(' ')[0];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24, paddingBottom: 60 }}>

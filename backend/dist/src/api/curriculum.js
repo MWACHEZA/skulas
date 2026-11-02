@@ -27,4 +27,3 @@ router.get('/lesson-plans', async (req, res) => {
     res.json({ message: 'Lesson plans fetched' });
 });
 exports.default = router;
-//# sourceMappingURL=curriculum.js.map

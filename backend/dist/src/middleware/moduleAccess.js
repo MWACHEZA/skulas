@@ -11,9 +11,9 @@ const MODULE_ACCESS_MAP = {
         secondaryRequestRoles: ['teacher', 'TEACHER', 'student', 'STUDENT', 'parent', 'PARENT', 'bursar', 'BURSAR', 'ancillary', 'ANCILLARY']
     },
     farm: {
-        fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN', 'TEACHER'],
-        secondaryFullRoles: ['farm_manager', 'FARM_MANAGER', 'FARM_MGT', 'Agriculture Teacher', 'Farm Assistant', 'agric_teacher', 'AGRIC_TEACHER'],
-        secondaryScopedRoles: ['agric_teacher', 'AGRIC_TEACHER', 'AGRI_ACADEMIC', 'Agriculture Teacher', 'Farm Assistant', 'teacher', 'TEACHER'],
+        fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN', 'TEACHER', 'FARM_MANAGER'],
+        secondaryFullRoles: ['farm_manager', 'Farm Manager', 'FARM_MANAGER', 'FARM_MGT', 'Agriculture Teacher', 'Farm Assistant', 'agric_teacher', 'AGRIC_TEACHER'],
+        secondaryScopedRoles: ['farm_manager', 'Farm Manager', 'agric_teacher', 'AGRIC_TEACHER', 'AGRI_ACADEMIC', 'Agriculture Teacher', 'Farm Assistant', 'teacher', 'TEACHER'],
         secondaryRequestRoles: []
     },
     prefects: {
@@ -24,14 +24,14 @@ const MODULE_ACCESS_MAP = {
     },
     dining: {
         fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN'],
-        secondaryFullRoles: ['catering_manager', 'CATERING_MANAGER', 'KITCHEN'],
-        secondaryScopedRoles: ['matron', 'MATRON', 'BOARDING'],
+        secondaryFullRoles: ['catering_manager', 'CATERING_MANAGER', 'KITCHEN', 'Head Chef', 'Cook', 'Catering Supervisor', 'Kitchen Assistant'],
+        secondaryScopedRoles: ['matron', 'MATRON', 'BOARDING', 'Hostel Matron', 'Hostel Supervisor'],
         secondaryRequestRoles: []
     },
     sports: {
         fullRoles: ['SCHOOL_ADMIN', 'SUPER_ADMIN'],
-        secondaryFullRoles: ['sports_master', 'SPORTS_MASTER', 'SPORTS'],
-        secondaryScopedRoles: ['pe_teacher', 'PE_TEACHER', 'house_master', 'HOUSE_MASTER', 'HOUSE', 'hod_sports', 'HOD_SPORTS', 'sports_tech', 'SPORTS_TECH'],
+        secondaryFullRoles: ['sports_master', 'SPORTS_MASTER', 'SPORTS', 'Sports Coordinator'],
+        secondaryScopedRoles: ['pe_teacher', 'PE_TEACHER', 'house_master', 'HOUSE_MASTER', 'HOUSE', 'hod_sports', 'HOD_SPORTS', 'sports_tech', 'SPORTS_TECH', 'Sports Captain'],
         secondaryRequestRoles: []
     }
 };
@@ -41,22 +41,23 @@ function getModuleAccess(user, module) {
         return { level: 'none' };
     const primaryRole = (user.role || '').toUpperCase();
     const secondaryRoles = Array.isArray(user.secondaryRoles) ? user.secondaryRoles : [];
+    const normalize = (str) => (str || '').toLowerCase().replace(/[\s_-]+/g, '');
     // Full access via primary role
-    if (map.fullRoles.some(r => r.toUpperCase() === primaryRole)) {
+    if (map.fullRoles.some(r => normalize(r) === normalize(primaryRole))) {
         return { level: 'full' };
     }
-    // Full access via secondary role (case-insensitive)
-    const fullSecondary = secondaryRoles.find((r) => map.secondaryFullRoles.some(s => s.toLowerCase() === (r || '').toLowerCase()));
+    // Full access via secondary role (case/spacing/underscore agnostic)
+    const fullSecondary = secondaryRoles.find((r) => map.secondaryFullRoles.some(s => normalize(s) === normalize(r)));
     if (fullSecondary) {
         return { level: 'full', actingAs: fullSecondary };
     }
     // Scoped access via secondary role
-    const scopedSecondary = secondaryRoles.find((r) => map.secondaryScopedRoles.some(s => s.toLowerCase() === (r || '').toLowerCase()));
+    const scopedSecondary = secondaryRoles.find((r) => map.secondaryScopedRoles.some(s => normalize(s) === normalize(r)));
     if (scopedSecondary) {
         return { level: 'scoped', actingAs: scopedSecondary };
     }
     // Request-only access via secondary role
-    const requestSecondary = secondaryRoles.find((r) => map.secondaryRequestRoles.some(s => s.toLowerCase() === (r || '').toLowerCase()));
+    const requestSecondary = secondaryRoles.find((r) => map.secondaryRequestRoles.some(s => normalize(s) === normalize(r)));
     if (requestSecondary) {
         return { level: 'request_only', actingAs: requestSecondary };
     }
@@ -93,4 +94,3 @@ function requireModuleAccess(module, minLevel = 'request_only') {
         });
     };
 }
-//# sourceMappingURL=moduleAccess.js.map

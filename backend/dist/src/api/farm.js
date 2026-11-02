@@ -193,4 +193,3 @@ router.post('/sales', (0, moduleAccess_1.requireModuleAccess)('farm', 'full'), a
     }
 });
 exports.default = router;
-//# sourceMappingURL=farm.js.map

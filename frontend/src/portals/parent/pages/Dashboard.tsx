@@ -1,10 +1,28 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth, type LinkedEntity } from '../../../contexts/AuthContext';
+import axios from 'axios';
+import { useAuth } from '../../../contexts/AuthContext';
 import api, { BASE_URL } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
+import { PaynowCheckoutModal } from '../../../components/shared';
 
 // ── TYPES ──
+
+export interface TripModalData {
+  tripTitle?: string;
+  date?: string;
+  destination?: string;
+  transport?: string;
+  costCovered?: string;
+}
+
+export interface ActionItemPayload extends TripModalData {
+  amount?: number;
+  currency?: string;
+  studentName?: string;
+  studentId?: string;
+  planId?: string;
+}
 
 interface DashboardSummary {
   child: {
@@ -16,6 +34,7 @@ interface DashboardSummary {
     avatar: string | null;
     schoolName?: string;
     schoolCode?: string;
+    isPendingVerification?: boolean;
   };
   fees: {
     balanceDue: number;
@@ -61,7 +80,7 @@ interface DashboardSummary {
     isOverdue?: boolean;
     actionUrl: string;
     actionModal?: 'TRIP_APPROVAL' | 'PAY_NOW' | null;
-    payload?: any;
+    payload?: ActionItemPayload;
   }>;
   totalActionItemsCount: number;
   timeline: Array<{
@@ -120,12 +139,13 @@ export default function ParentDashboard() {
   // Modals
   const [payModalOpen, setPayModalOpen] = useState(false);
   const [payAmount, setPayAmount] = useState<string>('');
-  const [payMethod, setPayMethod] = useState<'paynow' | 'zipit'>('paynow');
-  const [payLoading, setPayLoading] = useState(false);
 
   const [tripModalOpen, setTripModalOpen] = useState(false);
-  const [tripData, setTripData] = useState<any>(null);
+  const [tripData, setTripData] = useState<TripModalData | null>(null);
   const [tripApproved, setTripApproved] = useState(false);
+
+  const summaryRef = useRef(summary);
+  summaryRef.current = summary;
 
   // Load from cache first for zero-latency instant render
   const loadFromCache = useCallback((childId: string): boolean => {
@@ -171,39 +191,42 @@ export default function ParentDashboard() {
         }));
         setLastUpdatedText('Updated just now');
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to fetch parent dashboard summary:', err);
-      if (!hasShownErrorRef.current && !summary) {
+      if (!hasShownErrorRef.current && !summaryRef.current) {
         hasShownErrorRef.current = true;
-        const msg = err.response?.data?.error || 'Unable to load live student data. Check your internet connection.';
-        showToast(msg, 'error');
+        const msg = axios.isAxiosError(err) ? err.response?.data?.error : undefined;
+        showToast(msg || 'Unable to load live student data. Check your internet connection.', 'error');
       }
     } finally {
       isFetchingRef.current = false;
       setLoading(false);
       setIsRefreshing(false);
     }
-  }, [summary, showToast]);
+  }, [showToast]);
 
-  // Initial load or child change
+  // Sync active entity if different
+  useEffect(() => {
+    if (!activeChildId) return;
+    const matchedEntity = linkedChildren.find(c => c.id === activeChildId);
+    if (matchedEntity && activeEntity?.id !== matchedEntity.id) {
+      setActiveEntity(matchedEntity);
+    }
+  }, [activeChildId, linkedChildren, activeEntity?.id, setActiveEntity]);
+
+  // Initial load or child change: hydrate cache and trigger fresh fetch
   useEffect(() => {
     if (!activeChildId) return;
 
     // Persist active child id
     localStorage.setItem('acadex_active_child_id', activeChildId);
 
-    // Sync active entity if different
-    const matchedEntity = linkedChildren.find(c => c.id === activeChildId);
-    if (matchedEntity && activeEntity?.id !== matchedEntity.id) {
-      setActiveEntity(matchedEntity);
-    }
-
     // Immediate cached hydration
     const hasCache = loadFromCache(activeChildId);
 
     // Trigger fresh fetch (background if cache exists)
     fetchDashboardData(activeChildId, hasCache);
-  }, [activeChildId]);
+  }, [activeChildId, loadFromCache, fetchDashboardData]);
 
   // Handle Child Switcher
   const handleChildSwitch = (newChildId: string) => {
@@ -217,28 +240,15 @@ export default function ParentDashboard() {
   };
 
   // Quick Pay Modal Trigger
-  const handleOpenPay = (payload?: any) => {
+  const handleOpenPay = (payload?: ActionItemPayload) => {
     const bal = payload?.amount ?? summary?.fees.balanceDue ?? 0;
     setPayAmount(bal > 0 ? bal.toFixed(2) : '100.00');
     setPayModalOpen(true);
   };
 
-  const handleProcessPayment = () => {
-    setPayLoading(true);
-    setTimeout(() => {
-      setPayLoading(false);
-      setPayModalOpen(false);
-      showToast(
-        payMethod === 'paynow'
-          ? 'Connecting to Paynow Secure Gateway...'
-          : 'Zipit Reference submitted for Bursar reconciliation.',
-        'success'
-      );
-    }, 1200);
-  };
 
   // Quick Trip Approval Modal Trigger
-  const handleOpenTripModal = (payload?: any) => {
+  const handleOpenTripModal = (payload?: TripModalData) => {
     setTripData(payload || {
       tripTitle: 'National Museum Educational Trip',
       date: '28 March 2026',
@@ -404,7 +414,7 @@ export default function ParentDashboard() {
       </div>
 
       {/* Verification Pending Banner */}
-      {(activeEntity?.status === 'PENDING' || (summary?.child as any)?.isPendingVerification) && (
+      {(activeEntity?.status === 'PENDING' || summary?.child?.isPendingVerification) && (
         <div style={{
           background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)',
           border: '1px solid #fcd34d',
@@ -994,157 +1004,25 @@ export default function ParentDashboard() {
         </div>
       </div>
 
-      {/* ── MODAL 1: QUICK PAY (Paynow / Zipit) ── */}
-      {payModalOpen && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(15, 23, 42, 0.65)',
-          backdropFilter: 'blur(4px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: 16
-        }}>
-          <div style={{
-            background: '#ffffff',
-            borderRadius: 14,
-            maxWidth: 440,
-            width: '100%',
-            padding: 24,
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ width: 34, height: 34, borderRadius: '50%', background: '#fee2e2', color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <i className="fas fa-credit-card"></i>
-                </span>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Quick Fee Payment</h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setPayModalOpen(false)}
-                style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '1.2rem', cursor: 'pointer' }}
-              >
-                ✕
-              </button>
-            </div>
-
-            <p style={{ margin: '0 0 16px 0', fontSize: '0.85rem', color: '#64748b' }}>
-              Paying for <strong>{currentChildName}</strong> ({currentClassName})
-            </p>
-
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: 6 }}>
-                Payment Amount ({summary?.fees.currency || 'USD'})
-              </label>
-              <input
-                type="number"
-                value={payAmount}
-                onChange={(e) => setPayAmount(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '10px 12px',
-                  borderRadius: 8,
-                  border: '1px solid #cbd5e1',
-                  fontSize: '1rem',
-                  fontWeight: 700,
-                  boxSizing: 'border-box'
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: 20 }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: 6 }}>
-                Select Gateway
-              </label>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                <button
-                  type="button"
-                  onClick={() => setPayMethod('paynow')}
-                  style={{
-                    padding: '10px',
-                    borderRadius: 8,
-                    border: payMethod === 'paynow' ? '2px solid var(--school-primary, #3b82f6)' : '1px solid #e2e8f0',
-                    background: payMethod === 'paynow' ? '#eff6ff' : '#ffffff',
-                    cursor: 'pointer',
-                    fontSize: '0.82rem',
-                    fontWeight: 700,
-                    textAlign: 'center'
-                  }}
-                >
-                  <i className="fas fa-bolt" style={{ color: '#f59e0b', marginRight: 6 }}></i> Paynow
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPayMethod('zipit')}
-                  style={{
-                    padding: '10px',
-                    borderRadius: 8,
-                    border: payMethod === 'zipit' ? '2px solid var(--school-primary, #3b82f6)' : '1px solid #e2e8f0',
-                    background: payMethod === 'zipit' ? '#eff6ff' : '#ffffff',
-                    cursor: 'pointer',
-                    fontSize: '0.82rem',
-                    fontWeight: 700,
-                    textAlign: 'center'
-                  }}
-                >
-                  <i className="fas fa-university" style={{ color: '#10b981', marginRight: 6 }}></i> Zipit / Transfer
-                </button>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button
-                type="button"
-                onClick={() => setPayModalOpen(false)}
-                style={{
-                  flex: 1,
-                  padding: '10px 16px',
-                  borderRadius: 8,
-                  border: '1px solid #cbd5e1',
-                  background: '#ffffff',
-                  fontWeight: 600,
-                  fontSize: '0.88rem',
-                  cursor: 'pointer'
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleProcessPayment}
-                disabled={payLoading}
-                style={{
-                  flex: 2,
-                  padding: '10px 16px',
-                  borderRadius: 8,
-                  border: 'none',
-                  background: 'var(--school-primary, #3b82f6)',
-                  color: '#ffffff',
-                  fontWeight: 700,
-                  fontSize: '0.88rem',
-                  cursor: payLoading ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: 8
-                }}
-              >
-                {payLoading ? (
-                  <><i className="fas fa-spinner fa-spin"></i> Processing...</>
-                ) : (
-                  <><span>Pay {summary?.fees.currencySymbol}{payAmount}</span> <i className="fas fa-lock"></i></>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── MODAL 1: QUICK PAY (Paynow Gateway) ── */}
+      <PaynowCheckoutModal
+        isOpen={payModalOpen}
+        onClose={() => setPayModalOpen(false)}
+        studentId={summary?.child.id || activeEntity?.id || ''}
+        studentName={summary?.child.name || activeEntity?.name}
+        purpose="FEES"
+        defaultAmount={parseFloat(payAmount) || summary?.fees.balanceDue || 50}
+        balanceDue={summary?.fees.balanceDue}
+        currency={summary?.fees.currency || 'USD'}
+        userPhone={user?.phone}
+        userEmail={user?.email}
+        onSuccess={() => {
+          const targetChildId = activeChildId || summary?.child.id || activeEntity?.id;
+          if (targetChildId) {
+            fetchDashboardData(targetChildId);
+          }
+        }}
+      />
 
       {/* ── MODAL 2: QUICK TRIP APPROVAL (10-Second Inline Action) ── */}
       {tripModalOpen && (

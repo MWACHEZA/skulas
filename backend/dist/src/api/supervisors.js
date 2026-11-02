@@ -119,4 +119,3 @@ router.post('/reports', auth_1.requireAuth, (0, features_1.requireFeature)('Rese
     }
 });
 exports.default = router;
-//# sourceMappingURL=supervisors.js.map

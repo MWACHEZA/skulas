@@ -107,4 +107,3 @@ async function moveFile(oldRelPath, newRelPath) {
     }
 }
 migrate();
-//# sourceMappingURL=migrate-storage.js.map

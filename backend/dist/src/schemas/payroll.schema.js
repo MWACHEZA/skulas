@@ -59,4 +59,3 @@ exports.EmployeeProfileSchema = zod_1.z.object({
     linkedinLink: zod_1.z.string().optional(),
     twitterLink: zod_1.z.string().optional(),
 });
-//# sourceMappingURL=payroll.schema.js.map

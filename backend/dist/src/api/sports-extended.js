@@ -262,4 +262,3 @@ router.post('/trips/consents/:id/cancel', async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=sports-extended.js.map

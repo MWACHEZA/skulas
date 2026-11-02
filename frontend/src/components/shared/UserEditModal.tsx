@@ -3,13 +3,11 @@ import api, { BASE_URL } from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import SecondaryRoleSelect from './SecondaryRoleSelect';
-import { getAvatarUrl } from '../../utils/formatters';
+import { getAvatarUrl, parseCleanBadges } from '../../utils/formatters';
 import {
-  validateZimNationalId,
   validateNationalIdOrBirthCert,
   validatePhone,
   validateEmail,
-  validateBankAccount,
   checkImageDimensions
 } from '../../utils/validation';
 
@@ -146,7 +144,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
         ...(user.metadata || {}),
         ...(user.employeeProfile || {}) // Include profile fields like bloodGroup
       } as UserEditFormData);
-      setSecondaryRoles(user.secondaryRoles || []);
+      setSecondaryRoles(parseCleanBadges(user.secondaryRoles));
       setAvatarPreview(getAvatarUrl(user.avatar, currentUserSession?.schoolCode));
       setDocFiles({});
       setActiveTab('basic');
@@ -257,7 +255,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
         }
       });
       
-      data.append('secondaryRoles', JSON.stringify(secondaryRoles.filter(r => r.trim() !== '')));
+      data.append('secondaryRoles', JSON.stringify(Array.from(new Set(secondaryRoles.map(r => r.trim()).filter(Boolean)))));
       
       if (avatarFile) data.append('avatar', avatarFile);
       if (docFiles.idDoc) data.append('idDoc', docFiles.idDoc);

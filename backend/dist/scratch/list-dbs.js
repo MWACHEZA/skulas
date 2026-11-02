@@ -10,4 +10,3 @@ async function listDatabases() {
     console.log(result);
 }
 listDatabases().catch(console.error).finally(() => prisma.$disconnect());
-//# sourceMappingURL=list-dbs.js.map

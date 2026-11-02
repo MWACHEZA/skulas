@@ -384,4 +384,3 @@ main().catch(err => {
     console.error('Migration failed:', err);
     process.exit(1);
 });
-//# sourceMappingURL=migrate-to-ledger.js.map

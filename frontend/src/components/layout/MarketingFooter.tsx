@@ -6,9 +6,14 @@ export default function MarketingFooter() {
       <div className="container">
         <div className="footer-content" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2.5rem', padding: '4rem 0 2rem' }}>
           <div className="footer-col">
-            <div className="logo" style={{ marginBottom: '1.2rem', fontSize: '1.8rem', fontWeight: 900 }}>
-              ACAD<span style={{ color: '#3b82f6' }}>EX</span>
-            </div>
+            <Link to="/" className="landing-brand" style={{ marginBottom: '1.2rem', display: 'inline-flex' }}>
+              <span className="brand-icon">
+                <i className="fas fa-graduation-cap"></i>
+              </span>
+              <span className="brand-text">
+                ACAD<span className="brand-accent">EX</span>
+              </span>
+            </Link>
             <p style={{ maxWidth: '320px', color: 'var(--gray-400)', fontSize: '0.9rem', lineHeight: 1.6 }}>
               The continental-scale education operating system. Hardened multi-tenant vaulting, role-based workflows, and automated financial compliance.
             </p>

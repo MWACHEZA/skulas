@@ -1170,4 +1170,3 @@ router.get('/institutional-overview', auth_1.requireAuth, (0, auth_1.requireRole
     }
 });
 exports.default = router;
-//# sourceMappingURL=report-data.js.map

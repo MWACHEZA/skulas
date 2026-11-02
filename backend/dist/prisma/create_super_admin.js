@@ -36,4 +36,3 @@ main()
     .finally(async () => {
     await prisma.$disconnect();
 });
-//# sourceMappingURL=create_super_admin.js.map

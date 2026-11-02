@@ -22,4 +22,3 @@ async function fix() {
     console.log('Successfully RESET password to Admin@1234 for stpatricks@gmail.com');
 }
 fix().catch(console.error).finally(() => prisma.$disconnect());
-//# sourceMappingURL=fix-login.js.map

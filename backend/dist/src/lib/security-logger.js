@@ -56,4 +56,3 @@ const logSecurityEvent = async (params) => {
     }
 };
 exports.logSecurityEvent = logSecurityEvent;
-//# sourceMappingURL=security-logger.js.map

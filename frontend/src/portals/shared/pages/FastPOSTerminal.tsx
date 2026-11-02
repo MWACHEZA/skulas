@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
-import { formatCurrency } from '../../../utils/formatters';
+import type { TuckshopItem } from '../../bursar/pages/TuckshopInventory';
 import '../../../styles/portal.css';
 
 interface POSItem {
@@ -27,6 +27,38 @@ interface StudentRecord {
   balance?: number;
 }
 
+interface TillSession {
+  sessionNumber: string;
+  status: string;
+  cashierName: string;
+  float: number;
+}
+
+type PaymentMethod = 'WALLET' | 'CASH_USD' | 'CASH_ZIG' | 'ECOCASH' | 'CARD';
+
+interface POSReceipt {
+  receiptNo: string;
+  date: string;
+  items: CartItem[];
+  subtotalUSD: number;
+  subtotalZiG: number;
+  paymentMethod: PaymentMethod;
+  studentName: string | null;
+  studentId: string | null;
+  newBalance: number | null;
+  tendered: number;
+}
+
+interface UniformProductItem {
+  id: string;
+  name: string;
+  size?: string;
+  category?: { name?: string };
+  sellingPrice?: number | string;
+  stockQty?: number | string;
+  barcode?: string;
+}
+
 export default function FastPOSTerminal() {
   const { user } = useAuth();
   const { showToast } = useToast();
@@ -38,7 +70,7 @@ export default function FastPOSTerminal() {
   const [posMode, setPosMode] = useState<'TUCKSHOP' | 'UNIFORMS'>('TUCKSHOP');
 
   // Till status
-  const [tillSession, setTillSession] = useState<any>({
+  const [tillSession, setTillSession] = useState<TillSession>({
     sessionNumber: 'TILL-2026-001',
     status: 'ACTIVE',
     cashierName: user?.name || 'Cashier',
@@ -53,7 +85,7 @@ export default function FastPOSTerminal() {
 
   // Cart & Checkout
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [paymentMethod, setPaymentMethod] = useState<'WALLET' | 'CASH_USD' | 'CASH_ZIG' | 'ECOCASH' | 'CARD'>('WALLET');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('WALLET');
 
   // Student Wallet Search
   const [studentSearch, setStudentSearch] = useState('');
@@ -67,84 +99,44 @@ export default function FastPOSTerminal() {
 
   // Processing & Receipt
   const [processing, setProcessing] = useState(false);
-  const [receipt, setReceipt] = useState<any | null>(null);
+  const [receipt, setReceipt] = useState<POSReceipt | null>(null);
 
-  useEffect(() => {
-    fetchItems();
-    checkTill();
-  }, [posMode]);
-
-  const fetchItems = async () => {
+  const fetchItems = useCallback(async () => {
     setLoading(true);
     try {
       if (posMode === 'UNIFORMS') {
         const res = await api.get('/api/uniforms/products');
         const prods = Array.isArray(res.data) ? res.data : [];
-        if (prods.length > 0) {
-          setItems(prods.map((p: any) => ({
-            id: p.id,
-            name: `${p.name} (${p.size})`,
-            category: p.category?.name || 'Apparel',
-            price: Number(p.sellingPrice) || 0,
-            stock: Number(p.stockQty) || 0,
-            barcode: p.barcode || undefined
-          })));
-        } else {
-          // Fallback standard uniform items
-          setItems([
-            { id: 'uni-1', name: 'Boys Grey Shorts (Size 30)', category: 'Boys Wear', price: 15.00, stock: 24, barcode: 'UNI-B-S30' },
-            { id: 'uni-2', name: 'White Collared Shirt (Size 14)', category: 'Shirts', price: 10.00, stock: 40, barcode: 'UNI-S-14' },
-            { id: 'uni-3', name: 'Girls Pleated Skirt (Size 28)', category: 'Girls Wear', price: 18.00, stock: 30, barcode: 'UNI-G-S28' },
-            { id: 'uni-4', name: 'Winter Woollen Blazer (Size 34)', category: 'Blazers', price: 45.00, stock: 15, barcode: 'UNI-BLZ-34' },
-            { id: 'uni-5', name: 'Official Striped Tie', category: 'Accessories', price: 6.00, stock: 50, barcode: 'UNI-TIE' }
-          ]);
-        }
+        setItems(prods.map((p: UniformProductItem) => ({
+          id: p.id,
+          name: `${p.name}${p.size ? ` (${p.size})` : ''}`,
+          category: p.category?.name || 'Apparel',
+          price: Number(p.sellingPrice) || 0,
+          stock: Number(p.stockQty) || 0,
+          barcode: p.barcode || undefined
+        })));
       } else {
         const res = await api.get('/api/tuckshop/items');
         const data = Array.isArray(res.data) ? res.data : [];
-        if (data.length > 0) {
-          setItems(data);
-        } else {
-          // Fallback default sample inventory
-          setItems([
-            { id: 'item-1', name: 'Fresh Meat Pie', category: 'Bakery', price: 1.50, stock: 45 },
-            { id: 'item-2', name: 'Sausage Roll', category: 'Bakery', price: 1.25, stock: 30 },
-            { id: 'item-3', name: 'Chilled Fruit Juice 350ml', category: 'Drinks', price: 1.00, stock: 60 },
-            { id: 'item-4', name: 'Mineral Water 500ml', category: 'Drinks', price: 0.75, stock: 80 },
-            { id: 'item-5', name: 'Chocolate Muffin', category: 'Bakery', price: 1.20, stock: 25 },
-            { id: 'item-6', name: 'Potato Chips / Crisps', category: 'Snacks', price: 1.00, stock: 50 },
-            { id: 'item-7', name: 'Biscuits Pack', category: 'Snacks', price: 0.80, stock: 40 },
-            { id: 'item-8', name: 'Ballpoint Pen (Blue)', category: 'Stationery', price: 0.50, stock: 100 },
-            { id: 'item-9', name: 'Exercise Book A4', category: 'Stationery', price: 1.50, stock: 70 },
-            { id: 'item-10', name: 'Apple / Banana Fruit', category: 'Snacks', price: 0.50, stock: 35 }
-          ]);
-        }
+        setItems(data.map((item: TuckshopItem) => ({
+          id: item.id,
+          name: item.name,
+          category: item.category,
+          price: Number(item.price) || 0,
+          stock: Number(item.stock) || 0,
+          barcode: item.barcode || undefined
+        })));
       }
-    } catch {
-      // Offline fallback
-      if (posMode === 'UNIFORMS') {
-        setItems([
-          { id: 'uni-1', name: 'Boys Grey Shorts (Size 30)', category: 'Boys Wear', price: 15.00, stock: 24, barcode: 'UNI-B-S30' },
-          { id: 'uni-2', name: 'White Collared Shirt (Size 14)', category: 'Shirts', price: 10.00, stock: 40, barcode: 'UNI-S-14' },
-          { id: 'uni-3', name: 'Girls Pleated Skirt (Size 28)', category: 'Girls Wear', price: 18.00, stock: 30, barcode: 'UNI-G-S28' },
-          { id: 'uni-4', name: 'Winter Woollen Blazer (Size 34)', category: 'Blazers', price: 45.00, stock: 15, barcode: 'UNI-BLZ-34' },
-          { id: 'uni-5', name: 'Official Striped Tie', category: 'Accessories', price: 6.00, stock: 50, barcode: 'UNI-TIE' }
-        ]);
-      } else {
-        setItems([
-          { id: 'item-1', name: 'Fresh Meat Pie', category: 'Bakery', price: 1.50, stock: 45 },
-          { id: 'item-2', name: 'Sausage Roll', category: 'Bakery', price: 1.25, stock: 30 },
-          { id: 'item-3', name: 'Chilled Fruit Juice 350ml', category: 'Drinks', price: 1.00, stock: 60 },
-          { id: 'item-4', name: 'Mineral Water 500ml', category: 'Drinks', price: 0.75, stock: 80 },
-          { id: 'item-5', name: 'Ballpoint Pen (Blue)', category: 'Stationery', price: 0.50, stock: 100 }
-        ]);
-      }
+    } catch (err: unknown) {
+      console.error('Failed to fetch items from database:', err);
+      showToast(`Failed to load ${posMode === 'UNIFORMS' ? 'uniform' : 'tuckshop'} items from database`, 'error');
+      setItems([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [posMode, showToast]);
 
-  const checkTill = async () => {
+  const checkTill = useCallback(async () => {
     try {
       const res = await api.get('/api/tills/active?deviceId=POS-TERMINAL-1');
       if (res.data?.session) {
@@ -155,8 +147,15 @@ export default function FastPOSTerminal() {
           float: res.data.session.openingFloat || 25.00
         });
       }
-    } catch {}
-  };
+    } catch {
+      // Till session fetch fallback
+    }
+  }, [user?.name]);
+
+  useEffect(() => {
+    fetchItems();
+    checkTill();
+  }, [fetchItems, checkTill]);
 
   // Student Search for Wallet Deduction
   useEffect(() => {
@@ -172,11 +171,7 @@ export default function FastPOSTerminal() {
         const list = Array.isArray(res.data) ? res.data : res.data?.students || [];
         setSearchResults(list.slice(0, 5));
       } catch {
-        setSearchResults([
-          { id: 'ST-001', studentId: 'ST-001', name: 'Tanaka Ndlovu', class: { name: 'Form 3A' } },
-          { id: 'ST-002', studentId: 'ST-002', name: 'Ruvimbo Chitepo', class: { name: 'Form 3A' } },
-          { id: 'ST-003', studentId: 'ST-003', name: 'Blessing Sibanda', class: { name: 'Form 4B' } }
-        ]);
+        setSearchResults([]);
       } finally {
         setSearchingStudents(false);
       }
@@ -191,9 +186,9 @@ export default function FastPOSTerminal() {
 
     try {
       const res = await api.get(`/api/wallets/${st.id}`);
-      setWalletBalance(res.data?.balance ?? 15.50);
+      setWalletBalance(res.data?.balance ?? 0);
     } catch {
-      setWalletBalance(15.50); // Fallback sample balance
+      setWalletBalance(null);
     }
   };
 
@@ -297,10 +292,45 @@ export default function FastPOSTerminal() {
       showToast(`${posMode === 'UNIFORMS' ? 'Uniform' : 'Tuckshop'} sale completed and posted to ledger`, 'success');
       clearCart();
       fetchItems();
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Failed to complete checkout', 'error');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string } } };
+      showToast(error.response?.data?.error || 'Failed to complete checkout', 'error');
     } finally {
       setProcessing(false);
+    }
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const code = itemSearch.trim();
+      if (!code) return;
+
+      // Find exact barcode or name match first
+      const exactMatch = items.find(i => 
+        (i.barcode && i.barcode.toLowerCase() === code.toLowerCase()) ||
+        i.name.toLowerCase() === code.toLowerCase()
+      );
+
+      if (exactMatch) {
+        if (exactMatch.stock <= 0) {
+          showToast(`${exactMatch.name} is OUT OF STOCK!`, 'warning');
+        } else {
+          addToCart(exactMatch);
+          showToast(`Scanned: ${exactMatch.name}`, 'success');
+          setItemSearch('');
+        }
+      } else if (filteredItems.length === 1) {
+        if (filteredItems[0].stock <= 0) {
+          showToast(`${filteredItems[0].name} is OUT OF STOCK!`, 'warning');
+        } else {
+          addToCart(filteredItems[0]);
+          showToast(`Added: ${filteredItems[0].name}`, 'success');
+          setItemSearch('');
+        }
+      } else if (filteredItems.length === 0) {
+        showToast(`No item found for barcode "${code}"`, 'error');
+      }
     }
   };
 
@@ -330,7 +360,7 @@ export default function FastPOSTerminal() {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <button
-            onClick={() => navigate(posMode === 'UNIFORMS' ? '/admin/uniforms' : '/bursar/tuckshop')}
+            onClick={() => navigate(posMode === 'UNIFORMS' ? '/admin/uniforms' : (user?.role === 'ANCILLARY' ? '/ancillary/tuckshop' : '/bursar/tuckshop'))}
             style={{ background: '#1e293b', border: '1px solid #334155', color: '#cbd5e1', padding: '6px 12px', borderRadius: 6, cursor: 'pointer', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: 6 }}
           >
             <i className="fas fa-arrow-left" /> Exit POS
@@ -397,17 +427,23 @@ export default function FastPOSTerminal() {
         <div style={{ flex: '1 1 65%', display: 'flex', flexDirection: 'column', padding: '16px 20px', overflowY: 'auto' }}>
           {/* Search and Category Filter */}
           <div style={{ display: 'flex', gap: 12, marginBottom: 14, flexWrap: 'wrap', alignItems: 'center' }}>
-            <div style={{ position: 'relative', flex: '1 1 260px' }}>
-              <i className="fas fa-search" style={{ position: 'absolute', left: 14, top: 12, color: '#94a3b8' }} />
+            <div style={{ position: 'relative', flex: '1 1 280px' }}>
+              <i className="fas fa-barcode" style={{ position: 'absolute', left: 14, top: 12, color: '#3b82f6', fontSize: '1rem' }} />
               <input
                 type="text"
                 className="portal-input"
-                style={{ width: '100%', paddingLeft: 38, borderRadius: 8 }}
-                placeholder="Search items or scan barcode..."
+                style={{ width: '100%', paddingLeft: 40, borderRadius: 8, borderColor: itemSearch ? '#3b82f6' : undefined }}
+                placeholder="Scan barcode or type name (Press Enter)..."
                 value={itemSearch}
                 onChange={e => setItemSearch(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
+                autoFocus
               />
             </div>
+
+            <span style={{ fontSize: '0.75rem', color: '#16a34a', background: '#dcfce7', padding: '6px 10px', borderRadius: 6, fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <i className="fas fa-bolt" /> Barcode Auto-Scan Ready
+            </span>
 
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
               {categories.map(cat => (
@@ -436,7 +472,15 @@ export default function FastPOSTerminal() {
           {loading ? (
             <div style={{ textAlign: 'center', padding: 60, color: '#64748b' }}>
               <i className="fas fa-spinner fa-spin" style={{ fontSize: '2rem', color: '#2563eb' }} />
-              <p style={{ marginTop: 12 }}>Loading tuckshop catalog...</p>
+              <p style={{ marginTop: 12 }}>Loading {posMode === 'UNIFORMS' ? 'uniforms' : 'tuckshop'} catalog...</p>
+            </div>
+          ) : filteredItems.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '60px 20px', color: '#64748b', background: '#fff', borderRadius: 12, border: '1px dashed #cbd5e1' }}>
+              <i className="fas fa-box-open" style={{ fontSize: '2.5rem', color: '#94a3b8', marginBottom: 12 }} />
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#1e293b', margin: '0 0 6px 0' }}>No items found in database</h3>
+              <p style={{ margin: 0, fontSize: '0.85rem' }}>
+                {itemSearch ? `No products match "${itemSearch}"` : `No ${posMode === 'UNIFORMS' ? 'uniform' : 'tuckshop'} items currently registered in the system.`}
+              </p>
             </div>
           ) : (
             <div style={{
@@ -468,9 +512,16 @@ export default function FastPOSTerminal() {
                     }}
                   >
                     <div>
-                      <span style={{ fontSize: '0.7rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>
-                        {item.category}
-                      </span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 4 }}>
+                        <span style={{ fontSize: '0.7rem', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>
+                          {item.category}
+                        </span>
+                        {item.barcode && (
+                          <span style={{ fontSize: '0.65rem', color: '#1e40af', background: '#eff6ff', border: '1px solid #bfdbfe', padding: '1px 5px', borderRadius: 4, fontFamily: 'monospace', fontWeight: 700 }}>
+                            <i className="fas fa-barcode mr-1" />{item.barcode}
+                          </span>
+                        )}
+                      </div>
                       <div style={{ fontWeight: 700, color: '#0f172a', fontSize: '0.95rem', marginTop: 4, lineHeight: 1.25 }}>
                         {item.name}
                       </div>
@@ -633,7 +684,7 @@ export default function FastPOSTerminal() {
               ].map(m => (
                 <button
                   key={m.id}
-                  onClick={() => setPaymentMethod(m.id as any)}
+                  onClick={() => setPaymentMethod(m.id as PaymentMethod)}
                   style={{
                     padding: '8px 4px',
                     borderRadius: 6,
@@ -758,7 +809,7 @@ export default function FastPOSTerminal() {
             )}
 
             <div style={{ maxHeight: 180, overflowY: 'auto', marginBottom: 14 }}>
-              {receipt.items.map((it: any) => (
+              {receipt.items.map((it) => (
                 <div key={it.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', padding: '4px 0' }}>
                   <span>{it.name} &times; {it.quantity}</span>
                   <strong>${(it.price * it.quantity).toFixed(2)}</strong>

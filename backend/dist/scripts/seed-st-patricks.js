@@ -658,4 +658,3 @@ main()
     .finally(async () => {
     await prisma.$disconnect();
 });
-//# sourceMappingURL=seed-st-patricks.js.map

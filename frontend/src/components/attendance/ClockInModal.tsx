@@ -51,12 +51,25 @@ export default function ClockInModal({ onClose, onSuccess, action, isMandatory =
     setLoading(true);
     try {
       const endpoint = action === 'IN' ? '/api/staff-attendance/clock-in' : '/api/staff-attendance/clock-out';
-      await api.post(endpoint, { image: capturedImage });
-      showToast(`Successfully Clocked ${action}`, 'success');
+      const res = await api.post(endpoint, { image: capturedImage });
+      showToast(res.data?.message || `Successfully Clocked ${action}`, 'success');
       onSuccess();
       if (onClose) onClose();
     } catch (error: any) {
-      showToast(error.response?.data?.error || `Failed to clock ${action.toLowerCase()}`, 'error');
+      const errMsg = error.response?.data?.error || '';
+      if (errMsg.toLowerCase().includes('already clocked in')) {
+        showToast('You are already clocked in for today.', 'info');
+        onSuccess();
+        if (onClose) onClose();
+        return;
+      }
+      if (errMsg.toLowerCase().includes('already clocked out')) {
+        showToast('You are already clocked out for today.', 'info');
+        onSuccess();
+        if (onClose) onClose();
+        return;
+      }
+      showToast(errMsg || `Failed to clock ${action.toLowerCase()}`, 'error');
     } finally {
       setLoading(false);
     }
@@ -88,9 +101,10 @@ export default function ClockInModal({ onClose, onSuccess, action, isMandatory =
             </div>
           </div>
           
-          {!isMandatory && onClose && (
+          {onClose && (
             <button 
               onClick={onClose} 
+              title={isMandatory ? "Remind me in 15 minutes" : "Close"}
               style={{ background: '#f1f5f9', color: '#64748b', border: 'none', width: '32px', height: '32px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               <i className="fas fa-times"></i>
@@ -175,34 +189,71 @@ export default function ClockInModal({ onClose, onSuccess, action, isMandatory =
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '16px 20px', borderTop: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
+        <div style={{ padding: '16px 20px', borderTop: '1px solid #e2e8f0', background: '#f8fafc', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {capturedImage && (
               <span style={{ fontSize: '0.8rem', color: '#059669', fontWeight: 800 }}>
                 <i className="fas fa-check-circle mr-1"></i> Verification photo ready
               </span>
             )}
+            {isMandatory && onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#64748b',
+                  fontSize: '0.82rem',
+                  textDecoration: 'underline',
+                  cursor: 'pointer',
+                  padding: '4px 8px'
+                }}
+              >
+                <i className="fas fa-history mr-1"></i> Remind me later (15 min)
+              </button>
+            )}
           </div>
-          <button 
-            onClick={handlePunch}
-            disabled={loading || !capturedImage}
-            className="portal-btn-primary" 
-            style={{ 
-              background: action === 'IN' ? '#059669' : '#dc2626', 
-              borderColor: action === 'IN' ? '#047857' : '#b91c1c', 
-              padding: '12px 32px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: 10,
-              fontSize: '1rem',
-              fontWeight: 900,
-              borderRadius: 12,
-              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-            }}
-          >
-            {loading ? <i className="fas fa-spinner fa-spin"></i> : <i className={`fas fa-sign-${action === 'IN' ? 'in' : 'out'}-alt`}></i>}
-            Confirm & Clock {action} Now
-          </button>
+          <div style={{ display: 'flex', gap: 10 }}>
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                className="portal-btn-ghost"
+                style={{
+                  padding: '12px 20px',
+                  borderRadius: 12,
+                  fontWeight: 700,
+                  fontSize: '0.9rem',
+                  border: '1px solid #cbd5e1',
+                  background: '#ffffff',
+                  color: '#475569'
+                }}
+              >
+                {isMandatory ? 'Bypass for Now' : 'Cancel'}
+              </button>
+            )}
+            <button 
+              onClick={handlePunch}
+              disabled={loading || !capturedImage}
+              className="portal-btn-primary" 
+              style={{ 
+                background: action === 'IN' ? '#059669' : '#dc2626', 
+                borderColor: action === 'IN' ? '#047857' : '#b91c1c', 
+                padding: '12px 32px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 10,
+                fontSize: '1rem',
+                fontWeight: 900,
+                borderRadius: 12,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+              }}
+            >
+              {loading ? <i className="fas fa-spinner fa-spin"></i> : <i className={`fas fa-sign-${action === 'IN' ? 'in' : 'out'}-alt`}></i>}
+              Confirm & Clock {action} Now
+            </button>
+          </div>
         </div>
       </div>
     </div>

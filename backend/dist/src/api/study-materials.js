@@ -118,4 +118,3 @@ router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SC
     }
 });
 exports.default = router;
-//# sourceMappingURL=study-materials.js.map

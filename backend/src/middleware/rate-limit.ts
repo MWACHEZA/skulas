@@ -1,4 +1,4 @@
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import { Request } from 'express';
 
 /**
@@ -6,7 +6,7 @@ import { Request } from 'express';
  * do not exhaust each other's rate limits.
  */
 const getClientKey = (req: Request): string => {
-  const ip = req.ip || req.socket.remoteAddress || 'unknown';
+  const ip = ipKeyGenerator(req.ip || req.socket.remoteAddress || 'unknown');
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith('Bearer ') && authHeader.length > 24) {
     return `${ip}:${authHeader.slice(-16)}`;

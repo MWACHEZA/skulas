@@ -417,4 +417,3 @@ router.get('/schools/:identifier', async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=acadex.js.map

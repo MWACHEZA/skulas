@@ -230,8 +230,12 @@ router.get('/admin', requireAuth, requireRole('SCHOOL_ADMIN', 'BURSAR'), async (
         dueDate: firstPending ? firstPending.dueDate.toISOString() : p.createdAt.toISOString(),
         status: p.status,
         notes: `${p.planType} payment plan (${p.installmentsCount} installments)`,
+        allowGateEntry: !!p.allowGateEntry,
+        planType: p.planType,
+        installmentsCount: p.installmentsCount,
         createdAt: p.createdAt.toISOString(),
         student: {
+          id: p.student?.id || p.studentId,
           name: p.student?.name || 'Student',
           studentId: p.student?.studentId || p.studentId,
           class: p.student?.class || { name: 'General' }

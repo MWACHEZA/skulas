@@ -112,8 +112,33 @@ interface ExeatRecord {
   createdAt: string;
 }
 
+interface BoardingFeeGroup {
+  id: string;
+  name: string;
+  amount: number;
+  billingType?: string;
+  year?: number;
+}
+
+interface BoardingStudent {
+  id: string;
+  studentId?: string;
+  name?: string;
+  class?: { name?: string };
+  boardingStatus?: string;
+}
+
+interface BoardingApiError {
+  response?: {
+    data?: {
+      error?: string;
+      message?: string;
+    };
+  };
+}
+
 export default function AdminBoarding() {
-  const { showToast, toastConfirm } = useToast();
+  const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Normalize legacy tab names if accessed via older links
@@ -130,7 +155,7 @@ export default function AdminBoarding() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [hostels, setHostels] = useState<Hostel[]>([]);
   const [allocations, setAllocations] = useState<Allocation[]>([]);
-  const [students, setStudents] = useState<any[]>([]);
+  const [students, setStudents] = useState<BoardingStudent[]>([]);
   const [filterUnpaidOnly, setFilterUnpaidOnly] = useState(false);
 
   // Selected hostel for room drilldown
@@ -159,7 +184,8 @@ export default function AdminBoarding() {
   // Form states
   const [hostelForm, setHostelForm] = useState({ name: '', type: 'BOYS', capacity: 40, location: '', description: '' });
   const [roomForm, setRoomForm] = useState({ hostelId: '', roomNumber: '', name: '', capacity: 4, bedCount: 4, conditionStatus: 'GOOD' });
-  const [assignForm, setAssignForm] = useState({ studentId: '', hostelId: '', roomId: '', term: 'Term 1', feeAmount: 350 });
+  const [boardingFeeGroups, setBoardingFeeGroups] = useState<BoardingFeeGroup[]>([]);
+  const [assignForm, setAssignForm] = useState({ studentId: '', hostelId: '', roomId: '', term: 'Term 1', feeAmount: 350, feeGroupId: '' });
   const [vacateTarget, setVacateTarget] = useState<{ allocationId: string; studentName: string; feeAmount: number } | null>(null);
   const [vacateReason, setVacateReason] = useState('End of term checkout');
   const [proRataRatio, setProRataRatio] = useState(0); // 0 = no refund, 0.5 = 50% pro-rata
@@ -170,9 +196,9 @@ export default function AdminBoarding() {
   const [selectedBedNumber, setSelectedBedNumber] = useState<number | null>(null);
 
   const boarderStudentOptions = useMemo<ComboboxOption[]>(() => {
-    return students.map((s: any) => ({
+    return students.map(s => ({
       value: s.id,
-      label: s.name,
+      label: s.name || '',
       subLabel: `${s.studentId || ''}${s.class?.name ? ` • ${s.class.name}` : ''}`,
       badge: s.boardingStatus || 'Boarder'
     }));
@@ -200,12 +226,14 @@ export default function AdminBoarding() {
 
   useEffect(() => {
     loadInitialData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   useEffect(() => {
     if (activeTab === 'roll-call' && rcHostelId) {
       loadRollCall(rcHostelId, rcDate, rcTime);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, rcHostelId, rcDate, rcTime]);
 
   const loadInitialData = async () => {
@@ -252,6 +280,18 @@ export default function AdminBoarding() {
         });
         setExeats(Array.isArray(exeatsRes.data) ? exeatsRes.data : []);
       }
+
+      // 6. Fetch official Boarding Fee Groups from Bursar Fee Catalog
+      const feeGroupsRes = await api.get('/api/ancillary/boarding/fee-groups').catch(() => null);
+      if (Array.isArray(feeGroupsRes?.data) && feeGroupsRes.data.length > 0) {
+        setBoardingFeeGroups(feeGroupsRes.data);
+        const defaultGroup = feeGroupsRes.data[0];
+        setAssignForm(prev => ({
+          ...prev,
+          feeGroupId: prev.feeGroupId || defaultGroup.id,
+          feeAmount: prev.feeAmount !== undefined && prev.feeAmount !== 350 ? prev.feeAmount : defaultGroup.amount
+        }));
+      }
     } catch (err) {
       console.error('Failed to load boarding data:', err);
       showToast('Failed to load boarding management data', 'error');
@@ -290,8 +330,9 @@ export default function AdminBoarding() {
       setShowHostelModal(false);
       setHostelForm({ name: '', type: 'BOYS', capacity: 40, location: '', description: '' });
       loadInitialData();
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Failed to create hostel', 'error');
+    } catch (err: unknown) {
+      const apiErr = err as BoardingApiError;
+      showToast(apiErr.response?.data?.error || 'Failed to create hostel', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -312,8 +353,9 @@ export default function AdminBoarding() {
       setShowRoomModal(false);
       setRoomForm({ hostelId: '', roomNumber: '', name: '', capacity: 4, bedCount: 4, conditionStatus: 'GOOD' });
       loadInitialData();
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Failed to create room', 'error');
+    } catch (err: unknown) {
+      const apiErr = err as BoardingApiError;
+      showToast(apiErr.response?.data?.error || 'Failed to create room', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -326,7 +368,7 @@ export default function AdminBoarding() {
       await api.patch(`/api/ancillary/rooms/${roomId}`, { conditionStatus: nextStatus });
       showToast(`Room condition updated to ${nextStatus}`, 'success');
       loadInitialData();
-    } catch (err) {
+    } catch {
       showToast('Failed to update room condition', 'error');
     }
   };
@@ -340,13 +382,14 @@ export default function AdminBoarding() {
     }
     setSubmitting(true);
     try {
-      const res = await api.post('/api/ancillary/boarding/assign', assignForm);
+      await api.post('/api/ancillary/boarding/assign', assignForm);
       showToast('Boarder allocated successfully. Invoicing posted to Bursar.', 'success');
       setShowAssignModal(false);
-      setAssignForm({ studentId: '', hostelId: '', roomId: '', term: 'Term 1', feeAmount: 350 });
+      setAssignForm({ studentId: '', hostelId: '', roomId: '', term: 'Term 1', feeAmount: boardingFeeGroups[0]?.amount || 350, feeGroupId: boardingFeeGroups[0]?.id || '' });
       loadInitialData();
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Failed to allocate boarder', 'error');
+    } catch (err: unknown) {
+      const apiErr = err as BoardingApiError;
+      showToast(apiErr.response?.data?.error || 'Failed to allocate boarder', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -371,8 +414,9 @@ export default function AdminBoarding() {
       setShowVacateModal(false);
       setVacateTarget(null);
       loadInitialData();
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Failed to vacate bed', 'error');
+    } catch (err: unknown) {
+      const apiErr = err as BoardingApiError;
+      showToast(apiErr.response?.data?.error || 'Failed to vacate bed', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -385,7 +429,7 @@ export default function AdminBoarding() {
       await api.patch(`/api/ancillary/boarding/allocations/${allocId}/status`, { status: nextStatus });
       showToast(`Allocation status updated to ${nextStatus}`, 'success');
       loadInitialData();
-    } catch (err) {
+    } catch {
       showToast('Failed to update allocation status', 'error');
     }
   };
@@ -422,8 +466,9 @@ export default function AdminBoarding() {
       }
       loadRollCall(rcHostelId, rcDate, rcTime);
       loadInitialData();
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Failed to save roll call', 'error');
+    } catch (err: unknown) {
+      const apiErr = err as BoardingApiError;
+      showToast(apiErr.response?.data?.error || 'Failed to save roll call', 'error');
     } finally {
       setRcSaving(false);
     }
@@ -443,8 +488,9 @@ export default function AdminBoarding() {
       setShowExeatModal(false);
       setExeatForm({ studentId: '', type: 'weekend', reason: '', departureAt: '', returnAt: '' });
       loadInitialData();
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Failed to create exeat', 'error');
+    } catch (err: unknown) {
+      const apiErr = err as BoardingApiError;
+      showToast(apiErr.response?.data?.error || 'Failed to create exeat', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -457,8 +503,9 @@ export default function AdminBoarding() {
       });
       showToast('Exeat approved! Day attendance & night roll call synced to "On Exeat".', 'success');
       loadInitialData();
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Failed to approve exeat', 'error');
+    } catch (err: unknown) {
+      const apiErr = err as BoardingApiError;
+      showToast(apiErr.response?.data?.error || 'Failed to approve exeat', 'error');
     }
   };
 
@@ -469,7 +516,7 @@ export default function AdminBoarding() {
       });
       showToast('Exeat request rejected', 'info');
       loadInitialData();
-    } catch (err: any) {
+    } catch {
       showToast('Failed to reject exeat', 'error');
     }
   };
@@ -479,7 +526,7 @@ export default function AdminBoarding() {
       await api.post(`/api/ancillary/boarding/exeats/${exeatId}/return`, {});
       showToast('Student successfully signed back in from exeat', 'success');
       loadInitialData();
-    } catch (err: any) {
+    } catch {
       showToast('Failed to mark exeat returned', 'error');
     }
   };
@@ -918,7 +965,14 @@ export default function AdminBoarding() {
                                         <button
                                           type="button"
                                           onClick={() => {
-                                            setAssignForm({ studentId: '', hostelId: h.id, roomId: rm.id, term: 'Term 1', feeAmount: 350 });
+                                            setAssignForm({
+                                              studentId: '',
+                                              hostelId: h.id,
+                                              roomId: rm.id,
+                                              term: 'Term 1',
+                                              feeAmount: boardingFeeGroups[0]?.amount || 350,
+                                              feeGroupId: boardingFeeGroups[0]?.id || ''
+                                            });
                                             setShowAssignModal(true);
                                           }}
                                           className="btn btn-xs"
@@ -1879,15 +1933,50 @@ export default function AdminBoarding() {
                 )}
 
                 <div style={{ marginBottom: '14px' }}>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>Boarding Fee ($ USD)</label>
-                  <input
-                    type="number"
-                    min={0}
-                    step={0.01}
-                    value={assignForm.feeAmount}
-                    onChange={e => setAssignForm(prev => ({ ...prev, feeAmount: parseFloat(e.target.value) || 0 }))}
-                    style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
-                  />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                    <label style={{ fontSize: '0.85rem', fontWeight: 600, color: '#334155', margin: 0 }}>
+                      Bursar Fee Group / Tariff <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
+                    <span style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 600 }}>
+                      <i className="fas fa-check-circle mr-1"></i>Governed by Fee Catalog
+                    </span>
+                  </div>
+                  {boardingFeeGroups.length > 0 ? (
+                    <select
+                      value={assignForm.feeGroupId}
+                      onChange={e => {
+                        const fg = boardingFeeGroups.find(g => g.id === e.target.value);
+                        setAssignForm(prev => ({
+                          ...prev,
+                          feeGroupId: e.target.value,
+                          feeAmount: fg ? fg.amount : prev.feeAmount
+                        }));
+                      }}
+                      style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', marginBottom: '8px', fontSize: '0.88rem' }}
+                    >
+                      {boardingFeeGroups.map(fg => (
+                        <option key={fg.id} value={fg.id}>
+                          {fg.name} — ${Number(fg.amount).toFixed(2)} ({fg.billingType || 'Termly'})
+                        </option>
+                      ))}
+                    </select>
+                  ) : null}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ flex: 1 }}>
+                      <label style={{ display: 'block', fontSize: '0.75rem', color: '#64748b', marginBottom: '2px' }}>Effective Fee Amount ($ USD)</label>
+                      <input
+                        type="number"
+                        min={0}
+                        step={0.01}
+                        value={assignForm.feeAmount}
+                        onChange={e => setAssignForm(prev => ({ ...prev, feeAmount: parseFloat(e.target.value) || 0 }))}
+                        style={{ width: '100%', padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1' }}
+                      />
+                    </div>
+                  </div>
+                  <div style={{ fontSize: '0.74rem', color: '#64748b', marginTop: '4px' }}>
+                    Posting this bed allocation links directly to the Fee Group, automatically updating Bursar fee counts and generating double-entry invoice.
+                  </div>
                 </div>
               </div>
 

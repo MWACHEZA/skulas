@@ -28,4 +28,3 @@ const logAction = async (req, action, entityType, entityId, details, status = 'S
     }
 };
 exports.logAction = logAction;
-//# sourceMappingURL=audit.js.map

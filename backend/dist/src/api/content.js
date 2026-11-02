@@ -84,7 +84,17 @@ router.delete('/news/:id', async (req, res) => {
 router.get('/announcements', async (req, res) => {
     const { category } = req.query;
     try {
-        const where = { schoolId: req.user.schoolId };
+        let schoolId = req.user?.schoolId || req.headers['x-school-id'];
+        if (!schoolId && req.user?.role === 'PARENT') {
+            const parent = await prisma_1.default.parent.findUnique({
+                where: { userId: req.user.id },
+                include: { students: { include: { student: true } } }
+            });
+            if (parent && parent.students.length > 0) {
+                schoolId = parent.students[0].student.schoolId;
+            }
+        }
+        const where = schoolId ? { schoolId } : {};
         if (category && category !== 'ALL') {
             where.category = String(category);
         }
@@ -183,4 +193,3 @@ router.delete('/announcements/:id', async (req, res) => {
 // Similar routes for Gallery, Clubs, Sports...
 // Placeholder for brevity but structure is identical: check schoolId isolation.
 exports.default = router;
-//# sourceMappingURL=content.js.map

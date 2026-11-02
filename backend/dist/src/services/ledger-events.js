@@ -76,4 +76,3 @@ exports.LedgerEvents = new LedgerEventBroadcaster();
 setInterval(() => {
     exports.LedgerEvents.pingAll();
 }, 25000);
-//# sourceMappingURL=ledger-events.js.map

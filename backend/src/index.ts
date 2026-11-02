@@ -1,4 +1,6 @@
 import 'dotenv/config';
+import dns from 'dns';
+dns.setDefaultResultOrder('ipv4first');
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -235,6 +237,8 @@ app.use('/api/gate', gateRoutes);
 import qrRoutes from './api/qr';
 app.use('/api/qr', qrRoutes);
 app.use('/api', qrRoutes);
+import paymentsRoutes from './api/payments';
+app.use('/api/payments', paymentsRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

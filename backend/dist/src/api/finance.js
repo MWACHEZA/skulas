@@ -223,4 +223,3 @@ router.delete('/revenue-allocations/:id', auth_1.requireAuth, (0, auth_1.require
     }
 });
 exports.default = router;
-//# sourceMappingURL=finance.js.map

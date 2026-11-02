@@ -238,8 +238,8 @@ body {
 
 @media (min-width: 768px) {
     .panel {
-        backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
     }
 }
 

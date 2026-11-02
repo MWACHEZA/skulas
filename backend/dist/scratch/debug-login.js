@@ -24,4 +24,3 @@ async function check() {
     allUsers.forEach(u => console.log(`- ${u.email} (${u.role}) [SchoolId: ${u.schoolId}]`));
 }
 check().catch(console.error).finally(() => prisma.$disconnect());
-//# sourceMappingURL=debug-login.js.map

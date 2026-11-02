@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../lib/api';
 import { useAuth } from '../../../contexts/AuthContext';
-import { useTerminology } from '../../../hooks/useTerminology';
 import { StockTab, SuppliersTab } from '../../../portals/shared/pages/UniformsPage';
 import type { Supplier, UniformItem, StockOrder } from '../../../portals/shared/pages/UniformsPage';
 import { useToast } from '../../../context/ToastContext';
@@ -25,7 +24,7 @@ const exportToCSV = (title: string, headers: string[], dataRows: string[][]) => 
 };
 
 const exportToWord = (title: string, headers: string[], dataRows: string[][]) => {
-  let html = `
+  const html = `
     <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
     <head>
       <title>${title}</title>
@@ -59,20 +58,54 @@ const exportToWord = (title: string, headers: string[], dataRows: string[][]) =>
   URL.revokeObjectURL(url);
 };
 
+export interface RequisitionItem {
+  description: string;
+  qty: number;
+  unitPrice?: number;
+  totalPrice?: number;
+}
+
+export interface RequisitionUser {
+  id?: string;
+  name: string;
+  role?: string;
+}
+
+export interface RequisitionDepartment {
+  id?: string;
+  name?: string;
+}
+
+export interface Requisition {
+  id: string;
+  refNumber: string;
+  title: string;
+  description?: string | null;
+  estimatedAmount: number;
+  status: string;
+  priority?: string | null;
+  department?: string | RequisitionDepartment | null;
+  attachmentUrl?: string | null;
+  items?: RequisitionItem[] | null;
+  requester?: RequisitionUser | null;
+  hod?: RequisitionUser | null;
+  bursar?: { name: string } | null;
+  admin?: { name: string } | null;
+  createdAt?: string;
+}
+
 interface Props {
   mode: 'RAISE_ONLY' | 'MANAGE' | 'FULL';
 }
 
 const ProcurementUI: React.FC<Props> = ({ mode }) => {
-  const { t } = useTerminology();
   const { user } = useAuth();
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState('requisitions');
-  const [requisitions, setRequisitions] = useState<any[]>([]);
+  const [requisitions, setRequisitions] = useState<Requisition[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [selectedReq, setSelectedReq] = useState<any>(null);
-  const [formData, setFormData] = useState({ title: '', description: '', estimatedAmount: '', department: '' });
+  const [selectedReq, setSelectedReq] = useState<Requisition | null>(null);
 
   // Uniform stock & suppliers state
   const [items, setItems] = useState<UniformItem[]>([]);
@@ -88,7 +121,7 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
     if (canManageUniforms) {
       fetchUniformsData();
     }
-  }, [user]);
+  }, [user, canManageUniforms]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -96,7 +129,7 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
       const res = await api.get('/api/procurement/requisitions');
       setRequisitions(res.data);
     } catch (err) {
-      console.error('Failed to fetch requisitions');
+      console.error('Failed to fetch requisitions', err);
     } finally {
       setLoading(false);
     }
@@ -120,27 +153,15 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await api.post('/api/procurement/requisitions', formData);
-      showToast('Requisition submitted successfully', 'success');
-      setShowModal(false);
-      setFormData({ title: '', description: '', estimatedAmount: '', department: user?.dept?.name || 'Central Administration' });
-      fetchData();
-    } catch (err) {
-      showToast('Failed to submit requisition', 'error');
-    }
-  };
-
   const handleAction = async (id: string, action: 'APPROVE' | 'REJECT') => {
     try {
       await api.patch(`/api/procurement/requisitions/${id}/approve`, { action });
       showToast(`Requisition ${action.toLowerCase()}d successfully`, 'success');
       setSelectedReq(null);
       fetchData();
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Action failed', 'error');
+    } catch (err: unknown) {
+      const errorMsg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error || 'Action failed';
+      showToast(errorMsg, 'error');
     }
   };
 
@@ -156,10 +177,10 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
     }
   };
 
-  const canApprove = (req: any) => {
+  const canApprove = (req: Requisition) => {
     if (req.status === 'DRAFT') return false;
     if (user?.role === 'SCHOOL_ADMIN') return true;
-    if (req.status === 'PENDING' && user?.secondaryRoles?.includes('HOD')) return true;
+    if (req.status === 'PENDING' && user?.secondaryRoles?.some((r: string) => ['HOD', 'HEAD OF DEPARTMENT', 'HEAD OF DEPARTMENT (HOD)', 'DEPARTMENT_HEAD'].includes(r.toUpperCase()))) return true;
     if (req.status === 'HOD_APPROVED' && user?.role === 'BURSAR') return true;
     if (req.status === 'BURSAR_APPROVED' && user?.role === 'SCHOOL_ADMIN') return true;
     return false;
@@ -278,7 +299,7 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
                       r.refNumber,
                       r.title,
                       r.requester?.name || 'N/A',
-                      r.department,
+                      typeof r.department === 'object' && r.department ? r.department.name || 'N/A' : (r.department || 'N/A'),
                       `$${r.estimatedAmount.toLocaleString()}`,
                       r.status
                     ]);
@@ -297,7 +318,7 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
                       r.refNumber,
                       r.title,
                       r.requester?.name || 'N/A',
-                      r.department,
+                      typeof r.department === 'object' && r.department ? r.department.name || 'N/A' : (r.department || 'N/A'),
                       `$${r.estimatedAmount.toLocaleString()}`,
                       r.status
                     ]);
@@ -319,12 +340,6 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
                 </button>
                 {mode !== 'MANAGE' && (
                   <button className="portal-btn-primary" onClick={() => {
-                    setFormData({
-                      title: '',
-                      description: '',
-                      estimatedAmount: '',
-                      department: user?.dept?.name || 'Central Administration'
-                    });
                     setShowModal(true);
                   }} style={{ padding: '0 32px', fontWeight: 900, height: '52px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <i className="fas fa-plus"></i> RAISE REQUISITION
@@ -361,7 +376,7 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
                             <div style={{ fontWeight: 600 }}>{r.title}</div>
                             <div style={{ fontSize: '0.75rem', color: '#718096' }}>By {r.requester?.name}</div>
                           </td>
-                          <td>{r.department}</td>
+                          <td>{typeof r.department === 'object' && r.department ? r.department.name : (r.department || 'N/A')}</td>
                           <td style={{ fontWeight: 700 }}>${r.estimatedAmount.toLocaleString()}</td>
                           <td>{renderApprovalProgress(r.status)}</td>
                           <td>{getStatusBadge(r.status)}</td>
@@ -433,7 +448,7 @@ const ProcurementUI: React.FC<Props> = ({ mode }) => {
                           </tr>
                         </thead>
                         <tbody>
-                          {selectedReq.items.map((it: any, i: number) => (
+                          {selectedReq.items.map((it: RequisitionItem, i: number) => (
                             <tr key={i}>
                               <td>{it.description}</td>
                               <td>{it.qty}</td>

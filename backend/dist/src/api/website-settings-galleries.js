@@ -78,4 +78,3 @@ router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'
     }
 });
 exports.default = router;
-//# sourceMappingURL=website-settings-galleries.js.map

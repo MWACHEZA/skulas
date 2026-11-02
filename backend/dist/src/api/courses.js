@@ -169,4 +169,3 @@ router.get('/revenue/report', auth_1.requireAuth, (0, auth_1.requireRole)('TEACH
     }
 });
 exports.default = router;
-//# sourceMappingURL=courses.js.map

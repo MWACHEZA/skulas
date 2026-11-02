@@ -288,6 +288,7 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
     align-items: center;
     justify-content: center;
+    -webkit-backdrop-filter: blur(4px);
     backdrop-filter: blur(4px);
     animation: fadeIn 0.3s ease;
 }

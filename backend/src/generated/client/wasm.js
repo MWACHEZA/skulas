@@ -1446,6 +1446,8 @@ exports.Prisma.TuckshopItemScalarFieldEnum = {
   category: 'category',
   price: 'price',
   stock: 'stock',
+  barcode: 'barcode',
+  sku: 'sku',
   schoolId: 'schoolId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

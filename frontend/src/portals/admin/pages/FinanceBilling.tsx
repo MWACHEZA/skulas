@@ -1,13 +1,75 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
 import { formatCurrency } from '../../../utils/formatters';
-import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption, SkeletonLoader, PaginatedTable } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, type ComboboxOption, SkeletonLoader, PaginatedTable, ReceiptModal, type ReceiptModalData } from '../../../components/shared';
 import type { ExportColumn } from '../../../utils/exportService';
 import '../../../styles/portal.css';
 
 type BillingTab = 'invoices' | 'receipts' | 'ledgers';
+
+interface BillingInvoice {
+  id: string;
+  invoiceNumber?: string;
+  studentId?: string;
+  student?: { id?: string; studentId?: string; name?: string; user?: { name?: string }; class?: { name?: string } };
+  amount?: number;
+  discount?: number;
+  paid?: number;
+  status?: string;
+  dueDate?: string;
+  createdAt?: string;
+  [key: string]: unknown;
+}
+
+interface BillingReceipt {
+  id: string;
+  reference?: string;
+  receiptNumber?: string;
+  student?: { id?: string; studentId?: string; name?: string; user?: { name?: string }; class?: { name?: string } };
+  amount?: number;
+  date?: string;
+  createdAt?: string;
+  paymentMode?: string;
+  method?: string;
+  recordedBy?: string;
+  description?: string;
+  [key: string]: unknown;
+}
+
+interface BillingLedger {
+  id?: string;
+  studentId?: string;
+  studentName?: string;
+  name?: string;
+  className?: string;
+  class?: { name?: string };
+  totalBilled?: number;
+  totalInvoiced?: number;
+  billed?: number;
+  totalPaid?: number;
+  paid?: number;
+  balance?: number;
+  [key: string]: unknown;
+}
+
+interface BillingFeeGroup {
+  id: string;
+  name: string;
+  amount?: number | string;
+  billingType?: string;
+  year?: string | number;
+  [key: string]: unknown;
+}
+
+interface BillingStudent {
+  id: string;
+  name: string;
+  studentId?: string;
+  class?: { name?: string };
+  [key: string]: unknown;
+}
 
 export default function FinanceBilling() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,15 +83,17 @@ export default function FinanceBilling() {
   const initialSearch = searchParams.get('search') || '';
 
   // Data states
-  const [invoices, setInvoices] = useState<any[]>([]);
-  const [receipts, setReceipts] = useState<any[]>([]);
-  const [ledgers, setLedgers] = useState<any[]>([]);
+  const [invoices, setInvoices] = useState<BillingInvoice[]>([]);
+  const [receipts, setReceipts] = useState<BillingReceipt[]>([]);
+  const [ledgers, setLedgers] = useState<BillingLedger[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Emit Invoice Modal State
   const [showEmitModal, setShowEmitModal] = useState(false);
-  const [feeGroups, setFeeGroups] = useState<any[]>([]);
-  const [students, setStudents] = useState<any[]>([]);
+  const [selectedReceiptData, setSelectedReceiptData] = useState<ReceiptModalData | null>(null);
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
+  const [feeGroups, setFeeGroups] = useState<BillingFeeGroup[]>([]);
+  const [students, setStudents] = useState<BillingStudent[]>([]);
   const [selectedFeeGroupId, setSelectedFeeGroupId] = useState('');
   const [selectedStudentId, setSelectedStudentId] = useState('');
   const [customAmount, setCustomAmount] = useState('');
@@ -42,7 +106,7 @@ export default function FinanceBilling() {
     return students.map(s => ({
       value: s.id,
       label: s.name,
-      subLabel: `${s.studentId}${s.class?.name ? ` • ${s.class.name}` : ''}`,
+      subLabel: `${s.studentId || ''}${s.class?.name ? ` • ${s.class.name}` : ''}`,
       badge: 'Student'
     }));
   }, [students]);
@@ -52,7 +116,6 @@ export default function FinanceBilling() {
   const [debouncedSearch, setDebouncedSearch] = useState(initialSearch);
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [methodFilter, setMethodFilter] = useState('ALL');
-  const [dateFilter, setDateFilter] = useState('ALL');
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -61,11 +124,7 @@ export default function FinanceBilling() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  useEffect(() => {
-    fetchData();
-  }, [activeTab]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       if (activeTab === 'invoices') {
@@ -87,7 +146,11 @@ export default function FinanceBilling() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTab]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleTabChange = (tab: BillingTab) => {
     const next = new URLSearchParams(searchParams);
@@ -149,9 +212,10 @@ export default function FinanceBilling() {
       showToast('Fee invoice emitted successfully!', 'success');
       setShowEmitModal(false);
       fetchData();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to emit invoice:', err);
-      showToast(err.response?.data?.error || 'Failed to emit invoice', 'error');
+      const error = err as { response?: { data?: { error?: string } }; message?: string };
+      showToast(error.response?.data?.error || error.message || 'Failed to emit invoice', 'error');
     } finally {
       setSubmittingInvoice(false);
     }
@@ -399,8 +463,8 @@ export default function FinanceBilling() {
                             <td style={{ color: '#059669', fontWeight: 600 }}>{formatCurrency(inv.paid || 0)}</td>
                             <td style={{ color: bal > 0 ? '#dc2626' : '#059669', fontWeight: 800 }}>{formatCurrency(bal)}</td>
                             <td>
-                              <span className={`portal-badge ${bal <= 0 ? 'success' : inv.paid > 0 ? 'warning' : 'danger'}`}>
-                                {bal <= 0 ? 'PAID' : inv.paid > 0 ? 'PARTIAL' : 'UNPAID'}
+                              <span className={`portal-badge ${bal <= 0 ? 'success' : (inv.paid ?? 0) > 0 ? 'warning' : 'danger'}`}>
+                                {bal <= 0 ? 'PAID' : (inv.paid ?? 0) > 0 ? 'PARTIAL' : 'UNPAID'}
                               </span>
                             </td>
                             <td>
@@ -435,6 +499,7 @@ export default function FinanceBilling() {
                         <th>Method / Channel</th>
                         <th>Cashier / Collector</th>
                         <th>Verification</th>
+                        <th style={{ textAlign: 'center' }}>Receipt</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -463,6 +528,33 @@ export default function FinanceBilling() {
                             <span className="portal-badge success">
                               <i className="fas fa-check-circle mr-1"></i>Settled
                             </span>
+                          </td>
+                          <td style={{ textAlign: 'center' }}>
+                            <button
+                              type="button"
+                              className="portal-btn-ghost"
+                              style={{ padding: '4px 8px', fontSize: '0.78rem', color: '#2563eb', fontWeight: 700, borderRadius: 6, border: '1px solid #cbd5e1' }}
+                              onClick={() => {
+                                setSelectedReceiptData({
+                                  receiptNo: rec.reference || rec.receiptNumber || `REC-${idx + 1000}`,
+                                  date: rec.date || rec.createdAt || new Date(),
+                                  studentName: rec.student?.user?.name || rec.student?.name || 'Student',
+                                  studentId: rec.student?.studentId,
+                                  className: rec.student?.class?.name,
+                                  paymentMode: rec.paymentMode || rec.method || 'Cash / Deposit',
+                                  reference: rec.reference,
+                                  amountPaid: rec.amount || 0,
+                                  recordedBy: rec.recordedBy || 'Bursar Office',
+                                  feeItems: [{
+                                    desc: rec.description || 'Tuition & Fee Payment',
+                                    amount: rec.amount || 0
+                                  }]
+                                });
+                                setIsReceiptModalOpen(true);
+                              }}
+                            >
+                              <i className="fas fa-receipt mr-1"></i> View Receipt
+                            </button>
                           </td>
                         </tr>
                       ))}
@@ -667,6 +759,12 @@ export default function FinanceBilling() {
           </div>
         </div>
       )}
+      {/* Official Receipt Modal */}
+      <ReceiptModal
+        isOpen={isReceiptModalOpen}
+        onClose={() => setIsReceiptModalOpen(false)}
+        data={selectedReceiptData}
+      />
     </>
   );
 }

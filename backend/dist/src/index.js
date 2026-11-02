@@ -127,6 +127,7 @@ const library_reminder_job_1 = require("./jobs/library-reminder-job");
 notification_worker_1.notificationWorker.start();
 library_reminder_job_1.libraryReminderWorker.start();
 app.use(rate_limit_1.globalLimiter);
+app.use(rate_limit_1.mutationLimiter);
 app.use(audit_2.auditMiddleware);
 // Routes
 app.use('/api/auth', rate_limit_1.authLimiter, auth_1.default);
@@ -235,6 +236,11 @@ const parent_approvals_1 = __importDefault(require("./api/parent-approvals"));
 app.use('/api/parent/approvals', parent_approvals_1.default);
 const gate_1 = __importDefault(require("./api/gate"));
 app.use('/api/gate', gate_1.default);
+const qr_1 = __importDefault(require("./api/qr"));
+app.use('/api/qr', qr_1.default);
+app.use('/api', qr_1.default);
+const payments_1 = __importDefault(require("./api/payments"));
+app.use('/api/payments', payments_1.default);
 // Health check endpoint
 app.get('/api/health', (req, res) => {
     res.status(200).send('OK');
@@ -242,4 +248,3 @@ app.get('/api/health', (req, res) => {
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
-//# sourceMappingURL=index.js.map

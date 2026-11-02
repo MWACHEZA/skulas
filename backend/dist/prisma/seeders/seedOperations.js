@@ -204,4 +204,3 @@ async function seedOperations(prisma, school, students, staff, clinicStaff) {
         }
     }
 }
-//# sourceMappingURL=seedOperations.js.map

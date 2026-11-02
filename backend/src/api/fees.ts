@@ -371,45 +371,67 @@ router.post('/invoice/standard', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMI
       const parsedDiscount = parseFloat(discount) || 0;
       const isPaid = paymentStatus === 'paid';
 
+      // 1. Bulk preload all target students in one query
+      const students = await tx.student.findMany({
+        where: { id: { in: studentIds }, schoolId },
+        select: { id: true, classId: true }
+      });
+      const studentMap = new Map(students.map(s => [s.id, s]));
+
+      // 2. Bulk preload all existing fees for this run to avoid N*M database queries
+      const existingFees = await tx.fee.findMany({
+        where: {
+          studentId: { in: studentIds },
+          feeGroupId: { in: feeGroupIds },
+          schoolId
+        },
+        select: { studentId: true, feeGroupId: true }
+      });
+      const existingSet = new Set(existingFees.map(f => `${f.studentId}_${f.feeGroupId}`));
+
+      // 3. Resolve default ledger accounts once before iterating
+      const defaultArAccountId = await getAccountId(schoolId, '1210', tx as any);
+      const defaultIncomeAccountId = await getAccountId(schoolId, '5100', tx as any);
+      const cashAccountId = (isPaid && paymentMethod) ? await getAccountId(schoolId, '1100', tx as any) : null;
+
+      // 4. Precalculate all fee line items to create
+      const itemsToCreate: Array<{
+        studentId: string;
+        group: typeof feeGroups[0];
+        amount: number;
+        itemDiscount: number;
+        netAmount: number;
+        paidAmount: number;
+      }> = [];
+
       for (const studentId of studentIds) {
-        const student = await tx.student.findFirst({ where: { id: studentId } });
+        const student = studentMap.get(studentId);
         if (!student) continue;
 
-        // Pre-calculate amounts for this student to distribute discount proportionally
         let totalAmount = 0;
-        const studentFeeGroups = [];
+        const studentFeeGroups: Array<{ group: typeof feeGroups[0]; amount: number }> = [];
 
         for (const group of feeGroups) {
-          // Check if already invoiced
-          const existing = await tx.fee.findFirst({
-            where: { studentId, feeGroupId: group.id, schoolId }
-          });
-          if (!existing) {
-            let amount = group.amount;
-            if (student.classId) {
-              const classAmount = group.classAmounts.find(ca => ca.classId === student.classId);
-              if (classAmount) amount = classAmount.amount;
-            }
-            totalAmount += amount;
-            studentFeeGroups.push({ group, amount });
+          if (existingSet.has(`${studentId}_${group.id}`)) continue;
+
+          let amount = group.amount;
+          if (student.classId) {
+            const classAmount = group.classAmounts.find(ca => ca.classId === student.classId);
+            if (classAmount) amount = classAmount.amount;
           }
+          totalAmount += amount;
+          studentFeeGroups.push({ group, amount });
         }
 
         if (studentFeeGroups.length === 0) continue;
 
-        // Now create fees, distributing the discount proportionally to avoid double-application
         let remainingDiscount = parsedDiscount;
-
         for (let i = 0; i < studentFeeGroups.length; i++) {
           const { group, amount } = studentFeeGroups[i];
-          
           let itemDiscount = 0;
           if (totalAmount > 0) {
-            // Distribute proportionally and round to 2 decimals
             itemDiscount = Math.round((amount / totalAmount) * parsedDiscount * 100) / 100;
           }
-          
-          // If it's the last item, give it the rest of the discount to avoid rounding loss
           if (i === studentFeeGroups.length - 1) {
             itemDiscount = Math.max(0, Math.round(remainingDiscount * 100) / 100);
           }
@@ -418,76 +440,95 @@ router.post('/invoice/standard', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMI
           const netAmount = Math.max(0, Math.round((amount - itemDiscount) * 100) / 100);
           const paidAmount = isPaid ? netAmount : 0;
 
-          const docNo = await SequenceService.nextDocNo(schoolId, 'INV', tx as any);
-          const fullDesc = `[${docNo}] ${description || `${group.name} - ${group.billingType} ${group.year}`}`;
+          itemsToCreate.push({
+            studentId,
+            group,
+            amount,
+            itemDiscount,
+            netAmount,
+            paidAmount
+          });
+        }
+      }
 
-          const fee = await tx.fee.create({
+      if (itemsToCreate.length === 0) {
+        return { createdCount: 0 };
+      }
+
+      // 5. Batch reserve all document sequence numbers in ONE atomic query (eliminates hundreds of DB hits)
+      const docNumbers = await SequenceService.nextDocNos(schoolId, 'INV', itemsToCreate.length, tx as any);
+
+      // 6. Create fee records and post ledger entries
+      for (let i = 0; i < itemsToCreate.length; i++) {
+        const item = itemsToCreate[i];
+        const docNo = docNumbers[i];
+        const fullDesc = `[${docNo}] ${description || `${item.group.name} - ${item.group.billingType} ${item.group.year}`}`;
+
+        const fee = await tx.fee.create({
+          data: {
+            studentId: item.studentId,
+            feeGroupId: item.group.id,
+            amount: Math.round(item.amount * 100) / 100,
+            discount: item.itemDiscount,
+            vatPercentage: 0,
+            paid: item.paidAmount,
+            status: isPaid ? 'paid' : 'unpaid',
+            term: item.group.billingType,
+            year: item.group.year,
+            dueDate: dueDate ? new Date(dueDate) : new Date(item.group.year, 11, 31),
+            description: fullDesc,
+            schoolId
+          }
+        });
+
+        // Post AR debit / Income credit for the invoice
+        const arAccountId = item.group.arAccountId || defaultArAccountId;
+        const incomeAccountId = item.group.incomeAccountId || defaultIncomeAccountId;
+
+        await LedgerService.postEntry({
+          schoolId,
+          date: new Date(),
+          description: `Invoice: ${description || `${item.group.name} - ${item.group.billingType} ${item.group.year}`}`,
+          sourceType: 'fee_invoice',
+          sourceId: fee.id,
+          lines: [
+            { accountId: arAccountId, debit: item.netAmount, description: 'Student AR — fee billed', studentId: item.studentId },
+            { accountId: incomeAccountId, credit: item.netAmount, description: item.group.name }
+          ],
+          tx
+        });
+
+        if (isPaid && paymentMethod && cashAccountId) {
+          const payment = await tx.studentPayment.create({
             data: {
-              studentId,
-              feeGroupId: group.id,
-              amount: Math.round(amount * 100) / 100,
-              discount: itemDiscount,
-              vatPercentage: 0,
-              paid: paidAmount,
-              status: isPaid ? 'paid' : 'unpaid',
-              term: group.billingType,
-              year: group.year,
-              dueDate: dueDate ? new Date(dueDate) : new Date(group.year, 11, 31),
-              description: fullDesc,
+              studentId: item.studentId,
+              feeId: fee.id,
+              amount: item.paidAmount,
+              paymentMode: paymentMethod,
+              status: 'Commit',
               schoolId
             }
           });
-
-          // Post AR debit / Income credit for the invoice
-          const arAccountId = group.arAccountId || (await getAccountId(schoolId, '1210', tx as any));
-          // Map fee group billing type to income account (tuition default, can be extended)
-          const incomeAccountId = group.incomeAccountId || (await getAccountId(schoolId, '5100', tx as any));
-          await LedgerService.postEntry({
+          // Post Cash debit / AR credit
+          const payJe = await LedgerService.postEntry({
             schoolId,
             date: new Date(),
-            description: `Invoice: ${description || `${group.name} - ${group.billingType} ${group.year}`}`,
-            sourceType: 'fee_invoice',
-            sourceId: fee.id,
+            description: `Payment: ${description || item.group.name}`,
+            sourceType: 'fee_payment',
+            sourceId: payment.id,
             lines: [
-              { accountId: arAccountId, debit: netAmount, description: 'Student AR — fee billed', studentId },
-              { accountId: incomeAccountId, credit: netAmount, description: group.name }
+              { accountId: cashAccountId, debit: item.paidAmount, description: paymentMethod, studentId: item.studentId },
+              { accountId: arAccountId, credit: item.paidAmount, description: 'Reduce AR', studentId: item.studentId }
             ],
             tx
           });
-
-          if (isPaid && paymentMethod) {
-            const cashAccountId = await getAccountId(schoolId, '1100', tx as any);
-            const payment = await tx.studentPayment.create({
-              data: {
-                studentId,
-                feeId: fee.id,
-                amount: paidAmount,
-                paymentMode: paymentMethod,
-                status: 'Commit',
-                schoolId
-              }
-            });
-            // Post Cash debit / AR credit
-            const payJe = await LedgerService.postEntry({
-              schoolId,
-              date: new Date(),
-              description: `Payment: ${description || group.name}`,
-              sourceType: 'fee_payment',
-              sourceId: payment.id,
-              lines: [
-                { accountId: cashAccountId, debit: paidAmount, description: paymentMethod, studentId },
-                { accountId: arAccountId, credit: paidAmount, description: 'Reduce AR', studentId }
-              ],
-              tx
-            });
-            await tx.studentPayment.update({ where: { id: payment.id }, data: { journalEntryId: payJe.id } });
-          }
-
-          createdCount++;
+          await tx.studentPayment.update({ where: { id: payment.id }, data: { journalEntryId: payJe.id } });
         }
+
+        createdCount++;
       }
       return { createdCount };
-    });
+    }, { timeout: 120000, maxWait: 20000 });
 
     res.json({ success: true, message: `Successfully created ${results.createdCount} fee records.` });
   } catch (error: any) {
@@ -512,12 +553,24 @@ router.post('/invoice/custom', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'
 
     const results = await prisma.$transaction(async (tx) => {
       let createdCount = 0;
-      for (const studentId of studentIds) {
+      const isPaid = paymentStatus === 'paid';
+
+      // 1. Resolve default accounts once before loop
+      const arAccountId = group.arAccountId || (await getAccountId(schoolId, '1210', tx as any));
+      const incomeAccountId = group.incomeAccountId || (await getAccountId(schoolId, '5100', tx as any));
+      const cashAccountId = (isPaid && paymentMethod) ? await getAccountId(schoolId, '1100', tx as any) : null;
+
+      // 2. Batch reserve document sequence numbers in one query
+      const docNumbers = await SequenceService.nextDocNos(schoolId, 'INV', studentIds.length, tx as any);
+
+      for (let i = 0; i < studentIds.length; i++) {
+        const studentId = studentIds[i];
+        const docNo = docNumbers[i];
         const parsedDiscount = Math.round((parseFloat(discount) || 0) * 100) / 100;
         const amount = Math.round(parseFloat(customAmount) * 100) / 100;
         const netAmount = Math.max(0, Math.round((amount - parsedDiscount) * 100) / 100);
-        const isPaid = paymentStatus === 'paid';
         const paidAmount = isPaid ? netAmount : 0;
+        const fullDesc = `[${docNo}] ${description || `Custom: ${group.name} - ${group.billingType} ${group.year}`}`;
 
         const fee = await tx.fee.create({
           data: {
@@ -530,15 +583,11 @@ router.post('/invoice/custom', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'
             term: group.billingType,
             year: group.year,
             dueDate: dueDate ? new Date(dueDate) : new Date(group.year, 11, 31),
-            description: description || `Custom: ${group.name} - ${group.billingType} ${group.year}`,
+            description: fullDesc,
             schoolId
           }
         });
 
-        // Post AR debit / Income credit for the invoice
-        const arAccountId = group.arAccountId || (await getAccountId(schoolId, '1210', tx as any));
-        const incomeAccountId = group.incomeAccountId || (await getAccountId(schoolId, '5100', tx as any));
-        
         await LedgerService.postEntry({
           schoolId,
           date: new Date(),
@@ -552,8 +601,7 @@ router.post('/invoice/custom', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'
           tx
         });
 
-        if (isPaid && paymentMethod) {
-          const cashAccountId = await getAccountId(schoolId, '1100', tx as any);
+        if (isPaid && paymentMethod && cashAccountId) {
           const payment = await tx.studentPayment.create({
             data: {
               studentId,
@@ -583,7 +631,7 @@ router.post('/invoice/custom', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'
         createdCount++;
       }
       return { createdCount };
-    });
+    }, { timeout: 120000, maxWait: 20000 });
 
     res.json({ success: true, message: `Successfully created ${results.createdCount} custom fee records.` });
   } catch (error: any) {
@@ -684,15 +732,21 @@ router.get('/bulk-invoices', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'),
       orderBy: { createdAt: 'desc' }
     });
 
-    const invoices = groups.map(g => ({
-      id: g.id,
-      name: g.name.replace(/^\[BULK\]\s*/, '').replace(/\s*\|\|.*$/, ''),
-      amount: g.amount,
-      date: g.createdAt,
-      category: g.billingType,
-      description: g.name.match(/\|\|(.*)$/)?.[1]?.trim() || '',
-      recipientsCount: g._count.fees
-    }));
+    const invoices = groups.map(g => {
+      const rawDesc = g.name.match(/\|\|(.*)$/)?.[1]?.trim() || '';
+      // Strip trailing timestamp tag "| 123456789"
+      const cleanDesc = rawDesc.replace(/\s*\|\s*\d+$/, '').trim();
+      return {
+        id: g.id,
+        name: g.name.replace(/^\[BULK\]\s*/, '').replace(/\s*\|\|.*$/, ''),
+        amount: g.amount,
+        totalValue: g.amount * g._count.fees,
+        date: g.createdAt,
+        category: g.billingType,
+        description: cleanDesc,
+        recipientsCount: g._count.fees
+      };
+    });
 
     res.json(invoices);
   } catch (error) {
@@ -740,6 +794,7 @@ router.post('/bulk-invoices', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN')
     const studentFilter: any = { schoolId, status: 'Enrolled' };
     if (targetType === 'Boarders Only') studentFilter.boardingStatus = 'Boarder';
     if (targetType === 'Day Students Only') studentFilter.boardingStatus = 'Day';
+    if (targetType === 'Specific Class' && req.body.classId) studentFilter.classId = req.body.classId;
 
     const students = await prisma.student.findMany({
       where: studentFilter,
@@ -840,16 +895,68 @@ router.delete('/bulk-invoices/:id', requireAuth, requireRole('BURSAR', 'SCHOOL_A
  */
 router.get('/invoices', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
-    const invoices = await prisma.fee.findMany({
-      where: { schoolId: req.user!.schoolId! },
-      include: {
-        student: { select: { name: true, class: { select: { name: true } } } },
-        feeGroup: { select: { name: true } },
-        payments: { select: { id: true, amount: true, date: true, paymentMode: true } }
-      },
-      orderBy: { createdAt: 'desc' }
+    const schoolId = req.user!.schoolId!;
+    const [fees, studentInvoices] = await Promise.all([
+      prisma.fee.findMany({
+        where: { schoolId },
+        include: {
+          student: { select: { id: true, studentId: true, name: true, class: { select: { name: true } } } },
+          feeGroup: { select: { name: true } },
+          payments: { select: { id: true, amount: true, date: true, paymentMode: true, reference: true } }
+        },
+        orderBy: { createdAt: 'desc' }
+      }),
+      prisma.studentInvoice.findMany({
+        where: { schoolId },
+        include: {
+          student: { select: { id: true, studentId: true, name: true, class: { select: { name: true } } } },
+          items: true,
+          allocations: true
+        },
+        orderBy: { createdAt: 'desc' }
+      })
+    ]);
+
+    const feeIds = new Set(fees.map(f => f.id));
+    const formattedFees = fees.map(f => {
+      const paymentsSum = f.payments.reduce((s, p) => s + (p.amount || 0), 0);
+      const effectivePaid = Math.max(f.paid, paymentsSum);
+      const discount = f.discount || 0;
+      const netAmount = Math.max(0, f.amount - discount);
+      const status = effectivePaid >= netAmount ? 'paid' : (effectivePaid > 0 ? 'partial' : f.status);
+
+      return {
+        ...f,
+        paid: effectivePaid,
+        status
+      };
     });
-    res.json(invoices);
+
+    const formattedInvoices = studentInvoices
+      .filter(si => !feeIds.has(si.id) && !fees.some(f => f.description?.includes(si.invoiceNumber)))
+      .map(si => {
+        const paidAllocated = si.allocations.reduce((s, a) => s + (a.allocatedAmount || 0), 0);
+        return {
+          id: si.id,
+          studentId: si.studentId,
+          term: si.term || 'Term 1',
+          year: si.year || new Date(si.createdAt).getFullYear(),
+          amount: si.totalAmount,
+          discount: 0,
+          vatPercentage: 0,
+          paid: paidAllocated,
+          dueDate: si.dueDate || si.createdAt,
+          status: si.status === 'posted' ? (paidAllocated > 0 ? 'partial' : 'unpaid') : si.status,
+          description: si.items[0]?.description || `Invoice ${si.invoiceNumber}`,
+          createdAt: si.createdAt,
+          updatedAt: si.updatedAt,
+          student: si.student,
+          feeGroup: { name: si.sourceModule || 'Fee Invoicing' },
+          payments: []
+        };
+      });
+
+    res.json([...formattedFees, ...formattedInvoices]);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch invoices' });
   }
@@ -987,16 +1094,56 @@ router.get('/payments', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), asyn
       whereClause.student = { classId: String(classId) };
     }
 
-    const payments = await prisma.studentPayment.findMany({
-      where: whereClause,
-      include: {
-        student: { select: { name: true, class: { select: { name: true } } } },
-        fee: { select: { description: true, feeGroup: { select: { name: true } } } }
-      },
-      orderBy: { date: 'desc' }
-    });
+    const [payments, receipts] = await Promise.all([
+      prisma.studentPayment.findMany({
+        where: whereClause,
+        include: {
+          student: { select: { id: true, studentId: true, name: true, class: { select: { name: true } } } },
+          fee: { select: { description: true, feeGroup: { select: { name: true } } } }
+        },
+        orderBy: { date: 'desc' }
+      }),
+      prisma.receipt.findMany({
+        where: { schoolId, ...(studentId ? { studentId: String(studentId) } : {}) },
+        include: {
+          student: { select: { id: true, studentId: true, name: true, class: { select: { name: true } } } },
+          allocations: true
+        },
+        orderBy: { createdAt: 'desc' }
+      })
+    ]);
 
-    res.json(payments);
+    const formattedPayments = payments.map(p => ({
+      id: p.id,
+      receiptNumber: p.reference || `REC-${p.id.slice(-6).toUpperCase()}`,
+      reference: p.reference,
+      student: p.student,
+      amount: p.amount,
+      date: p.date,
+      paymentMode: p.paymentMode,
+      description: p.fee?.description || 'Fee Payment'
+    }));
+
+    const paymentRefs = new Set(payments.map(p => p.reference));
+    const extraReceipts = receipts
+      .filter(r => !paymentRefs.has(r.receiptNumber))
+      .map(r => ({
+        id: r.id,
+        receiptNumber: r.receiptNumber,
+        reference: r.receiptNumber,
+        student: r.student,
+        amount: r.amount,
+        date: r.createdAt,
+        paymentMode: r.paymentMethod === 'cash_usd' ? 'USD Cash'
+          : r.paymentMethod === 'cash_zig' ? 'ZiG Cash'
+          : r.paymentMethod === 'ecocash' ? 'EcoCash'
+          : r.paymentMethod === 'bank_usd' ? 'Bank USD'
+          : r.paymentMethod === 'bank_zig' ? 'Bank ZiG'
+          : (r.paymentMethod || 'Official Receipt'),
+        description: 'Official Fee Receipt'
+      }));
+
+    res.json([...formattedPayments, ...extraReceipts]);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch payments' });
   }
@@ -1080,17 +1227,50 @@ router.post('/ledger', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async
  */
 router.get('/ledgers', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), async (req: AuthRequest, res: Response) => {
   try {
-    const ledgers = await prisma.fee.findMany({
-      where: { schoolId: req.user!.schoolId!, isLedger: true },
+    const schoolId = req.user!.schoolId!;
+    const fees = await prisma.fee.findMany({
+      where: { schoolId },
       include: {
-        student: { select: { name: true, class: { select: { name: true } } } },
+        student: { select: { id: true, studentId: true, name: true, class: { select: { name: true } } } },
         lineItems: true,
         payments: { select: { id: true, amount: true, date: true, paymentMode: true } }
       },
       orderBy: { createdAt: 'desc' }
     });
-    res.json(ledgers);
-  } catch (error) {
+
+    const formattedLedgers = fees.map(f => {
+      const discount = f.discount || 0;
+      const netDue = Math.max(0, f.amount - discount);
+      const paymentsSum = f.payments?.reduce((s, p) => s + (p.amount || 0), 0) || 0;
+      const effectivePaid = Math.max(f.paid, paymentsSum);
+      const balance = Math.max(0, netDue - effectivePaid);
+      const status = effectivePaid >= netDue ? 'paid' : (effectivePaid > 0 ? 'partial' : f.status);
+
+      return {
+        id: f.id,
+        description: f.description || 'General Tuition & Boarding Ledger',
+        studentId: f.studentId,
+        studentName: f.student?.name,
+        student: f.student,
+        dueDate: f.dueDate,
+        discount,
+        status,
+        createdAt: f.createdAt,
+        amount: f.amount,
+        totalBilled: f.amount,
+        billed: f.amount,
+        totalPaid: effectivePaid,
+        paid: effectivePaid,
+        balance,
+        lineItems: f.lineItems && f.lineItems.length > 0 ? f.lineItems : [
+          { id: `li_${f.id}`, item: f.description || 'Tuition Fee Debit', amount: f.amount, date: f.createdAt }
+        ]
+      };
+    });
+
+    res.json(formattedLedgers);
+  } catch (error: any) {
+    console.error('Failed to fetch ledgers:', error);
     res.status(500).json({ error: 'Failed to fetch ledgers' });
   }
 });

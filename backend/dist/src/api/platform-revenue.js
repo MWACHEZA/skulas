@@ -108,4 +108,3 @@ router.get('/revenue', auth_1.requireAuth, (0, auth_1.requireRole)('SUPER_ADMIN'
     }
 });
 exports.default = router;
-//# sourceMappingURL=platform-revenue.js.map

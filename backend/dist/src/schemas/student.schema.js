@@ -91,4 +91,3 @@ exports.ClassMigrationWizardSchema = zod_1.z.object({
         })
     })
 });
-//# sourceMappingURL=student.schema.js.map

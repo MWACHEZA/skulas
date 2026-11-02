@@ -173,7 +173,7 @@ export default function SchoolRegister() {
         <div className="logo cursor-pointer" onClick={() => navigate('/')}>
           ACAD<span>EX</span>
         </div>
-        <div className="cta" style={{ fontSize: '0.9rem', color: 'var(--gray-400)' }}>
+        <div className="register-step-badge" style={{ fontSize: '0.9rem', color: 'var(--gray-400)', fontWeight: 600, padding: '6px 14px', borderRadius: '100px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
           Step {step} of 4
         </div>
       </nav>

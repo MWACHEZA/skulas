@@ -130,4 +130,3 @@ async function seedFinance(prisma, school, students, staff) {
         });
     }
 }
-//# sourceMappingURL=seedFinance.js.map

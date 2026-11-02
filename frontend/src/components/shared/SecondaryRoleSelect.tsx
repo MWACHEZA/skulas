@@ -63,12 +63,20 @@ export default function SecondaryRoleSelect({
     })
     .filter(g => g.roles.length > 0);
 
+  // Deduplicate and normalize selected roles
+  const uniqueSelectedRoles = Array.from(new Set(selectedRoles.map(r => {
+    const clean = r.replace(/_/g, ' ').replace(/^["'[\]]+|["'[\]]+$/g, '').trim();
+    return (clean.toUpperCase() === 'HOD' || clean.toUpperCase() === 'HEAD OF DEPARTMENT')
+      ? 'Head of Department (HOD)'
+      : clean;
+  }).filter(Boolean)));
+
   const toggleRole = (role: string) => {
-    if (selectedRoles.includes(role)) {
-      onChange(selectedRoles.filter(r => r !== role));
+    if (uniqueSelectedRoles.includes(role)) {
+      onChange(uniqueSelectedRoles.filter(r => r !== role));
     } else {
-      if (selectedRoles.length >= maxRoles) return;
-      onChange([...selectedRoles, role]);
+      if (uniqueSelectedRoles.length >= maxRoles) return;
+      onChange([...uniqueSelectedRoles, role]);
     }
   };
 
@@ -98,10 +106,10 @@ export default function SecondaryRoleSelect({
           opacity: disabled ? 0.6 : 1,
         }}
       >
-        {selectedRoles.length === 0 ? (
+        {uniqueSelectedRoles.length === 0 ? (
           <span style={{ color: '#a0aec0', fontSize: '0.9rem' }}>Assign secondary roles...</span>
         ) : (
-          selectedRoles.map(r => {
+          uniqueSelectedRoles.map(r => {
             const groupKey = Object.keys(ROLE_GROUPS).find(k => ROLE_GROUPS[k as keyof typeof ROLE_GROUPS].includes(r));
             const color = groupKey ? GROUP_COLORS[groupKey] || '#0056b3' : '#0056b3';
             return (

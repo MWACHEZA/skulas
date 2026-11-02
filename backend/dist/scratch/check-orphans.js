@@ -11,4 +11,3 @@ async function checkOrphans() {
     console.log('All Students:', all.map(s => ({ name: s.name, schoolId: s.schoolId })));
 }
 checkOrphans().catch(console.error).finally(() => prisma.$disconnect());
-//# sourceMappingURL=check-orphans.js.map

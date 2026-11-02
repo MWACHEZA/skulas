@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import api from '../../lib/api';
 import { useToast } from '../../context/ToastContext';
 import SecondaryRoleSelect from './SecondaryRoleSelect';
@@ -685,7 +685,7 @@ export default function AdminUserCreateModal({
         if (docFiles.birthCertificate) data.append('birthCertificate', docFiles.birthCertificate);
       }
 
-      data.append('secondaryRoles', JSON.stringify(secondaryRoles.filter(r => r.trim() !== '')));
+      data.append('secondaryRoles', JSON.stringify(Array.from(new Set(secondaryRoles.map(r => r.trim()).filter(Boolean)))));
 
       if (avatarFile) {
         data.append('avatar', avatarFile);

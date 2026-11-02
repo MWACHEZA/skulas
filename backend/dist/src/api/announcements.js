@@ -22,8 +22,18 @@ router.get('/', auth_1.requireAuth, async (req, res) => {
         else {
             // SCHOOL_ADMIN / SUPER_ADMIN see all
         }
+        let schoolId = req.user?.schoolId;
+        if (!schoolId && role === 'PARENT') {
+            const parent = await prisma_1.default.parent.findUnique({
+                where: { userId: req.user.id },
+                include: { students: { include: { student: true } } }
+            });
+            if (parent && parent.students.length > 0) {
+                schoolId = parent.students[0].student.schoolId;
+            }
+        }
         const whereClause = {
-            schoolId: req.user.schoolId,
+            schoolId: schoolId || undefined,
             OR: [
                 { expiryDate: null },
                 { expiryDate: { gt: new Date() } }
@@ -31,6 +41,10 @@ router.get('/', auth_1.requireAuth, async (req, res) => {
         };
         if (audienceFilter.length > 0) {
             whereClause.audience = { in: audienceFilter };
+        }
+        const category = req.query.category;
+        if (category && category.toUpperCase() !== 'ALL') {
+            whereClause.category = { equals: category, mode: 'insensitive' };
         }
         const announcements = await prisma_1.default.announcement.findMany({
             where: whereClause,
@@ -41,7 +55,8 @@ router.get('/', auth_1.requireAuth, async (req, res) => {
             },
             orderBy: [
                 { isPinned: 'desc' },
-                { priority: 'desc' }, // URGENT first (U > N)
+                { priority: 'desc' },
+                { publishedAt: 'desc' },
                 { createdAt: 'desc' }
             ]
         });
@@ -177,4 +192,3 @@ router.post('/:id/read', auth_1.requireAuth, async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=announcements.js.map

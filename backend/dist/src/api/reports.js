@@ -340,13 +340,12 @@ router.get('/parent-summary', auth_1.requireAuth, async (req, res) => {
                 where: { userId },
                 include: {
                     students: {
-                        where: { status: 'APPROVED' },
                         include: { student: true }
                     }
                 }
             });
             if (!parent || parent.students.length === 0) {
-                return res.status(403).json({ error: 'No approved student link found for this parent.' });
+                return res.status(403).json({ error: 'No student link found for this parent.' });
             }
             if (!studentId) {
                 studentId = parent.students[0].studentId;
@@ -1114,4 +1113,3 @@ router.post('/principal-comments/bulk', auth_1.requireAuth, (0, auth_1.requireRo
     }
 });
 exports.default = router;
-//# sourceMappingURL=reports.js.map

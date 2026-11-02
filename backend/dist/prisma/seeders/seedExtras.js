@@ -175,4 +175,3 @@ async function seedExtras(prisma, school, admin, student) {
         });
     }
 }
-//# sourceMappingURL=seedExtras.js.map

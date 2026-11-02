@@ -23,6 +23,68 @@ const SCHOOL_ADMIN_ASSIGNABLE_ROLES = [
 ];
 
 /**
+ * Sanitizes, flattens, deduplicates, and normalizes secondary roles.
+ * Normalizes 'HOD' to canonical 'Head of Department (HOD)'.
+ */
+export function sanitizeSecondaryRoles(input: any): string[] {
+  if (!input) return [];
+  let rawItems: any[] = [];
+  if (Array.isArray(input)) {
+    rawItems = input;
+  } else if (typeof input === 'string') {
+    const trimmed = input.trim();
+    if (!trimmed || trimmed === '[]' || trimmed === 'null' || trimmed === 'undefined') return [];
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) rawItems = parsed;
+      else if (typeof parsed === 'string') rawItems = [parsed];
+      else rawItems = [trimmed];
+    } catch {
+      rawItems = trimmed.split(',').map(s => s.trim());
+    }
+  }
+
+  const flattened: string[] = [];
+  for (const item of rawItems) {
+    if (!item) continue;
+    if (typeof item === 'string') {
+      const trimmed = item.trim();
+      if (!trimmed || trimmed === '[]' || trimmed === 'null') continue;
+      if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          if (Array.isArray(parsed)) {
+            parsed.forEach(p => {
+              if (p && typeof p === 'string') flattened.push(p.trim());
+            });
+            continue;
+          }
+        } catch {
+          // ignore
+        }
+      }
+      flattened.push(trimmed);
+    } else if (typeof item === 'object') {
+      const str = item.name || item.role || item.leadershipRole || item.title;
+      if (str && typeof str === 'string') flattened.push(str.trim());
+    }
+  }
+
+  const cleaned: string[] = [];
+  for (const role of flattened) {
+    let clean = role.replace(/_/g, ' ').replace(/^["'\[\]]+|["'\[\]]+$/g, '').trim();
+    if (!clean || clean === '[]') continue;
+    if (clean.toUpperCase() === 'HOD' || clean.toUpperCase() === 'HEAD OF DEPARTMENT') {
+      clean = 'Head of Department (HOD)';
+    }
+    if (!cleaned.includes(clean)) {
+      cleaned.push(clean);
+    }
+  }
+  return cleaned;
+}
+
+/**
  * @route   GET /api/users/template
  * @desc    Download the Excel template for staff accounts import
  */
@@ -680,16 +742,7 @@ router.post('/', requireAuth, staffDocumentUpload.fields([
   const normalizedEmail = (email || '').trim().toLowerCase();
 
   // Process secondaryRoles
-  let secondaryRoles = req.body.secondaryRoles;
-  if (typeof secondaryRoles === 'string') {
-    try {
-      secondaryRoles = JSON.parse(secondaryRoles);
-    } catch {
-      secondaryRoles = secondaryRoles.split(',').filter(Boolean).map((s: string) => s.trim());
-    }
-  }
-  if (!Array.isArray(secondaryRoles)) secondaryRoles = [];
-  
+  const secondaryRoles = sanitizeSecondaryRoles(req.body.secondaryRoles);
   if (secondaryRoles.length > 4) {
     return res.status(400).json({ error: 'Maximum 4 secondary roles allowed' });
   }
@@ -1258,18 +1311,7 @@ router.put('/:id', requireAuth, requireRole('SCHOOL_ADMIN'), staffDocumentUpload
     facebookLink, linkedinLink, twitterLink
   } = req.body;
   
-  let parsedSecondaryRoles: string[] = [];
-  if (secondaryRoles) {
-    if (typeof secondaryRoles === 'string') {
-      try {
-        parsedSecondaryRoles = JSON.parse(secondaryRoles);
-      } catch {
-        parsedSecondaryRoles = secondaryRoles.split(',').filter(Boolean).map((s: string) => s.trim());
-      }
-    } else if (Array.isArray(secondaryRoles)) {
-      parsedSecondaryRoles = secondaryRoles;
-    }
-  }
+  const parsedSecondaryRoles = sanitizeSecondaryRoles(secondaryRoles);
   
   // Handle files
   const files = req.files as { [fieldname: string]: Express.Multer.File[] } || {};

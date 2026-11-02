@@ -69,4 +69,3 @@ exports.AssignTeacherClassSchema = zod_1.z.object({
         isClassTeacher: zod_1.z.union([zod_1.z.boolean(), zod_1.z.string()]).optional().nullable(),
     })
 });
-//# sourceMappingURL=teacher.schema.js.map

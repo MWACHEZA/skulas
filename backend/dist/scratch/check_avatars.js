@@ -14,4 +14,3 @@ async function main() {
     console.log(JSON.stringify(users, null, 2));
 }
 main().catch(e => console.error(e)).finally(() => prisma.$disconnect());
-//# sourceMappingURL=check_avatars.js.map

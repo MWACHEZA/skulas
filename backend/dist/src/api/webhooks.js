@@ -71,4 +71,3 @@ router.post('/whatsapp', async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=webhooks.js.map

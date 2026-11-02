@@ -3,6 +3,7 @@ import prisma from '../lib/prisma';
 import { requireAuth, AuthRequest } from '../middleware/auth';
 import { QrCryptoService, QrType, VALID_QR_TYPES } from '../lib/qr-crypto';
 import { BursarService } from '../services/bursar.service';
+import { GateService } from '../services/gate.service';
 
 const router = Router();
 
@@ -67,94 +68,171 @@ router.post('/verify', requireAuth, async (req: AuthRequest, res: Response) => {
     });
   }
 
-  let parsed;
-  try {
-    parsed = QrCryptoService.parsePayload(payload);
-  } catch (parseErr: any) {
-    // Log malformed scan attempt
-    await prisma.scanLog.create({
-      data: {
-        tenantId: school.id,
-        type: 'UNKNOWN',
-        entityId: 'UNKNOWN',
-        scannerUserId,
-        result: 'INVALID',
-        reason: `Malformed QR: ${parseErr.message}`,
-        scannedAt,
-        deviceId: deviceId || 'SCANNER-01',
-        metadata: { rawPayload: payload.slice(0, 100) }
-      }
-    }).catch(() => {});
+  const rawParts = payload.trim().split(':');
+  const isLegacyGateToken = rawParts.length === 5 && rawParts[0] === 'v1' && !VALID_QR_TYPES.includes(rawParts[1].toUpperCase() as any);
 
-    return res.status(400).json({
-      valid: false,
-      reason: `Malformed QR payload: ${parseErr.message}`,
-      flags: ['MALFORMED_PAYLOAD']
+  let parsed: any;
+  let isLegacyVerified = false;
+
+  if (isLegacyGateToken) {
+    const targetSchoolId = rawParts[1];
+    const targetEntityId = rawParts[2];
+    const targetSig = rawParts[4];
+
+    // Strict Tenant Isolation for legacy tokens
+    if (targetSchoolId !== school.id) {
+      const targetSchool = await prisma.school.findUnique({ where: { id: targetSchoolId } });
+      const targetCode = targetSchool?.code || targetSchoolId;
+      await prisma.scanLog.create({
+        data: {
+          tenantId: school.id,
+          type: 'GATE',
+          entityId: targetEntityId,
+          scannerUserId,
+          result: 'INVALID',
+          reason: `Tenant mismatch: QR is for school ${targetCode}, scanner is ${school.code}`,
+          scannedAt,
+          deviceId: deviceId || 'SCANNER-01',
+          metadata: { targetSchool: targetCode, scannerSchool: school.code }
+        }
+      }).catch(() => {});
+
+      return res.status(200).json({
+        valid: false,
+        reason: `Tenant mismatch: This QR code belongs to school "${targetCode}" and is not valid at "${school.code}".`,
+        flags: ['TENANT_MISMATCH', 'CROSS_SCHOOL_FORBIDDEN']
+      });
+    }
+
+    // Check token registered in database or valid HMAC
+    const existingQr = await prisma.studentQrCode.findFirst({
+      where: { schoolId: school.id, qrToken: payload.trim(), isActive: true }
     });
-  }
+    const hmacResult = GateService.verifySignature(payload.trim());
 
-  // Strict Tenant Isolation: School Code in payload MUST match current tenant school code
-  if (parsed.schoolCode.toUpperCase() !== school.code.toUpperCase()) {
-    await prisma.scanLog.create({
-      data: {
-        tenantId: school.id,
-        type: parsed.type,
-        entityId: parsed.entityId,
-        scannerUserId,
-        result: 'INVALID',
-        reason: `Tenant mismatch: QR is for ${parsed.schoolCode}, scanner is ${school.code}`,
-        scannedAt,
-        deviceId: deviceId || 'SCANNER-01',
-        metadata: { targetSchool: parsed.schoolCode, scannerSchool: school.code }
-      }
-    }).catch(() => {});
+    if (!existingQr && !hmacResult.isValid) {
+      await prisma.scanLog.create({
+        data: {
+          tenantId: school.id,
+          type: 'GATE',
+          entityId: targetEntityId,
+          scannerUserId,
+          result: 'INVALID',
+          reason: 'Invalid signature on legacy gate token',
+          scannedAt,
+          deviceId: deviceId || 'SCANNER-01'
+        }
+      }).catch(() => {});
 
-    return res.status(200).json({
-      valid: false,
-      reason: `Tenant mismatch: This QR code belongs to school "${parsed.schoolCode}" and is not valid at "${school.code}".`,
-      flags: ['TENANT_MISMATCH', 'CROSS_SCHOOL_FORBIDDEN']
-    });
-  }
+      return res.status(200).json({
+        valid: false,
+        reason: 'Invalid signature: This QR code has been altered or is counterfeit.',
+        flags: ['TAMPERED_SIGNATURE']
+      });
+    }
 
-  // Cryptographic Signature Verification with Key Rotation (KID support)
-  const tenantKeys = await QrCryptoService.findTenantKeys(school.id, parsed.keyId);
-  if (tenantKeys.length === 0) {
-    return res.status(200).json({
-      valid: false,
-      reason: 'No matching cryptographic verification key found for this school.',
-      flags: ['KEY_NOT_FOUND']
-    });
-  }
+    parsed = {
+      raw: payload.trim(),
+      dataToSign: rawParts.slice(0, 4).join(':'),
+      version: 'v1',
+      type: 'GATE' as QrType,
+      schoolCode: school.code.toUpperCase(),
+      entityId: targetEntityId,
+      signature: targetSig,
+      isExpired: false
+    };
+    isLegacyVerified = true;
+  } else {
+    try {
+      parsed = QrCryptoService.parsePayload(payload);
+    } catch (parseErr: any) {
+      // Log malformed scan attempt
+      await prisma.scanLog.create({
+        data: {
+          tenantId: school.id,
+          type: 'UNKNOWN',
+          entityId: 'UNKNOWN',
+          scannerUserId,
+          result: 'INVALID',
+          reason: `Malformed QR: ${parseErr.message}`,
+          scannedAt,
+          deviceId: deviceId || 'SCANNER-01',
+          metadata: { rawPayload: payload.slice(0, 100) }
+        }
+      }).catch(() => {});
 
-  let signatureValid = false;
-  for (const key of tenantKeys) {
-    const keyData = key.algorithm === 'ED25519' ? key.publicKey : key.encryptedPrivateKey;
-    if (QrCryptoService.verifySignatureWithKey(parsed, keyData, key.algorithm as any)) {
-      signatureValid = true;
-      break;
+      return res.status(400).json({
+        valid: false,
+        reason: `Malformed QR payload: ${parseErr.message}`,
+        flags: ['MALFORMED_PAYLOAD']
+      });
+    }
+
+    // Strict Tenant Isolation: School Code in payload MUST match current tenant school code
+    if (parsed.schoolCode.toUpperCase() !== school.code.toUpperCase()) {
+      await prisma.scanLog.create({
+        data: {
+          tenantId: school.id,
+          type: parsed.type,
+          entityId: parsed.entityId,
+          scannerUserId,
+          result: 'INVALID',
+          reason: `Tenant mismatch: QR is for ${parsed.schoolCode}, scanner is ${school.code}`,
+          scannedAt,
+          deviceId: deviceId || 'SCANNER-01',
+          metadata: { targetSchool: parsed.schoolCode, scannerSchool: school.code }
+        }
+      }).catch(() => {});
+
+      return res.status(200).json({
+        valid: false,
+        reason: `Tenant mismatch: This QR code belongs to school "${parsed.schoolCode}" and is not valid at "${school.code}".`,
+        flags: ['TENANT_MISMATCH', 'CROSS_SCHOOL_FORBIDDEN']
+      });
     }
   }
 
-  if (!signatureValid) {
-    await prisma.scanLog.create({
-      data: {
-        tenantId: school.id,
-        type: parsed.type,
-        entityId: parsed.entityId,
-        scannerUserId,
-        result: 'INVALID',
-        reason: 'Cryptographic signature verification failed (tampered or counterfeit payload)',
-        scannedAt,
-        deviceId: deviceId || 'SCANNER-01',
-        metadata: { keyId: parsed.keyId }
-      }
-    }).catch(() => {});
+  // Cryptographic Signature Verification with Key Rotation (for standard tokens)
+  if (!isLegacyVerified) {
+    const tenantKeys = await QrCryptoService.findTenantKeys(school.id, parsed.keyId);
+    if (tenantKeys.length === 0) {
+      return res.status(200).json({
+        valid: false,
+        reason: 'No matching cryptographic verification key found for this school.',
+        flags: ['KEY_NOT_FOUND']
+      });
+    }
 
-    return res.status(200).json({
-      valid: false,
-      reason: 'Invalid signature: This QR code has been altered or is counterfeit.',
-      flags: ['TAMPERED_SIGNATURE']
-    });
+    let signatureValid = false;
+    for (const key of tenantKeys) {
+      const keyData = key.algorithm === 'ED25519' ? key.publicKey : key.encryptedPrivateKey;
+      if (QrCryptoService.verifySignatureWithKey(parsed, keyData, key.algorithm as any)) {
+        signatureValid = true;
+        break;
+      }
+    }
+
+    if (!signatureValid) {
+      await prisma.scanLog.create({
+        data: {
+          tenantId: school.id,
+          type: parsed.type,
+          entityId: parsed.entityId,
+          scannerUserId,
+          result: 'INVALID',
+          reason: 'Cryptographic signature verification failed (tampered or counterfeit payload)',
+          scannedAt,
+          deviceId: deviceId || 'SCANNER-01',
+          metadata: { keyId: parsed.keyId }
+        }
+      }).catch(() => {});
+
+      return res.status(200).json({
+        valid: false,
+        reason: 'Invalid signature: This QR code has been altered or is counterfeit.',
+        flags: ['TAMPERED_SIGNATURE']
+      });
+    }
   }
 
   // Expiration Check
@@ -422,13 +500,20 @@ router.post('/verify', requireAuth, async (req: AuthRequest, res: Response) => {
     });
 
     if (!attRecord) {
+      const effectiveTeacherId = await GateService.getEffectiveTeacherId(
+        school.id,
+        scannerUserId || student.class?.teacherId || undefined
+      );
+
       attRecord = await prisma.attendance.create({
         data: {
           schoolId: school.id,
           studentId: student.id,
-          classId: student.classId || '',
+          teacherId: effectiveTeacherId,
+          classId: student.classId || null,
           date: todayStart,
-          status: 'PRESENT'
+          status: 'PRESENT',
+          scanMethod: 'QR Code'
         }
       });
     }

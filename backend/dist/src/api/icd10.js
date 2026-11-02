@@ -105,4 +105,3 @@ router.delete('/:id', auth_1.requireAuth, async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=icd10.js.map

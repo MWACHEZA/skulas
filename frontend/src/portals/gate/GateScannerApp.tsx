@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import api from '../../lib/api';
-import { format } from 'date-fns';
 import { useAuth } from '../../contexts/AuthContext';
-import { getPublicMediaUrl } from '../../utils/formatters';
+import { getPublicMediaUrl, getAvatarUrl } from '../../utils/formatters';
 import { qrOfflineService, type OfflineScanLog } from '../../services/qrOfflineService';
 
 interface GateStudent {
@@ -62,7 +61,9 @@ export default function GateScannerApp() {
         const parsed = JSON.parse(stored);
         if (parsed.name) return parsed.name;
       }
-    } catch {}
+    } catch {
+      // Fallback if stored user is invalid JSON
+    }
     return localStorage.getItem('gate_guard_name') || 'Security Guard';
   });
   const [schoolName, setSchoolName] = useState<string>(() => {
@@ -72,7 +73,9 @@ export default function GateScannerApp() {
         const parsed = JSON.parse(stored);
         if (parsed.schoolName || parsed.school?.name) return parsed.schoolName || parsed.school?.name;
       }
-    } catch {}
+    } catch {
+      // Fallback if stored user is invalid JSON
+    }
     return localStorage.getItem('gate_school_name') || 'Skulas Academy';
   });
 
@@ -81,6 +84,53 @@ export default function GateScannerApp() {
   const effectiveSchoolName = authUser?.schoolName || authUser?.school?.name || schoolName || 'Skulas Academy';
   const effectiveSchoolCode = authUser?.schoolCode || authUser?.school?.code || 'global';
   
+  // School logo & branding
+  const [schoolLogo, setSchoolLogo] = useState<string | null>(() => {
+    try {
+      const stored = localStorage.getItem('acadex_user');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed.schoolBranding?.logo || parsed.school?.branding?.logo || parsed.school?.logo || parsed.avatar) {
+          return parsed.schoolBranding?.logo || parsed.school?.branding?.logo || parsed.school?.logo || parsed.avatar;
+        }
+      }
+    } catch {
+      // Fallback
+    }
+    return localStorage.getItem('gate_school_logo') || null;
+  });
+
+  // System Colours / Theme Mode ('portal' for System Light / ACADEX theme, 'night' for High-Contrast Dark)
+  const [themeMode, setThemeMode] = useState<'portal' | 'night'>(() => {
+    return (localStorage.getItem('gate_theme_mode') as 'portal' | 'night') || 'portal';
+  });
+
+  const toggleThemeMode = () => {
+    const next = themeMode === 'portal' ? 'night' : 'portal';
+    setThemeMode(next);
+    localStorage.setItem('gate_theme_mode', next);
+  };
+
+  useEffect(() => {
+    if (authUser?.schoolBranding?.logo || authUser?.school?.branding?.logo || authUser?.school?.logo || authUser?.avatar) {
+      const found = authUser.schoolBranding?.logo || authUser.school?.branding?.logo || authUser.school?.logo || authUser.avatar;
+      if (found) {
+        setSchoolLogo(found);
+        localStorage.setItem('gate_school_logo', found);
+      }
+    } else {
+      api.get('/api/schools/settings', {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined
+      }).then(res => {
+        const logo = res.data?.logo || res.data?.favicon || res.data?.school?.branding?.logo;
+        if (logo) {
+          setSchoolLogo(logo);
+          localStorage.setItem('gate_school_logo', logo);
+        }
+      }).catch(() => {});
+    }
+  }, [authUser, token]);
+
   // PIN Login modal state
   const [pinInput, setPinInput] = useState('');
   const [schoolCodeInput, setSchoolCodeInput] = useState('');
@@ -108,7 +158,7 @@ export default function GateScannerApp() {
   }>>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
-  const searchTimeoutRef = useRef<any>(null);
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const searchContainerRef = useRef<HTMLDivElement | null>(null);
   const [bursarNoticeMsg, setBursarNoticeMsg] = useState<string | null>(null);
 
@@ -128,11 +178,10 @@ export default function GateScannerApp() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [scanHistory, setScanHistory] = useState<OfflineScanLog[]>([]);
   const [cachedStudentCount, setCachedStudentCount] = useState<number>(0);
-  const [showHistoryModal, setShowHistoryModal] = useState<boolean>(false);
 
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const cooldownRef = useRef(false);
-  const timerRef = useRef<any>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Register PWA Service Worker for offline resilience
   useEffect(() => {
@@ -155,7 +204,7 @@ export default function GateScannerApp() {
       setGuardName(authUser.name);
     }
     if (authUser?.schoolName || authUser?.school?.name) {
-      setSchoolName(authUser.schoolName || authUser.school?.name);
+      setSchoolName(authUser.schoolName || authUser.school?.name || '');
     }
   }, [authUser, token]);
 
@@ -169,6 +218,40 @@ export default function GateScannerApp() {
     document.addEventListener('mousedown', handleOutsideClick);
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, []);
+
+  const downloadDailyAllowList = useCallback(async () => {
+    try {
+      const res = await api.get('/api/gate/daily-allow-list', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.data.data) {
+        localStorage.setItem('gate_daily_allow_list', JSON.stringify(res.data.data));
+      }
+    } catch (err) {
+      console.warn('Could not refresh offline allow list, using cached version:', err);
+    }
+  }, [token]);
+
+  const syncOfflineQueue = useCallback(async () => {
+    if (!token) return;
+    setIsSyncing(true);
+    try {
+      // 1. Sync queued scans from IndexedDB
+      await qrOfflineService.syncPendingQueue(token);
+      // 2. Refresh offline manifest (student roster + Ed25519 tenant public key)
+      const manifestRes = await qrOfflineService.syncOfflineManifest(token);
+      setCachedStudentCount(manifestRes.studentCount);
+      // 3. Update pending count & history
+      const pendingCount = await qrOfflineService.getPendingQueueCount();
+      setOfflineQueueCount(pendingCount);
+      const history = await qrOfflineService.getRecentHistory(30);
+      setScanHistory(history);
+    } catch (err) {
+      console.warn('Offline sync attempt:', err);
+    } finally {
+      setIsSyncing(false);
+    }
+  }, [token]);
 
   // Online / Offline monitor & initial IndexedDB load
   useEffect(() => {
@@ -189,7 +272,7 @@ export default function GateScannerApp() {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, []);
+  }, [syncOfflineQueue]);
 
   // Fetch daily allow-list and sync manifest on mount if authenticated
   useEffect(() => {
@@ -197,13 +280,13 @@ export default function GateScannerApp() {
       downloadDailyAllowList();
       syncOfflineQueue();
     }
-  }, [token]);
+  }, [token, downloadDailyAllowList, syncOfflineQueue]);
 
   // Clean up scanner on unmount
   useEffect(() => {
     return () => {
       stopCamera();
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, []);
 
@@ -220,40 +303,6 @@ export default function GateScannerApp() {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, [countdown]);
-
-  const downloadDailyAllowList = async () => {
-    try {
-      const res = await api.get('/api/gate/daily-allow-list', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (res.data.data) {
-        localStorage.setItem('gate_daily_allow_list', JSON.stringify(res.data.data));
-      }
-    } catch (err) {
-      console.warn('Could not refresh offline allow list, using cached version:', err);
-    }
-  };
-
-  const syncOfflineQueue = async () => {
-    if (!token) return;
-    setIsSyncing(true);
-    try {
-      // 1. Sync queued scans from IndexedDB
-      await qrOfflineService.syncPendingQueue(token);
-      // 2. Refresh offline manifest (student roster + Ed25519 tenant public key)
-      const manifestRes = await qrOfflineService.syncOfflineManifest(token);
-      setCachedStudentCount(manifestRes.studentCount);
-      // 3. Update pending count & history
-      const pendingCount = await qrOfflineService.getPendingQueueCount();
-      setOfflineQueueCount(pendingCount);
-      const history = await qrOfflineService.getRecentHistory(30);
-      setScanHistory(history);
-    } catch (err) {
-      console.warn('Offline sync attempt:', err);
-    } finally {
-      setIsSyncing(false);
-    }
-  };
 
   const handlePinLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -280,7 +329,8 @@ export default function GateScannerApp() {
         localStorage.setItem('gate_school_name', res.data.user.schoolName);
         setPinInput('');
       }
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { error?: string } } };
       setPinError(err.response?.data?.error || 'Invalid PIN or credentials');
     } finally {
       setIsLoggingIn(false);
@@ -436,45 +486,54 @@ export default function GateScannerApp() {
     if (navigator.onLine) {
       try {
         if (isV1) {
-          const res = await api.post(
-            '/api/verify',
-            { payload: inputString, direction: scanDirection, deviceId: 'GATE-STATION-PWA' },
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
+          try {
+            const res = await api.post(
+              '/api/verify',
+              { payload: inputString, direction: scanDirection, deviceId: 'GATE-STATION-PWA' },
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
 
-          const data = res.data;
-          handleScanResponse({
-            success: true,
-            type: 'STUDENT',
-            direction: scanDirection,
-            allowed: data.valid,
-            status: data.flags?.join(', ') || (data.valid ? 'PERMITTED' : 'DENIED'),
-            reason: data.reason,
-            isBoarder: false,
-            student: data.student ? {
-              id: data.student.id,
-              studentId: data.student.studentId,
-              name: data.student.name,
-              className: data.student.class || null,
-              avatar: data.student.photoUrl || null,
-              boardingStatus: 'Day',
-              balance: data.student.balance || 0
-            } : undefined,
-            gateLogId: data.auditLogId,
-            autoConfirmed: data.valid
-          });
-          return;
-        } else {
-          const res = await api.post(
-            '/api/gate/scan',
-            { tokenOrId: inputString, forceDirection: scanDirection, deviceId: 'GATE-STATION-PWA' },
-            { headers: { Authorization: `Bearer ${token}` } }
-          );
+            const data = res.data;
+            if (data && data.valid) {
+              handleScanResponse({
+                success: true,
+                type: 'STUDENT',
+                direction: scanDirection,
+                allowed: data.valid,
+                status: data.flags?.join(', ') || 'PERMITTED',
+                reason: data.reason,
+                isBoarder: false,
+                student: data.student ? {
+                  id: data.student.id,
+                  studentId: data.student.studentId,
+                  name: data.student.name,
+                  className: data.student.class || null,
+                  avatar: data.student.photoUrl || null,
+                  boardingStatus: 'Day',
+                  balance: data.student.balance || 0
+                } : undefined,
+                gateLogId: data.auditLogId,
+                autoConfirmed: data.valid
+              });
+              return;
+            }
+          } catch (verifyErr) {
+            console.warn('Verify endpoint error, falling back to /api/gate/scan:', verifyErr);
+          }
+        }
 
+        // Try standard /api/gate/scan endpoint (handles legacy HMAC tokens, student ID cards, fee compliance)
+        const res = await api.post(
+          '/api/gate/scan',
+          { tokenOrId: inputString, forceDirection: scanDirection, deviceId: 'GATE-STATION-PWA' },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (res.data && (res.data.success || res.data.student)) {
           handleScanResponse(res.data);
           return;
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.warn('Online scan error, falling back to offline verification:', err);
       }
     }
@@ -656,7 +715,8 @@ export default function GateScannerApp() {
       setOverrideCount(prev => prev + 1);
       setShowOverrideModal(false);
       clearScanAndResume();
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { error?: string } } };
       setOverrideError(err.response?.data?.error || 'Headmaster PIN authorization failed');
     } finally {
       setIsSubmittingOverride(false);
@@ -802,61 +862,91 @@ export default function GateScannerApp() {
     );
   }
 
-  // Standalone Guard PWA Interface (High-Contrast, Sunlight-Readable)
+  const isLight = themeMode === 'portal';
+
+  // Standalone Guard PWA Interface (ACADEX System Colours + High-Contrast Mode)
   return (
     <div style={{
       minHeight: '100vh',
-      backgroundColor: '#090d16',
-      color: '#f8fafc',
-      fontFamily: 'Inter, system-ui, sans-serif',
+      backgroundColor: isLight ? '#f1f5f9' : '#090d16',
+      color: isLight ? '#1e293b' : '#f8fafc',
+      fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
       display: 'flex',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      transition: 'background-color 0.25s ease'
     }}>
       {/* Top Header Bar */}
       <header style={{
         position: 'relative',
         width: '100%',
         zIndex: 20,
-        backgroundColor: '#131b2e',
-        borderBottom: '1px solid #1e293b',
-        padding: '12px 16px',
+        background: isLight 
+          ? 'linear-gradient(135deg, #0c2340 0%, #0369a1 100%)' 
+          : 'linear-gradient(135deg, #0c2340 0%, #131b2e 100%)',
+        borderBottom: '1px solid rgba(255,255,255,0.12)',
+        padding: '12px 18px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         flexWrap: 'wrap',
-        gap: '10px',
-        boxSizing: 'border-box'
+        gap: '12px',
+        boxSizing: 'border-box',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{
-            width: '38px',
-            height: '38px',
-            backgroundColor: '#0284c7',
+            width: '42px',
+            height: '42px',
+            backgroundColor: '#ffffff',
             borderRadius: '10px',
+            overflow: 'hidden',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '18px'
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            border: '2px solid rgba(255,255,255,0.3)',
+            flexShrink: 0
           }}>
-            🛡️
+            {schoolLogo ? (
+              <img
+                src={getAvatarUrl(schoolLogo, effectiveSchoolCode) || ''}
+                alt={effectiveSchoolName}
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                onError={(e) => {
+                  (e.currentTarget as HTMLElement).style.display = 'none';
+                  if (e.currentTarget.parentElement) {
+                    e.currentTarget.parentElement.innerHTML = '<span style="font-size: 20px;">🛡️</span>';
+                  }
+                }}
+              />
+            ) : (
+              <span style={{ fontSize: '20px' }}>🛡️</span>
+            )}
           </div>
           <div>
-            <div style={{ fontWeight: '700', fontSize: '15px', color: '#fff' }}>{effectiveSchoolName}</div>
-            <div style={{ fontSize: '12px', color: '#94a3b8' }}>
-              Officer: <strong style={{ color: '#38bdf8' }}>{effectiveOfficerName}</strong>
+            <div style={{ fontWeight: '800', fontSize: '16px', color: '#ffffff', letterSpacing: '-0.01em' }}>
+              {effectiveSchoolName}
+            </div>
+            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.8)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span>Officer:</span>
+              <strong style={{ color: '#7dd3fc' }}>{effectiveOfficerName}</strong>
+              <span style={{ opacity: 0.5 }}>•</span>
+              <span style={{ fontSize: '11px', background: 'rgba(255,255,255,0.15)', padding: '1px 6px', borderRadius: '4px' }}>
+                {effectiveSchoolCode}
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Status Indicators & Direction Toggle */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        {/* Status Indicators, Theme Toggle & Direction Toggle */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
           {/* Direction Toggle */}
           <div style={{
             display: 'flex',
-            backgroundColor: '#090d16',
+            backgroundColor: 'rgba(0,0,0,0.25)',
             padding: '3px',
             borderRadius: '8px',
-            border: '1px solid #334155'
+            border: '1px solid rgba(255,255,255,0.15)'
           }}>
             <button
               onClick={() => setScanDirection('IN')}
@@ -868,7 +958,7 @@ export default function GateScannerApp() {
                 fontWeight: '700',
                 cursor: 'pointer',
                 backgroundColor: scanDirection === 'IN' ? '#16a34a' : 'transparent',
-                color: scanDirection === 'IN' ? '#fff' : '#94a3b8'
+                color: scanDirection === 'IN' ? '#fff' : 'rgba(255,255,255,0.7)'
               }}
             >
               ☀️ Morning Entry
@@ -882,13 +972,36 @@ export default function GateScannerApp() {
                 fontSize: '12px',
                 fontWeight: '700',
                 cursor: 'pointer',
-                backgroundColor: scanDirection === 'OUT' ? '#2563eb' : 'transparent',
-                color: scanDirection === 'OUT' ? '#fff' : '#94a3b8'
+                backgroundColor: scanDirection === 'OUT' ? '#0284c7' : 'transparent',
+                color: scanDirection === 'OUT' ? '#fff' : 'rgba(255,255,255,0.7)'
               }}
             >
               🌙 Departure Exit
             </button>
           </div>
+
+          {/* Theme Mode Toggle (ACADEX System Colours vs High-Contrast Night) */}
+          <button
+            type="button"
+            onClick={toggleThemeMode}
+            title={isLight ? 'Switch to Night Vision Mode' : 'Switch to ACADEX Portal Theme'}
+            style={{
+              padding: '6px 12px',
+              backgroundColor: 'rgba(255,255,255,0.15)',
+              color: '#ffffff',
+              border: '1px solid rgba(255,255,255,0.25)',
+              borderRadius: '8px',
+              fontSize: '12px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'all 0.2s'
+            }}
+          >
+            <span>{isLight ? '☀️ System Theme' : '🌙 Night Mode'}</span>
+          </button>
 
           {/* Online / Offline Badge */}
           <div style={{
@@ -899,9 +1012,9 @@ export default function GateScannerApp() {
             borderRadius: '8px',
             fontSize: '11px',
             fontWeight: '600',
-            backgroundColor: isOnline ? '#16a34a22' : '#ea580c22',
-            color: isOnline ? '#4ade80' : '#fb923c',
-            border: `1px solid ${isOnline ? '#16a34a44' : '#ea580c44'}`
+            backgroundColor: isOnline ? 'rgba(22, 163, 74, 0.25)' : 'rgba(234, 88, 12, 0.25)',
+            color: isOnline ? '#86efac' : '#fdba74',
+            border: `1px solid ${isOnline ? 'rgba(74, 222, 128, 0.4)' : 'rgba(251, 146, 60, 0.4)'}`
           }}>
             <span style={{
               width: '8px',
@@ -931,33 +1044,56 @@ export default function GateScannerApp() {
             </button>
           )}
 
-          <button
-            onClick={() => window.location.href = '/admin/dashboard'}
-            style={{
-              padding: '6px 12px',
-              backgroundColor: '#0284c7',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '12px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px'
-            }}
-          >
-            <span>Admin Portal</span>
-            <span style={{ fontSize: '14px' }}>→</span>
-          </button>
+          {(() => {
+            const role = (authUser?.role || (() => {
+              try {
+                const s = localStorage.getItem('acadex_user');
+                return s ? JSON.parse(s).role : '';
+              } catch {
+                return '';
+              }
+            })() || '').toUpperCase();
+
+            const portal = (role === 'SCHOOL_ADMIN' || role === 'SUPER_ADMIN')
+              ? { label: 'Admin Portal', path: '/admin/dashboard' }
+              : (role === 'ANCILLARY' || role === 'STAFF')
+              ? { label: 'Staff Portal', path: '/ancillary/dashboard' }
+              : role === 'TEACHER'
+              ? { label: 'Teacher Portal', path: '/teacher/dashboard' }
+              : role === 'BURSAR'
+              ? { label: 'Bursar Portal', path: '/bursar/dashboard' }
+              : { label: 'Back to Dashboard', path: '/ancillary/dashboard' };
+
+            return (
+              <button
+                onClick={() => { window.location.href = portal.path; }}
+                style={{
+                  padding: '6px 12px',
+                  backgroundColor: '#0284c7',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <span>{portal.label}</span>
+                <span style={{ fontSize: '14px' }}>→</span>
+              </button>
+            );
+          })()}
 
           <button
             onClick={handleLogout}
             style={{
               padding: '6px 12px',
-              backgroundColor: '#334155',
-              color: '#cbd5e1',
-              border: 'none',
+              backgroundColor: 'rgba(255,255,255,0.12)',
+              color: '#f8fafc',
+              border: '1px solid rgba(255,255,255,0.2)',
               borderRadius: '8px',
               fontSize: '12px',
               fontWeight: '600',
@@ -973,49 +1109,54 @@ export default function GateScannerApp() {
       <section style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(4, 1fr)',
-        gap: '10px',
+        gap: '12px',
         padding: '12px 16px',
-        backgroundColor: '#0f172a',
-        borderBottom: '1px solid #1e293b'
+        backgroundColor: isLight ? '#ffffff' : '#0f172a',
+        borderBottom: isLight ? '1px solid #e2e8f0' : '1px solid #1e293b',
+        boxShadow: isLight ? '0 2px 4px rgba(0,0,0,0.02)' : 'none'
       }}>
         <div style={{
-          backgroundColor: '#1e293b',
+          backgroundColor: isLight ? '#f0fdf4' : '#1e293b',
           borderRadius: '10px',
-          padding: '10px 14px',
+          padding: '12px 16px',
+          border: isLight ? '1px solid #bbf7d0' : 'none',
           borderLeft: '4px solid #16a34a'
         }}>
-          <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: '700' }}>Allowed Today</div>
-          <div style={{ fontSize: '22px', fontWeight: '800', color: '#4ade80' }}>{allowedCount}</div>
+          <div style={{ fontSize: '11px', color: isLight ? '#166534' : '#94a3b8', textTransform: 'uppercase', fontWeight: '700' }}>Allowed Today</div>
+          <div style={{ fontSize: '24px', fontWeight: '800', color: '#16a34a' }}>{allowedCount}</div>
         </div>
 
         <div style={{
-          backgroundColor: '#1e293b',
+          backgroundColor: isLight ? '#fef2f2' : '#1e293b',
           borderRadius: '10px',
-          padding: '10px 14px',
+          padding: '12px 16px',
+          border: isLight ? '1px solid #fecaca' : 'none',
           borderLeft: '4px solid #ef4444'
         }}>
-          <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: '700' }}>Denied Today</div>
-          <div style={{ fontSize: '22px', fontWeight: '800', color: '#f87171' }}>{deniedCount}</div>
+          <div style={{ fontSize: '11px', color: isLight ? '#991b1b' : '#94a3b8', textTransform: 'uppercase', fontWeight: '700' }}>Denied Today</div>
+          <div style={{ fontSize: '24px', fontWeight: '800', color: '#ef4444' }}>{deniedCount}</div>
         </div>
 
         <div style={{
-          backgroundColor: '#1e293b',
+          backgroundColor: isLight ? '#fffbeb' : '#1e293b',
           borderRadius: '10px',
-          padding: '10px 14px',
+          padding: '12px 16px',
+          border: isLight ? '1px solid #fde68a' : 'none',
           borderLeft: '4px solid #f59e0b'
         }}>
-          <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: '700' }}>HM Overrides</div>
-          <div style={{ fontSize: '22px', fontWeight: '800', color: '#fbbf24' }}>{overrideCount}</div>
+          <div style={{ fontSize: '11px', color: isLight ? '#92400e' : '#94a3b8', textTransform: 'uppercase', fontWeight: '700' }}>HM Overrides</div>
+          <div style={{ fontSize: '24px', fontWeight: '800', color: '#d97706' }}>{overrideCount}</div>
         </div>
 
         <div style={{
-          backgroundColor: '#1e293b',
+          backgroundColor: isLight ? '#f0f9ff' : '#1e293b',
           borderRadius: '10px',
-          padding: '10px 14px',
-          borderLeft: '4px solid #38bdf8'
+          padding: '12px 16px',
+          border: isLight ? '1px solid #bae6fd' : 'none',
+          borderLeft: '4px solid #0284c7'
         }}>
-          <div style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: '700' }}>Gate Scans</div>
-          <div style={{ fontSize: '22px', fontWeight: '800', color: '#38bdf8' }}>{allowedCount + deniedCount + overrideCount}</div>
+          <div style={{ fontSize: '11px', color: isLight ? '#075985' : '#94a3b8', textTransform: 'uppercase', fontWeight: '700' }}>Gate Scans</div>
+          <div style={{ fontSize: '24px', fontWeight: '800', color: '#0284c7' }}>{allowedCount + deniedCount + overrideCount}</div>
         </div>
       </section>
 
@@ -1427,22 +1568,22 @@ export default function GateScannerApp() {
         {/* Live Camera Viewport Area */}
         <div style={{
           width: '100%',
-          backgroundColor: '#1e293b',
+          backgroundColor: isLight ? '#ffffff' : '#1e293b',
           borderRadius: '16px',
-          border: '1px solid #334155',
+          border: isLight ? '1px solid #e2e8f0' : '1px solid #334155',
           overflow: 'hidden',
           marginBottom: '20px',
-          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.4)'
+          boxShadow: isLight ? '0 10px 25px -5px rgba(0, 0, 0, 0.05)' : '0 10px 15px -3px rgba(0, 0, 0, 0.4)'
         }}>
           <div style={{
             padding: '14px 16px',
-            backgroundColor: '#0f172a',
-            borderBottom: '1px solid #334155',
+            backgroundColor: isLight ? '#f8fafc' : '#0f172a',
+            borderBottom: isLight ? '1px solid #e2e8f0' : '1px solid #334155',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between'
           }}>
-            <div style={{ fontWeight: '700', fontSize: '14px' }}>
+            <div style={{ fontWeight: '700', fontSize: '14px', color: isLight ? '#1e293b' : '#ffffff' }}>
               📷 Live Camera QR Viewfinder
             </div>
             <div>
@@ -1504,10 +1645,10 @@ export default function GateScannerApp() {
                 color: '#64748b'
               }}>
                 <div style={{ fontSize: '40px', marginBottom: '12px' }}>📷</div>
-                <div style={{ fontSize: '15px', fontWeight: '600', color: '#94a3b8' }}>
+                <div style={{ fontSize: '15px', fontWeight: '600', color: isLight ? '#475569' : '#94a3b8' }}>
                   Camera is paused
                 </div>
-                <p style={{ fontSize: '13px', margin: '6px 0 16px' }}>
+                <p style={{ fontSize: '13px', margin: '6px 0 16px', color: isLight ? '#64748b' : '#94a3b8' }}>
                   Click Start Camera to begin scanning student ID card QR codes
                 </p>
                 <button
@@ -1523,7 +1664,8 @@ export default function GateScannerApp() {
                     cursor: 'pointer',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '8px'
+                    gap: '8px',
+                    boxShadow: '0 4px 12px rgba(2, 132, 199, 0.3)'
                   }}
                 >
                   Turn On Camera
@@ -1534,7 +1676,7 @@ export default function GateScannerApp() {
         </div>
 
         {/* Manual ID / Token Input with Live Search Autocomplete */}
-        <div ref={searchContainerRef} style={{ width: '100%', position: 'relative' }}>
+        <div ref={searchContainerRef} style={{ width: '100%', position: 'relative', marginBottom: '20px' }}>
           <form
             onSubmit={handleManualSearch}
             style={{
@@ -1558,13 +1700,14 @@ export default function GateScannerApp() {
                   width: '100%',
                   padding: '14px 16px',
                   paddingRight: isSearching ? '40px' : '16px',
-                  backgroundColor: '#1e293b',
-                  border: '1px solid #475569',
+                  backgroundColor: isLight ? '#ffffff' : '#1e293b',
+                  border: isLight ? '1px solid #cbd5e1' : '1px solid #475569',
                   borderRadius: '10px',
-                  color: '#fff',
+                  color: isLight ? '#0f172a' : '#fff',
                   fontSize: '15px',
                   outline: 'none',
-                  boxSizing: 'border-box'
+                  boxSizing: 'border-box',
+                  boxShadow: isLight ? '0 2px 4px rgba(0,0,0,0.03)' : 'none'
                 }}
               />
               {isSearching && (
@@ -1574,7 +1717,7 @@ export default function GateScannerApp() {
                   top: '50%',
                   transform: 'translateY(-50%)',
                   fontSize: '13px',
-                  color: '#38bdf8'
+                  color: '#0284c7'
                 }}>
                   ⏳
                 </div>
@@ -1591,7 +1734,8 @@ export default function GateScannerApp() {
                 fontSize: '14px',
                 fontWeight: '700',
                 cursor: 'pointer',
-                whiteSpace: 'nowrap'
+                whiteSpace: 'nowrap',
+                boxShadow: '0 4px 12px rgba(2, 132, 199, 0.25)'
               }}
             >
               Lookup
@@ -1605,10 +1749,10 @@ export default function GateScannerApp() {
               top: 'calc(100% + 6px)',
               left: 0,
               right: 0,
-              backgroundColor: '#0f172a',
-              border: '1px solid #334155',
+              backgroundColor: isLight ? '#ffffff' : '#0f172a',
+              border: isLight ? '1px solid #e2e8f0' : '1px solid #334155',
               borderRadius: '12px',
-              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.8), 0 8px 10px -6px rgba(0,0,0,0.8)',
+              boxShadow: isLight ? '0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)' : '0 20px 25px -5px rgba(0,0,0,0.8), 0 8px 10px -6px rgba(0,0,0,0.8)',
               zIndex: 100,
               maxHeight: '340px',
               overflowY: 'auto'
@@ -1618,8 +1762,8 @@ export default function GateScannerApp() {
                 fontSize: '11px',
                 fontWeight: '700',
                 textTransform: 'uppercase',
-                color: '#64748b',
-                borderBottom: '1px solid #1e293b',
+                color: isLight ? '#64748b' : '#64748b',
+                borderBottom: isLight ? '1px solid #f1f5f9' : '1px solid #1e293b',
                 display: 'flex',
                 justifyContent: 'space-between'
               }}>
@@ -1638,11 +1782,11 @@ export default function GateScannerApp() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      borderBottom: '1px solid #1e293b',
+                      borderBottom: isLight ? '1px solid #f1f5f9' : '1px solid #1e293b',
                       cursor: 'pointer',
                       transition: 'background-color 0.15s ease'
                     }}
-                    onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1e293b'}
+                    onMouseEnter={e => e.currentTarget.style.backgroundColor = isLight ? '#f8fafc' : '#1e293b'}
                     onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -1650,13 +1794,13 @@ export default function GateScannerApp() {
                         width: '38px',
                         height: '38px',
                         borderRadius: '50%',
-                        backgroundColor: '#334155',
+                        backgroundColor: isLight ? '#e2e8f0' : '#334155',
                         overflow: 'hidden',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         flexShrink: 0,
-                        border: '1px solid #475569'
+                        border: isLight ? '1px solid #cbd5e1' : '1px solid #475569'
                       }}>
                         {avatarUrl ? (
                           <img
@@ -1674,11 +1818,11 @@ export default function GateScannerApp() {
                         )}
                       </div>
                       <div>
-                        <div style={{ fontSize: '14px', fontWeight: '700', color: '#fff' }}>
+                        <div style={{ fontSize: '14px', fontWeight: '700', color: isLight ? '#0f172a' : '#fff' }}>
                           {s.name}
                         </div>
-                        <div style={{ fontSize: '12px', color: '#94a3b8' }}>
-                          Reg: <span style={{ color: '#38bdf8' }}>{s.studentId}</span> • Class: {s.className || 'General'} • {s.boardingStatus}
+                        <div style={{ fontSize: '12px', color: isLight ? '#64748b' : '#94a3b8' }}>
+                          Reg: <span style={{ color: '#0284c7' }}>{s.studentId}</span> • Class: {s.className || 'General'} • {s.boardingStatus}
                         </div>
                       </div>
                     </div>
@@ -1689,7 +1833,7 @@ export default function GateScannerApp() {
                       fontSize: '11px',
                       fontWeight: '700',
                       backgroundColor: isPaid ? '#16a34a22' : '#dc262622',
-                      color: isPaid ? '#4ade80' : '#f87171',
+                      color: isPaid ? '#16a34a' : '#ef4444',
                       border: `1px solid ${isPaid ? '#16a34a55' : '#dc262655'}`
                     }}>
                       {isPaid ? 'Fee Compliant' : (s.balance > 0 ? `Arrears $${s.balance}` : 'Arrears')}
@@ -1704,11 +1848,12 @@ export default function GateScannerApp() {
         {/* Scan History Section (Offline / Online Audit Trail) */}
         <div style={{
           width: '100%',
-          backgroundColor: '#131b2e',
-          border: '1px solid #1e293b',
+          backgroundColor: isLight ? '#ffffff' : '#131b2e',
+          border: isLight ? '1px solid #e2e8f0' : '1px solid #1e293b',
           borderRadius: '16px',
           padding: '20px',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
+          boxShadow: isLight ? '0 10px 25px -5px rgba(0,0,0,0.05)' : 'none'
         }}>
           <div style={{
             display: 'flex',
@@ -1719,10 +1864,10 @@ export default function GateScannerApp() {
             gap: '10px'
           }}>
             <div>
-              <h3 style={{ fontSize: '16px', fontWeight: '800', margin: '0 0 4px', color: '#fff' }}>
+              <h3 style={{ fontSize: '16px', fontWeight: '800', margin: '0 0 4px', color: isLight ? '#0f172a' : '#fff' }}>
                 📋 Gate Scan History ({scanHistory.length})
               </h3>
-              <p style={{ fontSize: '12px', color: '#64748b', margin: 0 }}>
+              <p style={{ fontSize: '12px', color: isLight ? '#64748b' : '#94a3b8', margin: 0 }}>
                 {cachedStudentCount > 0 ? `Synced offline roster: ${cachedStudentCount} students active` : 'IndexedDB offline roster ready'}
               </p>
             </div>
@@ -1778,8 +1923,10 @@ export default function GateScannerApp() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      backgroundColor: '#0b1120',
-                      border: `1px solid ${isValid ? '#10b98133' : '#ef444433'}`,
+                      backgroundColor: isLight ? '#f8fafc' : '#0b1120',
+                      border: isLight 
+                        ? `1px solid ${isValid ? '#bbf7d0' : '#fecaca'}` 
+                        : `1px solid ${isValid ? '#10b98133' : '#ef444433'}`,
                       padding: '10px 14px',
                       borderRadius: '10px',
                       fontSize: '13px',
@@ -1794,10 +1941,10 @@ export default function GateScannerApp() {
                         borderRadius: '50%',
                         backgroundColor: isValid ? '#10b981' : '#ef4444'
                       }} />
-                      <span style={{ color: '#94a3b8', fontSize: '11px', fontFamily: 'monospace' }}>
+                      <span style={{ color: isLight ? '#64748b' : '#94a3b8', fontSize: '11px', fontFamily: 'monospace' }}>
                         {timeStr}
                       </span>
-                      <span style={{ fontWeight: '700', color: '#fff' }}>
+                      <span style={{ fontWeight: '700', color: isLight ? '#0f172a' : '#fff' }}>
                         {item.studentId || item.entityId}
                       </span>
                       {item.direction && (

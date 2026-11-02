@@ -3,9 +3,10 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useToast } from '../../../context/ToastContext';
 import api from '../../../lib/api';
+import axios from 'axios';
 import TabbedPage, { type TabItem } from '../../../components/portals/shared/TabbedPage';
 import EmptyState from '../../../components/shared/EmptyState';
-import { Pagination, usePagination, PaginatedTable } from '../../../components/shared';
+import { Pagination, usePagination, PaginatedTable, PaynowCheckoutModal, ReceiptModal } from '../../../components/shared';
 
 // ── TYPES ──
 
@@ -126,7 +127,7 @@ export default function ParentFees() {
   const currentChild = activeEntity || user?.linkedEntities?.[0];
   const { showToast } = useToast();
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
 
   const [data, setData] = useState<FeeSummaryData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -137,8 +138,6 @@ export default function ParentFees() {
   // Modals state
   const [showPayModal, setShowPayModal] = useState(false);
   const [payTargetAmount, setPayTargetAmount] = useState<string>('');
-  const [payMethod, setPayMethod] = useState<'paynow' | 'ecocash' | 'bank_transfer'>('paynow');
-  const [isProcessingPay, setIsProcessingPay] = useState(false);
 
   const [showZigModal, setShowZigModal] = useState(false);
   const [zigRefNumber, setZigRefNumber] = useState('');
@@ -170,7 +169,7 @@ export default function ParentFees() {
     try {
       const res = await api.get(`/api/fees/parent-summary?studentId=${studentId}`);
       setData(res.data);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Error fetching parent fees summary:', err);
       showToast('Unable to load fees summary. Please check your connection.', 'error');
     } finally {
@@ -189,25 +188,6 @@ export default function ParentFees() {
     setShowPayModal(true);
   };
 
-  const handleProcessPayment = () => {
-    const val = parseFloat(payTargetAmount);
-    if (isNaN(val) || val <= 0) {
-      return showToast('Please enter a valid payment amount', 'warning');
-    }
-    setIsProcessingPay(true);
-    setTimeout(() => {
-      setIsProcessingPay(false);
-      setShowPayModal(false);
-      showToast(
-        payMethod === 'paynow'
-          ? 'Connecting to Paynow Secure Gateway...'
-          : payMethod === 'ecocash'
-          ? 'EcoCash prompt sent to your mobile phone.'
-          : 'Bank transfer details confirmed. Upload proof once completed.',
-        'success'
-      );
-    }, 1200);
-  };
 
   const handleSubmitZigTransfer = (e: React.FormEvent) => {
     e.preventDefault();
@@ -268,8 +248,9 @@ export default function ParentFees() {
       setProofRef('');
       setProofNotes('');
       fetchSummary();
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Failed to upload proof of payment', 'error');
+    } catch (err) {
+      const errorMsg = axios.isAxiosError(err) ? err.response?.data?.error : undefined;
+      showToast(errorMsg || 'Failed to upload proof of payment', 'error');
     } finally {
       setIsUploadingProof(false);
     }
@@ -294,8 +275,9 @@ export default function ParentFees() {
       setPlanDueDate('');
       setPlanNotes('');
       fetchSummary();
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Failed to submit payment plan request', 'error');
+    } catch (err) {
+      const errorMsg = axios.isAxiosError(err) ? err.response?.data?.error : undefined;
+      showToast(errorMsg || 'Failed to submit payment plan request', 'error');
     } finally {
       setIsSubmittingPlan(false);
     }
@@ -1230,91 +1212,22 @@ export default function ParentFees() {
         }
       />
 
-      {/* ── MODAL 1: PAY NOW (USD) ── */}
-      {showPayModal && (
-        <div className="portal-modal-overlay">
-          <div className="portal-modal-card" style={{ maxWidth: 480 }}>
-            <div className="portal-modal-header">
-              <h2><i className="fas fa-credit-card" style={{ marginRight: 8, color: '#2563eb' }}></i>Secure Fee Payment</h2>
-              <button onClick={() => setShowPayModal(false)} className="portal-btn-ghost">&times;</button>
-            </div>
-            <div className="portal-modal-body">
-              <div className="portal-form-group">
-                <label>Amount to Pay ({data?.currency || 'USD'})</label>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  className="portal-input"
-                  value={payTargetAmount}
-                  onChange={e => setPayTargetAmount(e.target.value)}
-                  placeholder="0.00"
-                />
-              </div>
-
-              <div className="portal-form-group">
-                <label>Select Payment Gateway</label>
-                <div style={{ display: 'grid', gap: 10 }}>
-                  <label
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      padding: 12,
-                      borderRadius: 8,
-                      border: `2px solid ${payMethod === 'paynow' ? '#2563eb' : '#e2e8f0'}`,
-                      background: payMethod === 'paynow' ? '#eff6ff' : '#fff',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <input
-                      type="radio"
-                      name="payMethod"
-                      checked={payMethod === 'paynow'}
-                      onChange={() => setPayMethod('paynow')}
-                    />
-                    <div>
-                      <div style={{ fontWeight: 700 }}>Paynow (Visa / Mastercard / Zimswitch)</div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Instant card and online bank settlement</div>
-                    </div>
-                  </label>
-
-                  <label
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      padding: 12,
-                      borderRadius: 8,
-                      border: `2px solid ${payMethod === 'ecocash' ? '#2563eb' : '#e2e8f0'}`,
-                      background: payMethod === 'ecocash' ? '#eff6ff' : '#fff',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <input
-                      type="radio"
-                      name="payMethod"
-                      checked={payMethod === 'ecocash'}
-                      onChange={() => setPayMethod('ecocash')}
-                    />
-                    <div>
-                      <div style={{ fontWeight: 700 }}>EcoCash / Mobile Money</div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Prompt sent directly to your phone</div>
-                    </div>
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div className="portal-modal-footer">
-              <button className="portal-btn-secondary" onClick={() => setShowPayModal(false)}>
-                Cancel
-              </button>
-              <button className="portal-btn-primary" onClick={handleProcessPayment} disabled={isProcessingPay}>
-                {isProcessingPay ? 'Connecting Gateway...' : `Proceed to Pay $${payTargetAmount}`}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── MODAL 1: PAY NOW (PAYNOW GATEWAY) ── */}
+      <PaynowCheckoutModal
+        isOpen={showPayModal}
+        onClose={() => setShowPayModal(false)}
+        studentId={currentChild?.id || ''}
+        studentName={currentChild?.name}
+        purpose="FEES"
+        defaultAmount={parseFloat(payTargetAmount) || data?.totals.totalBalanceDue || 50}
+        balanceDue={data?.totals.totalBalanceDue}
+        currency={data?.currency || 'USD'}
+        userPhone={user?.phone}
+        userEmail={user?.email}
+        onSuccess={() => {
+          fetchSummary();
+        }}
+      />
 
       {/* ── MODAL 2: PAY IN ZIG ── */}
       {showZigModal && (
@@ -1540,53 +1453,24 @@ export default function ParentFees() {
 
       {/* ── MODAL 5: RECEIPT VIEWER ── */}
       {selectedReceipt && (
-        <div className="portal-modal-overlay">
-          <div className="portal-modal-card" style={{ maxWidth: 520 }}>
-            <div className="portal-modal-header">
-              <h2>Official Receipt: {selectedReceipt.receiptNumber}</h2>
-              <button onClick={() => setSelectedReceipt(null)} className="portal-btn-ghost">&times;</button>
-            </div>
-            <div className="portal-modal-body" style={{ background: '#f8fafc', padding: 24, borderRadius: 12 }}>
-              <div style={{ textAlign: 'center', marginBottom: 20 }}>
-                <div style={{ fontSize: '1.25rem', fontWeight: 800 }}>{data?.student.schoolName}</div>
-                <div style={{ fontSize: '0.85rem', color: '#64748b' }}>OFFICIAL PAYMENT RECEIPT</div>
-                <div style={{ display: 'inline-block', marginTop: 8, padding: '4px 12px', background: '#dcfce7', color: '#15803d', borderRadius: 20, fontSize: '0.8rem', fontWeight: 700 }}>
-                  <i className="fas fa-check-circle"></i> {selectedReceipt.status}
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: '0.9rem', marginBottom: 20 }}>
-                <div>
-                  <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Receipt Number</span>
-                  <div style={{ fontWeight: 700 }}>{selectedReceipt.receiptNumber}</div>
-                </div>
-                <div>
-                  <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Date Received</span>
-                  <div style={{ fontWeight: 700 }}>{new Date(selectedReceipt.date).toLocaleDateString()}</div>
-                </div>
-                <div>
-                  <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Student Name</span>
-                  <div style={{ fontWeight: 700 }}>{data?.student.name}</div>
-                </div>
-                <div>
-                  <span style={{ color: '#64748b', fontSize: '0.8rem' }}>Payment Method</span>
-                  <div style={{ fontWeight: 700 }}>{selectedReceipt.paymentMode}</div>
-                </div>
-              </div>
-
-              <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 8, padding: 16, textAlign: 'center' }}>
-                <div style={{ fontSize: '0.85rem', color: '#64748b' }}>Amount Paid</div>
-                <div style={{ fontSize: '2rem', fontWeight: 900, color: '#16a34a', marginTop: 4 }}>
-                  {data?.currencySymbol}{selectedReceipt.amount.toFixed(2)}
-                </div>
-              </div>
-            </div>
-            <div className="portal-modal-footer">
-              <button className="portal-btn-secondary" onClick={() => setSelectedReceipt(null)}>Close</button>
-              <button className="portal-btn-primary" onClick={() => window.print()}><i className="fas fa-print"></i> Print Receipt</button>
-            </div>
-          </div>
-        </div>
+        <ReceiptModal
+          isOpen={!!selectedReceipt}
+          onClose={() => setSelectedReceipt(null)}
+          data={{
+            receiptNo: selectedReceipt.receiptNumber,
+            date: selectedReceipt.date,
+            studentName: data?.student.name || 'Student',
+            className: data?.student.className,
+            paymentMode: selectedReceipt.paymentMode,
+            amountPaid: selectedReceipt.amount,
+            currencySymbol: data?.currencySymbol || '$',
+            status: selectedReceipt.status,
+            feeItems: [{
+              desc: selectedReceipt.description || 'School Tuition Fee Payment',
+              amount: selectedReceipt.amount
+            }]
+          }}
+        />
       )}
 
       {/* ── MODAL 6: APPLY FOR PAYMENT PLAN ── */}

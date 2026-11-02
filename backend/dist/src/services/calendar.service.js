@@ -25,4 +25,3 @@ async function syncModuleEventToCalendar(eventData) {
         });
     }
 }
-//# sourceMappingURL=calendar.service.js.map

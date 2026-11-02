@@ -1,19 +1,48 @@
 // Public Careers Portal Component
-import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useState, useEffect, useCallback, type ChangeEvent, type FormEvent } from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 import api from '../lib/api';
 import { useToast } from '../context/ToastContext';
 import { SkeletonLoader } from '../components/shared';
 
+interface Department {
+  id?: string;
+  name?: string;
+}
+
+interface Vacancy {
+  id: string;
+  jobTitle: string;
+  jobType?: string;
+  department?: Department | null;
+  shortDescription?: string;
+  location?: string;
+  workExperience?: string;
+  discloseSalary?: boolean;
+  currency?: string;
+  rate?: number | string;
+  showPaymentMethodBy?: string;
+  endDate: string;
+  requiredFields?: string;
+  status?: string;
+}
+
+interface ApplicationSuccessData {
+  success?: boolean;
+  applicationId: string;
+  applicantName: string;
+}
+
 export default function Careers() {
   const { schoolCode } = useParams<{ schoolCode: string }>();
   const { showToast } = useToast();
-  const [vacancies, setVacancies] = useState<any[]>([]);
+  const [vacancies, setVacancies] = useState<Vacancy[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedJob, setSelectedJob] = useState<any>(null);
+  const [selectedJob, setSelectedJob] = useState<Vacancy | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [successData, setSuccessData] = useState<any>(null);
+  const [successData, setSuccessData] = useState<ApplicationSuccessData | null>(null);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -37,14 +66,10 @@ export default function Careers() {
     resume: null
   });
 
-  useEffect(() => {
-    fetchVacancies();
-  }, [schoolCode]);
-
-  const fetchVacancies = async () => {
+  const fetchVacancies = useCallback(async () => {
     setLoading(true);
     try {
-      const { data } = await api.get(`/api/public/vacancies?schoolCode=${schoolCode}`);
+      const { data } = await api.get<Vacancy[]>(`/api/public/vacancies?schoolCode=${schoolCode}`);
       setVacancies(data);
     } catch (err) {
       console.error('Failed to fetch vacancies:', err);
@@ -52,14 +77,18 @@ export default function Careers() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [schoolCode, showToast]);
 
-  const handleInputChange = (e: any) => {
+  useEffect(() => {
+    fetchVacancies();
+  }, [fetchVacancies]);
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e: any, key: 'photo' | 'resume') => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>, key: 'photo' | 'resume') => {
     const file = e.target.files?.[0];
     if (file) {
       const MAX_UPLOAD_SIZE = 20 * 1024 * 1024 * 1024; // 20GB limit
@@ -92,7 +121,7 @@ export default function Careers() {
     }
   };
 
-  const openApplyModal = (job: any) => {
+  const openApplyModal = (job: Vacancy) => {
     setSelectedJob(job);
     setFormData({
       applicantName: '',
@@ -111,8 +140,9 @@ export default function Careers() {
     setIsModalOpen(true);
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!selectedJob) return;
     setSubmitting(true);
 
     try {
@@ -160,14 +190,18 @@ export default function Careers() {
         resumeUrl
       };
 
-      const { data } = await api.post('/api/public/applications', payload);
+      const { data } = await api.post<ApplicationSuccessData>('/api/public/applications', payload);
 
       setSuccessData(data);
       showToast('Application submitted successfully!', 'success');
       fetchVacancies(); // Refresh list in case status changes
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      showToast(err.response?.data?.error || 'Failed to submit application.', 'error');
+      let errorMsg = 'Failed to submit application.';
+      if (axios.isAxiosError(err) && err.response?.data?.error) {
+        errorMsg = err.response.data.error;
+      }
+      showToast(errorMsg, 'error');
     } finally {
       setSubmitting(false);
     }
@@ -348,6 +382,7 @@ export default function Careers() {
           right: 0;
           bottom: 0;
           background: rgba(15, 23, 42, 0.6);
+          -webkit-backdrop-filter: blur(8px);
           backdrop-filter: blur(8px);
           display: flex;
           align-items: center;

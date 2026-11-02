@@ -50,6 +50,7 @@ const PORTAL_ROUTE_REWRITES: Record<string, Record<string, string>> = {
     '/admin/profile': '/librarian/profile'
   },
   ancillary: {
+    '/admin/gate-dashboard': '/ancillary/gate-dashboard',
     '/admin/leave': '/ancillary/leave',
     '/admin/awards': '/ancillary/awards',
     '/admin/messages': '/ancillary/messages',
@@ -208,10 +209,8 @@ function generateStudentPortalNavigation(user: UserContext | null | undefined, c
     user?.school?.modules;
 
   const userSecRoles = user?.secondaryRoles || [];
-  const isStudentLibrarian = userSecRoles.includes('Student Librarian');
   const isClassMonitor = userSecRoles.includes('Class Monitor');
   const isSportsCaptain = userSecRoles.includes('Sports Captain');
-  const isHouseCaptain = userSecRoles.includes('House Captain');
   const isChurchPrefect = userSecRoles.includes('Church Prefect');
 
   const isLeader = !!user?.isLeader;
@@ -364,7 +363,7 @@ export function generatePortalNavigation(
       if (stored) {
         effectiveUser = JSON.parse(stored);
       }
-    } catch (e) {
+    } catch {
       // ignore
     }
   }
@@ -422,10 +421,26 @@ export function generatePortalNavigation(
 
     // Secondary roles check
     if (page.requiredSecondaryRoles && page.requiredSecondaryRoles.length > 0) {
-      const userSecRoles = effectiveUser?.secondaryRoles || [];
-      const hasSecRole = page.requiredSecondaryRoles.some(r => userSecRoles.includes(r));
-      if (!hasSecRole) {
-        return false;
+      const isSuperOrAdmin = effectiveUser?.role === 'SUPER_ADMIN' || effectiveUser?.role === 'SCHOOL_ADMIN';
+      if (!isSuperOrAdmin) {
+        const normalize = (s: string) => (s || '').toLowerCase().replace(/[\s_-]+/g, '');
+        const pageSecRoles = page.requiredSecondaryRoles.map(normalize);
+        const userSecRoles = (effectiveUser?.secondaryRoles || []).map(normalize);
+        const metaSecRoles = Array.isArray(effectiveUser?.metadata?.secondaryRoles)
+          ? effectiveUser.metadata.secondaryRoles.map(normalize)
+          : [];
+        const designation = normalize(effectiveUser?.metadata?.designation || effectiveUser?.metadata?.jobTitle || '');
+        const deptName = normalize((effectiveUser as any)?.dept?.name || '');
+        
+        const hasSecRole = pageSecRoles.some(r => 
+          userSecRoles.includes(r) || 
+          metaSecRoles.includes(r) || 
+          (designation && (designation.includes(r) || r.includes(designation))) ||
+          (deptName && (deptName.includes(r) || r.includes(deptName)))
+        );
+        if (!hasSecRole) {
+          return false;
+        }
       }
     }
 

@@ -90,4 +90,3 @@ const enforceTenantIsolation = (req, res, next) => {
     next();
 };
 exports.enforceTenantIsolation = enforceTenantIsolation;
-//# sourceMappingURL=tenant.js.map

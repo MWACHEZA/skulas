@@ -41,4 +41,3 @@ exports.UniformSupplierPaymentSchema = zod_1.z.object({
     paymentMode: zod_1.z.string().nullable().optional(),
     reference: zod_1.z.string().nullable().optional(),
 });
-//# sourceMappingURL=uniforms.schema.js.map

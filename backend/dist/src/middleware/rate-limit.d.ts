@@ -1,9 +1,14 @@
 /**
- * Global API Limiter: General protection for all endpoints
+ * Global API Limiter: General protection for API endpoints.
+ * Skips static media/avatar fetches and health checks so image loading never exhausts API quota.
  */
 export declare const globalLimiter: import("express-rate-limit").RateLimitRequestHandler;
 /**
- * Auth Limiter: Protects login and registration
+ * Mutation Limiter: Prevents rapid duplicate POST/PUT/PATCH/DELETE submissions
+ */
+export declare const mutationLimiter: import("express-rate-limit").RateLimitRequestHandler;
+/**
+ * Auth Limiter: Protects login and registration against brute-force attacks
  */
 export declare const authLimiter: import("express-rate-limit").RateLimitRequestHandler;
 /**

@@ -233,4 +233,3 @@ router.post('/consumption', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR'
     }
 });
 exports.default = router;
-//# sourceMappingURL=inventory.js.map

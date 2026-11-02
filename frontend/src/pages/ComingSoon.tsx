@@ -11,7 +11,7 @@ export default function ComingSoon() {
         <div className="logo cursor-pointer" onClick={() => navigate('/')}>
           ACAD<span>EX</span>
         </div>
-        <div className="cta">
+        <div className="landing-nav-actions">
           <Link to="/" className="btn-premium btn-ghost-premium">Back to Home</Link>
         </div>
       </nav>

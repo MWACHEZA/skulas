@@ -12,4 +12,3 @@ async function checkSchemas() {
     }
 }
 checkSchemas().finally(() => prisma.$disconnect());
-//# sourceMappingURL=check-schemas.js.map

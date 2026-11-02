@@ -374,7 +374,8 @@ nav ul li a.active::after {
 }
 
 /* Call to Action */
-.cta {
+section.cta,
+.website-cta {
     padding: 80px 0;
     background: linear-gradient(rgba(var(--school-primary-rgb, 0, 86, 179), 0.9), rgba(var(--school-primary-rgb, 0, 86, 179), 0.9)), url('../images/cta-bg.jpg');
     background-size: cover;
@@ -396,12 +397,14 @@ nav ul li a.active::after {
     margin-right: auto;
 }
 
-.cta .btn {
+section.cta .btn,
+.website-cta .btn {
     background-color: #fff;
     color: var(--school-primary, #0056b3);
 }
 
-.cta .btn:hover {
+section.cta .btn:hover,
+.website-cta .btn:hover {
     background-color: #f1f1f1;
 }
 
@@ -1115,6 +1118,7 @@ footer {
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.6);
+            -webkit-backdrop-filter: blur(8px);
             backdrop-filter: blur(8px);
             align-items: center;
             justify-content: center;

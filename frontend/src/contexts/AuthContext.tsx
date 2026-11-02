@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 
 export interface LinkedEntity {
   id: string; // studentId or schoolCode
@@ -8,6 +8,54 @@ export interface LinkedEntity {
   schoolLogo?: string;
   roleSpecificId?: string; // vendorId for suppliers
   status: 'PENDING' | 'APPROVED';
+}
+
+export interface SchoolBranding {
+  primaryColor?: string;
+  accentColor?: string;
+  logo?: string;
+}
+
+export interface AuthSchool {
+  id?: string;
+  name?: string;
+  code?: string;
+  type?: string;
+  address?: string;
+  phone?: string;
+  email?: string;
+  website?: string;
+  logo?: string;
+  branding?: SchoolBranding | null;
+  plan?: {
+    id?: string;
+    name?: string;
+    [key: string]: unknown;
+  } | null;
+  modules?: Record<string, boolean>;
+  settings?: {
+    isOnboarded?: boolean;
+    [key: string]: unknown;
+  } | null;
+  subscription?: {
+    modules?: Record<string, boolean>;
+    [key: string]: unknown;
+  } | null;
+  [key: string]: unknown;
+}
+
+export interface AuthSubject {
+  id?: string;
+  name?: string;
+  code?: string | null;
+  [key: string]: unknown;
+}
+
+export interface AuthUserMetadata {
+  secondaryRoles?: string[];
+  designation?: string;
+  jobTitle?: string;
+  [key: string]: unknown;
 }
 
 interface AuthUser {
@@ -20,14 +68,10 @@ interface AuthUser {
   avatar?: string;
   staffId?: string;
   schoolId?: string;
-  school?: any;
+  school?: AuthSchool | null;
   schoolName?: string;
   schoolCode?: string;
-  schoolBranding?: {
-    primaryColor?: string;
-    accentColor?: string;
-    logo?: string;
-  };
+  schoolBranding?: SchoolBranding;
   schoolPlan?: string;   // e.g. 'Starter' | 'Professional' | 'Enterprise'
   schoolType?: string;   // e.g. 'Primary', 'Secondary', 'Nursing School'
   linkedEntities?: LinkedEntity[];
@@ -42,7 +86,7 @@ interface AuthUser {
     id: string;
     subjects?: {
       subjectId: string;
-      subject?: any;
+      subject?: AuthSubject | null;
     }[];
   };
   student?: {
@@ -58,7 +102,34 @@ interface AuthUser {
   isImpersonated?: boolean;
   impersonatorId?: string;
   isOnboarded?: boolean;
-  metadata?: any;
+  metadata?: AuthUserMetadata | null;
+  modules?: Record<string, boolean>;
+  isLeader?: boolean;
+  leadershipAssignment?: LeadershipAssignment | null;
+  [key: string]: unknown;
+}
+
+export type { AuthUser };
+
+export interface LeadershipAssignment {
+  id?: string;
+  leadershipRole?: string;
+  title?: string;
+  role?: string;
+  schoolId?: string;
+  studentId?: string;
+  hostelId?: string | null;
+  hostel?: {
+    id: string;
+    name: string;
+  } | null;
+  term?: string;
+  academicYear?: string;
+  isActive?: boolean;
+  assignedById?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  [key: string]: unknown;
 }
 
 interface AuthContextType {
@@ -74,13 +145,19 @@ interface AuthContextType {
   refreshUser: () => Promise<void>;
   updateUser: (fields: Partial<AuthUser>) => void;
   isLeader: boolean;
-  leadershipAssignment: any | null;
+  leadershipAssignment: LeadershipAssignment | null;
   refreshLeadership: () => Promise<void>;
 }
 
+type GlobalWithAuthContext = typeof globalThis & {
+  __ACADEX_AUTH_CONTEXT__?: React.Context<AuthContextType | null>;
+};
+
+const globalWithAuth = globalThis as GlobalWithAuthContext;
+
 const AuthContext: React.Context<AuthContextType | null> =
-  (globalThis as any).__ACADEX_AUTH_CONTEXT__ ||
-  ((globalThis as any).__ACADEX_AUTH_CONTEXT__ = createContext<AuthContextType | null>(null));
+  globalWithAuth.__ACADEX_AUTH_CONTEXT__ ||
+  (globalWithAuth.__ACADEX_AUTH_CONTEXT__ = createContext<AuthContextType | null>(null));
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(localStorage.getItem('acadex_token'));
@@ -90,12 +167,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const [isLeader, setIsLeader] = useState<boolean>(false);
-  const [leadershipAssignment, setLeadershipAssignment] = useState<any | null>(null);
+  const [leadershipAssignment, setLeadershipAssignment] = useState<LeadershipAssignment | null>(null);
 
   const [activeEntity, setActiveEntityState] = useState<LinkedEntity | null>(() => {
     const stored = localStorage.getItem('acadex_active_entity');
     if (stored) {
-      try { return JSON.parse(stored); } catch (e) {}
+      try {
+        return JSON.parse(stored);
+      } catch {
+        // Ignore JSON parse error
+      }
     }
     const storedUser = localStorage.getItem('acadex_user');
     if (storedUser) {
@@ -104,7 +185,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (u.linkedEntities && u.linkedEntities.length > 0) {
           return u.linkedEntities[0];
         }
-      } catch (e) {}
+      } catch {
+        // Ignore JSON parse error
+      }
     }
     return null;
   });
@@ -129,6 +212,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [user]);
 
+  const logout = useCallback(async () => {
+    if (token) {
+      try {
+        const { default: api } = await import('../lib/api');
+        await api.post('/api/auth/logout');
+      } catch (err) {
+        console.error('Failed to notify server of logout', err);
+      }
+    }
+    localStorage.removeItem('acadex_token');
+    localStorage.removeItem('acadex_user');
+    localStorage.removeItem('acadex_active_entity');
+    setToken(null);
+    setUser(null);
+    setActiveEntityState(null);
+  }, [token]);
+
   // Session Inactivity Idle Timeout Listener (Applies to all users/portals)
   useEffect(() => {
     if (!user || !token) return;
@@ -136,8 +236,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let idleTimeLimit = 0;       // seconds
     let warningTime = 0;         // seconds
 
-    let idleTimer: any;
-    let warningTimer: any;
+    let idleTimer: ReturnType<typeof setTimeout> | undefined;
+    let warningTimer: ReturnType<typeof setInterval> | undefined;
     let warningModal: HTMLDivElement | null = null;
 
     const fetchIdleSettings = async () => {
@@ -320,7 +420,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         warningModal = null;
       }
     };
-  }, [user, token]);
+  }, [user, token, logout]);
 
   const setActiveEntity = (entity: LinkedEntity | null) => {
     if (entity) {
@@ -358,22 +458,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const logout = async () => {
-    if (token) {
-      try {
-        const { default: api } = await import('../lib/api');
-        await api.post('/api/auth/logout');
-      } catch (err) {
-        console.error('Failed to notify server of logout', err);
-      }
-    }
-    localStorage.removeItem('acadex_token');
-    localStorage.removeItem('acadex_user');
-    localStorage.removeItem('acadex_active_entity');
-    setToken(null);
-    setUser(null);
-    setActiveEntityState(null);
-  };
 
   const hasRole = (...roles: string[]) => {
     return user ? roles.includes(user.role) : false;
@@ -411,7 +495,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const refreshLeadership = async () => {
+  const refreshLeadership = useCallback(async () => {
     if (!token || user?.role !== 'STUDENT') {
       setIsLeader(false);
       setLeadershipAssignment(null);
@@ -432,7 +516,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLeader(false);
       setLeadershipAssignment(null);
     }
-  };
+  }, [token, user?.role]);
 
   useEffect(() => {
     if (user?.role === 'STUDENT' && token) {
@@ -441,7 +525,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLeader(false);
       setLeadershipAssignment(null);
     }
-  }, [user?.id, user?.role, token]);
+  }, [user?.id, user?.role, token, refreshLeadership]);
 
   return (
     <AuthContext.Provider value={{ 
@@ -465,6 +549,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) {

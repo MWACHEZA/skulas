@@ -34,4 +34,3 @@ router.get('/my', auth_1.requireAuth, async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=payslips.js.map

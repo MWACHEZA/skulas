@@ -320,6 +320,16 @@ export default function DashboardLayout({
     }
   };
 
+  const [clockInSnoozed, setClockInSnoozed] = useState<boolean>(() => {
+    try {
+      const snoozedUntil = sessionStorage.getItem('clock_in_snoozed_until');
+      return snoozedUntil ? Date.now() < Number(snoozedUntil) : false;
+    } catch {
+      return false;
+    }
+  });
+  const [attendanceFetchError, setAttendanceFetchError] = useState(false);
+
   const fetchTodayAttendance = useCallback(async () => {
     if (!isStaffUser) {
       setCheckingAttendance(false);
@@ -327,16 +337,24 @@ export default function DashboardLayout({
     }
     try {
       setCheckingAttendance(true);
+      setAttendanceFetchError(false);
       const { data } = await api.get('/api/staff-attendance/today');
       setTodayAttendance(data || null);
     } catch (error) {
       console.error('Failed to fetch today attendance:', error);
+      setAttendanceFetchError(true);
     } finally {
       setCheckingAttendance(false);
     }
   }, [isStaffUser]);
 
-  const requiresMandatoryClockIn = Boolean(isStaffUser && !checkingAttendance && (!todayAttendance || !todayAttendance.timeIn));
+  const requiresMandatoryClockIn = Boolean(
+    isStaffUser && 
+    !checkingAttendance && 
+    !attendanceFetchError &&
+    !clockInSnoozed && 
+    (!todayAttendance || !todayAttendance.timeIn)
+  );
 
   const [reflection, setReflection] = useState<SpiritualReflection | null>(null);
   const [dismissedReflectionId, setDismissedReflectionId] = useState<string | null>(() => 
@@ -840,6 +858,12 @@ export default function DashboardLayout({
         <ClockInModal 
           action="IN"
           isMandatory={true}
+          onClose={() => {
+            try {
+              sessionStorage.setItem('clock_in_snoozed_until', String(Date.now() + 15 * 60 * 1000));
+            } catch {}
+            setClockInSnoozed(true);
+          }}
           onSuccess={fetchTodayAttendance}
         />
       )}

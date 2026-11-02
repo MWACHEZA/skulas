@@ -228,4 +228,3 @@ router.delete('/complaints/:id', async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=reception.js.map

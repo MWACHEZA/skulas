@@ -1126,6 +1126,8 @@ router.post('/products', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), asy
 
     if (!name) return res.status(400).json({ error: 'Product name is required' });
 
+    const finalBarcode = (barcode && String(barcode).trim()) || `UNI-${Math.floor(100000 + Math.random() * 900000)}`;
+
     const product = await prisma.$transaction(async (tx) => {
       const created = await tx.uniformProduct.create({
         data: {
@@ -1139,7 +1141,7 @@ router.post('/products', requireAuth, requireRole('BURSAR', 'SCHOOL_ADMIN'), asy
           sellingPrice: Number(sellingPrice) || 0,
           stockQty: Number(stockQty) || 0,
           minStockAlert: Number(minStockAlert) || 5,
-          barcode: barcode || null
+          barcode: finalBarcode
         }
       });
 
@@ -1558,9 +1560,10 @@ router.post('/issuances/:id/return', requireAuth, requireRole('BURSAR', 'SCHOOL_
         const journal = await tx.journalEntry.findFirst({
           where: {
             schoolId,
-            sourceModule: 'invoicing',
-            reference: issuance.invoice.id,
-            isReversed: false
+            isReversed: false,
+            ...(issuance.invoice.journalEntryId
+              ? { id: issuance.invoice.journalEntryId }
+              : { sourceType: 'invoice', sourceId: issuance.invoice.id })
           }
         });
 

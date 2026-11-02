@@ -28,4 +28,3 @@ async function deepAudit() {
     console.log(`Users with role STUDENT but NO Student record: ${studentUsers.filter(u => !u.student).length}`);
 }
 deepAudit().catch(console.error).finally(() => prisma.$disconnect());
-//# sourceMappingURL=deep-audit.js.map

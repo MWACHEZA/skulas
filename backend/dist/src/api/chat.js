@@ -33,4 +33,3 @@ router.post('/santa', tenant_1.tenantContext, async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=chat.js.map

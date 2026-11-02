@@ -662,13 +662,17 @@ export default function TeacherLeave() {
     );
   };
 
+  const isTeacher = user?.role === 'TEACHER';
+
   const CoverArrangementsTab = () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div style={{ background: '#fff', padding: '16px 20px', borderRadius: 10, border: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#1e293b' }}>Staff Cover & Relief Arrangements</h3>
           <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '0.85rem' }}>
-            Classroom coverage scheduled during approved staff leaves, ensuring continuous learning without teacherless periods.
+            {isTeacher
+              ? 'Classroom coverage scheduled during approved staff leaves, ensuring continuous learning without teacherless periods.'
+              : 'Duty coverage scheduled during approved staff leaves, ensuring continuous operations without service disruption.'}
           </p>
         </div>
         <span className="portal-badge info" style={{ fontWeight: 700 }}>Active Term Rotations</span>
@@ -678,13 +682,13 @@ export default function TeacherLeave() {
         {/* Coverage for My Absences */}
         <div className="portal-card" style={{ padding: 20, background: '#fff', borderRadius: 10, border: '1px solid #e2e8f0' }}>
           <h4 style={{ margin: '0 0 12px', fontSize: '1rem', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <i className="fas fa-user-shield" style={{ color: '#0284c7' }} /> Cover For My Classes (When on Leave)
+            <i className="fas fa-user-shield" style={{ color: '#0284c7' }} /> {isTeacher ? 'Cover For My Classes (When on Leave)' : 'Cover For My Duties (When on Leave)'}
           </h4>
           <table className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
             <thead>
               <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
                 <th style={{ padding: 10 }}>Leave Date</th>
-                <th style={{ padding: 10 }}>Assigned Cover Teacher</th>
+                <th style={{ padding: 10 }}>{isTeacher ? 'Assigned Cover Teacher' : 'Assigned Relief Staff'}</th>
                 <th style={{ padding: 10 }}>Status</th>
               </tr>
             </thead>
@@ -703,7 +707,7 @@ export default function TeacherLeave() {
               {myLeaves.filter(l => l.coverTeacherId).length === 0 && (
                 <tr>
                   <td colSpan={3} style={{ padding: 20, textAlign: 'center', color: '#94a3b8' }}>
-                    No relief cover teachers assigned to current requests.
+                    {isTeacher ? 'No relief cover teachers assigned to current requests.' : 'No relief cover staff assigned to current requests.'}
                   </td>
                 </tr>
               )}
@@ -711,10 +715,10 @@ export default function TeacherLeave() {
           </table>
         </div>
 
-        {/* Available Cover Teachers */}
+        {/* Available Cover Teachers / Staff */}
         <div className="portal-card" style={{ padding: 20, background: '#fff', borderRadius: 10, border: '1px solid #e2e8f0' }}>
           <h4 style={{ margin: '0 0 12px', fontSize: '1rem', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <i className="fas fa-users" style={{ color: '#15803d' }} /> Available Department Relief Teachers
+            <i className="fas fa-users" style={{ color: '#15803d' }} /> {isTeacher ? 'Available Department Relief Teachers' : 'Available Department Relief Staff'}
           </h4>
           <div style={{ maxHeight: 220, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
             {coverSuggestions.map(c => (
@@ -859,14 +863,14 @@ export default function TeacherLeave() {
               {/* Cover Teacher / Relief Field */}
               <div style={{ marginBottom: 16 }}>
                 <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: 6 }}>
-                  Relief / Cover Teacher (From Timetable Suggestions)
+                  {isTeacher ? 'Relief / Cover Teacher (From Timetable Suggestions)' : 'Relief / Cover Staff (From Same Role Group)'}
                 </label>
                 <select
                   value={leaveForm.coverTeacherId}
                   onChange={e => setLeaveForm({ ...leaveForm, coverTeacherId: e.target.value })}
                   style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: '0.9rem' }}
                 >
-                  <option value="">-- Select Cover Teacher (Optional) --</option>
+                  <option value="">{isTeacher ? '-- Select Cover Teacher (Optional) --' : '-- Select Relief Staff (Optional) --'}</option>
                   {coverSuggestions.map(c => (
                     <option key={c.userId} value={c.userId}>
                       {c.name} ({c.department}) — {c.isAvailable ? 'Available' : 'Busy / On Leave'}
@@ -878,11 +882,11 @@ export default function TeacherLeave() {
               {/* Classes / Duties Affected */}
               <div style={{ marginBottom: 16 }}>
                 <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#334155', marginBottom: 6 }}>
-                  Classes & Duties Affected
+                  {isTeacher ? 'Classes & Duties Affected' : 'Duties & Routes/Shifts Affected'}
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Form 3A Maths, Period 2; Form 4 Science Lab; Boarding Hostel Inspection"
+                  placeholder={isTeacher ? "e.g. Form 3A Maths, Period 2; Form 4 Science Lab; Boarding Hostel Inspection" : "e.g. Morning Bus Route A, Fleet Maintenance Run, Scheduled Shift"}
                   value={leaveForm.dutiesAffected}
                   onChange={e => setLeaveForm({ ...leaveForm, dutiesAffected: e.target.value })}
                   style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: '0.9rem' }}

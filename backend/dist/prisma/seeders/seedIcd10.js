@@ -9818,4 +9818,3 @@ if (require.main === module) {
         await prisma.$disconnect();
     });
 }
-//# sourceMappingURL=seedIcd10.js.map

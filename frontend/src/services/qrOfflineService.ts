@@ -12,6 +12,7 @@ export interface CachedStudent {
 
 export interface CachedTenantKey {
   key: string; // 'current'
+  schoolId?: string;
   schoolCode: string;
   publicKey: string;
   algorithm: string;
@@ -32,7 +33,23 @@ export interface OfflineScanLog {
   scannedAt: string;
   direction: 'IN' | 'OUT';
   synced: boolean;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
+}
+
+export interface ParsedQrPayload {
+  raw: string;
+  dataToSign: string;
+  version: string;
+  type: string;
+  schoolCode: string;
+  schoolId?: string;
+  entityId: string;
+  extra?: string;
+  expiresAt?: string;
+  keyId?: string;
+  signature: string;
+  isExpired: boolean;
+  isLegacy: boolean;
 }
 
 export interface OfflineVerifyResult {
@@ -118,6 +135,7 @@ class QrOfflineService {
       const store = tx.objectStore('tenantKey');
       const record: CachedTenantKey = {
         key: 'current',
+        schoolId: tenant.id || tenant.schoolId,
         schoolCode: tenant.code,
         publicKey: tenant.publicKey,
         algorithm: tenant.algorithm,
@@ -165,7 +183,7 @@ class QrOfflineService {
   /**
    * Strict offline payload parser.
    */
-  public parseQrPayload(raw: string) {
+  public parseQrPayload(raw: string): ParsedQrPayload {
     const trimmed = raw.trim();
     const lastColon = trimmed.lastIndexOf(':');
     if (lastColon === -1) throw new Error('Missing signature delimiter');
@@ -176,6 +194,26 @@ class QrOfflineService {
     const parts = dataToSign.split(':');
     if (parts.length < 4 || parts[0] !== 'v1') {
       throw new Error('Invalid version or format');
+    }
+
+    // Check if this is a legacy Gate HMAC token: v1:<schoolId>:<entityId>:<nonce>:<signature>
+    const isLegacy = parts.length === 4 && !['GATE', 'FEES', 'LIB', 'ATT'].includes(parts[1].toUpperCase());
+    if (isLegacy) {
+      return {
+        raw: trimmed,
+        dataToSign,
+        version: 'v1',
+        type: 'GATE',
+        schoolCode: '',
+        schoolId: parts[1],
+        entityId: parts[2],
+        extra: parts[3],
+        expiresAt: undefined,
+        keyId: undefined,
+        signature,
+        isExpired: false,
+        isLegacy: true
+      };
     }
 
     const [version, type, schoolCode, entityId, ...rest] = parts;
@@ -213,14 +251,15 @@ class QrOfflineService {
       expiresAt,
       keyId,
       signature,
-      isExpired
+      isExpired,
+      isLegacy: false
     };
   }
 
   /**
    * Converts base64url string to Uint8Array.
    */
-  private base64UrlToUint8Array(base64Url: string): Uint8Array {
+  private base64UrlToUint8Array(base64Url: string): Uint8Array<ArrayBuffer> {
     let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     while (base64.length % 4) {
       base64 += '=';
@@ -273,7 +312,7 @@ class QrOfflineService {
       return await window.crypto.subtle.verify(
         { name: 'Ed25519' },
         cryptoKey,
-        sigBytes as any,
+        sigBytes,
         dataBytes
       );
     } catch (e) {
@@ -298,26 +337,40 @@ class QrOfflineService {
       };
     }
 
-    let parsed;
+    let parsed: ParsedQrPayload;
     try {
       parsed = this.parseQrPayload(rawPayload);
-    } catch (err: any) {
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
       return {
         valid: false,
-        reason: `Malformed QR payload: ${err.message}`,
+        reason: `Malformed QR payload: ${message}`,
         flags: ['MALFORMED_PAYLOAD'],
         offline: true
       };
     }
 
+    const isLegacy = parsed.isLegacy;
+
     // Strict Tenant Isolation
-    if (parsed.schoolCode !== cachedKey.schoolCode.toUpperCase()) {
-      return {
-        valid: false,
-        reason: `Tenant Mismatch: QR is for "${parsed.schoolCode}", device is locked to "${cachedKey.schoolCode}".`,
-        flags: ['TENANT_MISMATCH', 'CROSS_SCHOOL_FORBIDDEN'],
-        offline: true
-      };
+    if (isLegacy) {
+      if (cachedKey.schoolId && parsed.schoolId && parsed.schoolId !== cachedKey.schoolId) {
+        return {
+          valid: false,
+          reason: `Tenant Mismatch: QR belongs to school "${parsed.schoolId}", device is locked to "${cachedKey.schoolCode}".`,
+          flags: ['TENANT_MISMATCH', 'CROSS_SCHOOL_FORBIDDEN'],
+          offline: true
+        };
+      }
+    } else {
+      if (parsed.schoolCode !== cachedKey.schoolCode.toUpperCase()) {
+        return {
+          valid: false,
+          reason: `Tenant Mismatch: QR is for "${parsed.schoolCode}", device is locked to "${cachedKey.schoolCode}".`,
+          flags: ['TENANT_MISMATCH', 'CROSS_SCHOOL_FORBIDDEN'],
+          offline: true
+        };
+      }
     }
 
     // Expiration check
@@ -330,15 +383,17 @@ class QrOfflineService {
       };
     }
 
-    // Verify signature offline
-    const isSigValid = await this.verifySignatureOffline(parsed.dataToSign, parsed.signature, cachedKey.publicKey);
-    if (!isSigValid) {
-      return {
-        valid: false,
-        reason: 'Signature verification failed. Invalid or counterfeit QR code.',
-        flags: ['INVALID_SIGNATURE'],
-        offline: true
-      };
+    // Verify signature offline (for standard asymmetric Ed25519 tokens)
+    if (!isLegacy) {
+      const isSigValid = await this.verifySignatureOffline(parsed.dataToSign, parsed.signature, cachedKey.publicKey);
+      if (!isSigValid) {
+        return {
+          valid: false,
+          reason: 'Signature verification failed. Invalid or counterfeit QR code.',
+          flags: ['INVALID_SIGNATURE'],
+          offline: true
+        };
+      }
     }
 
     // Look up student in local IndexedDB
@@ -528,7 +583,7 @@ class QrOfflineService {
    */
   public playAudioFeedback(allowed: boolean): void {
     try {
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioCtx = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
       if (!AudioCtx) return;
 
       if (!this.audioCtx || this.audioCtx.state === 'suspended') {

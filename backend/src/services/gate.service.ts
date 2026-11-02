@@ -319,7 +319,7 @@ export class GateService {
   /**
    * Helper to resolve a valid Teacher ID for Attendance foreign key constraint.
    */
-  private static async getEffectiveTeacherId(schoolId: string, preferredUserId?: string): Promise<string> {
+  public static async getEffectiveTeacherId(schoolId: string, preferredUserId?: string): Promise<string> {
     if (preferredUserId) {
       const existingTeacher = await prisma.teacher.findFirst({
         where: { OR: [{ id: preferredUserId }, { userId: preferredUserId }] }

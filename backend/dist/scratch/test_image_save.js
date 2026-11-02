@@ -25,4 +25,3 @@ if (filename) {
 else {
     console.error('FAILURE: saveBase64Image returned null');
 }
-//# sourceMappingURL=test_image_save.js.map

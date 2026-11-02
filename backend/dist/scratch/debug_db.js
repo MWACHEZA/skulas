@@ -29,4 +29,3 @@ async function main() {
     });
 }
 main().catch(console.error).finally(() => prisma.$disconnect());
-//# sourceMappingURL=debug_db.js.map

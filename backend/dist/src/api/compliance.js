@@ -104,4 +104,3 @@ router.post('/clearance/:studentId/signoff', async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=compliance.js.map

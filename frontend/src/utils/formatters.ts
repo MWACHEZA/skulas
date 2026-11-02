@@ -91,13 +91,21 @@ export const getPublicMediaUrl = (
   return getAvatarUrl(media, schoolCode, cacheBuster);
 };
 
+interface BadgeRoleItem {
+  leadershipRole?: string;
+  name?: string;
+  role?: string;
+  title?: string;
+  hostel?: { name?: string };
+}
+
 /**
  * Parses and sanitizes array or JSON-stringified roles/tags into clean badge strings.
  * Completely eliminates raw brackets [], quotes, and empty artifacts.
  */
-export const parseCleanBadges = (val: any): string[] => {
+export const parseCleanBadges = (val: unknown): string[] => {
   if (!val) return [];
-  let items: any[] = [];
+  let items: unknown[] = [];
   if (Array.isArray(val)) {
     items = val;
   } else if (typeof val === 'string') {
@@ -120,24 +128,33 @@ export const parseCleanBadges = (val: any): string[] => {
   for (const item of items) {
     if (!item) continue;
     if (typeof item === 'object') {
-      const roleStr = item.leadershipRole || item.name || item.role || item.title;
+      const roleObj = item as BadgeRoleItem;
+      const roleStr = roleObj.leadershipRole || roleObj.name || roleObj.role || roleObj.title;
       if (roleStr && typeof roleStr === 'string') {
-        const clean = roleStr.replace(/_/g, ' ').replace(/^["'\[\]]+|["'\[\]]+$/g, '').trim();
+        let clean = roleStr.replace(/_/g, ' ').replace(/^["'[\]]+|["'[\]]+$/g, '').trim();
         if (clean && clean !== '[]') {
-          const hostelSuffix = item.hostel?.name ? ` (${item.hostel.name})` : '';
+          if (clean.toUpperCase() === 'HOD' || clean.toUpperCase() === 'HEAD OF DEPARTMENT') {
+            clean = 'Head of Department (HOD)';
+          }
+          const hostelSuffix = roleObj.hostel?.name ? ` (${roleObj.hostel.name})` : '';
           result.push(`${clean}${hostelSuffix}`);
         }
       }
     } else if (typeof item === 'string') {
-      let trimmedItem = item.trim();
+      const trimmedItem = item.trim();
       if (!trimmedItem || trimmedItem === '[]' || trimmedItem === 'null') continue;
       if (trimmedItem.startsWith('[') && trimmedItem.endsWith(']')) {
         try {
           const nested = JSON.parse(trimmedItem);
           if (Array.isArray(nested)) {
             nested.forEach(n => {
-              const clean = String(n).replace(/_/g, ' ').replace(/^["'\[\]]+|["'\[\]]+$/g, '').trim();
-              if (clean && clean !== '[]') result.push(clean);
+              let clean = String(n).replace(/_/g, ' ').replace(/^["'[\]]+|["'[\]]+$/g, '').trim();
+              if (clean && clean !== '[]') {
+                if (clean.toUpperCase() === 'HOD' || clean.toUpperCase() === 'HEAD OF DEPARTMENT') {
+                  clean = 'Head of Department (HOD)';
+                }
+                result.push(clean);
+              }
             });
             continue;
           }
@@ -145,9 +162,14 @@ export const parseCleanBadges = (val: any): string[] => {
           // ignore parse error
         }
       }
-      const clean = trimmedItem.replace(/_/g, ' ').replace(/^["'\[\]]+|["'\[\]]+$/g, '').trim();
-      if (clean && clean !== '[]') result.push(clean);
+      let clean = trimmedItem.replace(/_/g, ' ').replace(/^["'[\]]+|["'[\]]+$/g, '').trim();
+      if (clean && clean !== '[]') {
+        if (clean.toUpperCase() === 'HOD' || clean.toUpperCase() === 'HEAD OF DEPARTMENT') {
+          clean = 'Head of Department (HOD)';
+        }
+        result.push(clean);
+      }
     }
   }
-  return result;
+  return Array.from(new Set(result));
 };

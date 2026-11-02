@@ -383,4 +383,3 @@ router.post('/dismiss-orientation', auth_1.requireAuth, async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=setup.js.map

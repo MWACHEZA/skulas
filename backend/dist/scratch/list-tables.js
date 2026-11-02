@@ -13,4 +13,3 @@ async function listTables() {
     console.log(result);
 }
 listTables().catch(console.error).finally(() => prisma.$disconnect());
-//# sourceMappingURL=list-tables.js.map

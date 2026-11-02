@@ -143,7 +143,23 @@ router.get('/menu', async (req, res) => {
                 });
             }
         }
-        res.json(menu);
+        const rawData = menu?.menuData || {};
+        const dayPairs = [
+            ['monday', 'Monday'],
+            ['tuesday', 'Tuesday'],
+            ['wednesday', 'Wednesday'],
+            ['thursday', 'Thursday'],
+            ['friday', 'Friday'],
+            ['saturday', 'Saturday'],
+            ['sunday', 'Sunday']
+        ];
+        const normalizedMenuData = { ...rawData };
+        for (const [lower, upper] of dayPairs) {
+            const val = rawData[lower] || rawData[upper] || { breakfast: 'Nutritious Morning Serving', lunch: 'Balanced Midday Meal', dinner: 'Wholesome Evening Supper' };
+            normalizedMenuData[lower] = val;
+            normalizedMenuData[upper] = val;
+        }
+        res.json({ ...menu, menuData: normalizedMenuData });
     }
     catch (error) {
         console.error('Fetch menu error:', error);
@@ -170,7 +186,23 @@ router.post('/menu', async (req, res) => {
             }
         });
         await (0, audit_1.logAction)(req, 'CREATE_MENU', 'WeeklyMenu', menu.id, { weekStarting });
-        res.json(menu);
+        const rawData = menu?.menuData || {};
+        const dayPairs = [
+            ['monday', 'Monday'],
+            ['tuesday', 'Tuesday'],
+            ['wednesday', 'Wednesday'],
+            ['thursday', 'Thursday'],
+            ['friday', 'Friday'],
+            ['saturday', 'Saturday'],
+            ['sunday', 'Sunday']
+        ];
+        const normalizedMenuData = { ...rawData };
+        for (const [lower, upper] of dayPairs) {
+            const val = rawData[lower] || rawData[upper] || { breakfast: 'Nutritious Morning Serving', lunch: 'Balanced Midday Meal', dinner: 'Wholesome Evening Supper' };
+            normalizedMenuData[lower] = val;
+            normalizedMenuData[upper] = val;
+        }
+        res.json({ ...menu, menuData: normalizedMenuData });
     }
     catch (error) {
         console.error('Save menu error:', error);
@@ -615,4 +647,3 @@ router.post('/scheduled-meal-deduction', async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=dining-hall.js.map

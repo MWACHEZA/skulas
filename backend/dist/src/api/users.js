@@ -1501,4 +1501,3 @@ router.post('/:id/reset-password', auth_1.requireAuth, (0, auth_1.requireRole)('
     }
 });
 exports.default = router;
-//# sourceMappingURL=users.js.map

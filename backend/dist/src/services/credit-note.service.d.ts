@@ -164,6 +164,7 @@ export declare class CreditNoteService {
                 tier2ApprovalRole: string | null;
                 debtorLimit: number | null;
                 tillVarianceThreshold: number | null;
+                gateFeeThreshold: number | null;
                 allowNegativeStock: boolean;
                 vatNumber: string | null;
                 vatRate: number | null;
@@ -190,7 +191,6 @@ export declare class CreditNoteService {
                 currentTerm: string | null;
                 nextTermBegin: Date | null;
                 timezone: string | null;
-                tawktoPropertyId: string | null;
                 textAlignment: string | null;
                 themeColour: string | null;
                 enableParentMarketplace: boolean;

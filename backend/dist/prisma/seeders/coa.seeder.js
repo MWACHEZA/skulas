@@ -257,4 +257,3 @@ async function getAccountId(schoolId, code, db) {
     }
     return account.id;
 }
-//# sourceMappingURL=coa.seeder.js.map

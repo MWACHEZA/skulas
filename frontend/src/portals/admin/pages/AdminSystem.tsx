@@ -51,18 +51,15 @@ export default function AdminSystem() {
   // Parent Linkages state
   const [parentLinks, setParentLinks] = useState<any[]>([]);
   const [parentLinksLoading, setParentLinksLoading] = useState(false);
+  const [parentLinkFilter, setParentLinkFilter] = useState<'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED'>('ALL');
+  const [parentUsers, setParentUsers] = useState<any[]>([]);
   const [isAddLinkModalOpen, setIsAddLinkModalOpen] = useState(false);
   const [parentLinkSearch, setParentLinkSearch] = useState('');
   const [newLink, setNewLink] = useState({
-    parentId: '',
-    parentName: '',
+    parentUserId: '',
     studentId: '',
-    studentName: '',
     relationship: 'Father',
-    isPrimary: true,
-    isEmergency: true,
-    canReceiveBilling: true,
-    canPickup: true
+    isPrimaryPayer: true
   });
 
   // Permissions Matrix state
@@ -173,6 +170,11 @@ export default function AdminSystem() {
 
   useEffect(() => {
     fetchUsers();
+    fetchParentLinks();
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('tab') === 'PARENT_LINKAGE' || params.get('tab') === 'parent-links' || params.get('tab') === 'parent' || params.get('role') === 'PARENT') {
+      setActiveSystemTab('PARENT_LINKAGE');
+    }
   }, []);
 
   const fetchUsers = async () => {
@@ -389,88 +391,58 @@ export default function AdminSystem() {
   const fetchParentLinks = async () => {
     setParentLinksLoading(true);
     try {
-      const [uRes, sRes] = await Promise.all([
+      const [uRes, sRes, connRes] = await Promise.all([
         api.get('/api/users?role=PARENT').catch(() => ({ data: { users: [] } })),
-        api.get('/api/students?limit=200').catch(() => ({ data: { students: [] } }))
+        api.get('/api/students?limit=300').catch(() => ({ data: { students: [] } })),
+        api.get('/api/schools/connections/pending?role=PARENT&status=ALL').catch(() => ({ data: [] }))
       ]);
       const parents = Array.isArray(uRes.data?.users) ? uRes.data.users : [];
       const stList = Array.isArray(sRes.data?.students) ? sRes.data.students : [];
+      const connections = Array.isArray(connRes.data) ? connRes.data : [];
       setSchoolStudents(stList);
+      setParentUsers(parents);
 
-      if (parents.length > 0 && stList.length > 0) {
-        // Link them
-        const generated = parents.slice(0, 10).map((p: any, idx: number) => {
-          const s = stList[idx % stList.length];
-          return {
-            id: `link-${idx + 1}`,
-            parentId: p.id,
-            parentName: p.name || 'Parent Guardian',
-            parentEmail: p.email,
-            parentPhone: p.phone || p.phoneNumber || '+263 77 123 4567',
-            studentId: s.id,
-            studentName: s.name,
-            studentNumber: s.studentId || `STU-${1000 + idx}`,
-            relationship: idx % 2 === 0 ? 'Mother' : 'Father',
-            isPrimary: true,
-            isEmergency: true,
-            canReceiveBilling: true,
-            canPickup: true
-          };
-        });
-        setParentLinks(generated);
-      } else {
-        setParentLinks([
-          {
-            id: 'link-1',
-            parentId: 'par-1',
-            parentName: 'Mr. Blessing Moyo',
-            parentEmail: 'blessing.moyo@gmail.com',
-            parentPhone: '+263 77 234 5678',
-            studentId: 'stu-1',
-            studentName: 'Takudzwa Moyo',
-            studentNumber: 'STU-4001',
-            relationship: 'Father',
-            isPrimary: true,
-            isEmergency: true,
-            canReceiveBilling: true,
-            canPickup: true
-          },
-          {
-            id: 'link-2',
-            parentId: 'par-2',
-            parentName: 'Mrs. Grace Moyo',
-            parentEmail: 'grace.moyo@gmail.com',
-            parentPhone: '+263 71 888 9900',
-            studentId: 'stu-1',
-            studentName: 'Takudzwa Moyo',
-            studentNumber: 'STU-4001',
-            relationship: 'Mother',
-            isPrimary: false,
-            isEmergency: true,
-            canReceiveBilling: false,
-            canPickup: true
-          },
-          {
-            id: 'link-3',
-            parentId: 'par-3',
-            parentName: 'Dr. Tariro Marange',
-            parentEmail: 'tariro.m@health.gov.zw',
-            parentPhone: '+263 77 999 1122',
-            studentId: 'stu-2',
-            studentName: 'Tinashe Marange',
-            studentNumber: 'STU-4015',
-            relationship: 'Legal Guardian',
-            isPrimary: true,
-            isEmergency: true,
-            canReceiveBilling: true,
-            canPickup: false
-          }
-        ]);
-      }
+      const mappedLinks = connections.map((c: any) => ({
+        id: c.connectionId || c.id,
+        connectionId: c.connectionId || c.id,
+        parentId: c.parentUserId || c.id,
+        parentName: c.name || 'Parent Guardian',
+        parentEmail: c.email || '—',
+        parentPhone: c.phone || '—',
+        studentId: c.studentRecordId,
+        studentName: c.studentName || 'Student',
+        studentNumber: c.studentId || '—',
+        studentClass: c.studentClass || 'Unassigned',
+        relationship: c.relation || 'Guardian',
+        linkStatus: (c.linkStatus || 'PENDING').toUpperCase(),
+        isPrimaryPayer: !!c.isPrimaryPayer,
+        createdAt: c.createdAt
+      }));
+      setParentLinks(mappedLinks);
     } catch (err) {
-      showToast('Loaded local parent linkage data', 'info');
+      showToast('Failed to load parent linkages', 'error');
     } finally {
       setParentLinksLoading(false);
+    }
+  };
+
+  const handleApproveParentLink = async (connectionId: string) => {
+    try {
+      await api.patch(`/api/schools/connections/${connectionId}/approve`);
+      showToast('Parent-Student link approved! Parent status is now Active.', 'success');
+      fetchParentLinks();
+    } catch (err: any) {
+      showToast(err?.response?.data?.error || 'Failed to approve parent link', 'error');
+    }
+  };
+
+  const handleRejectParentLink = async (connectionId: string) => {
+    try {
+      await api.patch(`/api/schools/connections/${connectionId}/reject`);
+      showToast('Parent-Student link request rejected/revoked.', 'info');
+      fetchParentLinks();
+    } catch (err: any) {
+      showToast(err?.response?.data?.error || 'Failed to reject parent link', 'error');
     }
   };
 
@@ -488,52 +460,42 @@ export default function AdminSystem() {
     showToast('Role permissions matrix saved and committed to tenant policies!', 'success');
   };
 
-  const handleToggleLinkField = (id: string, field: 'isPrimary' | 'isEmergency' | 'canReceiveBilling' | 'canPickup') => {
-    setParentLinks(prev => prev.map(item => item.id === id ? { ...item, [field]: !item[field] } : item));
-    showToast('Parent linkage permissions updated', 'success');
+  const handleDeleteLink = async (connectionId: string) => {
+    if (!(await toastConfirm('Are you sure you want to permanently remove this parent-student linkage?'))) return;
+    try {
+      await api.delete(`/api/schools/connections/${connectionId}`);
+      showToast('Parent linkage removed successfully', 'success');
+      fetchParentLinks();
+    } catch (err: any) {
+      showToast(err?.response?.data?.error || 'Failed to remove parent linkage', 'error');
+    }
   };
 
-  const handleDeleteLink = async (id: string) => {
-    if (!(await toastConfirm('Remove this parent-student linkage?'))) return;
-    setParentLinks(prev => prev.filter(l => l.id !== id));
-    showToast('Parent linkage unlinked', 'success');
-  };
-
-  const handleCreateParentLink = (e: React.FormEvent) => {
+  const handleCreateParentLink = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newLink.parentName || !newLink.studentName) {
-      showToast('Parent name and student name are required', 'error');
+    if (!newLink.parentUserId || !newLink.studentId) {
+      showToast('Please select both a Parent and a Student', 'error');
       return;
     }
-    const created = {
-      id: `link-${Date.now()}`,
-      parentId: newLink.parentId || `par-${Date.now()}`,
-      parentName: newLink.parentName,
-      parentEmail: 'parent@domain.com',
-      parentPhone: '+263 77 000 0000',
-      studentId: newLink.studentId || `stu-${Date.now()}`,
-      studentName: newLink.studentName,
-      studentNumber: `STU-${Math.floor(1000 + Math.random() * 9000)}`,
-      relationship: newLink.relationship,
-      isPrimary: newLink.isPrimary,
-      isEmergency: newLink.isEmergency,
-      canReceiveBilling: newLink.canReceiveBilling,
-      canPickup: newLink.canPickup
-    };
-    setParentLinks(prev => [created, ...prev]);
-    setIsAddLinkModalOpen(false);
-    setNewLink({
-      parentId: '',
-      parentName: '',
-      studentId: '',
-      studentName: '',
-      relationship: 'Father',
-      isPrimary: true,
-      isEmergency: true,
-      canReceiveBilling: true,
-      canPickup: true
-    });
-    showToast('Parent linked to student successfully!', 'success');
+    try {
+      await api.post('/api/schools/connections/parent-student', {
+        parentUserId: newLink.parentUserId,
+        studentId: newLink.studentId,
+        relation: newLink.relationship,
+        isPrimaryPayer: newLink.isPrimaryPayer
+      });
+      setIsAddLinkModalOpen(false);
+      setNewLink({
+        parentUserId: '',
+        studentId: '',
+        relationship: 'Father',
+        isPrimaryPayer: true
+      });
+      showToast('Parent linked to student successfully!', 'success');
+      fetchParentLinks();
+    } catch (err: any) {
+      showToast(err?.response?.data?.error || 'Failed to create parent linkage', 'error');
+    }
   };
 
   const handleResetPassword = async (user: any) => {
@@ -691,7 +653,13 @@ export default function AdminSystem() {
       <div style={{ display: 'flex', gap: '8px', borderBottom: '2px solid #e2e8f0', marginBottom: '24px', flexWrap: 'wrap' }}>
         {[
           { id: 'USERS', label: 'User Accounts & Roles', icon: 'fas fa-users' },
-          { id: 'PARENT_LINKAGE', label: 'Parent-Student Linkages', icon: 'fas fa-user-friends', onSelect: fetchParentLinks },
+          {
+            id: 'PARENT_LINKAGE',
+            label: 'Parent-Student Linkages',
+            icon: 'fas fa-user-friends',
+            badge: parentLinks.filter(l => l.linkStatus === 'PENDING').length || undefined,
+            onSelect: fetchParentLinks
+          },
           { id: 'PERMISSIONS_MATRIX', label: 'Permissions Matrix', icon: 'fas fa-key' },
           { id: 'AUDIT_LOGS', label: 'Audit Trail & Security', icon: 'fas fa-shield-alt', onSelect: fetchAuditLogs },
           { id: 'LEADERSHIP', label: 'Student Leadership', icon: 'fas fa-user-shield', onSelect: fetchLeadershipData },
@@ -719,6 +687,20 @@ export default function AdminSystem() {
             }}
           >
             <i className={tab.icon}></i> {tab.label}
+            {tab.badge !== undefined && tab.badge > 0 && (
+              <span
+                style={{
+                  background: '#f59e0b',
+                  color: '#fff',
+                  fontSize: '0.72rem',
+                  fontWeight: 800,
+                  padding: '2px 8px',
+                  borderRadius: '10px'
+                }}
+              >
+                {tab.badge}
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -1298,124 +1280,289 @@ export default function AdminSystem() {
       )}
 
       {/* TAB 4: PARENT-STUDENT LINKAGES */}
-      {activeSystemTab === 'PARENT_LINKAGE' && (
-        <div>
-          {/* Header & Search */}
-          <div className="portal-card" style={{ background: '#fff', borderRadius: '8px', padding: '16px 20px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 280 }}>
-              <i className="fas fa-search" style={{ color: '#94a3b8' }}></i>
-              <input
-                type="text"
-                placeholder="Search parent name, student name, or student ID..."
-                className="portal-input"
-                style={{ width: '100%', maxWidth: 400 }}
-                value={parentLinkSearch}
-                onChange={e => setParentLinkSearch(e.target.value)}
-              />
-            </div>
-            <div style={{ display: 'flex', gap: 16, alignItems: 'center', fontSize: '0.9rem', color: '#64748b' }}>
-              <span>Total Linkages: <strong>{parentLinks.length}</strong></span>
-              <span className="badge" style={{ background: '#eff6ff', color: '#2563eb', padding: '6px 12px', borderRadius: 6, fontWeight: 600 }}>
-                Multi-Guardian Support Enabled
-              </span>
-            </div>
-          </div>
+      {activeSystemTab === 'PARENT_LINKAGE' && (() => {
+        const pendingCount = parentLinks.filter(l => l.linkStatus === 'PENDING').length;
+        const approvedCount = parentLinks.filter(l => l.linkStatus === 'APPROVED').length;
+        const rejectedCount = parentLinks.filter(l => l.linkStatus === 'REJECTED').length;
 
-          {/* Links Table */}
-          <div className="portal-card" style={{ background: '#fff', borderRadius: '8px', overflow: 'hidden' }}>
-            <div style={{ overflowX: 'auto' }}>
-              <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-                <thead style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', color: '#475569' }}>
-                  <tr>
-                    <th style={{ padding: '12px 16px', textAlign: 'left' }}>Parent / Guardian</th>
-                    <th style={{ padding: '12px 16px', textAlign: 'left' }}>Linked Student</th>
-                    <th style={{ padding: '12px 16px', textAlign: 'left' }}>Relationship</th>
-                    <th style={{ padding: '12px 16px', textAlign: 'center' }}>Primary Contact</th>
-                    <th style={{ padding: '12px 16px', textAlign: 'center' }}>Emergency</th>
-                    <th style={{ padding: '12px 16px', textAlign: 'center' }}>Fees & Billing SMS</th>
-                    <th style={{ padding: '12px 16px', textAlign: 'center' }}>Pickup Auth</th>
-                    <th style={{ padding: '12px 16px', textAlign: 'right' }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {parentLinks
-                    .filter(l => {
-                      const q = parentLinkSearch.toLowerCase();
-                      return !q || l.parentName.toLowerCase().includes(q) || l.studentName.toLowerCase().includes(q) || l.studentNumber.toLowerCase().includes(q);
-                    })
-                    .map(link => (
-                      <tr key={link.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                        <td style={{ padding: '12px 16px' }}>
-                          <div style={{ fontWeight: 600, color: '#1e293b' }}>{link.parentName}</div>
-                          <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{link.parentPhone} • {link.parentEmail}</div>
-                        </td>
-                        <td style={{ padding: '12px 16px' }}>
-                          <div style={{ fontWeight: 600, color: '#2563eb' }}>{link.studentName}</div>
-                          <div style={{ fontSize: '0.8rem', color: '#64748b' }}>ID: {link.studentNumber}</div>
-                        </td>
-                        <td style={{ padding: '12px 16px' }}>
-                          <span className="badge" style={{ background: '#f1f5f9', color: '#475569', padding: '4px 8px', borderRadius: 4, fontWeight: 500 }}>
-                            {link.relationship}
-                          </span>
-                        </td>
-                        <td style={{ padding: '12px 16px', textAlign: 'center' }}>
-                          <input
-                            type="checkbox"
-                            checked={link.isPrimary}
-                            onChange={() => handleToggleLinkField(link.id, 'isPrimary')}
-                            style={{ cursor: 'pointer', width: 16, height: 16 }}
-                          />
-                        </td>
-                        <td style={{ padding: '12px 16px', textAlign: 'center' }}>
-                          <input
-                            type="checkbox"
-                            checked={link.isEmergency}
-                            onChange={() => handleToggleLinkField(link.id, 'isEmergency')}
-                            style={{ cursor: 'pointer', width: 16, height: 16 }}
-                          />
-                        </td>
-                        <td style={{ padding: '12px 16px', textAlign: 'center' }}>
-                          <input
-                            type="checkbox"
-                            checked={link.canReceiveBilling}
-                            onChange={() => handleToggleLinkField(link.id, 'canReceiveBilling')}
-                            style={{ cursor: 'pointer', width: 16, height: 16 }}
-                          />
-                        </td>
-                        <td style={{ padding: '12px 16px', textAlign: 'center' }}>
-                          <input
-                            type="checkbox"
-                            checked={link.canPickup}
-                            onChange={() => handleToggleLinkField(link.id, 'canPickup')}
-                            style={{ cursor: 'pointer', width: 16, height: 16 }}
-                          />
-                        </td>
-                        <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+        const filteredLinks = parentLinks.filter(l => {
+          const q = parentLinkSearch.toLowerCase();
+          const matchesSearch = !q ||
+            (l.parentName || '').toLowerCase().includes(q) ||
+            (l.parentEmail || '').toLowerCase().includes(q) ||
+            (l.parentPhone || '').toLowerCase().includes(q) ||
+            (l.studentName || '').toLowerCase().includes(q) ||
+            (l.studentNumber || '').toLowerCase().includes(q);
+          const matchesStatus = parentLinkFilter === 'ALL' || l.linkStatus === parentLinkFilter;
+          return matchesSearch && matchesStatus;
+        });
+
+        return (
+          <div>
+            {/* Pending Alert Banner */}
+            {pendingCount > 0 && (
+              <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '8px', padding: '14px 18px', marginBottom: '18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#d97706', fontSize: '1.2rem' }}>
+                    <i className="fas fa-user-clock"></i>
+                  </div>
+                  <div>
+                    <div style={{ fontWeight: 800, color: '#92400e', fontSize: '0.98rem' }}>
+                      {pendingCount} Parent–Student Link Request{pendingCount > 1 ? 's' : ''} Awaiting School Approval
+                    </div>
+                    <p style={{ margin: '2px 0 0', color: '#b45309', fontSize: '0.84rem' }}>
+                      Review and approve parents who registered or claimed a student ID so they can access grades, reports, and invoices in the Parent Portal.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setParentLinkFilter('PENDING')}
+                  style={{ padding: '8px 16px', background: '#d97706', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
+                >
+                  <i className="fas fa-filter mr-1"></i> View Pending Queue ({pendingCount})
+                </button>
+              </div>
+            )}
+
+            {/* Header, Search & Filter Bar */}
+            <div className="portal-card" style={{ background: '#fff', borderRadius: '8px', padding: '16px 20px', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 14 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 260 }}>
+                  <i className="fas fa-search" style={{ color: '#94a3b8' }}></i>
+                  <input
+                    type="text"
+                    placeholder="Search parent name, student name, ID or email..."
+                    className="portal-input"
+                    style={{ width: '100%', maxWidth: 360 }}
+                    value={parentLinkSearch}
+                    onChange={e => setParentLinkSearch(e.target.value)}
+                  />
+                </div>
+
+                {/* Status Filter Buttons */}
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                  {(['ALL', 'PENDING', 'APPROVED', 'REJECTED'] as const).map(f => {
+                    const count = f === 'ALL' ? parentLinks.length : f === 'PENDING' ? pendingCount : f === 'APPROVED' ? approvedCount : rejectedCount;
+                    const isActive = parentLinkFilter === f;
+                    return (
+                      <button
+                        key={f}
+                        type="button"
+                        onClick={() => setParentLinkFilter(f)}
+                        style={{
+                          padding: '6px 14px',
+                          borderRadius: '20px',
+                          fontSize: '0.82rem',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                          border: isActive ? '1px solid #2563eb' : '1px solid #e2e8f0',
+                          background: isActive ? '#2563eb' : '#fff',
+                          color: isActive ? '#fff' : '#64748b',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6
+                        }}
+                      >
+                        <span>{f === 'ALL' ? 'All Links' : f === 'PENDING' ? 'Pending' : f === 'APPROVED' ? 'Approved' : 'Rejected'}</span>
+                        <span
+                          style={{
+                            background: isActive ? 'rgba(255,255,255,0.25)' : f === 'PENDING' && count > 0 ? '#fef3c7' : '#f1f5f9',
+                            color: isActive ? '#fff' : f === 'PENDING' && count > 0 ? '#b45309' : '#475569',
+                            padding: '1px 7px',
+                            borderRadius: '10px',
+                            fontSize: '0.75rem',
+                            fontWeight: 800
+                          }}
+                        >
+                          {count}
+                        </span>
+                      </button>
+                    );
+                  })}
+
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={fetchParentLinks}
+                    style={{ padding: '6px 12px', fontSize: '0.82rem', borderRadius: 6, display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                    title="Refresh list"
+                  >
+                    <i className="fas fa-sync-alt"></i> Refresh
+                  </button>
+
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => setIsAddLinkModalOpen(true)}
+                    style={{ padding: '6px 14px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.82rem', display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}
+                  >
+                    <i className="fas fa-link"></i> Link Parent & Student
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Links Table */}
+            <div className="portal-card" style={{ background: '#fff', borderRadius: '8px', overflow: 'hidden' }}>
+              <div style={{ overflowX: 'auto' }}>
+                <PaginatedTable className="portal-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                  <thead style={{ background: '#f8fafc', borderBottom: '2px solid #e2e8f0', color: '#475569' }}>
+                    <tr>
+                      <th style={{ padding: '12px 16px', textAlign: 'left' }}>Parent / Guardian</th>
+                      <th style={{ padding: '12px 16px', textAlign: 'left' }}>Linked Student</th>
+                      <th style={{ padding: '12px 16px', textAlign: 'left' }}>Relationship</th>
+                      <th style={{ padding: '12px 16px', textAlign: 'center' }}>Fees Payer</th>
+                      <th style={{ padding: '12px 16px', textAlign: 'center' }}>Status</th>
+                      <th style={{ padding: '12px 16px', textAlign: 'left' }}>Requested Date</th>
+                      <th style={{ padding: '12px 16px', textAlign: 'right' }}>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredLinks.map(link => {
+                      const status = (link.linkStatus || 'PENDING').toUpperCase();
+                      return (
+                        <tr key={link.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '12px 16px' }}>
+                            <div style={{ fontWeight: 700, color: '#1e293b' }}>{link.parentName}</div>
+                            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                              {link.parentPhone !== '—' && <span>{link.parentPhone} &bull; </span>}
+                              {link.parentEmail}
+                            </div>
+                          </td>
+                          <td style={{ padding: '12px 16px' }}>
+                            <div style={{ fontWeight: 700, color: '#2563eb' }}>{link.studentName}</div>
+                            <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                              ID: <span style={{ fontFamily: 'monospace' }}>{link.studentNumber}</span> &bull; {link.studentClass}
+                            </div>
+                          </td>
+                          <td style={{ padding: '12px 16px' }}>
+                            <span className="badge" style={{ background: '#f1f5f9', color: '#475569', padding: '4px 10px', borderRadius: 4, fontWeight: 600 }}>
+                              {link.relationship}
+                            </span>
+                          </td>
+                          <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                            {link.isPrimaryPayer ? (
+                              <span className="badge" style={{ background: '#ecfdf5', color: '#047857', padding: '4px 8px', borderRadius: 4, fontWeight: 700, fontSize: '0.78rem' }}>
+                                <i className="fas fa-check-circle mr-1"></i> Yes
+                              </span>
+                            ) : (
+                              <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>No</span>
+                            )}
+                          </td>
+                          <td style={{ padding: '12px 16px', textAlign: 'center' }}>
+                            <span
+                              style={{
+                                padding: '4px 12px',
+                                borderRadius: '999px',
+                                fontSize: '0.75rem',
+                                fontWeight: 800,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 5,
+                                background: status === 'APPROVED' ? '#dcfce7' : status === 'PENDING' ? '#fef3c7' : '#fee2e2',
+                                color: status === 'APPROVED' ? '#15803d' : status === 'PENDING' ? '#b45309' : '#b91c1c'
+                              }}
+                            >
+                              <i className={`fas ${status === 'APPROVED' ? 'fa-check-circle' : status === 'PENDING' ? 'fa-clock' : 'fa-ban'}`}></i>
+                              {status === 'APPROVED' ? 'APPROVED' : status === 'PENDING' ? 'PENDING APPROVAL' : 'REJECTED'}
+                            </span>
+                          </td>
+                          <td style={{ padding: '12px 16px', fontSize: '0.82rem', color: '#64748b' }}>
+                            {link.createdAt ? new Date(link.createdAt).toLocaleDateString() : '—'}
+                          </td>
+                          <td style={{ padding: '12px 16px', textAlign: 'right' }}>
+                            <div style={{ display: 'inline-flex', gap: 6, alignItems: 'center' }}>
+                              {status === 'PENDING' && (
+                                <>
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm"
+                                    onClick={() => handleApproveParentLink(link.connectionId || link.id)}
+                                    style={{ background: '#16a34a', color: '#fff', border: 'none', borderRadius: 6, padding: '5px 12px', fontWeight: 700, fontSize: '0.8rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5 }}
+                                    title="Approve Link"
+                                  >
+                                    <i className="fas fa-check"></i> Approve
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm"
+                                    onClick={() => handleRejectParentLink(link.connectionId || link.id)}
+                                    style={{ background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: 6, padding: '5px 10px', fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5 }}
+                                    title="Reject Request"
+                                  >
+                                    <i className="fas fa-times"></i> Reject
+                                  </button>
+                                </>
+                              )}
+
+                              {status === 'APPROVED' && (
+                                <button
+                                  type="button"
+                                  className="btn btn-sm"
+                                  onClick={() => handleDeleteLink(link.connectionId || link.id)}
+                                  style={{ background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: 6, padding: '5px 10px', fontSize: '0.8rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5 }}
+                                  title="Unlink Parent"
+                                >
+                                  <i className="fas fa-unlink"></i> Unlink
+                                </button>
+                              )}
+
+                              {status === 'REJECTED' && (
+                                <>
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm"
+                                    onClick={() => handleApproveParentLink(link.connectionId || link.id)}
+                                    style={{ background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0', borderRadius: 6, padding: '5px 10px', fontWeight: 600, fontSize: '0.8rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 5 }}
+                                    title="Re-Approve Link"
+                                  >
+                                    <i className="fas fa-redo"></i> Re-Approve
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm"
+                                    onClick={() => handleDeleteLink(link.connectionId || link.id)}
+                                    style={{ background: '#f1f5f9', color: '#64748b', border: 'none', borderRadius: 6, padding: '5px 8px', fontSize: '0.8rem', cursor: 'pointer' }}
+                                    title="Delete Record"
+                                  >
+                                    <i className="fas fa-trash"></i>
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    {filteredLinks.length === 0 && (
+                      <tr>
+                        <td colSpan={7} style={{ textAlign: 'center', padding: '3.5rem 1rem', color: '#64748b' }}>
+                          <i className="fas fa-user-friends fa-2x" style={{ color: '#cbd5e1', marginBottom: 10, display: 'block' }}></i>
+                          <p style={{ fontWeight: 700, color: '#1e293b', margin: '0 0 4px' }}>
+                            No {parentLinkFilter !== 'ALL' ? parentLinkFilter.toLowerCase() : ''} parent-student linkages found.
+                          </p>
+                          <p style={{ fontSize: '0.85rem', margin: '0 0 14px' }}>
+                            When parents sign up or claim student access from the Parent Portal, their verification requests will appear here.
+                          </p>
                           <button
                             type="button"
-                            className="btn btn-sm"
-                            onClick={() => handleDeleteLink(link.id)}
-                            style={{ background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: 4, padding: '4px 8px', cursor: 'pointer' }}
-                            title="Unlink Parent"
+                            className="btn btn-primary"
+                            onClick={() => setIsAddLinkModalOpen(true)}
+                            style={{ padding: '7px 16px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}
                           >
-                            <i className="fas fa-unlink"></i>
+                            <i className="fas fa-plus-circle mr-1"></i> Link Parent & Student
                           </button>
                         </td>
                       </tr>
-                    ))}
-                  {parentLinks.length === 0 && (
-                    <tr>
-                      <td colSpan={8} style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>
-                        No parent-student linkages configured. Click "Link Parent & Student" to map guardians.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </PaginatedTable>
+                    )}
+                  </tbody>
+                </PaginatedTable>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* TAB 5: PERMISSIONS MATRIX */}
       {activeSystemTab === 'PERMISSIONS_MATRIX' && (
@@ -1629,38 +1776,69 @@ export default function AdminSystem() {
       {/* Add Parent Link Modal */}
       {isAddLinkModalOpen && (
         <div className="portal-modal-overlay">
-          <div className="portal-modal" style={{ maxWidth: 520, background: '#fff', borderRadius: 8, padding: 24 }}>
-            <div className="modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: 12 }}>
-              <h3 style={{ margin: 0, fontWeight: 700, fontSize: '1.2rem' }}>Link Parent Guardian to Student</h3>
-              <button onClick={() => setIsAddLinkModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer' }}>&times;</button>
+          <div className="portal-modal" style={{ maxWidth: 540, background: '#fff', borderRadius: 12, padding: 24, boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }}>
+            <div className="modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #e2e8f0', paddingBottom: 14 }}>
+              <div>
+                <h3 style={{ margin: 0, fontWeight: 800, fontSize: '1.15rem', color: '#0f172a' }}>
+                  <i className="fas fa-link mr-2" style={{ color: '#0284c7', marginRight: 8 }}></i>
+                  Link Parent Guardian to Student
+                </h3>
+                <p style={{ margin: '3px 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+                  Authorize family portal access for a student and designate fees billing roles.
+                </p>
+              </div>
+              <button onClick={() => setIsAddLinkModalOpen(false)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#94a3b8' }}>&times;</button>
             </div>
             <form onSubmit={handleCreateParentLink} style={{ marginTop: 16 }}>
               <div className="form-group mb-3">
-                <label className="form-label" style={{ fontWeight: 600, display: 'block', marginBottom: 6 }}>Parent / Guardian Name *</label>
-                <input
-                  type="text"
+                <label className="form-label" style={{ fontWeight: 700, display: 'block', marginBottom: 6, fontSize: '0.88rem', color: '#334155' }}>
+                  Select Parent / Guardian Account *
+                </label>
+                <select
                   className="portal-input"
                   style={{ width: '100%' }}
-                  placeholder="e.g. Mr. Farai Chidzero"
                   required
-                  value={newLink.parentName}
-                  onChange={e => setNewLink({ ...newLink, parentName: e.target.value })}
-                />
+                  value={newLink.parentUserId}
+                  onChange={e => setNewLink({ ...newLink, parentUserId: e.target.value })}
+                >
+                  <option value="">-- Choose Registered Parent --</option>
+                  {parentUsers.map(p => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} ({p.email || p.phone || 'Parent User'})
+                    </option>
+                  ))}
+                </select>
+                {parentUsers.length === 0 && (
+                  <small style={{ color: '#e11d48', marginTop: 4, display: 'block' }}>
+                    No parent accounts found. You can create a Parent in "User Accounts & Roles".
+                  </small>
+                )}
               </div>
+
               <div className="form-group mb-3">
-                <label className="form-label" style={{ fontWeight: 600, display: 'block', marginBottom: 6 }}>Student Name *</label>
-                <input
-                  type="text"
+                <label className="form-label" style={{ fontWeight: 700, display: 'block', marginBottom: 6, fontSize: '0.88rem', color: '#334155' }}>
+                  Select Student *
+                </label>
+                <select
                   className="portal-input"
                   style={{ width: '100%' }}
-                  placeholder="e.g. Nomsa Chidzero"
                   required
-                  value={newLink.studentName}
-                  onChange={e => setNewLink({ ...newLink, studentName: e.target.value })}
-                />
+                  value={newLink.studentId}
+                  onChange={e => setNewLink({ ...newLink, studentId: e.target.value })}
+                >
+                  <option value="">-- Choose Enrolled Student --</option>
+                  {schoolStudents.map(s => (
+                    <option key={s.id} value={s.id}>
+                      {s.name} ({s.studentId || 'ID'} - {s.class?.name || 'Class'})
+                    </option>
+                  ))}
+                </select>
               </div>
+
               <div className="form-group mb-3">
-                <label className="form-label" style={{ fontWeight: 600, display: 'block', marginBottom: 6 }}>Relationship</label>
+                <label className="form-label" style={{ fontWeight: 700, display: 'block', marginBottom: 6, fontSize: '0.88rem', color: '#334155' }}>
+                  Relationship
+                </label>
                 <select
                   className="portal-input"
                   style={{ width: '100%' }}
@@ -1673,47 +1851,25 @@ export default function AdminSystem() {
                   <option value="Sponsor">Sponsor</option>
                   <option value="Uncle / Aunt">Uncle / Aunt</option>
                   <option value="Grandparent">Grandparent</option>
+                  <option value="Other">Other</option>
                 </select>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, margin: '16px 0', background: '#f8fafc', padding: 12, borderRadius: 6 }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem', cursor: 'pointer' }}>
+              <div style={{ margin: '16px 0', background: '#f8fafc', padding: '12px 16px', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '0.88rem', fontWeight: 600, color: '#334155', cursor: 'pointer' }}>
                   <input
                     type="checkbox"
-                    checked={newLink.isPrimary}
-                    onChange={e => setNewLink({ ...newLink, isPrimary: e.target.checked })}
+                    checked={newLink.isPrimaryPayer}
+                    onChange={e => setNewLink({ ...newLink, isPrimaryPayer: e.target.checked })}
+                    style={{ width: 16, height: 16, cursor: 'pointer' }}
                   />
-                  Primary Contact
-                </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem', cursor: 'pointer' }}>
-                  <input
-                    type="checkbox"
-                    checked={newLink.isEmergency}
-                    onChange={e => setNewLink({ ...newLink, isEmergency: e.target.checked })}
-                  />
-                  Emergency Contact
-                </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem', cursor: 'pointer' }}>
-                  <input
-                    type="checkbox"
-                    checked={newLink.canReceiveBilling}
-                    onChange={e => setNewLink({ ...newLink, canReceiveBilling: e.target.checked })}
-                  />
-                  Receive Fees & Billing SMS
-                </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '0.85rem', cursor: 'pointer' }}>
-                  <input
-                    type="checkbox"
-                    checked={newLink.canPickup}
-                    onChange={e => setNewLink({ ...newLink, canPickup: e.target.checked })}
-                  />
-                  Authorized Campus Pickup
+                  Designate as Primary Fees Payer & Billing Contact
                 </label>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 20 }}>
-                <button type="button" onClick={() => setIsAddLinkModalOpen(false)} className="btn btn-secondary" style={{ padding: '8px 16px' }}>Cancel</button>
-                <button type="submit" className="btn btn-primary" style={{ padding: '8px 16px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: 4 }}>Save Linkage</button>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 24, borderTop: '1px solid #e2e8f0', paddingTop: 14 }}>
+                <button type="button" onClick={() => setIsAddLinkModalOpen(false)} className="btn btn-secondary" style={{ padding: '8px 18px', borderRadius: 6 }}>Cancel</button>
+                <button type="submit" className="btn btn-primary" style={{ padding: '8px 20px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: 6, fontWeight: 700 }}>Save Linkage</button>
               </div>
             </form>
           </div>

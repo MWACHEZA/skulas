@@ -28,4 +28,3 @@ function generateShortCode(name) {
     }
     return words[0].substring(0, 4);
 }
-//# sourceMappingURL=utils.js.map

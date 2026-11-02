@@ -267,4 +267,3 @@ async function seedExtras2(prisma, school, admin, student) {
         catch (e) { }
     }
 }
-//# sourceMappingURL=seedExtras2.js.map

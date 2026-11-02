@@ -52,7 +52,7 @@ export default function ProtectedRoute({ children, allowedRoles, redirectTo = '/
 
   // Modular Tenancy Check
   const userModules: Record<string, boolean> | undefined =
-    (user as any)?.modules ||
+    user?.modules ||
     user?.school?.subscription?.modules ||
     user?.school?.modules;
 

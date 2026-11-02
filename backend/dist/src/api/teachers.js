@@ -445,27 +445,32 @@ router.post('/assignments/:id/release-grades', auth_1.requireAuth, (0, auth_1.re
                 });
             }
             assessmentRecordId = assessment.id;
-            // Upsert individual student scores into Continuous Assessment ledger
-            for (const sub of gradedSubmissions) {
-                await prisma_1.default.studentAssessment.upsert({
-                    where: {
-                        assessmentId_studentId: {
+            try {
+                // Upsert individual student scores into Continuous Assessment ledger
+                for (const sub of gradedSubmissions) {
+                    await prisma_1.default.studentAssessment.upsert({
+                        where: {
+                            assessmentId_studentId: {
+                                assessmentId: assessment.id,
+                                studentId: sub.studentId
+                            }
+                        },
+                        update: {
+                            marksObtained: sub.grade,
+                            comment: sub.feedback
+                        },
+                        create: {
+                            schoolId,
                             assessmentId: assessment.id,
-                            studentId: sub.studentId
+                            studentId: sub.studentId,
+                            marksObtained: sub.grade,
+                            comment: sub.feedback
                         }
-                    },
-                    update: {
-                        marksObtained: sub.grade,
-                        feedback: sub.feedback
-                    },
-                    create: {
-                        schoolId,
-                        assessmentId: assessment.id,
-                        studentId: sub.studentId,
-                        marksObtained: sub.grade,
-                        feedback: sub.feedback
-                    }
-                });
+                    });
+                }
+            }
+            catch (caError) {
+                console.warn('[Release Grades] Non-fatal continuous assessment sync warning:', caError);
             }
         }
         res.json({
@@ -710,16 +715,57 @@ router.get('/textbooks', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 
     }
 });
 /**
+ * @route   POST /api/teachers/textbooks
+ * @desc    [TEACHER / ADMIN] Register a curriculum textbook linked to teacher/class/subject
+ */
+router.post('/textbooks', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'SUPER_ADMIN'), async (req, res) => {
+    try {
+        const schoolId = req.user.schoolId;
+        const { title, author, isbn, totalCopies, subjectId, classId, description } = req.body;
+        if (!title || !author) {
+            return res.status(400).json({ error: 'Title and Author are required' });
+        }
+        let teacherId = null;
+        const teacher = await prisma_1.default.teacher.findFirst({ where: { userId: req.user.id } });
+        if (teacher) {
+            teacherId = teacher.id;
+        }
+        const copiesCount = Math.max(1, parseInt(String(totalCopies || '1'), 10) || 1);
+        const book = await prisma_1.default.book.create({
+            data: {
+                title: String(title).trim(),
+                author: String(author).trim(),
+                isbn: isbn ? String(isbn).trim() : null,
+                description: description ? String(description).trim() : null,
+                copies: copiesCount,
+                available: copiesCount,
+                schoolId,
+                teacherId,
+                subjectId: subjectId || null,
+                classId: classId || null,
+                status: 'Available',
+                source: 'Curriculum'
+            }
+        });
+        res.status(201).json(book);
+    }
+    catch (error) {
+        console.error('Error creating textbook:', error);
+        res.status(500).json({ error: error.message || 'Failed to add textbook' });
+    }
+});
+/**
  * @route   GET /api/teachers/my-classes
  * @desc    [TEACHER] Get classes assigned to teacher (as class teacher or subject teacher)
  */
 router.get('/my-classes', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     try {
+        const schoolId = req.user.schoolId;
         const teacher = await prisma_1.default.teacher.findFirst({ where: { userId: req.user.id } });
         if (!teacher) {
             if (['ADMIN', 'SCHOOL_ADMIN', 'SUPER_ADMIN'].includes(req.user.role)) {
                 const allClasses = await prisma_1.default.schoolClass.findMany({
-                    where: { schoolId: req.user.schoolId },
+                    where: { schoolId },
                     include: { _count: { select: { students: true } } },
                     orderBy: { name: 'asc' }
                 });
@@ -729,7 +775,7 @@ router.get('/my-classes', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER',
         }
         // Classes where they are the Class Teacher
         const homeroomClasses = await prisma_1.default.schoolClass.findMany({
-            where: { teacherId: teacher.id },
+            where: { teacherId: teacher.id, schoolId },
             include: { _count: { select: { students: true } } }
         });
         // Classes where they are a Subject Teacher
@@ -751,43 +797,118 @@ router.get('/my-classes', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER',
         });
         // Merge and unique
         const classMap = new Map();
-        homeroomClasses.forEach(c => classMap.set(c.id, { ...c, role: 'Class Teacher' }));
+        homeroomClasses.forEach(c => {
+            if (c && c.id) {
+                classMap.set(c.id, { ...c, role: 'Class Teacher' });
+            }
+        });
         subjectAssignments.forEach(sa => {
+            if (!sa || !sa.class || !sa.class.id)
+                return;
+            const subjName = sa.subject?.name || 'Assigned Subject';
             if (!classMap.has(sa.classId)) {
-                classMap.set(sa.classId, { ...sa.class, role: `Subject Teacher (${sa.subject.name})` });
+                classMap.set(sa.classId, { ...sa.class, role: `Subject Teacher (${subjName})` });
             }
             else {
                 const existing = classMap.get(sa.classId);
-                existing.role += `, Subject Teacher (${sa.subject.name})`;
+                existing.role += `, Subject Teacher (${subjName})`;
             }
         });
         res.json(Array.from(classMap.values()));
     }
     catch (error) {
+        console.error('Error fetching my-classes:', error);
         res.status(500).json({ error: 'Failed to fetch your classes' });
     }
 });
 /**
  * @route   GET /api/teachers/my-students
- * @desc    [TEACHER] Get students in a specific class assigned to the teacher
+ * @desc    [TEACHER] Get students in classes assigned to teacher (as class teacher or subject teacher)
  */
 router.get('/my-students', auth_1.requireAuth, (0, auth_1.requireRole)('TEACHER', 'SCHOOL_ADMIN', 'ADMIN', 'SUPER_ADMIN'), async (req, res) => {
     const { classId } = req.query;
+    const schoolId = req.user.schoolId;
     try {
+        const isTeacher = req.user.role === 'TEACHER';
+        let allowedClassIds = [];
+        const teacherRoleMap = new Map();
+        if (isTeacher) {
+            const teacher = await prisma_1.default.teacher.findFirst({ where: { userId: req.user.id } });
+            if (!teacher) {
+                return res.status(404).json({ error: 'Teacher record not found' });
+            }
+            // 1. Homeroom classes (Class Teacher)
+            const homeroomClasses = await prisma_1.default.schoolClass.findMany({
+                where: { teacherId: teacher.id, schoolId },
+                select: { id: true, name: true }
+            });
+            homeroomClasses.forEach(c => {
+                allowedClassIds.push(c.id);
+                teacherRoleMap.set(c.id, 'Class Teacher');
+            });
+            // 2. Subject assignments (Subject Teacher)
+            const subjectAssignments = await prisma_1.default.classSubjectTeacher.findMany({
+                where: { teacherId: teacher.id },
+                include: { subject: { select: { name: true } } }
+            });
+            subjectAssignments.forEach(sa => {
+                if (!sa.classId)
+                    return;
+                allowedClassIds.push(sa.classId);
+                const subjName = sa.subject?.name || 'Subject';
+                if (teacherRoleMap.has(sa.classId)) {
+                    teacherRoleMap.set(sa.classId, `${teacherRoleMap.get(sa.classId)} & Subject Teacher (${subjName})`);
+                }
+                else {
+                    teacherRoleMap.set(sa.classId, `Subject Teacher (${subjName})`);
+                }
+            });
+            allowedClassIds = Array.from(new Set(allowedClassIds));
+            // If teacher has no assigned classes, they teach 0 students
+            if (allowedClassIds.length === 0) {
+                return res.json([]);
+            }
+        }
+        // Determine target classes filter
+        let targetClassFilter = undefined;
+        if (classId) {
+            if (isTeacher && !allowedClassIds.includes(classId)) {
+                return res.json([]);
+            }
+            targetClassFilter = classId;
+        }
+        else if (isTeacher) {
+            targetClassFilter = { in: allowedClassIds };
+        }
         const students = await prisma_1.default.student.findMany({
             where: {
-                schoolId: req.user.schoolId,
-                classId: classId || undefined
+                schoolId,
+                ...(targetClassFilter ? { classId: targetClassFilter } : {})
             },
             include: {
-                user: { select: { name: true, email: true, avatar: true } },
-                class: { select: { name: true } }
+                user: { select: { name: true, email: true, avatar: true, phone: true } },
+                class: { select: { id: true, name: true } },
+                parents: {
+                    include: {
+                        parent: {
+                            include: {
+                                user: { select: { name: true, phone: true, email: true } }
+                            }
+                        }
+                    }
+                }
             },
             orderBy: { user: { name: 'asc' } }
         });
-        res.json(students);
+        const enriched = students.map((s) => ({
+            ...s,
+            teacherAssignmentType: s.classId ? (teacherRoleMap.get(s.classId) || 'Assigned Student') : 'Unassigned',
+            parent: s.parents?.[0]?.parent || null
+        }));
+        res.json(enriched);
     }
     catch (error) {
+        console.error('Error fetching my-students:', error);
         res.status(500).json({ error: 'Failed to fetch students' });
     }
 });
@@ -884,4 +1005,3 @@ router.post('/:id/load/unassign', auth_1.requireAuth, (0, auth_1.requireRole)('S
     }
 });
 exports.default = router;
-//# sourceMappingURL=teachers.js.map

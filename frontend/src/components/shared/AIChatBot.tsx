@@ -19,10 +19,14 @@ export default function AIChatBot() {
     setIsLoading(true);
     
     try {
-      // Find school code from URL or default to a known one from the system
-      const schoolCodeFromUrl = window.location.pathname.split('/')[1]?.startsWith('S-') 
-        ? window.location.pathname.split('/')[1] 
-        : 'AX-EMBAKWE'; // Use AX-EMBAKWE as default demo school
+      // Find school code from URL (e.g. /school/AX-GOXN5P/sports or /AX-GOXN5P) or default to AX-EMBAKWE
+      const schoolMatch = window.location.pathname.match(/\/school\/([^/]+)/i);
+      const firstSegment = window.location.pathname.split('/')[1];
+      const schoolCodeFromUrl = schoolMatch 
+        ? schoolMatch[1].toUpperCase() 
+        : (firstSegment && (firstSegment.startsWith('S-') || firstSegment.startsWith('AX-') || firstSegment.startsWith('P8-') || firstSegment.startsWith('LIB-'))
+            ? firstSegment.toUpperCase()
+            : 'AX-EMBAKWE');
 
       const response = await fetch(`${BASE_URL}/api/chat/santa`, {
         method: 'POST',

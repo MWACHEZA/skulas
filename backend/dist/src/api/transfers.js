@@ -141,4 +141,3 @@ router.get('/my-requests', auth_1.requireAuth, async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=transfers.js.map

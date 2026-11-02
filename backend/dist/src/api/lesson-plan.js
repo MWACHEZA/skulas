@@ -503,4 +503,3 @@ router.delete('/:id', auth_1.requireAuth, async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=lesson-plan.js.map

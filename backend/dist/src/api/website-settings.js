@@ -26,7 +26,14 @@ router.get('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANC
 router.put('/', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
         const schoolId = req.user.schoolId;
-        const updateData = req.body;
+        const updateData = { ...req.body };
+        // Keep bannerImage and heroBg strictly unified
+        if (updateData.bannerImage !== undefined && updateData.heroBg === undefined) {
+            updateData.heroBg = updateData.bannerImage;
+        }
+        else if (updateData.heroBg !== undefined && updateData.bannerImage === undefined) {
+            updateData.bannerImage = updateData.heroBg;
+        }
         const settings = await prisma_1.default.websiteSettings.upsert({
             where: { schoolId },
             update: updateData,
@@ -57,4 +64,3 @@ router.post('/upload', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN
     }
 });
 exports.default = router;
-//# sourceMappingURL=website-settings.js.map

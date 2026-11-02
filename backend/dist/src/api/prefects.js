@@ -310,4 +310,3 @@ router.get('/', async (req, res) => {
     res.json(prefects);
 });
 exports.default = router;
-//# sourceMappingURL=prefects.js.map

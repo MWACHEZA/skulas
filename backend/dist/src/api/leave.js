@@ -522,4 +522,3 @@ router.get('/calendar-view', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR
     }
 });
 exports.default = router;
-//# sourceMappingURL=leave.js.map

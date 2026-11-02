@@ -466,6 +466,7 @@ body {
     z-index: 2000;
     align-items: center;
     justify-content: center;
+    -webkit-backdrop-filter: blur(2px);
     backdrop-filter: blur(2px);
 }
 

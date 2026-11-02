@@ -52,4 +52,3 @@ async function seedInfrastructure(prisma, school, students) {
         });
     }
 }
-//# sourceMappingURL=seedInfrastructure.js.map

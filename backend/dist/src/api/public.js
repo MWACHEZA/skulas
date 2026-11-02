@@ -414,4 +414,3 @@ router.get('/noticeboard', async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=public.js.map

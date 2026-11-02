@@ -351,4 +351,3 @@ router.post('/:id/submit', auth_1.requireAuth, async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=cbt.js.map

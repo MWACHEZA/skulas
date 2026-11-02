@@ -154,7 +154,7 @@ router.post('/import', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN'), 
 
  * @desc    List students in the current user's school (paginated)
  */
-router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER', 'BURSAR', 'LIBRARIAN'), async (req: AuthRequest, res: Response) => {
+router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN', 'TEACHER', 'BURSAR', 'LIBRARIAN', 'ANCILLARY', 'CLINIC'), async (req: AuthRequest, res: Response) => {
   const { 
     page = '1', 
     limit = '50', 
@@ -171,9 +171,19 @@ router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER', 'BURSAR', 'L
 
   try {
     const whereCondition: any = {
-      schoolId: schoolId!,
-      ...(leadersOnly === 'true' ? { leadershipAssignments: { some: { isActive: true } } } : {})
+      schoolId: schoolId!
     };
+
+    const andConditions: any[] = [];
+
+    if (leadersOnly === 'true') {
+      andConditions.push({
+        OR: [
+          { leadershipAssignments: { some: { isActive: true } } },
+          { user: { secondaryRoles: { isEmpty: false } } }
+        ]
+      });
+    }
 
     if (classId) whereCondition.classId = classId;
     if (status) whereCondition.status = status;
@@ -183,13 +193,19 @@ router.get('/', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER', 'BURSAR', 'L
 
     if (search && search.trim()) {
       const q = search.trim();
-      whereCondition.OR = [
-        { studentId: { contains: q, mode: 'insensitive' as const } },
-        { name: { contains: q, mode: 'insensitive' as const } },
-        { nationalId: { contains: q, mode: 'insensitive' as const } },
-        { email: { contains: q, mode: 'insensitive' as const } },
-        { phone: { contains: q, mode: 'insensitive' as const } },
-      ];
+      andConditions.push({
+        OR: [
+          { studentId: { contains: q, mode: 'insensitive' as const } },
+          { name: { contains: q, mode: 'insensitive' as const } },
+          { nationalId: { contains: q, mode: 'insensitive' as const } },
+          { email: { contains: q, mode: 'insensitive' as const } },
+          { phone: { contains: q, mode: 'insensitive' as const } },
+        ]
+      });
+    }
+
+    if (andConditions.length > 0) {
+      whereCondition.AND = andConditions;
     }
 
     const [students, total] = await Promise.all([
@@ -1013,7 +1029,7 @@ router.get('/me/books', requireAuth, requireRole('STUDENT'), async (req: AuthReq
  * @route   GET /api/students/by-class/:classId
  * @desc    [SCHOOL_ADMIN/TEACHER] Get students for a specific class for migration
  */
-router.get('/by-class/:classId', requireAuth, requireRole('SCHOOL_ADMIN', 'TEACHER', 'BURSAR'), async (req: AuthRequest, res: Response) => {
+router.get('/by-class/:classId', requireAuth, requireRole('SCHOOL_ADMIN', 'SUPER_ADMIN', 'TEACHER', 'BURSAR', 'ANCILLARY', 'CLINIC'), async (req: AuthRequest, res: Response) => {
   try {
     const enrichedStudents = await MigrationService.getClassRegistrySummary(
       req.user!.schoolId!,

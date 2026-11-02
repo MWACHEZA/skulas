@@ -42,4 +42,3 @@ exports.RevenueAllocationSchema = zod_1.z.object({
     }),
     feeGroupIds: zod_1.z.array(zod_1.z.string()).min(1, 'At least one fee group must be selected'),
 });
-//# sourceMappingURL=finance.schema.js.map

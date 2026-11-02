@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { PaginatedTable } from '../../../components/shared/Pagination';
 import api, { BASE_URL } from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
@@ -26,8 +26,59 @@ interface StudentListItem {
   photo: string | null;
 }
 
+interface CardBackProps {
+  school: SchoolInfo | null;
+  logoUrl?: string;
+}
+
+interface CardFrontProps {
+  school: SchoolInfo | null;
+  student: StudentPreview | null;
+  photoUrl?: string;
+  logoUrl?: string;
+  classTerm?: string;
+  studentIdTerm?: string;
+}
+
+interface BuiltinTemplateItem {
+  id: string;
+  name: string;
+  color: string;
+  accent: string;
+  icon: string;
+  layout?: string;
+}
+
+interface TemplateConfig {
+  primaryColor?: string;
+  secondaryColor?: string;
+  showAttendance?: boolean;
+  showRanking?: boolean;
+  footerText?: string;
+  showStamp?: boolean;
+  showLogo?: boolean;
+  showStudentPhoto?: boolean;
+  enableQR?: boolean;
+  receiptPrefix?: string;
+  certTitle?: string;
+  invoiceDesign?: string;
+  consultationDesign?: string;
+  consultationLogo?: string;
+  paperDesign?: string;
+  receiptDesign?: string;
+  paperLogo?: string;
+  paperSignature?: string;
+  [key: string]: unknown;
+}
+
+interface DocumentTemplateState {
+  config: TemplateConfig;
+  signatureUrl?: string | null;
+  [key: string]: unknown;
+}
+
 // ─── Utils ──────────────────────────────────────────────────────────────────────
-export const resolveImgUrl = (url: string | null) => {
+const resolveImgUrl = (url: string | null) => {
   if (!url) return undefined;
   if (url.startsWith('http') || url.startsWith('data:')) return url;
 
@@ -44,18 +95,29 @@ export const resolveImgUrl = (url: string | null) => {
     return path;
   }
 
-  // Raw storage path (e.g. "AX-SEMINARY/global/academic/branding/template-xxx.jpg")
+  // Raw storage path (e.g. "AX-SEMINARY/global/academic/branding/template-xxx.jpg" or "logo-xxx.jpg")
   // Extract school code from the path and use the public /media/ route so <img> tags
   // can load without needing Auth headers (branding assets are not private documents).
   const parts = url.split('/');
-  const schoolCode = parts[0];
-  const rest = parts.slice(1).join('/');
+  let schoolCode = parts[0];
+  let rest = parts.slice(1).join('/');
+  if (!rest) {
+    let currentSchoolCode = '';
+    try {
+      const u = JSON.parse(localStorage.getItem('acadex_user') || localStorage.getItem('user') || '{}');
+      currentSchoolCode = u.schoolCode || u.school?.code || '';
+    } catch { /* ignore */ }
+    if (currentSchoolCode) {
+      rest = schoolCode;
+      schoolCode = currentSchoolCode;
+    }
+  }
   const base = BASE_URL || '';
   return `${base}/api/storage/media/${schoolCode}/${rest}`;
 };
 
 // ─── Builtin templates catalog ────────────────────────────────────────────────
-const BUILTIN_TEMPLATES = [
+const BUILTIN_TEMPLATES: BuiltinTemplateItem[] = [
   // ── Premium full-layout templates ──
   { id: 'university-pro', name: 'University Pro',  color: '#0284c7', accent: '#0c4a6e', icon: 'fa-university', layout: 'university-pro' },
   { id: 'corporate-dark', name: 'Corporate Dark',  color: '#0f172a', accent: '#f59e0b', icon: 'fa-building',   layout: 'corporate-dark' },
@@ -70,7 +132,7 @@ const BUILTIN_TEMPLATES = [
 ];
 
 // ─── Premium Layout: University Pro ──────────────────────────────────────────
-function UniversityProFront({ school, student, photoUrl, logoUrl, classTerm, studentIdTerm }: any) {
+function UniversityProFront({ school, student, photoUrl, logoUrl, classTerm, studentIdTerm }: CardFrontProps) {
   const primary = '#0284c7', dark = '#0c4a6e', teal = '#06b6d4';
   const dob = student?.dob ? new Date(student.dob).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase() : '—';
   return (
@@ -118,7 +180,7 @@ function UniversityProFront({ school, student, photoUrl, logoUrl, classTerm, stu
     </div>
   );
 }
-function UniversityProBack({ school }: any) {
+function UniversityProBack({ school }: CardBackProps) {
   const primary = '#0284c7', dark = '#0c4a6e', teal = '#06b6d4';
   return (
     <div style={{ width: '100%', height: '100%', background: 'linear-gradient(140deg,#f0f8ff 0%,#e8f5f9 100%)', position: 'relative', overflow: 'hidden', fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
@@ -156,7 +218,7 @@ function UniversityProBack({ school }: any) {
 }
 
 // ─── Premium Layout: Corporate Dark ──────────────────────────────────────────
-function CorporateDarkFront({ school, student, photoUrl, logoUrl, classTerm, studentIdTerm }: any) {
+function CorporateDarkFront({ school, student, photoUrl, logoUrl, classTerm, studentIdTerm }: CardFrontProps) {
   const gold = '#f59e0b', dark = '#0f172a', mid = '#1e293b';
   const dob = student?.dob ? new Date(student.dob).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase() : '—';
   return (
@@ -193,7 +255,7 @@ function CorporateDarkFront({ school, student, photoUrl, logoUrl, classTerm, stu
     </div>
   );
 }
-function CorporateDarkBack({ school }: any) {
+function CorporateDarkBack({ school }: CardBackProps) {
   const gold = '#f59e0b', dark = '#0f172a', mid = '#1e293b';
   return (
     <div style={{ width: '100%', height: '100%', background: dark, position: 'relative', overflow: 'hidden', fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
@@ -216,7 +278,7 @@ function CorporateDarkBack({ school }: any) {
 }
 
 // ─── Premium Layout: Emerald Fresh ───────────────────────────────────────────
-function EmeraldFreshFront({ school, student, photoUrl, logoUrl, classTerm, studentIdTerm }: any) {
+function EmeraldFreshFront({ school, student, photoUrl, logoUrl, classTerm, studentIdTerm }: CardFrontProps) {
   const green = '#059669', lime = '#10b981', dark = '#064e3b';
   const dob = student?.dob ? new Date(student.dob).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase() : '—';
   return (
@@ -252,7 +314,7 @@ function EmeraldFreshFront({ school, student, photoUrl, logoUrl, classTerm, stud
     </div>
   );
 }
-function EmeraldFreshBack({ school }: any) {
+function EmeraldFreshBack({ school }: CardBackProps) {
   const green = '#059669', lime = '#10b981', dark = '#064e3b';
   return (
     <div style={{ width: '100%', height: '100%', background: '#f0fdf4', position: 'relative', overflow: 'hidden', fontFamily: "'Segoe UI',system-ui,sans-serif" }}>
@@ -287,7 +349,7 @@ function IdCardFace({
   school: SchoolInfo | null;
   student: StudentPreview | null;
   templateUrl: string | null;
-  builtinTemplate: typeof BUILTIN_TEMPLATES[0] | null;
+  builtinTemplate: BuiltinTemplateItem | null;
   isBack?: boolean;
   classTerm?: string;
   studentIdTerm?: string;
@@ -346,7 +408,7 @@ function IdCardFace({
   }
 
   // -- PREMIUM LAYOUT dispatch --
-  const layout = (builtinTemplate as any)?.layout;
+  const layout = builtinTemplate?.layout;
   if (!templateUrl && layout) {
     if (isBack) {
       if (layout === 'university-pro') return <UniversityProBack school={school} logoUrl={logoUrl} />;
@@ -540,7 +602,7 @@ export default function AdminDocumentTemplates() {
   const { t } = useTerminology();
 
   const [activeTab, setActiveTab] = useState('reports');
-  const [template, setTemplate] = useState<any>({ 
+  const [template, setTemplate] = useState<DocumentTemplateState>({ 
     config: { 
       primaryColor: 'var(--school-primary, #3182ce)', 
       secondaryColor: '#2c5282', 
@@ -558,7 +620,6 @@ export default function AdminDocumentTemplates() {
   });
   const [loading, setLoading] = useState(false);
   const [signature, setSignature] = useState<File | null>(null);
-  const [stamp, setStamp] = useState<File | null>(null);
 
   // ─── ID Card States ──────────────────────────────────────────────────────────
   const [classes, setClasses] = useState<SchoolClass[]>([]);
@@ -622,7 +683,6 @@ export default function AdminDocumentTemplates() {
   const [selectedConsultationBuiltin, setSelectedConsultationBuiltin] = useState<string | null>('medical-classic');
   const [consultationLogoUrl, setConsultationLogoUrl] = useState<string | null>(null);
   const [uploadingConsultationLogo, setUploadingConsultationLogo] = useState(false);
-  const [generatingConsultations, setGeneratingConsultations] = useState(false);
 
   const CONSULTATION_BUILTIN = [
     { id: 'medical-classic', name: 'Medical Classic', color: '#1e40af', accent: '#eff6ff', icon: 'fa-stethoscope' },
@@ -651,7 +711,6 @@ export default function AdminDocumentTemplates() {
   const [selectedInvoiceBuiltin, setSelectedInvoiceBuiltin] = useState<string | null>('modern-clean');
   const [invoiceLogoUrl, setInvoiceLogoUrl] = useState<string | null>(null);
   const [uploadingInvoiceLogo, setUploadingInvoiceLogo] = useState(false);
-  const [generatingInvoices, setGeneratingInvoices] = useState(false);
 
   const INVOICE_BUILTIN = [
     { id: 'modern-clean',      name: 'Modern Clean',       color: '#0f172a', accent: '#f8fafc', icon: 'fa-file-invoice' },
@@ -668,57 +727,25 @@ export default function AdminDocumentTemplates() {
     { id: 'formal-exam',       name: 'Formal Exam',       color: '#475569', accent: '#f1f5f9', icon: 'fa-file-signature' },
   ];
 
-  // ID Cards effects
-  useEffect(() => {
-    if (activeTab === 'id-cards') {
-      fetchClasses();
-      fetchStudents();
-      fetchSchoolBase();
-    }
-    if (activeTab === 'certificates') {
-      fetchCertStudents();
-      fetchSchoolBase();
-    }
-    if (activeTab === 'reports') {
-      fetchReportStudents();
-      fetchSchoolBase();
-    }
-    if (activeTab === 'receipts' || activeTab === 'invoices') {
-      fetchSchoolBase();
-    }
-  }, [activeTab]);
-
-  useEffect(() => {
-    if (activeTab === 'id-cards' && selectedClassId) {
-      fetchStudents(selectedClassId);
-    }
-  }, [selectedClassId, activeTab]);
-
-  useEffect(() => {
-    if (activeTab === 'id-cards' && previewStudentId) {
-      loadPreviewData(previewStudentId);
-    }
-  }, [previewStudentId, activeTab]);
-
-  const fetchClasses = async () => {
+  const fetchClasses = useCallback(async () => {
     try {
       const res = await api.get('/api/classes');
       setClasses(Array.isArray(res.data) ? res.data : []);
     } catch { /* silent */ }
-  };
+  }, []);
 
-  const fetchStudents = async (classId = 'all') => {
+  const fetchStudents = useCallback(async (classId = 'all') => {
     try {
       const res = await api.get(`/api/schools/id-card/students?classId=${classId}`);
       const list = Array.isArray(res.data) ? res.data : [];
       setStudents(list);
-      if (list.length > 0 && !previewStudentId) {
-        setPreviewStudentId(list[0].id);
+      if (list.length > 0) {
+        setPreviewStudentId(prev => prev || list[0].id);
       }
     } catch { /* silent */ }
-  };
+  }, []);
 
-  const fetchSchoolBase = async () => {
+  const fetchSchoolBase = useCallback(async () => {
     try {
       const res = await api.get('/api/schools/me');
       const branding = res.data.branding || {};
@@ -735,9 +762,9 @@ export default function AdminDocumentTemplates() {
         accentColor: branding.accentColor || '#dbeafe',
       });
     } catch { /* silent */ }
-  };
+  }, []);
 
-  const loadPreviewData = async (studentId: string) => {
+  const loadPreviewData = useCallback(async (studentId: string) => {
     setLoadingPreview(true);
     try {
       const res = await api.get(`/api/schools/id-card/data/${studentId}`);
@@ -749,7 +776,83 @@ export default function AdminDocumentTemplates() {
     } finally {
       setLoadingPreview(false);
     }
-  };
+  }, [showToast]);
+
+  const fetchCertStudents = useCallback(async () => {
+    try {
+      const res = await api.get('/api/schools/id-card/students?classId=all');
+      const list = Array.isArray(res.data) ? res.data : [];
+      setCertStudents(list);
+      if (list.length > 0) setSelectedCertStudentId(list[0].id);
+    } catch { /* silent */ }
+  }, []);
+
+  const loadCertPreview = useCallback(async (studentId: string) => {
+    try {
+      const res = await api.get(`/api/schools/id-card/data/${studentId}`);
+      setCertPreviewStudent(res.data.student);
+    } catch { /* silent */ }
+  }, []);
+
+  const fetchReportStudents = useCallback(async () => {
+    try {
+      const res = await api.get('/api/schools/id-card/students?classId=all');
+      const list = Array.isArray(res.data) ? res.data : [];
+      setReportStudents(list);
+      if (list.length > 0) setReportPreviewStudentId(list[0].id);
+    } catch { /* silent */ }
+  }, []);
+
+  const loadReportPreview = useCallback(async (studentId: string) => {
+    try {
+      const res = await api.get(`/api/schools/id-card/data/${studentId}`);
+      setReportPreviewStudent(res.data.student);
+    } catch { /* silent */ }
+  }, []);
+
+  // ID Cards effects
+  useEffect(() => {
+    if (activeTab === 'id-cards') {
+      fetchClasses();
+      fetchStudents(selectedClassId);
+      fetchSchoolBase();
+    }
+    if (activeTab === 'certificates') {
+      fetchCertStudents();
+      fetchSchoolBase();
+    }
+    if (activeTab === 'reports') {
+      fetchReportStudents();
+      fetchSchoolBase();
+    }
+    if (activeTab === 'receipts' || activeTab === 'invoices') {
+      fetchSchoolBase();
+    }
+  }, [activeTab, fetchClasses, fetchStudents, selectedClassId, fetchSchoolBase, fetchCertStudents, fetchReportStudents]);
+
+  useEffect(() => {
+    if (activeTab === 'id-cards' && selectedClassId) {
+      fetchStudents(selectedClassId);
+    }
+  }, [selectedClassId, activeTab, fetchStudents]);
+
+  useEffect(() => {
+    if (activeTab === 'id-cards' && previewStudentId) {
+      loadPreviewData(previewStudentId);
+    }
+  }, [previewStudentId, activeTab, loadPreviewData]);
+
+  useEffect(() => {
+    if (activeTab === 'certificates' && selectedCertStudentId) {
+      loadCertPreview(selectedCertStudentId);
+    }
+  }, [selectedCertStudentId, activeTab, loadCertPreview]);
+
+  useEffect(() => {
+    if (activeTab === 'reports' && reportPreviewStudentId) {
+      loadReportPreview(reportPreviewStudentId);
+    }
+  }, [reportPreviewStudentId, activeTab, loadReportPreview]);
 
   const uploadTemplate = async (file: File, face: 'front' | 'back') => {
     const setUploading = face === 'front' ? setUploadingFront : setUploadingBack;
@@ -771,28 +874,6 @@ export default function AdminDocumentTemplates() {
     }
   };
 
-  const fetchCertStudents = async () => {
-    try {
-      const res = await api.get('/api/schools/id-card/students?classId=all');
-      const list = Array.isArray(res.data) ? res.data : [];
-      setCertStudents(list);
-      if (list.length > 0) setSelectedCertStudentId(list[0].id);
-    } catch { /* silent */ }
-  };
-
-  const loadCertPreview = async (studentId: string) => {
-    try {
-      const res = await api.get(`/api/schools/id-card/data/${studentId}`);
-      setCertPreviewStudent(res.data.student);
-    } catch { /* silent */ }
-  };
-
-  useEffect(() => {
-    if (activeTab === 'certificates' && selectedCertStudentId) {
-      loadCertPreview(selectedCertStudentId);
-    }
-  }, [selectedCertStudentId, activeTab]);
-
   const uploadCertTemplate = async (file: File) => {
     setUploadingCertBg(true);
     try {
@@ -810,26 +891,6 @@ export default function AdminDocumentTemplates() {
   };
 
   // ─── Report / Receipt upload handlers ─────────────────────────────────────────
-  const fetchReportStudents = async () => {
-    try {
-      const res = await api.get('/api/schools/id-card/students?classId=all');
-      const list = Array.isArray(res.data) ? res.data : [];
-      setReportStudents(list);
-      if (list.length > 0) setReportPreviewStudentId(list[0].id);
-    } catch { /* silent */ }
-  };
-
-  const loadReportPreview = async (studentId: string) => {
-    try {
-      const res = await api.get(`/api/schools/id-card/data/${studentId}`);
-      setReportPreviewStudent(res.data.student);
-    } catch { /* silent */ }
-  };
-
-  useEffect(() => {
-    if (activeTab === 'reports' && reportPreviewStudentId) loadReportPreview(reportPreviewStudentId);
-  }, [reportPreviewStudentId, activeTab]);
-
   const uploadReportBg = async (file: File) => {
     setUploadingReportBg(true);
     try {
@@ -899,21 +960,17 @@ export default function AdminDocumentTemplates() {
   const effectiveFrontUrl = activeBuiltin ? null : templates.front;
   const effectiveBackUrl = activeBuiltin ? null : templates.back;
 
-  useEffect(() => {
-    fetchTemplate();
-  }, []);
-
-  const fetchTemplate = async () => {
+  const fetchTemplate = useCallback(async () => {
     try {
       const res = await api.get('/api/reports/template');
       if (res.data) {
-        setTemplate({
+        setTemplate(prev => ({
           ...res.data,
           config: {
-            ...template.config,
+            ...prev.config,
             ...(res.data.config || {})
           }
-        });
+        }));
         if (res.data.config?.invoiceDesign) {
           setSelectedInvoiceBuiltin(res.data.config.invoiceDesign);
         }
@@ -923,36 +980,41 @@ export default function AdminDocumentTemplates() {
         if (res.data.config?.paperDesign) {
           setSelectedPaperBuiltin(res.data.config.paperDesign);
         }
+        if (res.data.config?.receiptDesign) {
+          setSelectedReceiptBuiltin(res.data.config.receiptDesign);
+        }
       }
-    } catch (err) {
+    } catch {
       console.error('Failed to fetch template');
-    
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchTemplate();
+  }, [fetchTemplate]);
 
   const handleSave = async () => {
     setLoading(true);
     const formData = new FormData();
     formData.append('config', JSON.stringify(template.config));
     if (signature) formData.append('signature', signature);
-    if (stamp) formData.append('stamp', stamp);
 
     try {
       await api.post('/api/reports/template', formData);
       showToast('Document branding updated successfully!', 'success');
       fetchTemplate();
-    } catch (err) {
+    } catch {
       showToast('Failed to update template', 'error');
     } finally {
       setLoading(false);
     }
   };
 
-  const updateConfig = (key: string, value: any) => {
-    setTemplate({
-      ...template,
-      config: { ...template.config, [key]: value }
-    });
+  const updateConfig = (key: string, value: unknown) => {
+    setTemplate(prev => ({
+      ...prev,
+      config: { ...prev.config, [key]: value }
+    }));
   };
 
   return (
@@ -1229,7 +1291,7 @@ export default function AdminDocumentTemplates() {
                   <span style={{ flex: 1, height: 1, background: '#ede9fe' }} />
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
-                  {BUILTIN_TEMPLATES.filter(tmpl => !!(tmpl as any).layout).map(tmpl => (
+                  {BUILTIN_TEMPLATES.filter(tmpl => !!tmpl.layout).map(tmpl => (
                     <div
                       key={tmpl.id}
                       onClick={() => { setSelectedBuiltin(tmpl.id); setTemplates({ front: null, back: null }); }}
@@ -1243,7 +1305,7 @@ export default function AdminDocumentTemplates() {
                       {/* Scaled card preview */}
                       <div style={{ width: '100%', aspectRatio: '1.586', overflow: 'hidden', pointerEvents: 'none', position: 'relative' }}>
                         <div style={{ position: 'absolute', inset: 0, transform: 'scale(0.28)', transformOrigin: 'top left', width: '357%', height: '357%' }}>
-                          <IdCardFace school={school} student={student} templateUrl={null} builtinTemplate={tmpl as any} isBack={false} classTerm={t('class')} studentIdTerm="ID Number" />
+                          <IdCardFace school={school} student={student} templateUrl={null} builtinTemplate={tmpl} isBack={false} classTerm={t('class')} studentIdTerm="ID Number" />
                         </div>
                       </div>
                       <div style={{ padding: '7px 10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: selectedBuiltin === tmpl.id ? `${tmpl.color}12` : '#fafafa', borderTop: '1px solid #f1f5f9' }}>
@@ -1264,7 +1326,7 @@ export default function AdminDocumentTemplates() {
                 <div style={{ fontWeight: 800, fontSize: '0.68rem', color: '#475569', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: 8 }}>
                   Color Themes <span style={{ flex: 1, height: 1, background: '#e2e8f0' }} />
                 </div>
-                {BUILTIN_TEMPLATES.filter(tmpl => !(tmpl as any).layout).map(tmpl => (
+                {BUILTIN_TEMPLATES.filter(tmpl => !tmpl.layout).map(tmpl => (
                   <div
                     key={tmpl.id}
                     onClick={() => { setSelectedBuiltin(tmpl.id); setTemplates({ front: null, back: null }); }}
@@ -1572,7 +1634,7 @@ export default function AdminDocumentTemplates() {
                   <label key={opt.key} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.82rem', fontWeight: 700, color: '#374151' }}>
                     <input
                       type="checkbox"
-                      checked={template.config[opt.key]}
+                      checked={!!template.config[opt.key]}
                       onChange={e => updateConfig(opt.key, e.target.checked)}
                       style={{ accentColor: '#2563eb', width: 16, height: 16 }}
                     />
@@ -1864,7 +1926,7 @@ export default function AdminDocumentTemplates() {
                   { key: 'showStudentPhoto', label: 'Student Photo' },
                 ].map(opt => (
                   <label key={opt.key} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.82rem', fontWeight: 700, color: '#374151' }}>
-                    <input type="checkbox" checked={template.config[opt.key]} onChange={e => updateConfig(opt.key, e.target.checked)}
+                    <input type="checkbox" checked={!!template.config[opt.key]} onChange={e => updateConfig(opt.key, e.target.checked)}
                       style={{ accentColor: '#2563eb', width: 16, height: 16 }} />
                     {opt.label}
                   </label>
@@ -2065,7 +2127,12 @@ export default function AdminDocumentTemplates() {
                 <p style={{ margin: 0, fontSize: '0.8rem', color: '#64748b' }}>Choose a built-in receipt theme. School branding and billing data are auto-populated.</p>
                 {RECEIPT_BUILTIN.map(rcp => (
                   <div key={rcp.id}
-                    onClick={() => { setSelectedReceiptBuiltin(rcp.id); setReceiptLogoUrl(null); updateConfig('primaryColor', rcp.color); }}
+                    onClick={() => {
+                      setSelectedReceiptBuiltin(rcp.id);
+                      setReceiptLogoUrl(null);
+                      updateConfig('primaryColor', rcp.color);
+                      updateConfig('receiptDesign', rcp.id);
+                    }}
                     style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 16px', borderRadius: 12,
                       border: selectedReceiptBuiltin === rcp.id ? `2px solid ${rcp.color}` : '2px solid #e2e8f0',
                       cursor: 'pointer', background: selectedReceiptBuiltin === rcp.id ? '#f8fafc' : '#fff',
@@ -2096,7 +2163,7 @@ export default function AdminDocumentTemplates() {
                   { key: 'showStudentPhoto', label: 'Student Photo' },
                 ].map(opt => (
                   <label key={opt.key} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.82rem', fontWeight: 700, color: '#374151' }}>
-                    <input type="checkbox" checked={template.config[opt.key]} onChange={e => updateConfig(opt.key, e.target.checked)}
+                    <input type="checkbox" checked={!!template.config[opt.key]} onChange={e => updateConfig(opt.key, e.target.checked)}
                       style={{ accentColor: '#059669', width: 16, height: 16 }} />
                     {opt.label}
                   </label>
@@ -2338,7 +2405,7 @@ export default function AdminDocumentTemplates() {
                   { key: 'enableQR', label: 'Payment QR Code' },
                 ].map(opt => (
                   <label key={opt.key} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.82rem', fontWeight: 700, color: '#374151' }}>
-                    <input type="checkbox" checked={template.config[opt.key]} onChange={e => updateConfig(opt.key, e.target.checked)}
+                    <input type="checkbox" checked={!!template.config[opt.key]} onChange={e => updateConfig(opt.key, e.target.checked)}
                       style={{ accentColor: '#0ea5e9', width: 16, height: 16 }} />
                     {opt.label}
                   </label>
@@ -2514,7 +2581,7 @@ export default function AdminDocumentTemplates() {
                   { key: 'showStamp', label: 'Show Signature & Stamp area' }
                 ].map(opt => (
                   <label key={opt.key} style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: '0.82rem', fontWeight: 700, color: '#374151' }}>
-                    <input type="checkbox" checked={template.config[opt.key]} onChange={e => updateConfig(opt.key, e.target.checked)}
+                    <input type="checkbox" checked={!!template.config[opt.key]} onChange={e => updateConfig(opt.key, e.target.checked)}
                       style={{ accentColor: '#ef4444', width: 16, height: 16 }} />
                     {opt.label}
                   </label>
@@ -2530,7 +2597,8 @@ export default function AdminDocumentTemplates() {
             {(() => {
               const pBuiltin = PAPER_BUILTIN.find(p => p.id === selectedPaperBuiltin) || PAPER_BUILTIN[0];
               const pColor = pBuiltin.color;
-              const logoUrl = template.config?.paperLogo || template.config?.consultationLogo || school?.logo;
+              const rawLogo = template.config?.paperLogo || template.config?.consultationLogo || school?.logo;
+              const logoUrl = typeof rawLogo === 'string' ? rawLogo : null;
 
               return (
                 <div style={{ 
@@ -2602,7 +2670,7 @@ export default function AdminDocumentTemplates() {
                     try {
                       const res = await api.post('/api/storage/upload', fd);
                       updateConfig('paperLogo', res.data.filename);
-                    } catch (e) {
+                    } catch {
                       showToast('Upload failed', 'error');
                     }
                   }} 
@@ -2619,7 +2687,7 @@ export default function AdminDocumentTemplates() {
                     try {
                       const res = await api.post('/api/storage/upload', fd);
                       updateConfig('paperSignature', res.data.filename);
-                    } catch (e) {
+                    } catch {
                       showToast('Upload failed', 'error');
                     }
                   }} 

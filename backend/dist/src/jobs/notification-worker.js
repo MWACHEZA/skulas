@@ -16,8 +16,15 @@ class NotificationWorker {
         this.isRunning = true;
         // Run every 10 seconds to process the queue
         this.intervalId = setInterval(() => {
-            this.processQueue().catch(err => console.error('Error in NotificationWorker processQueue:', err));
-        }, 10000);
+            this.processQueue().catch(err => {
+                if (err?.code === 'P1001') {
+                    console.warn('[NotificationWorker] Database busy/unreachable, will retry next minute.');
+                }
+                else {
+                    console.error('Error in NotificationWorker processQueue:', err);
+                }
+            });
+        }, 60000);
         console.log('Notification Worker started.');
     }
     stop() {
@@ -190,4 +197,3 @@ class NotificationWorker {
 }
 exports.NotificationWorker = NotificationWorker;
 exports.notificationWorker = new NotificationWorker();
-//# sourceMappingURL=notification-worker.js.map

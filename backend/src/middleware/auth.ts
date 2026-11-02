@@ -13,6 +13,7 @@ interface CachedAuthStatus {
   isLocked: boolean;
   passwordLastChangedMs: number;
   schoolStatus?: string;
+  secondaryRoles?: string[];
   sessionValid: boolean;
   cachedAt: number;
 }
@@ -81,6 +82,7 @@ export const requireAuth = async (req: AuthRequest, res: Response, next: NextFun
           select: {
             isLocked: true,
             passwordLastChanged: true,
+            secondaryRoles: true,
             school: { select: { status: true } }
           }
         }),
@@ -107,6 +109,7 @@ export const requireAuth = async (req: AuthRequest, res: Response, next: NextFun
         isLocked: Boolean(user.isLocked),
         passwordLastChangedMs: user.passwordLastChanged ? user.passwordLastChanged.getTime() : 0,
         schoolStatus: user.school?.status,
+        secondaryRoles: user.secondaryRoles || [],
         sessionValid,
         cachedAt: now
       };
@@ -137,7 +140,14 @@ export const requireAuth = async (req: AuthRequest, res: Response, next: NextFun
       return;
     }
 
-    req.user = decoded;
+    const userSecRoles = (decoded.secondaryRoles && decoded.secondaryRoles.length > 0)
+      ? decoded.secondaryRoles
+      : (cached.secondaryRoles || []);
+
+    req.user = {
+      ...decoded,
+      secondaryRoles: userSecRoles
+    };
     
     // Inject the schoolId into the AsyncLocalStorage store for Prisma Enforcement
     if (decoded?.schoolId) {
@@ -159,9 +169,14 @@ export const requireRole = (...roles: string[]) => {
       res.status(401).json({ error: 'Unauthenticated' });
       return;
     }
-    const hasRole = roles.includes(req.user.role);
-    const hasSecondaryRole = Array.isArray(req.user.secondaryRoles) && 
-      req.user.secondaryRoles.some(r => roles.includes(r) || (r.toLowerCase() === 'student librarian' && roles.includes('LIBRARIAN')));
+    const normalize = (s: string) => (s || '').toLowerCase().replace(/[\s_-]+/g, '');
+    const normRoles = roles.map(normalize);
+    const hasRole = normRoles.includes(normalize(req.user.role));
+    const userSecRoles = Array.isArray(req.user.secondaryRoles) ? req.user.secondaryRoles : [];
+    const hasSecondaryRole = userSecRoles.some(r => 
+      normRoles.includes(normalize(r)) || 
+      (normalize(r) === 'studentlibrarian' && normRoles.includes('librarian'))
+    );
     if (!hasRole && !hasSecondaryRole) {
       res.status(403).json({ error: `Access denied. Required role: ${roles.join(' or ')}` });
       return;

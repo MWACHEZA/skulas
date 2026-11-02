@@ -42,6 +42,9 @@ exports.UpdateBrandingSchema = zod_1.z.object({
     body: zod_1.z.object({
         primaryColor: zod_1.z.string().optional().nullable(),
         accentColor: zod_1.z.string().optional().nullable(),
+        sidebarTheme: zod_1.z.string().optional().nullable(),
+        headerTheme: zod_1.z.string().optional().nullable(),
+        mode: zod_1.z.string().optional().nullable(),
         motto: zod_1.z.string().optional().nullable(),
     }),
 });
@@ -133,4 +136,3 @@ exports.SuperAdminSchoolSchema = zod_1.z.object({
         type: zod_1.z.string().optional().nullable(),
     }),
 });
-//# sourceMappingURL=school.schema.js.map

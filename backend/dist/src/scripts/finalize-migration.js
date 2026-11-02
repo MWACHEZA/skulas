@@ -116,4 +116,3 @@ async function moveFile(oldAbsPath, newRelPath) {
     }
 }
 migrate().finally(() => prisma.$disconnect());
-//# sourceMappingURL=finalize-migration.js.map

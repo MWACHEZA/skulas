@@ -617,6 +617,31 @@ exports.LedgerService = {
                 balance: await exports.LedgerService.getAccountBalance(acc.id, asOfDate)
             })));
         }
+        // Include Current Period Retained Earnings in Equity (Assets = Liabilities + Equity)
+        const incomeAccounts = await prisma_1.default.chartOfAccount.findMany({
+            where: { schoolId, type: 'INCOME', isActive: true }
+        });
+        const expenseAccounts = await prisma_1.default.chartOfAccount.findMany({
+            where: { schoolId, type: 'EXPENSE', isActive: true }
+        });
+        let currentPeriodIncome = 0;
+        for (const acc of incomeAccounts) {
+            const bal = await exports.LedgerService.getAccountBalance(acc.id, asOfDate);
+            currentPeriodIncome += bal;
+        }
+        let currentPeriodExpenses = 0;
+        for (const acc of expenseAccounts) {
+            const bal = await exports.LedgerService.getAccountBalance(acc.id, asOfDate);
+            currentPeriodExpenses += bal;
+        }
+        const currentPeriodEarnings = round2(currentPeriodIncome - currentPeriodExpenses);
+        if (Math.abs(currentPeriodEarnings) > 0.001) {
+            result.EQUITY.push({
+                code: '3999',
+                name: 'Current Period Retained Earnings (Net Surplus)',
+                balance: currentPeriodEarnings
+            });
+        }
         const totalAssets = round2(result.ASSET.reduce((s, a) => s + a.balance, 0));
         const totalLiabilities = round2(result.LIABILITY.reduce((s, a) => s + a.balance, 0));
         const totalEquity = round2(result.EQUITY.reduce((s, a) => s + a.balance, 0));
@@ -915,4 +940,3 @@ exports.LedgerService = {
     }
 };
 exports.default = exports.LedgerService;
-//# sourceMappingURL=ledger.service.js.map

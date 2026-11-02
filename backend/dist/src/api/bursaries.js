@@ -81,4 +81,3 @@ router.get('/', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCHOOL_AD
     }
 });
 exports.default = router;
-//# sourceMappingURL=bursaries.js.map

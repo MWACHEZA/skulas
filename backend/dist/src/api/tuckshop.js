@@ -32,7 +32,16 @@ function paymentAccountCode(paymentMethod) {
 // ─────────────────────────────────────────────────────────────────────────────
 router.get('/items', async (req, res) => {
     try {
-        const schoolId = req.user?.schoolId;
+        let schoolId = req.user?.schoolId || req.headers['x-school-id'];
+        if (!schoolId && req.user?.role === 'PARENT') {
+            const parent = await prisma_1.default.parent.findUnique({
+                where: { userId: req.user.id },
+                include: { students: { include: { student: true } } }
+            });
+            if (parent && parent.students.length > 0) {
+                schoolId = parent.students[0].student.schoolId;
+            }
+        }
         if (!schoolId)
             return res.status(400).json({ error: 'Missing schoolId' });
         const items = await prisma_1.default.tuckshopItem.findMany({
@@ -51,7 +60,16 @@ router.get('/items', async (req, res) => {
 // ─────────────────────────────────────────────────────────────────────────────
 router.post('/items', async (req, res) => {
     try {
-        const schoolId = req.user?.schoolId;
+        let schoolId = req.user?.schoolId || req.headers['x-school-id'];
+        if (!schoolId && req.user?.role === 'PARENT') {
+            const parent = await prisma_1.default.parent.findUnique({
+                where: { userId: req.user.id },
+                include: { students: { include: { student: true } } }
+            });
+            if (parent && parent.students.length > 0) {
+                schoolId = parent.students[0].student.schoolId;
+            }
+        }
         if (!schoolId)
             return res.status(400).json({ error: 'Missing schoolId' });
         const { name, category, price, stock } = req.body;
@@ -128,7 +146,16 @@ router.put('/items/:id', async (req, res) => {
 // ─────────────────────────────────────────────────────────────────────────────
 router.post('/sales', async (req, res) => {
     try {
-        const schoolId = req.user?.schoolId;
+        let schoolId = req.user?.schoolId || req.headers['x-school-id'];
+        if (!schoolId && req.user?.role === 'PARENT') {
+            const parent = await prisma_1.default.parent.findUnique({
+                where: { userId: req.user.id },
+                include: { students: { include: { student: true } } }
+            });
+            if (parent && parent.students.length > 0) {
+                schoolId = parent.students[0].student.schoolId;
+            }
+        }
         if (!schoolId)
             return res.status(400).json({ error: 'Missing schoolId' });
         const { items, paymentMethod, studentId } = req.body;
@@ -384,4 +411,3 @@ router.get('/reports', async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=tuckshop.js.map

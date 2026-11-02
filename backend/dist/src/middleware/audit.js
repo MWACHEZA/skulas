@@ -66,4 +66,3 @@ const auditMiddleware = (req, res, next) => {
     next();
 };
 exports.auditMiddleware = auditMiddleware;
-//# sourceMappingURL=audit.js.map

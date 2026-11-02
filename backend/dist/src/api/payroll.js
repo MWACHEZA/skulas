@@ -793,4 +793,3 @@ router.put('/entries/:id', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR',
     }
 });
 exports.default = router;
-//# sourceMappingURL=payroll.js.map

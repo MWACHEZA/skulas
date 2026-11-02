@@ -420,4 +420,3 @@ router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SCH
     }
 });
 exports.default = router;
-//# sourceMappingURL=awards.js.map

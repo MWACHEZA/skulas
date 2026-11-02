@@ -293,4 +293,3 @@ router.patch('/hostels/:id/assign-warden', async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=admin-leadership.js.map

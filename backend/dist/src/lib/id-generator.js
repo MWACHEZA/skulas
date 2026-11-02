@@ -70,4 +70,3 @@ async function generateSequentialId(schoolId, role, tx) {
     const paddedSequence = nextNumber.toString().padStart(padLength, '0');
     return `${pattern}${paddedSequence}`;
 }
-//# sourceMappingURL=id-generator.js.map

@@ -29,4 +29,3 @@ async function createSuperAdmin() {
 createSuperAdmin()
     .catch(console.error)
     .finally(() => prisma.$disconnect());
-//# sourceMappingURL=create-superadmin.js.map

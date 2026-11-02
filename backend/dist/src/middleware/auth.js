@@ -3,13 +3,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.requireOwnership = exports.requireRole = exports.requireAuth = void 0;
+exports.requireOwnership = exports.requireRole = exports.requireAuth = exports.invalidateAuthCache = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const prisma_1 = __importDefault(require("../lib/prisma"));
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
     console.error('CRITICAL ERROR: JWT_SECRET not set in environment. Authentication will fail.');
 }
+const authVerificationCache = new Map();
+const AUTH_CACHE_TTL_MS = 30 * 1000;
+const invalidateAuthCache = (userId) => {
+    if (!userId) {
+        authVerificationCache.clear();
+        return;
+    }
+    for (const key of authVerificationCache.keys()) {
+        if (key.startsWith(`${userId}:`)) {
+            authVerificationCache.delete(key);
+        }
+    }
+};
+exports.invalidateAuthCache = invalidateAuthCache;
 const prisma_2 = require("../lib/prisma");
 /**
  * Middleware: Verifies JWT and attaches decoded user to req.user
@@ -30,52 +44,75 @@ const requireAuth = async (req, res, next) => {
     }
     try {
         const decoded = jsonwebtoken_1.default.verify(token, JWT_SECRET);
-        const user = await prisma_1.default.user.findFirst({
-            where: { id: decoded.id },
-            select: {
-                isLocked: true,
-                passwordLastChanged: true,
-                school: { select: { status: true } }
+        const cacheKey = `${decoded.id}:${decoded.sessionId || 'nosess'}`;
+        const now = Date.now();
+        let cached = authVerificationCache.get(cacheKey);
+        if (!cached || now - cached.cachedAt > AUTH_CACHE_TTL_MS) {
+            const [user, session] = await Promise.all([
+                prisma_1.default.user.findFirst({
+                    where: { id: decoded.id },
+                    select: {
+                        isLocked: true,
+                        passwordLastChanged: true,
+                        secondaryRoles: true,
+                        school: { select: { status: true } }
+                    }
+                }),
+                !decoded.isImpersonated && decoded.sessionId
+                    ? prisma_1.default.userSession.findFirst({ where: { id: decoded.sessionId } })
+                    : Promise.resolve(null)
+            ]);
+            if (!user) {
+                authVerificationCache.delete(cacheKey);
+                res.status(401).json({ error: 'User no longer exists' });
+                return;
             }
-        });
-        if (!user) {
-            res.status(401).json({ error: 'User no longer exists' });
-            return;
+            const sessionValid = decoded.isImpersonated || !decoded.sessionId
+                ? true
+                : Boolean(session && session.isValid);
+            if (session && session.isValid && now - session.lastActiveAt.getTime() > 5 * 60 * 1000) {
+                prisma_1.default.userSession.update({ where: { id: session.id }, data: { lastActiveAt: new Date() } }).catch(() => { });
+            }
+            cached = {
+                isLocked: Boolean(user.isLocked),
+                passwordLastChangedMs: user.passwordLastChanged ? user.passwordLastChanged.getTime() : 0,
+                schoolStatus: user.school?.status,
+                secondaryRoles: user.secondaryRoles || [],
+                sessionValid,
+                cachedAt: now
+            };
+            authVerificationCache.set(cacheKey, cached);
         }
-        if (user.isLocked) {
+        if (cached.isLocked) {
             res.status(401).json({ error: 'Account is locked' });
             return;
         }
-        if (user.school?.status === 'suspended') {
+        if (cached.schoolStatus === 'suspended') {
             res.status(403).json({ error: 'Your school account has been suspended. Please contact support.' });
             return;
         }
-        if (user.school?.status === 'deleted') {
+        if (cached.schoolStatus === 'deleted') {
             res.status(403).json({ error: 'Your school account has been deleted.' });
             return;
         }
-        if (decoded.iat && user.passwordLastChanged) {
-            const iatDate = new Date(decoded.iat * 1000);
-            // Add a small buffer (5 seconds) to handle timestamp precision issues
-            if (iatDate.getTime() < user.passwordLastChanged.getTime() - 5000) {
+        if (decoded.iat && cached.passwordLastChangedMs) {
+            const iatMs = decoded.iat * 1000;
+            if (iatMs < cached.passwordLastChangedMs - 5000) {
                 res.status(401).json({ error: 'Token expired due to password change' });
                 return;
             }
         }
-        if (!decoded.isImpersonated && decoded.sessionId) {
-            const session = await prisma_1.default.userSession.findFirst({
-                where: { id: decoded.sessionId }
-            });
-            if (!session || !session.isValid) {
-                res.status(401).json({ error: 'Session revoked or invalid' });
-                return;
-            }
-            // Update last active periodically
-            if (Date.now() - session.lastActiveAt.getTime() > 5 * 60 * 1000) {
-                prisma_1.default.userSession.update({ where: { id: session.id }, data: { lastActiveAt: new Date() } }).catch(e => console.error(e));
-            }
+        if (!cached.sessionValid) {
+            res.status(401).json({ error: 'Session revoked or invalid' });
+            return;
         }
-        req.user = decoded;
+        const userSecRoles = (decoded.secondaryRoles && decoded.secondaryRoles.length > 0)
+            ? decoded.secondaryRoles
+            : (cached.secondaryRoles || []);
+        req.user = {
+            ...decoded,
+            secondaryRoles: userSecRoles
+        };
         // Inject the schoolId into the AsyncLocalStorage store for Prisma Enforcement
         if (decoded?.schoolId) {
             prisma_2.tenantStorage.run({ schoolId: decoded.schoolId }, () => next());
@@ -98,9 +135,12 @@ const requireRole = (...roles) => {
             res.status(401).json({ error: 'Unauthenticated' });
             return;
         }
-        const hasRole = roles.includes(req.user.role);
-        const hasSecondaryRole = Array.isArray(req.user.secondaryRoles) &&
-            req.user.secondaryRoles.some(r => roles.includes(r) || (r.toLowerCase() === 'student librarian' && roles.includes('LIBRARIAN')));
+        const normalize = (s) => (s || '').toLowerCase().replace(/[\s_-]+/g, '');
+        const normRoles = roles.map(normalize);
+        const hasRole = normRoles.includes(normalize(req.user.role));
+        const userSecRoles = Array.isArray(req.user.secondaryRoles) ? req.user.secondaryRoles : [];
+        const hasSecondaryRole = userSecRoles.some(r => normRoles.includes(normalize(r)) ||
+            (normalize(r) === 'studentlibrarian' && normRoles.includes('librarian')));
         if (!hasRole && !hasSecondaryRole) {
             res.status(403).json({ error: `Access denied. Required role: ${roles.join(' or ')}` });
             return;
@@ -141,4 +181,3 @@ const requireOwnership = (idParam = 'id') => {
     };
 };
 exports.requireOwnership = requireOwnership;
-//# sourceMappingURL=auth.js.map

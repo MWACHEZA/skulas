@@ -43,6 +43,7 @@ router.get('/settings', auth_1.requireAuth, async (req, res) => {
         if (req.user.role !== 'SCHOOL_ADMIN') {
             delete responsePayload.smtpPassword;
             delete responsePayload.whatsAppApiKey;
+            delete responsePayload.paynowMerchantKey;
         }
         res.json(responsePayload);
     }
@@ -65,7 +66,7 @@ router.patch('/settings', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_AD
             'smtpSsl', 'systemUrl', 'whatsappApiUrl', 'whatsappAccessToken', 'countryPhoneCode',
             'systemName', 'systemTitle', 'shortSystemName', 'systemEmail', 'phone',
             'address', 'paypalEmail', 'systemCurrency', 'runningSession', 'weekends',
-            'currentTerm', 'nextTermBegin', 'language', 'timezone', 'tawktoPropertyId',
+            'currentTerm', 'nextTermBegin', 'language', 'timezone',
             'theme', 'textAlignment', 'themeColour', 'enableParentMarketplace',
             'deletePaymentHistoryWithPartial', 'footer', 'country', 'state', 'city',
             'facebook', 'twitter', 'youtube', 'instagram', 'linkedin', 'tiktok',
@@ -141,7 +142,9 @@ router.patch('/settings', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_AD
             'defaultCashAccountId',
             'defaultExpenseAccountId',
             'exchangeRate',
-            'autoPostToLedger'
+            'autoPostToLedger',
+            'paynowMerchantId',
+            'paynowMerchantKey'
         ];
         const accountingData = {};
         for (const key of accountingKeys) {
@@ -297,12 +300,15 @@ router.patch('/modules', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADM
 });
 /**
  * @route   GET /api/schools/me
- * @desc    [SCHOOL_ADMIN] Get own school details with plan and subscription modules
+ * @desc    Get own school details with plan and subscription modules
  */
-router.get('/me', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
+router.get('/me', auth_1.requireAuth, async (req, res) => {
     try {
+        const schoolId = req.user?.schoolId;
+        if (!schoolId)
+            return res.status(400).json({ error: 'No school context for user' });
         const school = await prisma_1.default.school.findUnique({
-            where: { id: req.user.schoolId },
+            where: { id: schoolId },
             include: {
                 plan: true,
                 _count: { select: { students: true, teachers: true, classes: true } }
@@ -508,7 +514,7 @@ router.patch('/me/plan', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADM
  */
 router.patch('/branding', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), upload_1.upload.single('logo'), (0, validation_1.validate)(school_schema_1.UpdateBrandingSchema), async (req, res) => {
     try {
-        const { primaryColor, accentColor, motto } = req.body;
+        const { primaryColor, accentColor, sidebarTheme, headerTheme, mode, motto } = req.body;
         const logoFilename = req.file ? req.file.filename : undefined;
         const existing = await prisma_1.default.school.findUnique({ where: { id: req.user.schoolId } });
         if (!existing)
@@ -518,6 +524,9 @@ router.patch('/branding', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_AD
             ...currentBranding,
             primaryColor: primaryColor || currentBranding.primaryColor,
             accentColor: accentColor || currentBranding.accentColor,
+            sidebarTheme: sidebarTheme !== undefined ? sidebarTheme : currentBranding.sidebarTheme,
+            headerTheme: headerTheme !== undefined ? headerTheme : currentBranding.headerTheme,
+            mode: mode !== undefined ? mode : currentBranding.mode,
             motto: motto !== undefined ? motto : currentBranding.motto,
             logo: logoFilename || currentBranding.logo,
         };
@@ -525,6 +534,13 @@ router.patch('/branding', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_AD
             where: { id: req.user.schoolId },
             data: { branding: updatedBranding }
         });
+        if (primaryColor) {
+            await prisma_1.default.websiteSettings.upsert({
+                where: { schoolId: req.user.schoolId },
+                update: { schoolPrimaryColor: primaryColor },
+                create: { schoolId: req.user.schoolId, schoolPrimaryColor: primaryColor }
+            }).catch(e => console.warn('Could not sync schoolPrimaryColor to websiteSettings', e));
+        }
         res.json({ success: true, branding: school.branding });
     }
     catch (error) {
@@ -1352,8 +1368,21 @@ router.delete('/sports-equipment/:id', auth_1.requireAuth, (0, auth_1.requireRol
 // ── HOLIDAYS ──
 router.get('/holidays', auth_1.requireAuth, async (req, res) => {
     try {
+        let schoolId = req.user?.schoolId || req.headers['x-school-id'];
+        if (!schoolId && req.user?.role === 'PARENT') {
+            const parent = await prisma_1.default.parent.findUnique({
+                where: { userId: req.user.id },
+                include: { students: { include: { student: true } } }
+            });
+            if (parent && parent.students.length > 0) {
+                schoolId = parent.students[0].student.schoolId;
+            }
+        }
+        if (!schoolId) {
+            return res.json([]);
+        }
         const holidays = await prisma_1.default.holiday.findMany({
-            where: { schoolId: req.user.schoolId },
+            where: { schoolId },
             orderBy: { startDate: 'asc' }
         });
         res.json(holidays);
@@ -1362,25 +1391,72 @@ router.get('/holidays', auth_1.requireAuth, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch holidays' });
     }
 });
-router.post('/holidays', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), (0, validation_1.validate)(school_schema_1.HolidaySchema), async (req, res) => {
+router.post('/holidays', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), (0, validation_1.validate)(school_schema_1.HolidaySchema), async (req, res) => {
     try {
-        const { title, content, startDate, endDate } = req.body;
+        const { title, content, startDate, endDate, publishNoticeboard } = req.body;
+        const schoolId = req.user.schoolId;
+        const start = new Date(startDate);
+        const end = endDate ? new Date(endDate) : start;
         const holiday = await prisma_1.default.holiday.create({
             data: {
                 title,
-                content,
-                startDate: new Date(startDate),
-                endDate: new Date(endDate),
-                schoolId: req.user.schoolId
+                content: content || null,
+                startDate: start,
+                endDate: end,
+                schoolId
             }
         });
+        if (publishNoticeboard !== false) {
+            await prisma_1.default.noticeboard.create({
+                data: {
+                    title,
+                    content: content || `Campus Event scheduled for ${start.toLocaleDateString()}`,
+                    date: start,
+                    schoolId
+                }
+            }).catch(err => console.error('Failed to sync noticeboard event:', err));
+        }
         res.json(holiday);
     }
     catch (error) {
+        console.error('Failed to create holiday:', error);
         res.status(500).json({ error: 'Failed to create holiday' });
     }
 });
-router.delete('/holidays/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
+router.put('/holidays/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, content, startDate, endDate, publishNoticeboard } = req.body;
+        const schoolId = req.user.schoolId;
+        const start = startDate ? new Date(startDate) : undefined;
+        const end = endDate ? new Date(endDate) : start;
+        const updated = await prisma_1.default.holiday.update({
+            where: { id: id },
+            data: {
+                title,
+                content: content !== undefined ? content : undefined,
+                startDate: start,
+                endDate: end
+            }
+        });
+        if (publishNoticeboard && title && start) {
+            await prisma_1.default.noticeboard.create({
+                data: {
+                    title,
+                    content: content || `Updated Campus Event scheduled for ${start.toLocaleDateString()}`,
+                    date: start,
+                    schoolId
+                }
+            }).catch(err => console.error('Failed to sync noticeboard event:', err));
+        }
+        res.json(updated);
+    }
+    catch (error) {
+        console.error('Failed to update holiday:', error);
+        res.status(500).json({ error: 'Failed to update holiday' });
+    }
+});
+router.delete('/holidays/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY'), async (req, res) => {
     try {
         await prisma_1.default.holiday.delete({ where: { id: req.params.id } });
         res.json({ success: true });
@@ -1518,6 +1594,9 @@ router.get('/:code', async (req, res) => {
             : new Date(school.createdAt).getFullYear();
         const currentYear = new Date().getFullYear();
         const yearsOfExcellence = Math.max(0, currentYear - firstAttendedYear);
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
         res.json({
             ...school,
             yearsOfExcellence,
@@ -1670,28 +1749,39 @@ router.get('/:code/content', async (req, res) => {
  * @route   GET /api/schools/connections/pending
  * @desc    [SCHOOL_ADMIN] Fetch all users with pending link requests (Suppliers or Parents)
  */
-router.get('/connections/pending', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
-    const { role } = req.query;
+router.get('/connections/pending', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'SUPER_ADMIN', 'PRINCIPAL'), async (req, res) => {
+    const { role, status } = req.query;
     try {
         const schoolId = req.user.schoolId;
         if (role === 'PARENT') {
+            const statusFilter = status === 'ALL'
+                ? undefined
+                : (typeof status === 'string' && status ? status : 'PENDING');
             const pendingParents = await prisma_1.default.parentStudent.findMany({
                 where: {
                     student: { schoolId },
-                    status: 'PENDING'
+                    ...(statusFilter ? { status: statusFilter } : {})
                 },
                 include: {
                     parent: { include: { user: true } },
-                    student: true
-                }
+                    student: { include: { class: true } }
+                },
+                orderBy: { createdAt: 'desc' }
             });
             return res.json(pendingParents.map(p => ({
                 ...p.parent.user,
-                parentRecordId: p.parent.id,
+                id: p.id,
                 connectionId: p.id,
+                parentUserId: p.parent.userId,
+                parentRecordId: p.parent.id,
+                linkStatus: p.status,
+                createdAt: p.createdAt,
+                studentRecordId: p.student.id,
                 studentName: p.student.name,
                 studentId: p.student.studentId,
-                relation: p.relation
+                studentClass: p.student.class?.name || 'Unassigned',
+                relation: p.relation,
+                isPrimaryPayer: p.isPrimaryPayer
             })));
         }
         // Default: Fetch PENDING connections from SchoolSupplier table
@@ -1726,24 +1816,66 @@ router.get('/connections/pending', auth_1.requireAuth, (0, auth_1.requireRole)('
 });
 /**
  * @route   PATCH /api/schools/connections/:userId/approve
- * @desc    [SCHOOL_ADMIN] Approve a pending connection request
+ * @desc    [SCHOOL_ADMIN] Approve a pending connection request (accepts connectionId or userId)
  */
-router.patch('/connections/:userId/approve', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'), async (req, res) => {
+router.patch('/connections/:userId/approve', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'SUPER_ADMIN', 'PRINCIPAL'), async (req, res) => {
     try {
-        const applicantId = req.params.userId;
+        const targetId = req.params.userId;
         const school = await prisma_1.default.school.findUnique({ where: { id: req.user.schoolId } });
         if (!school)
             return res.status(404).json({ error: 'School not found' });
-        const applicant = await prisma_1.default.user.findFirst({ where: { id: applicantId } });
+        // 1. Direct lookup by ParentStudent connectionId first (most specific, supports parents with multiple children)
+        const directParentConn = await prisma_1.default.parentStudent.findFirst({
+            where: {
+                id: targetId,
+                student: { schoolId: school.id }
+            }
+        });
+        if (directParentConn) {
+            const updated = await prisma_1.default.parentStudent.update({
+                where: { id: directParentConn.id },
+                data: { status: 'APPROVED' }
+            });
+            return res.json({
+                success: true,
+                message: 'Parent-Student link approved successfully',
+                connection: updated
+            });
+        }
+        // 2. Direct lookup by SchoolSupplier connectionId
+        const directSupplierConn = await prisma_1.default.schoolSupplier.findFirst({
+            where: {
+                id: targetId,
+                schoolId: school.id
+            },
+            include: { supplier: true }
+        });
+        if (directSupplierConn) {
+            const schoolSpecificId = await (0, id_generator_1.generateSequentialId)(school.id, 'SUPPLIER');
+            await prisma_1.default.$transaction([
+                prisma_1.default.schoolSupplier.update({
+                    where: { id: directSupplierConn.id },
+                    data: { status: 'APPROVED', schoolSpecificId }
+                }),
+                ...(directSupplierConn.supplier.userId ? [
+                    prisma_1.default.user.update({
+                        where: { id: directSupplierConn.supplier.userId },
+                        data: { staffId: schoolSpecificId }
+                    })
+                ] : [])
+            ]);
+            return res.json({ success: true, message: 'Supplier connection approved successfully', schoolSpecificId });
+        }
+        // 3. Fallback: Lookup by applicant User ID
+        const applicant = await prisma_1.default.user.findFirst({ where: { id: targetId } });
         if (!applicant)
-            return res.status(404).json({ error: 'User not found' });
-        // 1. Find the pending connection (Check Supplier first, then Parent)
+            return res.status(404).json({ error: 'User or connection not found' });
         let schoolSpecificId = null;
         let type = 'SUPPLIER';
         let connection = await prisma_1.default.schoolSupplier.findFirst({
             where: {
                 schoolId: school.id,
-                supplier: { userId: applicantId },
+                supplier: { userId: targetId },
                 status: 'PENDING'
             }
         });
@@ -1751,7 +1883,7 @@ router.patch('/connections/:userId/approve', auth_1.requireAuth, (0, auth_1.requ
             connection = await prisma_1.default.parentStudent.findFirst({
                 where: {
                     student: { schoolId: school.id },
-                    parent: { userId: applicantId },
+                    parent: { userId: targetId },
                     status: 'PENDING'
                 }
             });
@@ -1760,19 +1892,15 @@ router.patch('/connections/:userId/approve', auth_1.requireAuth, (0, auth_1.requ
         if (!connection) {
             return res.status(400).json({ error: 'No pending request found for this school' });
         }
-        // 2. Handle role-specific logic (e.g., ID generation)
         if (type === 'SUPPLIER') {
-            // Generate ID before the transaction (atomic via SchoolSequence table)
             schoolSpecificId = await (0, id_generator_1.generateSequentialId)(school.id, 'SUPPLIER');
-            // Both writes must succeed or neither should — wrap in transaction
             await prisma_1.default.$transaction([
                 prisma_1.default.schoolSupplier.update({
                     where: { id: connection.id },
                     data: { status: 'APPROVED', schoolSpecificId }
                 }),
-                // Sync generated ID back to the User table
                 prisma_1.default.user.update({
-                    where: { id: applicantId },
+                    where: { id: targetId },
                     data: { staffId: schoolSpecificId }
                 })
             ]);
@@ -1789,5 +1917,137 @@ router.patch('/connections/:userId/approve', auth_1.requireAuth, (0, auth_1.requ
         res.status(500).json({ error: 'Failed to approve connection' });
     }
 });
+/**
+ * @route   PATCH /api/schools/connections/:id/reject
+ * @desc    [SCHOOL_ADMIN] Reject or revoke a Parent-Student or Supplier connection request
+ */
+router.patch('/connections/:id/reject', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'SUPER_ADMIN', 'PRINCIPAL'), async (req, res) => {
+    try {
+        const targetId = req.params.id;
+        const schoolId = req.user.schoolId;
+        const parentConn = await prisma_1.default.parentStudent.findFirst({
+            where: {
+                OR: [
+                    { id: targetId, student: { schoolId } },
+                    { parent: { userId: targetId }, student: { schoolId }, status: 'PENDING' }
+                ]
+            }
+        });
+        if (parentConn) {
+            const updated = await prisma_1.default.parentStudent.update({
+                where: { id: parentConn.id },
+                data: { status: 'REJECTED' }
+            });
+            return res.json({ success: true, message: 'Parent-Student link rejected', connection: updated });
+        }
+        const supplierConn = await prisma_1.default.schoolSupplier.findFirst({
+            where: {
+                OR: [
+                    { id: targetId, schoolId },
+                    { supplier: { userId: targetId }, schoolId, status: 'PENDING' }
+                ]
+            }
+        });
+        if (supplierConn) {
+            await prisma_1.default.schoolSupplier.update({
+                where: { id: supplierConn.id },
+                data: { status: 'REJECTED' }
+            });
+            return res.json({ success: true, message: 'Supplier connection rejected' });
+        }
+        return res.status(404).json({ error: 'Connection request not found' });
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to reject connection' });
+    }
+});
+/**
+ * @route   POST /api/schools/connections/parent-student
+ * @desc    [SCHOOL_ADMIN] Manually create an approved parent-student link
+ */
+router.post('/connections/parent-student', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'SUPER_ADMIN', 'PRINCIPAL'), async (req, res) => {
+    try {
+        const schoolId = req.user.schoolId;
+        const { parentUserId, studentId, relation, isPrimaryPayer } = req.body;
+        if (!parentUserId || !studentId) {
+            return res.status(400).json({ error: 'Both Parent and Student are required' });
+        }
+        const student = await prisma_1.default.student.findFirst({
+            where: { id: studentId, schoolId }
+        });
+        if (!student) {
+            return res.status(404).json({ error: 'Student not found in this school' });
+        }
+        const parentUser = await prisma_1.default.user.findFirst({
+            where: { id: parentUserId }
+        });
+        if (!parentUser) {
+            return res.status(404).json({ error: 'Parent user not found' });
+        }
+        let parent = await prisma_1.default.parent.findUnique({
+            where: { userId: parentUser.id }
+        });
+        if (!parent) {
+            parent = await prisma_1.default.parent.create({
+                data: { userId: parentUser.id }
+            });
+        }
+        const link = await prisma_1.default.parentStudent.upsert({
+            where: {
+                parentId_studentId: {
+                    parentId: parent.id,
+                    studentId: student.id
+                }
+            },
+            update: {
+                relation: relation || 'Guardian',
+                isPrimaryPayer: !!isPrimaryPayer,
+                status: 'APPROVED'
+            },
+            create: {
+                parentId: parent.id,
+                studentId: student.id,
+                relation: relation || 'Guardian',
+                isPrimaryPayer: !!isPrimaryPayer,
+                status: 'APPROVED'
+            }
+        });
+        return res.json({ success: true, message: 'Parent linked to student successfully!', link });
+    }
+    catch (error) {
+        console.error('Error creating parent-student link:', error);
+        res.status(500).json({ error: 'Failed to create parent-student link' });
+    }
+});
+/**
+ * @route   DELETE /api/schools/connections/:id
+ * @desc    [SCHOOL_ADMIN] Permanently unlink/delete a parent-student or supplier connection
+ */
+router.delete('/connections/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'SUPER_ADMIN', 'PRINCIPAL'), async (req, res) => {
+    try {
+        const targetId = req.params.id;
+        const schoolId = req.user.schoolId;
+        const parentConn = await prisma_1.default.parentStudent.findFirst({
+            where: {
+                id: targetId,
+                student: { schoolId }
+            }
+        });
+        if (parentConn) {
+            await prisma_1.default.parentStudent.delete({ where: { id: parentConn.id } });
+            return res.json({ success: true, message: 'Parent-student linkage removed successfully' });
+        }
+        const supplierConn = await prisma_1.default.schoolSupplier.findFirst({
+            where: { id: targetId, schoolId }
+        });
+        if (supplierConn) {
+            await prisma_1.default.schoolSupplier.delete({ where: { id: supplierConn.id } });
+            return res.json({ success: true, message: 'Supplier connection removed successfully' });
+        }
+        return res.status(404).json({ error: 'Connection not found' });
+    }
+    catch (error) {
+        res.status(500).json({ error: 'Failed to remove connection' });
+    }
+});
 exports.default = router;
-//# sourceMappingURL=schools.js.map

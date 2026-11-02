@@ -271,4 +271,3 @@ if (require.main === module) {
         process.exit(1);
     });
 }
-//# sourceMappingURL=portal-consolidation-guards.test.js.map

@@ -789,4 +789,3 @@ router.get('/leave-cross-check', auth_1.requireAuth, async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=staff-attendance.js.map

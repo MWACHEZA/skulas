@@ -67,4 +67,3 @@ router.get('/metrics', auth_1.requireAuth, (0, auth_1.requireRole)('BURSAR', 'SC
 // Enforce boundary: explicit endpoints only for bursar actions
 // Avoid discipline/marks
 exports.default = router;
-//# sourceMappingURL=bursar-dashboard.js.map

@@ -377,4 +377,3 @@ router.get('/hostel-stock', exports.requireStudentLeader, async (req, res) => {
     }
 });
 exports.default = router;
-//# sourceMappingURL=student-requests.js.map

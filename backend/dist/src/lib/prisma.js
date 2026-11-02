@@ -91,4 +91,3 @@ const prisma = basePrisma.$extends({
     }
 });
 exports.default = prisma;
-//# sourceMappingURL=prisma.js.map

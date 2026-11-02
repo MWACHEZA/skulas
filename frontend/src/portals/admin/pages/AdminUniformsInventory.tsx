@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../lib/api';
 import { useToast } from '../../../context/ToastContext';
-import { formatCurrency } from '../../../utils/formatters';
-import { SearchInput, ExportButton, SearchableCombobox, Pagination, usePagination, type ComboboxOption, PaginatedTable } from '../../../components/shared';
+import { SearchInput, ExportButton, SearchableCombobox, Pagination, usePagination, type ComboboxOption, PaginatedTable, SkeletonLoader } from '../../../components/shared';
 import '../../../styles/portal.css';
 
 type UniformTab = 'stock' | 'kits' | 'issue' | 'alerts' | 'reports';
@@ -38,18 +37,6 @@ interface UniformKit {
   totalPrice: number;
 }
 
-interface UniformIssuance {
-  id: string;
-  studentId: string;
-  student?: { id: string; name: string; studentId: string };
-  term: string;
-  year: number;
-  totalAmount: number;
-  items: Array<{ productId: string; productName: string; size: string; qty: number; unitPrice: number; total: number }>;
-  paymentStatus: string;
-  collectionStatus: string;
-  createdAt: string;
-}
 
 interface StockLedgerEntry {
   id: string;
@@ -63,6 +50,16 @@ interface StockLedgerEntry {
   product?: { name: string; size: string };
 }
 
+interface UniformStudentOption {
+  id: string;
+  name: string;
+  studentId?: string;
+  admissionNumber?: string;
+  currentClass?: string;
+  grade?: string;
+  status?: string;
+}
+
 export default function AdminUniformsInventory() {
   const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -72,7 +69,6 @@ export default function AdminUniformsInventory() {
   const [products, setProducts] = useState<UniformProduct[]>([]);
   const [categories, setCategories] = useState<UniformCategory[]>([]);
   const [kits, setKits] = useState<UniformKit[]>([]);
-  const [issuances, setIssuances] = useState<UniformIssuance[]>([]);
   const [ledgerEntries, setLedgerEntries] = useState<StockLedgerEntry[]>([]);
   const [lowStockAlerts, setLowStockAlerts] = useState<UniformProduct[]>([]);
 
@@ -83,8 +79,9 @@ export default function AdminUniformsInventory() {
   // Modals & Forms
   const [showAddProductModal, setShowAddProductModal] = useState(false);
   const [showAddKitModal, setShowAddKitModal] = useState(false);
-  const [showRestockModal, setShowRestockModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  const generateUniformBarcode = () => `UNI-${Math.floor(100000 + Math.random() * 900000)}`;
 
   // Add Product Form State
   const [productForm, setProductForm] = useState({
@@ -100,6 +97,22 @@ export default function AdminUniformsInventory() {
     barcode: ''
   });
 
+  const openAddProductModal = () => {
+    setProductForm({
+      name: '',
+      categoryId: '',
+      gender: 'UNISEX',
+      size: 'M',
+      ageRange: 'Secondary',
+      costPrice: '',
+      sellingPrice: '',
+      stockQty: 50,
+      minStockAlert: 10,
+      barcode: generateUniformBarcode()
+    });
+    setShowAddProductModal(true);
+  };
+
   // Kits Builder Form State
   const [kitForm, setKitForm] = useState({
     name: '',
@@ -111,7 +124,7 @@ export default function AdminUniformsInventory() {
   // Issuance Form State
   const [studentOptions, setStudentOptions] = useState<ComboboxOption[]>([]);
   const [isSearchingStudents, setIsSearchingStudents] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState<any>(null);
+  const [selectedStudent, setSelectedStudent] = useState<UniformStudentOption | null>(null);
   const [selectedKitId, setSelectedKitId] = useState('');
   const [issueCart, setIssueCart] = useState<Array<{ productId: string; productName: string; size: string; qty: number; unitPrice: number }>>([]);
 
@@ -119,8 +132,8 @@ export default function AdminUniformsInventory() {
     setIsSearchingStudents(true);
     try {
       const res = await api.get(`/api/students?search=${encodeURIComponent(query)}`);
-      const list = Array.isArray(res.data) ? res.data : res.data?.students || [];
-      setStudentOptions(list.map((s: any) => ({
+      const list: UniformStudentOption[] = Array.isArray(res.data) ? res.data : res.data?.students || [];
+      setStudentOptions(list.map((s: UniformStudentOption) => ({
         value: s.id,
         label: s.name,
         subLabel: `${s.studentId || s.admissionNumber || ''} • ${s.currentClass || s.grade || 'Enrolled'}`.trim(),
@@ -138,20 +151,10 @@ export default function AdminUniformsInventory() {
     if (activeTab === 'issue' && studentOptions.length === 0) {
       searchStudents('');
     }
-  }, [activeTab]);
+  }, [activeTab, studentOptions.length]);
 
-  // Restock / GRN Form State
-  const [grnForm, setGrnForm] = useState({
-    grnNumber: '',
-    supplierId: '',
-    items: [] as Array<{ productId: string; qty: number; unitCost: number }>
-  });
 
-  useEffect(() => {
-    fetchInitialData();
-  }, [activeTab]);
-
-  const fetchInitialData = async () => {
+  const fetchInitialData = useCallback(async () => {
     setLoading(true);
     try {
       const [prodsRes, catsRes, kitsRes, alertsRes] = await Promise.all([
@@ -170,13 +173,17 @@ export default function AdminUniformsInventory() {
         const ledgerRes = await api.get('/api/uniforms/stock-ledger');
         setLedgerEntries(Array.isArray(ledgerRes.data) ? ledgerRes.data : []);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error fetching uniform data:', err);
       showToast('Failed to load uniform store data', 'error');
     } finally {
       setLoading(false);
     }
-  };
+  }, [activeTab, showToast]);
+
+  useEffect(() => {
+    fetchInitialData();
+  }, [fetchInitialData]);
 
   const handleTabChange = (tab: UniformTab) => {
     setSearchParams({ tab });
@@ -214,8 +221,9 @@ export default function AdminUniformsInventory() {
         minStockAlert: 10,
         barcode: ''
       });
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Failed to save product', 'error');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string } } };
+      showToast(error.response?.data?.error || 'Failed to save product', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -252,8 +260,9 @@ export default function AdminUniformsInventory() {
       setKits(prev => [res.data, ...prev]);
       setShowAddKitModal(false);
       setKitForm({ name: '', classLevel: 'Form 1', gender: 'UNISEX', selectedProductIds: [] });
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Failed to create kit', 'error');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string } } };
+      showToast(error.response?.data?.error || 'Failed to create kit', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -286,8 +295,9 @@ export default function AdminUniformsInventory() {
       setSelectedStudent(null);
       setSelectedKitId('');
       fetchInitialData();
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Failed to issue uniform', 'error');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string } } };
+      showToast(error.response?.data?.error || 'Failed to issue uniform', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -316,8 +326,9 @@ export default function AdminUniformsInventory() {
       });
 
       showToast(`Purchase requisition ${res.data.refNumber} submitted to Bursar!`, 'success');
-    } catch (err: any) {
-      showToast(err.response?.data?.error || 'Failed to create requisition', 'error');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string } } };
+      showToast(error.response?.data?.error || 'Failed to create requisition', 'error');
     } finally {
       setSubmitting(false);
     }
@@ -363,7 +374,7 @@ export default function AdminUniformsInventory() {
             className="btn btn-primary"
             onClick={() => {
               if (activeTab === 'kits') setShowAddKitModal(true);
-              else setShowAddProductModal(true);
+              else openAddProductModal();
             }}
             style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 18px', background: '#0284c7', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}
           >
@@ -477,8 +488,15 @@ export default function AdminUniformsInventory() {
         </button>
       </div>
 
-      {/* TAB 1: Stock Dashboard */}
-      {activeTab === 'stock' && (
+      {/* Tab Panels */}
+      {loading ? (
+        <div style={{ padding: '24px', background: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <SkeletonLoader type="table" rows={8} columns={6} />
+        </div>
+      ) : (
+        <>
+          {/* TAB 1: Stock Dashboard */}
+          {activeTab === 'stock' && (
         <div>
           <div style={{ display: 'flex', gap: '12px', marginBottom: '16px', background: '#fff', padding: '14px', borderRadius: '12px', border: '1px solid #e2e8f0', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
             <div style={{ flex: 1, minWidth: '280px', maxWidth: '480px' }}>
@@ -627,7 +645,7 @@ export default function AdminUniformsInventory() {
                 value={selectedStudent?.id}
                 onChange={(_val, opt) => {
                   const chosen = Array.isArray(opt) ? opt[0] : opt;
-                  setSelectedStudent(chosen?.extra || null);
+                  setSelectedStudent((chosen?.extra as UniformStudentOption) || null);
                 }}
                 placeholder="Type to search students..."
                 loading={isSearchingStudents}
@@ -938,6 +956,8 @@ export default function AdminUniformsInventory() {
           />
         </div>
       )}
+        </>
+      )}
 
       {/* Modal: Add Product */}
       {showAddProductModal && (
@@ -959,6 +979,19 @@ export default function AdminUniformsInventory() {
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
                 <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Category</label>
+                  <select
+                    value={productForm.categoryId}
+                    onChange={e => setProductForm({ ...productForm, categoryId: e.target.value })}
+                    style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1px solid #cbd5e1' }}
+                  >
+                    <option value="">Select Category (Optional)</option>
+                    {categories.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
                   <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Gender</label>
                   <select
                     value={productForm.gender}
@@ -970,6 +1003,9 @@ export default function AdminUniformsInventory() {
                     <option value="GIRLS">Girls</option>
                   </select>
                 </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Size *</label>
                   <input
@@ -978,6 +1014,16 @@ export default function AdminUniformsInventory() {
                     placeholder="e.g. 32, M, 14"
                     value={productForm.size}
                     onChange={e => setProductForm({ ...productForm, size: e.target.value })}
+                    style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1px solid #cbd5e1' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Age / Stage</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Primary, Secondary"
+                    value={productForm.ageRange}
+                    onChange={e => setProductForm({ ...productForm, ageRange: e.target.value })}
                     style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1px solid #cbd5e1' }}
                   />
                 </div>
@@ -1021,14 +1067,49 @@ export default function AdminUniformsInventory() {
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, marginBottom: 4 }}>Barcode</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. UNI-BLZ-32"
-                    value={productForm.barcode}
-                    onChange={e => setProductForm({ ...productForm, barcode: e.target.value })}
-                    style={{ width: '100%', padding: '8px 10px', borderRadius: 6, border: '1px solid #cbd5e1' }}
-                  />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                    <label style={{ fontSize: '0.85rem', fontWeight: 600 }}>Barcode</label>
+                    <span style={{ fontSize: '0.72rem', color: '#0284c7', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <i className="fas fa-lock" style={{ fontSize: '0.65rem' }} /> Auto-Generated
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <input
+                      type="text"
+                      readOnly
+                      placeholder="Auto-generated barcode"
+                      value={productForm.barcode || generateUniformBarcode()}
+                      style={{
+                        width: '100%',
+                        padding: '8px 10px',
+                        borderRadius: 6,
+                        border: '1px solid #cbd5e1',
+                        backgroundColor: '#f8fafc',
+                        color: '#334155',
+                        cursor: 'not-allowed',
+                        fontFamily: 'monospace',
+                        fontWeight: 600
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setProductForm(prev => ({ ...prev, barcode: generateUniformBarcode() }))}
+                      title="Regenerate Barcode"
+                      style={{
+                        padding: '8px 12px',
+                        background: '#e0f2fe',
+                        border: '1px solid #bae6fd',
+                        borderRadius: 6,
+                        color: '#0369a1',
+                        cursor: 'pointer',
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      <i className="fas fa-sync-alt" />
+                    </button>
+                  </div>
                 </div>
               </div>
 

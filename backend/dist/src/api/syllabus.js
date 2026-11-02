@@ -394,4 +394,3 @@ router.delete('/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN'
     }
 });
 exports.default = router;
-//# sourceMappingURL=syllabus.js.map

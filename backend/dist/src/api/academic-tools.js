@@ -131,4 +131,3 @@ router.delete('/question-papers/:id', auth_1.requireAuth, (0, auth_1.requireRole
     }
 });
 exports.default = router;
-//# sourceMappingURL=academic-tools.js.map

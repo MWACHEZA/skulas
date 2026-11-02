@@ -3,19 +3,21 @@ import type { Prisma } from '../generated/client';
 
 export class SequenceService {
   /**
-   * Atomically generate the next document sequence number for a given tenant and prefix.
-   * Format default: {PREFIX}-{YEAR}-{5-digit-padded-number}, e.g. "INV-2026-00001"
+   * Atomically generate a batch of sequential document numbers for a given tenant and prefix.
+   * Eliminates hundreds of individual roundtrips during bulk invoicing.
    */
-  static async nextDocNo(
+  static async nextDocNos(
     tenantId: string,
     prefix: string,
+    count: number = 1,
     tx?: Prisma.TransactionClient
-  ): Promise<string> {
+  ): Promise<string[]> {
+    if (count <= 0) return [];
     const db = tx || prisma;
     const currentYear = new Date().getFullYear();
     const cleanPrefix = prefix.toUpperCase().trim();
 
-    // Use SELECT ... FOR UPDATE or Prisma transaction upsert to guarantee atomic locking
+    // Use Prisma upsert to ensure the sequence record exists
     const sequence = await db.documentSequence.upsert({
       where: {
         schoolId_prefix: {
@@ -33,16 +35,18 @@ export class SequenceService {
       }
     });
 
-    let nextNumber = sequence.lastNumber + 1;
+    let startNumber = sequence.lastNumber + 1;
     let sequenceYear = sequence.year;
 
     // Reset sequence counter on year boundary
     if (sequenceYear !== currentYear) {
-      nextNumber = 1;
+      startNumber = 1;
       sequenceYear = currentYear;
     }
 
-    // Atomically increment and save
+    const endNumber = startNumber + count - 1;
+
+    // Atomically increment and save the entire batch range in one single update
     const updated = await db.documentSequence.update({
       where: {
         schoolId_prefix: {
@@ -51,13 +55,30 @@ export class SequenceService {
         }
       },
       data: {
-        lastNumber: nextNumber,
+        lastNumber: endNumber,
         year: sequenceYear
       }
     });
 
-    const paddedNum = String(updated.lastNumber).padStart(5, '0');
-    return `${cleanPrefix}-${sequenceYear}-${paddedNum}`;
+    const results: string[] = [];
+    for (let n = startNumber; n <= endNumber; n++) {
+      const paddedNum = String(n).padStart(5, '0');
+      results.push(`${cleanPrefix}-${sequenceYear}-${paddedNum}`);
+    }
+    return results;
+  }
+
+  /**
+   * Atomically generate the next document sequence number for a given tenant and prefix.
+   * Format default: {PREFIX}-{YEAR}-{5-digit-padded-number}, e.g. "INV-2026-00001"
+   */
+  static async nextDocNo(
+    tenantId: string,
+    prefix: string,
+    tx?: Prisma.TransactionClient
+  ): Promise<string> {
+    const [docNo] = await this.nextDocNos(tenantId, prefix, 1, tx);
+    return docNo;
   }
 
   /**

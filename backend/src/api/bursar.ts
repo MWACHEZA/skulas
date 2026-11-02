@@ -220,7 +220,12 @@ router.get('/receipts', requireRole('BURSAR', 'SCHOOL_ADMIN', 'SUPER_ADMIN', 'FI
     const receipts = await prisma.receipt.findMany({
       where: {
         schoolId,
-        ...(studentId ? { studentId: String(studentId) } : {}),
+        ...(studentId ? {
+          OR: [
+            { studentId: String(studentId) },
+            { student: { studentId: String(studentId) } }
+          ]
+        } : {}),
         ...(paymentMethod ? { paymentMethod: String(paymentMethod) } : {})
       },
       include: {

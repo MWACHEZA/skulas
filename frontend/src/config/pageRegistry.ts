@@ -1,4 +1,4 @@
-import { PERMISSIONS } from './permissions';
+import { PERMISSIONS, type UserContext } from './permissions';
 
 export type TenantModule = 'core' | 'boarding' | 'clinic' | 'tuckshop' | 'transport' | 'uniforms' | 'farm' | 'sports';
 
@@ -18,7 +18,7 @@ export interface PageDefinition {
   tabs?: { id: string; label: string; route?: string; module?: TenantModule }[];
   department?: string;
   approvalChain?: string[];
-  condition?: (user: any) => boolean;
+  condition?: (user: UserContext) => boolean;
   isSetupRequired?: boolean;
   showTour?: boolean;
 }
@@ -287,6 +287,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     icon: 'fas fa-shield-alt',
     permissionKey: PERMISSIONS.STUDENT_LIFE_CLOCK_LOGS,
     portalVisibility: ['admin', 'ancillary'],
+    requiredSecondaryRoles: ['Security Guard', 'Security Supervisor', 'Night Watchman', 'Gate Officer', 'Security Officer'],
     tabs: [
       { id: 'overview', label: 'Campus Occupancy' },
       { id: 'traffic', label: 'Real-Time Traffic Feed' }
@@ -301,6 +302,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     icon: 'fas fa-qrcode',
     permissionKey: PERMISSIONS.STUDENT_LIFE_CLOCK_LOGS,
     portalVisibility: ['admin', 'ancillary'],
+    requiredSecondaryRoles: ['Security Guard', 'Security Supervisor', 'Night Watchman', 'Gate Officer', 'Security Officer'],
     searchKeywords: ['qr scanner', 'gate terminal', 'camera scanner', 'guard scanner', 'clock in', 'gate entry']
   },
   {
@@ -1106,7 +1108,6 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     route: '/ancillary/dashboard',
     group: 'STUDENT_LIFE',
     icon: 'fas fa-fingerprint',
-    permissionKey: PERMISSIONS.STUDENT_LIFE_CLOCK_LOGS,
     portalVisibility: ['ancillary'],
     searchKeywords: ['attendance', 'clock-in', 'staff roll call']
   },
@@ -1119,6 +1120,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     module: 'boarding',
     permissionKey: PERMISSIONS.PEOPLE_HOUSES_MANAGE,
     portalVisibility: ['ancillary'],
+    requiredSecondaryRoles: ['Boarding Master', 'Hostel Matron', 'Hostel Supervisor', 'House Master', 'Matron', 'Warden'],
     tabs: [
       { id: 'occupancy', label: 'Occupancy' },
       { id: 'rollcall', label: 'Roll Call' },
@@ -1138,6 +1140,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     module: 'boarding',
     permissionKey: PERMISSIONS.STUDENT_LIFE_PREFECTS,
     portalVisibility: ['ancillary'],
+    requiredSecondaryRoles: ['Head Chef', 'Cook', 'Catering Supervisor', 'Kitchen Assistant', 'Caterer', 'DH Captain'],
     searchKeywords: ['kitchen', 'meals', 'dining hall', 'catering']
   },
   {
@@ -1149,6 +1152,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     module: 'sports',
     permissionKey: PERMISSIONS.STUDENT_LIFE_SPORTS,
     portalVisibility: ['ancillary'],
+    requiredSecondaryRoles: ['Sports Coordinator', 'Sports Master', 'Sports Captain', 'Groundskeeper'],
     searchKeywords: ['grounds', 'pitches', 'maintenance', 'sports']
   },
   {
@@ -1160,6 +1164,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     module: 'transport',
     permissionKey: PERMISSIONS.TRANSPORT_VEHICLES_MANAGE,
     portalVisibility: ['ancillary'],
+    requiredSecondaryRoles: ['Driver', 'Transport Coordinator', 'Transport Manager'],
     searchKeywords: ['fleet', 'buses', 'transport', 'vehicles']
   },
   {
@@ -1180,6 +1185,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     icon: 'fas fa-tools',
     permissionKey: PERMISSIONS.ASSETS_MAINTENANCE,
     portalVisibility: ['ancillary'],
+    requiredSecondaryRoles: ['Maintenance Supervisor', 'Plumber', 'Electrician', 'Carpenter', 'General Maintenance Worker', 'Handyman'],
     searchKeywords: ['repairs', 'maintenance', 'assets', 'equipment']
   },
   {
@@ -1191,7 +1197,26 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     module: 'farm',
     permissionKey: PERMISSIONS.FARM_PROJECTS_MANAGE,
     portalVisibility: ['ancillary'],
+    requiredSecondaryRoles: ['Farm Manager', 'Farm Assistant', 'Agriculture Teacher'],
     searchKeywords: ['farm', 'agriculture', 'livestock', 'crops']
+  },
+  {
+    id: 'ancillary-tuckshop',
+    label: 'Tuckshop & POS',
+    route: '/ancillary/tuckshop',
+    group: 'PROCUREMENT_ASSETS',
+    icon: 'fas fa-cash-register',
+    module: 'tuckshop',
+    portalVisibility: ['ancillary'],
+    requiredSecondaryRoles: ['Tuckshop Manager', 'Cashier', 'Tuckshop Assistant', 'Stock Controller'],
+    tabs: [
+      { id: 'sales', label: 'POS & Sales' },
+      { id: 'inventory', label: 'Store Inventory' },
+      { id: 'topups', label: 'Wallet Top-ups' },
+      { id: 'cashup', label: 'Till Sessions & Cash-Up' },
+      { id: 'reports', label: 'Reports & Analytics' }
+    ],
+    searchKeywords: ['tuckshop', 'canteen', 'pos', 'wallets', 'pocket money', 'inventory', 'cashup', 'sales', 'till']
   },
   {
     id: 'ancillary-schedules',
@@ -1568,7 +1593,7 @@ export const PAGE_REGISTRY: PageDefinition[] = [
     badge: 'Leader',
     department: 'boarding',
     approvalChain: ['HOD_BOARDING', 'ADMIN', 'BURSAR', 'STORE'],
-    condition: (user: any) => !!user?.isLeader,
+    condition: (user: UserContext) => !!user?.isLeader,
     tabs: [
       { id: 'request', label: 'Request' },
       { id: 'my-requests', label: 'My Requests' },

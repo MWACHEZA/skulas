@@ -472,7 +472,7 @@ async function runPhase5Tests() {
     await prisma.disciplineRecord.deleteMany({ where: { id: disciplineCase.id } });
     await prisma.attendanceSessionRecord.deleteMany({ where: { studentId: { in: [student1.id, student2.id] } } });
     await prisma.attendanceSession.deleteMany({ where: { id: { in: [session1.id, prevSess1.id, prevSess2.id, boardingSession.id] } } });
-    await prisma.communicationLog.deleteMany({ where: { id: commLog.id } });
+    if (commLog) await prisma.communicationLog.deleteMany({ where: { id: commLog.id } });
     await prisma.notificationQueue.deleteMany({ where: { id: queueItem.id } });
     await prisma.student.deleteMany({ where: { id: { in: [student1.id, student2.id] } } });
     await prisma.schoolClass.deleteMany({ where: { id: testClass.id } });

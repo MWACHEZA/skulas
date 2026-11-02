@@ -113,7 +113,6 @@ import TeacherClassDetails from './portals/teacher/pages/ClassDetails';
 import SupervisorDashboard from './portals/teacher/pages/SupervisorDashboardPage';
 import ZoomLiveClass from './portals/shared/pages/live-classes/ZoomLiveClass';
 import JitsiLiveClass from './portals/shared/pages/live-classes/JitsiLiveClass';
-import MyLeave from './portals/shared/pages/hr/MyLeave';
 import TeacherLeave from './portals/teacher/pages/TeacherLeave';
 import MyAwards from './portals/shared/pages/hr/MyAwards';
 import CoursesDashboard from './portals/teacher/pages/online-learning/CoursesDashboard';
@@ -152,7 +151,6 @@ import ClockInLogsPage from './portals/shared/pages/ClockInLogsPage';
 import AdminDepartments from './portals/admin/pages/Departments';
 import StudentClub from './portals/admin/pages/StudentClub';
 import AdminAssetManagement from './portals/admin/pages/AssetManagement';
-import LeaveManagement from './portals/shared/pages/hr/MyLeave';
 import HostelCategory from './portals/ancillary/pages/boarding/HostelCategory';
 import HostelRoom from './portals/ancillary/pages/boarding/HostelRoom';
 import ManageHostel from './portals/ancillary/pages/boarding/ManageHostel';
@@ -273,7 +271,6 @@ import PersonalPreferences from './portals/shared/pages/PersonalPreferences';
 import NotFoundPage from './portals/shared/pages/NotFoundPage';
 import PrivacyPolicyPage from './portals/shared/pages/PrivacyPolicyPage';
 import TermsPage from './portals/shared/pages/TermsPage';
-import GovernancePage from './portals/shared/pages/GovernancePage';
 import ITSupportPage from './portals/shared/pages/ITSupportPage';
 import PaymentMethodsPage from './portals/shared/pages/PaymentMethodsPage';
 import RevenueAllocationPage from './portals/shared/pages/RevenueAllocationPage';
@@ -336,25 +333,46 @@ function SchoolCodeRedirect() {
   return <Navigate to={target} replace />;
 }
 
-import { useState, useEffect, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import i18n from './i18n';
 import api from './lib/api';
 import { getPublicMediaUrl } from './utils/formatters';
 import { applySchoolTheme, resetToAcadexTheme, isAcadexPlatformPath } from './utils/theme';
 
+interface SchoolWithBranding {
+  branding?: {
+    primaryColor?: string;
+    accentColor?: string;
+  };
+}
+
+function applyFavicon(faviconPath: string, code: string, version: number) {
+  const iconUrl = getPublicMediaUrl(faviconPath, code, version);
+  if (!iconUrl) return;
+  const link = (document.querySelector("link[rel*='icon']") as HTMLLinkElement) || document.createElement('link');
+  link.type = 'image/x-icon';
+  link.rel = 'shortcut icon';
+  if (link.href !== iconUrl) {
+    link.href = iconUrl;
+    document.getElementsByTagName('head')[0].appendChild(link);
+  }
+}
+
 function SiteConfigHandler() {
   const { user } = useAuth();
   const location = useLocation();
-  const [favicon, setFavicon] = useState<string | null>(null);
-  const [faviconVersion, setFaviconVersion] = useState<number>(1);
-  const [schoolCode, setSchoolCode] = useState<string | null>(null);
 
   const isPlatformRoute = isAcadexPlatformPath(location.pathname);
   const urlSchoolMatch = location.pathname.match(/\/school\/([^/]+)/i);
   const activeSchoolCode = (urlSchoolMatch && urlSchoolMatch[1])
     ? urlSchoolMatch[1].toUpperCase()
     : (user?.schoolCode || null);
+
+  const userSchool = user?.school as SchoolWithBranding | undefined;
+  const cachedPrimary = user?.schoolBranding?.primaryColor || userSchool?.branding?.primaryColor;
+  const cachedAccent = user?.schoolBranding?.accentColor || userSchool?.branding?.accentColor;
+  const userSchoolId = user?.schoolId;
 
   const fetchFaviconAndTheme = useCallback(async (forceBust = false) => {
     // 1. If on Acadex public platform/marketing pages, strictly preserve Acadex branding & favicon
@@ -363,13 +381,7 @@ function SiteConfigHandler() {
       return;
     }
 
-    if (activeSchoolCode) {
-      setSchoolCode(activeSchoolCode);
-    }
-
     // 2. Apply cached user theme immediately if available
-    const cachedPrimary = user?.schoolBranding?.primaryColor || (user?.school as any)?.branding?.primaryColor;
-    const cachedAccent = user?.schoolBranding?.accentColor || (user?.school as any)?.branding?.accentColor;
     if (cachedPrimary) {
       applySchoolTheme({ primaryColor: cachedPrimary, accentColor: cachedAccent });
     }
@@ -377,7 +389,7 @@ function SiteConfigHandler() {
     // 3. Fetch latest school branding, colors & favicon only when school context changes or settings are explicitly updated
     try {
       const qs = forceBust ? `?_t=${Date.now()}` : '';
-      if (activeSchoolCode && !user?.schoolId) {
+      if (activeSchoolCode && !userSchoolId) {
         // Public school visitor
         const res = await api.get(`/api/schools/${activeSchoolCode}${qs}`);
         const s = res.data;
@@ -388,18 +400,16 @@ function SiteConfigHandler() {
           applySchoolTheme({ primaryColor: pCol, accentColor: aCol, bannerTitleColor: bTitleColor });
         }
         if (s?.schoolSetting?.favicon) {
-          setFavicon(s.schoolSetting.favicon);
-          if (forceBust) setFaviconVersion(Date.now());
+          applyFavicon(s.schoolSetting.favicon, activeSchoolCode, forceBust ? Date.now() : 1);
         }
         if (s?.schoolSetting?.language) {
           i18n.changeLanguage(s.schoolSetting.language);
         }
-      } else if (user?.schoolId) {
+      } else if (userSchoolId) {
         // Logged-in Portal User
         const res = await api.get(`/api/schools/settings${qs}`);
-        if (res.data?.favicon) {
-          setFavicon(res.data.favicon);
-          if (forceBust) setFaviconVersion(Date.now());
+        if (res.data?.favicon && activeSchoolCode) {
+          applyFavicon(res.data.favicon, activeSchoolCode, forceBust ? Date.now() : 1);
         }
         if (res.data?.themeColour) {
           applySchoolTheme({ primaryColor: res.data.themeColour, accentColor: cachedAccent });
@@ -417,7 +427,7 @@ function SiteConfigHandler() {
     } catch (err) {
       console.warn('School site config fetch error', err);
     }
-  }, [user?.schoolId, activeSchoolCode, isPlatformRoute]);
+  }, [activeSchoolCode, cachedAccent, cachedPrimary, isPlatformRoute, userSchoolId]);
 
   useEffect(() => {
     fetchFaviconAndTheme(false);
@@ -441,25 +451,6 @@ function SiteConfigHandler() {
       window.removeEventListener('storage', handleStorage);
     };
   }, [fetchFaviconAndTheme]);
-
-  // Apply or reset favicon
-  useEffect(() => {
-    if (isPlatformRoute) {
-      resetToAcadexTheme();
-      return;
-    }
-
-    if (favicon && schoolCode) {
-      const link = (document.querySelector("link[rel*='icon']") as HTMLLinkElement) || document.createElement('link');
-      link.type = 'image/x-icon';
-      link.rel = 'shortcut icon';
-      const iconUrl = getPublicMediaUrl(favicon, schoolCode, faviconVersion);
-      if (iconUrl && link.href !== iconUrl) {
-        link.href = iconUrl;
-        document.getElementsByTagName('head')[0].appendChild(link);
-      }
-    }
-  }, [favicon, faviconVersion, schoolCode, isPlatformRoute]);
 
   return null;
 }
@@ -1078,12 +1069,16 @@ export default function App() {
               <Route path="boarding/manage-hostel" element={<ManageHostel />} />
               <Route path="boarding/assign-students" element={<AssignStudents />} />
               <Route path="security" element={<SecurityLog />} />
+              <Route path="gate-dashboard" element={<AdminGateDashboard />} />
+              <Route path="gate" element={<Navigate to="/gate" replace />} />
               <Route path="kitchen" element={<KitchenManagement />} />
-              <Route path="tuckshop" element={<Navigate to="/bursar/tuckshop" replace />} />
-              <Route path="tuckshop/*" element={<Navigate to="/bursar/tuckshop" replace />} />
-              <Route path="transportation/routes" element={<Navigate to="/admin/transport?tab=routes" replace />} />
-              <Route path="transportation/vehicles" element={<Navigate to="/admin/transport?tab=buses" replace />} />
-              <Route path="transportation/assignments" element={<Navigate to="/admin/transport?tab=fees" replace />} />
+              <Route path="tuckshop" element={<BursarTuckshopUnified />} />
+              <Route path="tuckshop/*" element={<BursarTuckshopUnified />} />
+              <Route path="pos" element={<FastPOSTerminal />} />
+              <Route path="transport" element={<AdminTransport />} />
+              <Route path="transportation/routes" element={<AdminTransport />} />
+              <Route path="transportation/vehicles" element={<AdminTransport />} />
+              <Route path="transportation/assignments" element={<AdminTransport />} />
               <Route path="house" element={<HouseDashboard />} />
               <Route path="farm" element={<FarmManagement />} />
               <Route path="dining-hall" element={<DHRepresentative />} />

@@ -227,4 +227,3 @@ class LibraryReminderWorker {
 }
 exports.LibraryReminderWorker = LibraryReminderWorker;
 exports.libraryReminderWorker = new LibraryReminderWorker();
-//# sourceMappingURL=library-reminder-job.js.map

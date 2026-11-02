@@ -28,6 +28,14 @@ function paymentAccountCode(paymentMethod: string): string {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Barcode Helper — Generates clean, standard Code128 format TCK-XXXXXX
+// ─────────────────────────────────────────────────────────────────────────────
+function generateTuckshopBarcode(): string {
+  const rand = Math.floor(100000 + Math.random() * 900000);
+  return `TCK-${rand}`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // GET /api/tuckshop/items  — list all tuckshop inventory items
 // ─────────────────────────────────────────────────────────────────────────────
 router.get('/items', async (req: AuthRequest, res) => {
@@ -56,7 +64,74 @@ router.get('/items', async (req: AuthRequest, res) => {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// POST /api/tuckshop/items  — create a new tuckshop item
+// GET /api/tuckshop/items/lookup/:code  — fast scan lookup by barcode or SKU
+// ─────────────────────────────────────────────────────────────────────────────
+router.get('/items/lookup/:code', async (req: AuthRequest, res) => {
+  try {
+    const schoolId = req.user?.schoolId || (req.headers['x-school-id'] as string);
+    if (!schoolId) return res.status(400).json({ error: 'Missing schoolId' });
+
+    const code = (req.params.code as string).trim();
+    const item = await prisma.tuckshopItem.findFirst({
+      where: {
+        schoolId,
+        OR: [
+          { barcode: { equals: code, mode: 'insensitive' } },
+          { sku: { equals: code, mode: 'insensitive' } }
+        ]
+      }
+    });
+
+    if (!item) {
+      return res.status(404).json({ error: 'Item not found for this barcode' });
+    }
+    res.json(item);
+  } catch (error) {
+    console.error('Barcode lookup error:', error);
+    res.status(500).json({ error: 'Failed to lookup item' });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /api/tuckshop/items/generate-barcodes — generate missing barcodes for stock
+// ─────────────────────────────────────────────────────────────────────────────
+router.post('/items/generate-barcodes', async (req: AuthRequest, res) => {
+  try {
+    const schoolId = req.user?.schoolId || (req.headers['x-school-id'] as string);
+    if (!schoolId) return res.status(400).json({ error: 'Missing schoolId' });
+
+    const itemsWithoutBarcode = await prisma.tuckshopItem.findMany({
+      where: {
+        schoolId,
+        OR: [
+          { barcode: null },
+          { barcode: '' }
+        ]
+      }
+    });
+
+    let count = 0;
+    for (const item of itemsWithoutBarcode) {
+      const barcode = generateTuckshopBarcode();
+      await prisma.tuckshopItem.update({
+        where: { id: item.id },
+        data: {
+          barcode,
+          sku: item.sku || barcode
+        }
+      });
+      count++;
+    }
+
+    res.json({ message: `Generated barcodes for ${count} items`, count });
+  } catch (error) {
+    console.error('Generate barcodes error:', error);
+    res.status(500).json({ error: 'Failed to generate barcodes' });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// POST /api/tuckshop/items  — create a new tuckshop item (auto-generates barcode)
 // ─────────────────────────────────────────────────────────────────────────────
 router.post('/items', async (req: AuthRequest, res) => {
   try {
@@ -72,13 +147,18 @@ router.post('/items', async (req: AuthRequest, res) => {
     }
     if (!schoolId) return res.status(400).json({ error: 'Missing schoolId' });
 
-    const { name, category, price, stock } = req.body;
+    const { name, category, price, stock, barcode, sku } = req.body;
+    const finalBarcode = (barcode && String(barcode).trim()) || generateTuckshopBarcode();
+    const finalSku = (sku && String(sku).trim()) || finalBarcode;
+
     const item = await prisma.tuckshopItem.create({
       data: {
         name,
         category,
         price: parseFloat(price),
         stock: parseInt(stock) || 0,
+        barcode: finalBarcode,
+        sku: finalSku,
         schoolId
       }
     });
@@ -95,12 +175,14 @@ router.post('/items', async (req: AuthRequest, res) => {
 router.put('/items/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, category, price, stock, addStock, updatedAt } = req.body;
+    const { name, category, price, stock, addStock, barcode, sku, updatedAt } = req.body;
 
     const updateData: any = {};
     if (name) updateData.name = name;
     if (category) updateData.category = category;
     if (price !== undefined) updateData.price = parseFloat(price);
+    if (barcode !== undefined) updateData.barcode = barcode ? String(barcode).trim() : null;
+    if (sku !== undefined) updateData.sku = sku ? String(sku).trim() : null;
 
     if (addStock !== undefined) {
       updateData.stock = { increment: parseInt(addStock) };

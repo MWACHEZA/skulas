@@ -72,5 +72,5 @@ export declare class NotificationService {
         senderId: string;
         providerMsgId: string | null;
         errorDetails: string | null;
-    }>;
+    } | null>;
 }

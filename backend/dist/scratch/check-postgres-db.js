@@ -25,4 +25,3 @@ async function checkPostgresDb() {
     }
 }
 checkPostgresDb().catch(console.error).finally(() => prisma.$disconnect());
-//# sourceMappingURL=check-postgres-db.js.map

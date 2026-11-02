@@ -115,7 +115,9 @@ router.post('/scan', requireAuth, async (req: AuthRequest, res: Response) => {
       // Background notification attempt (fail-safe)
       NotificationService.sendSms(
         result.student.parentPhone,
-        `Notice from ${req.user!.schoolCode || 'School'}: Entry was not permitted for ${result.student.name} today. Reason: ${result.reason}. Please contact the Bursar's office.`
+        `Notice from ${req.user!.schoolCode || 'School'}: Entry was not permitted for ${result.student.name} today. Reason: ${result.reason}. Please contact the Bursar's office.`,
+        schoolId,
+        req.user!.id
       ).catch(() => {});
     }
 

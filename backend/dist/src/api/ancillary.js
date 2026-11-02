@@ -73,7 +73,7 @@ router.delete('/hostel-rooms/:id', auth_1.requireAuth, (0, auth_1.requireRole)('
         res.status(500).json({ error: 'Failed to delete hostel room' });
     }
 });
-router.get('/hostels', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER'), async (req, res) => {
+router.get('/hostels', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER', 'BURSAR', 'SUPER_ADMIN'), async (req, res) => {
     try {
         const hostels = await prisma_1.default.hostel.findMany({
             where: { schoolId: req.user.schoolId },
@@ -85,7 +85,7 @@ router.get('/hostels', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN
                         _count: { select: { bedAllocations: true, students: true } },
                         bedAllocations: {
                             where: { status: 'ACTIVE' },
-                            include: { student: { select: { id: true, name: true, studentId: true, avatar: true, class: { select: { name: true } } } } }
+                            include: { student: { select: { id: true, name: true, studentId: true, user: { select: { avatar: true } }, class: { select: { name: true } } } } }
                         }
                     },
                     orderBy: { name: 'asc' }
@@ -130,7 +130,7 @@ router.delete('/hostels/:id', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOO
     }
 });
 // ═══════════ HOSTEL ROOMS MANAGEMENT ═══════════
-router.get('/hostels/:id/rooms', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER', 'SUPER_ADMIN'), async (req, res) => {
+router.get('/hostels/:id/rooms', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN', 'ANCILLARY', 'TEACHER', 'BURSAR', 'SUPER_ADMIN'), async (req, res) => {
     try {
         const rooms = await prisma_1.default.room.findMany({
             where: { hostelId: req.params.id },
@@ -336,8 +336,69 @@ router.get('/boarding/allocations', auth_1.requireAuth, (0, auth_1.requireRole)(
     }
 });
 /**
+ * GET /api/ancillary/boarding/fee-groups
+ * Return available fee groups for boarding/accommodation
+ */
+router.get('/boarding/fee-groups', auth_1.requireAuth, async (req, res) => {
+    try {
+        const schoolId = req.user.schoolId || req.query.schoolId;
+        if (!schoolId)
+            return res.status(400).json({ error: 'School ID required' });
+        let feeGroups = await prisma_1.default.feeGroup.findMany({
+            where: {
+                schoolId,
+                OR: [
+                    { module: 'boarding' },
+                    { name: { contains: 'Boarding', mode: 'insensitive' } },
+                    { name: { contains: 'Hostel', mode: 'insensitive' } }
+                ]
+            },
+            include: {
+                _count: { select: { fees: true } }
+            },
+            orderBy: { createdAt: 'desc' }
+        });
+        // If none exist, auto-register standard Boarding Fee Group
+        if (feeGroups.length === 0) {
+            const currentYear = new Date().getFullYear();
+            const arAccount = await prisma_1.default.chartOfAccount.findFirst({
+                where: { schoolId, code: { in: ['1100', '1210'] } }
+            });
+            const revAccount = await prisma_1.default.chartOfAccount.findFirst({
+                where: { schoolId, code: '4020' }
+            });
+            const newGroup = await prisma_1.default.feeGroup.create({
+                data: {
+                    schoolId,
+                    name: 'Boarding & Accommodation Fee',
+                    amount: 350,
+                    year: currentYear,
+                    billingType: 'Termly',
+                    isRecurring: true,
+                    remindersEnabled: true,
+                    module: 'boarding',
+                    itemCode: 'BOARD',
+                    revenueAccountCode: '4020',
+                    applicableTo: 'BOARDERS',
+                    incomeAccountId: revAccount?.id || null,
+                    arAccountId: arAccount?.id || null
+                },
+                include: {
+                    _count: { select: { fees: true } }
+                }
+            });
+            feeGroups = [newGroup];
+        }
+        res.json(feeGroups);
+    }
+    catch (error) {
+        console.error('Failed to fetch boarding fee groups:', error);
+        res.status(500).json({ error: 'Failed to fetch boarding fee groups' });
+    }
+});
+/**
  * POST /api/ancillary/boarding/assign
- * Allocate a student to a hostel bed, auto-invoicing via BursarService
+ * Allocate a student to a hostel bed, governed by Bursar Fee Groups and auto-invoicing
  * Idempotency Key: board_{allocation_id}
  * Revenue Account: 4020 (Boarding & Hostel Accommodation)
  */
@@ -346,7 +407,7 @@ router.post('/boarding/assign', auth_1.requireAuth, (0, auth_1.requireRole)('SCH
         const schoolId = req.user.schoolId || req.query.schoolId || (await prisma_1.default.school.findFirst())?.id;
         if (!schoolId)
             return res.status(400).json({ error: 'School ID required' });
-        const { studentId, hostelId, roomId, termId, term, feeAmount } = req.body;
+        const { studentId, hostelId, roomId, termId, term, feeAmount, feeGroupId } = req.body;
         if (!studentId || !hostelId) {
             return res.status(400).json({ error: 'studentId and hostelId are required' });
         }
@@ -376,15 +437,66 @@ router.post('/boarding/assign', auth_1.requireAuth, (0, auth_1.requireRole)('SCH
                 });
             }
         }
-        // Determine boarding fee from roomType cost, request body, or default
-        let resolvedFee = 0;
+        // 1. Resolve Boarding Fee Group from Bursar Fee Catalog
+        let boardingFeeGroup = null;
+        if (feeGroupId) {
+            boardingFeeGroup = await prisma_1.default.feeGroup.findFirst({
+                where: { id: feeGroupId, schoolId }
+            });
+        }
+        if (!boardingFeeGroup) {
+            boardingFeeGroup = await prisma_1.default.feeGroup.findFirst({
+                where: {
+                    schoolId,
+                    OR: [
+                        { module: 'boarding' },
+                        { name: { contains: 'Boarding', mode: 'insensitive' } },
+                        { name: { contains: 'Hostel', mode: 'insensitive' } }
+                    ]
+                },
+                orderBy: { createdAt: 'desc' }
+            });
+        }
+        const currentYear = new Date().getFullYear();
+        const currentTerm = term || 'Term 1';
+        // Auto-create/register Boarding Fee Group in Bursar catalog if absent
+        if (!boardingFeeGroup) {
+            const arAccount = await prisma_1.default.chartOfAccount.findFirst({
+                where: { schoolId, code: { in: ['1100', '1210'] } }
+            });
+            const revAccount = await prisma_1.default.chartOfAccount.findFirst({
+                where: { schoolId, code: '4020' }
+            });
+            const defaultAmount = feeAmount !== undefined && feeAmount !== null && parseFloat(feeAmount) >= 0
+                ? parseFloat(feeAmount)
+                : (hostel.roomType?.cost || 350);
+            boardingFeeGroup = await prisma_1.default.feeGroup.create({
+                data: {
+                    schoolId,
+                    name: 'Boarding & Accommodation Fee',
+                    amount: defaultAmount,
+                    year: currentYear,
+                    billingType: currentTerm,
+                    isRecurring: true,
+                    remindersEnabled: true,
+                    module: 'boarding',
+                    itemCode: 'BOARD',
+                    revenueAccountCode: '4020',
+                    applicableTo: 'BOARDERS',
+                    incomeAccountId: revAccount?.id || null,
+                    arAccountId: arAccount?.id || null
+                }
+            });
+        }
+        // Determine boarding fee: explicit feeAmount > Fee Group amount > roomType cost > 0
+        let resolvedFee = boardingFeeGroup.amount;
         if (feeAmount !== undefined && feeAmount !== null && parseFloat(feeAmount) >= 0) {
             resolvedFee = parseFloat(feeAmount);
         }
         else if (hostel.roomType?.cost) {
             resolvedFee = hostel.roomType.cost;
         }
-        // 1. Create Allocation Record
+        // 2. Create Bed Allocation Record
         const allocation = await prisma_1.default.hostelBedAllocation.create({
             data: {
                 schoolId,
@@ -392,12 +504,12 @@ router.post('/boarding/assign', auth_1.requireAuth, (0, auth_1.requireRole)('SCH
                 hostelId,
                 roomId: roomId || null,
                 termId: termId || 'term_1',
-                term: term || 'Term 1',
+                term: currentTerm,
                 feeAmount: resolvedFee,
                 status: 'ACTIVE'
             }
         });
-        // 2. Update Student status
+        // 3. Update Student status to Boarder
         await prisma_1.default.student.update({
             where: { id: studentId },
             data: {
@@ -406,16 +518,65 @@ router.post('/boarding/assign', auth_1.requireAuth, (0, auth_1.requireRole)('SCH
                 boardingStatus: 'Boarder'
             }
         });
-        // 3. Post Invoice to Bursar if fee > 0
+        // 4. Synchronize Bursar Fee & Post Central Double-Entry Invoice if fee > 0
         let invoiceResult = null;
+        let bursarFee = null;
         if (resolvedFee > 0) {
+            // 4a. Synchronized Fee record for Fee Groups tracking & Invoices list
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 30);
+            const existingFee = await prisma_1.default.fee.findFirst({
+                where: {
+                    schoolId,
+                    studentId,
+                    feeGroupId: boardingFeeGroup.id,
+                    term: currentTerm,
+                    year: currentYear
+                }
+            });
+            if (existingFee) {
+                bursarFee = await prisma_1.default.fee.update({
+                    where: { id: existingFee.id },
+                    data: {
+                        amount: resolvedFee,
+                        description: `Boarding & Hostel Accommodation — ${hostel.name}${roomId ? ` (Room ${roomId})` : ''}`
+                    }
+                });
+            }
+            else {
+                bursarFee = await prisma_1.default.fee.create({
+                    data: {
+                        schoolId,
+                        studentId,
+                        feeGroupId: boardingFeeGroup.id,
+                        amount: resolvedFee,
+                        paid: 0,
+                        term: currentTerm,
+                        year: currentYear,
+                        dueDate,
+                        status: 'unpaid',
+                        description: `Boarding & Hostel Accommodation — ${hostel.name}${roomId ? ` (Room ${roomId})` : ''}`,
+                        incomeAccountId: boardingFeeGroup.incomeAccountId,
+                        arAccountId: boardingFeeGroup.arAccountId,
+                        lineItems: {
+                            create: [
+                                {
+                                    item: `Boarding & Hostel Accommodation — ${hostel.name}`,
+                                    amount: resolvedFee
+                                }
+                            ]
+                        }
+                    }
+                });
+            }
+            // 4b. Central Double-Entry StudentInvoice
             const idempotencyKey = `board_${allocation.id}`;
             invoiceResult = await bursar_service_1.BursarService.createStudentInvoice({
                 schoolId,
                 idempotencyKey,
                 studentId,
                 termId: termId || 'term_1',
-                term: term || 'Term 1',
+                term: currentTerm,
                 sourceModule: 'boarding',
                 sourceId: allocation.id,
                 items: [
@@ -438,6 +599,8 @@ router.post('/boarding/assign', auth_1.requireAuth, (0, auth_1.requireRole)('SCH
         res.json({
             success: true,
             allocation,
+            feeGroup: boardingFeeGroup,
+            fee: bursarFee,
             invoice: invoiceResult?.invoice || null
         });
     }
@@ -493,6 +656,19 @@ router.post('/boarding/vacate', auth_1.requireAuth, (0, auth_1.requireRole)('SCH
                 hostelId: null,
                 roomId: null,
                 boardingStatus: 'Day'
+            }
+        });
+        // Reconcile Bursar Fee Record upon checkout/vacating
+        await prisma_1.default.fee.updateMany({
+            where: {
+                schoolId,
+                studentId: allocation.studentId,
+                description: { contains: 'Boarding' },
+                status: { in: ['unpaid', 'partial'] }
+            },
+            data: {
+                status: ratio >= 1 ? 'cancelled' : ratio > 0 ? 'partial' : 'unpaid',
+                discount: ratio > 0 ? Math.round(allocation.feeAmount * ratio * 100) / 100 : 0
             }
         });
         res.json({
@@ -1174,4 +1350,3 @@ router.post('/menu', auth_1.requireAuth, (0, auth_1.requireRole)('SCHOOL_ADMIN',
     }
 });
 exports.default = router;
-//# sourceMappingURL=ancillary.js.map

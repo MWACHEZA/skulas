@@ -125469,6 +125469,8 @@ export namespace Prisma {
     category: string | null
     price: number | null
     stock: number | null
+    barcode: string | null
+    sku: string | null
     schoolId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -125480,6 +125482,8 @@ export namespace Prisma {
     category: string | null
     price: number | null
     stock: number | null
+    barcode: string | null
+    sku: string | null
     schoolId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -125491,6 +125495,8 @@ export namespace Prisma {
     category: number
     price: number
     stock: number
+    barcode: number
+    sku: number
     schoolId: number
     createdAt: number
     updatedAt: number
@@ -125514,6 +125520,8 @@ export namespace Prisma {
     category?: true
     price?: true
     stock?: true
+    barcode?: true
+    sku?: true
     schoolId?: true
     createdAt?: true
     updatedAt?: true
@@ -125525,6 +125533,8 @@ export namespace Prisma {
     category?: true
     price?: true
     stock?: true
+    barcode?: true
+    sku?: true
     schoolId?: true
     createdAt?: true
     updatedAt?: true
@@ -125536,6 +125546,8 @@ export namespace Prisma {
     category?: true
     price?: true
     stock?: true
+    barcode?: true
+    sku?: true
     schoolId?: true
     createdAt?: true
     updatedAt?: true
@@ -125634,6 +125646,8 @@ export namespace Prisma {
     category: string
     price: number
     stock: number
+    barcode: string | null
+    sku: string | null
     schoolId: string
     createdAt: Date
     updatedAt: Date
@@ -125664,6 +125678,8 @@ export namespace Prisma {
     category?: boolean
     price?: boolean
     stock?: boolean
+    barcode?: boolean
+    sku?: boolean
     schoolId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -125678,6 +125694,8 @@ export namespace Prisma {
     category?: boolean
     price?: boolean
     stock?: boolean
+    barcode?: boolean
+    sku?: boolean
     schoolId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -125690,6 +125708,8 @@ export namespace Prisma {
     category?: boolean
     price?: boolean
     stock?: boolean
+    barcode?: boolean
+    sku?: boolean
     schoolId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -125716,6 +125736,8 @@ export namespace Prisma {
       category: string
       price: number
       stock: number
+      barcode: string | null
+      sku: string | null
       schoolId: string
       createdAt: Date
       updatedAt: Date
@@ -126119,6 +126141,8 @@ export namespace Prisma {
     readonly category: FieldRef<"TuckshopItem", 'String'>
     readonly price: FieldRef<"TuckshopItem", 'Float'>
     readonly stock: FieldRef<"TuckshopItem", 'Int'>
+    readonly barcode: FieldRef<"TuckshopItem", 'String'>
+    readonly sku: FieldRef<"TuckshopItem", 'String'>
     readonly schoolId: FieldRef<"TuckshopItem", 'String'>
     readonly createdAt: FieldRef<"TuckshopItem", 'DateTime'>
     readonly updatedAt: FieldRef<"TuckshopItem", 'DateTime'>
@@ -308331,6 +308355,8 @@ export namespace Prisma {
     category: 'category',
     price: 'price',
     stock: 'stock',
+    barcode: 'barcode',
+    sku: 'sku',
     schoolId: 'schoolId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -320994,6 +321020,8 @@ export namespace Prisma {
     category?: StringFilter<"TuckshopItem"> | string
     price?: FloatFilter<"TuckshopItem"> | number
     stock?: IntFilter<"TuckshopItem"> | number
+    barcode?: StringNullableFilter<"TuckshopItem"> | string | null
+    sku?: StringNullableFilter<"TuckshopItem"> | string | null
     schoolId?: StringFilter<"TuckshopItem"> | string
     createdAt?: DateTimeFilter<"TuckshopItem"> | Date | string
     updatedAt?: DateTimeFilter<"TuckshopItem"> | Date | string
@@ -321007,6 +321035,8 @@ export namespace Prisma {
     category?: SortOrder
     price?: SortOrder
     stock?: SortOrder
+    barcode?: SortOrderInput | SortOrder
+    sku?: SortOrderInput | SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -321023,6 +321053,8 @@ export namespace Prisma {
     category?: StringFilter<"TuckshopItem"> | string
     price?: FloatFilter<"TuckshopItem"> | number
     stock?: IntFilter<"TuckshopItem"> | number
+    barcode?: StringNullableFilter<"TuckshopItem"> | string | null
+    sku?: StringNullableFilter<"TuckshopItem"> | string | null
     schoolId?: StringFilter<"TuckshopItem"> | string
     createdAt?: DateTimeFilter<"TuckshopItem"> | Date | string
     updatedAt?: DateTimeFilter<"TuckshopItem"> | Date | string
@@ -321036,6 +321068,8 @@ export namespace Prisma {
     category?: SortOrder
     price?: SortOrder
     stock?: SortOrder
+    barcode?: SortOrderInput | SortOrder
+    sku?: SortOrderInput | SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -321055,6 +321089,8 @@ export namespace Prisma {
     category?: StringWithAggregatesFilter<"TuckshopItem"> | string
     price?: FloatWithAggregatesFilter<"TuckshopItem"> | number
     stock?: IntWithAggregatesFilter<"TuckshopItem"> | number
+    barcode?: StringNullableWithAggregatesFilter<"TuckshopItem"> | string | null
+    sku?: StringNullableWithAggregatesFilter<"TuckshopItem"> | string | null
     schoolId?: StringWithAggregatesFilter<"TuckshopItem"> | string
     createdAt?: DateTimeWithAggregatesFilter<"TuckshopItem"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"TuckshopItem"> | Date | string
@@ -347949,6 +347985,8 @@ export namespace Prisma {
     category: string
     price: number
     stock?: number
+    barcode?: string | null
+    sku?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     school: SchoolCreateNestedOneWithoutTuckshopItemsInput
@@ -347961,6 +347999,8 @@ export namespace Prisma {
     category: string
     price: number
     stock?: number
+    barcode?: string | null
+    sku?: string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -347973,6 +348013,8 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
     stock?: IntFieldUpdateOperationsInput | number
+    barcode?: NullableStringFieldUpdateOperationsInput | string | null
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     school?: SchoolUpdateOneRequiredWithoutTuckshopItemsNestedInput
@@ -347985,6 +348027,8 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
     stock?: IntFieldUpdateOperationsInput | number
+    barcode?: NullableStringFieldUpdateOperationsInput | string | null
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -347997,6 +348041,8 @@ export namespace Prisma {
     category: string
     price: number
     stock?: number
+    barcode?: string | null
+    sku?: string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -348008,6 +348054,8 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
     stock?: IntFieldUpdateOperationsInput | number
+    barcode?: NullableStringFieldUpdateOperationsInput | string | null
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -348018,6 +348066,8 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
     stock?: IntFieldUpdateOperationsInput | number
+    barcode?: NullableStringFieldUpdateOperationsInput | string | null
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -372897,6 +372947,8 @@ export namespace Prisma {
     category?: SortOrder
     price?: SortOrder
     stock?: SortOrder
+    barcode?: SortOrder
+    sku?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -372913,6 +372965,8 @@ export namespace Prisma {
     category?: SortOrder
     price?: SortOrder
     stock?: SortOrder
+    barcode?: SortOrder
+    sku?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -372924,6 +372978,8 @@ export namespace Prisma {
     category?: SortOrder
     price?: SortOrder
     stock?: SortOrder
+    barcode?: SortOrder
+    sku?: SortOrder
     schoolId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -414283,6 +414339,8 @@ export namespace Prisma {
     category: string
     price: number
     stock?: number
+    barcode?: string | null
+    sku?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     sales?: TuckshopSaleCreateNestedManyWithoutItemInput
@@ -414294,6 +414352,8 @@ export namespace Prisma {
     category: string
     price: number
     stock?: number
+    barcode?: string | null
+    sku?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     sales?: TuckshopSaleUncheckedCreateNestedManyWithoutItemInput
@@ -421418,6 +421478,8 @@ export namespace Prisma {
     category?: StringFilter<"TuckshopItem"> | string
     price?: FloatFilter<"TuckshopItem"> | number
     stock?: IntFilter<"TuckshopItem"> | number
+    barcode?: StringNullableFilter<"TuckshopItem"> | string | null
+    sku?: StringNullableFilter<"TuckshopItem"> | string | null
     schoolId?: StringFilter<"TuckshopItem"> | string
     createdAt?: DateTimeFilter<"TuckshopItem"> | Date | string
     updatedAt?: DateTimeFilter<"TuckshopItem"> | Date | string
@@ -511804,6 +511866,8 @@ export namespace Prisma {
     category: string
     price: number
     stock?: number
+    barcode?: string | null
+    sku?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     school: SchoolCreateNestedOneWithoutTuckshopItemsInput
@@ -511815,6 +511879,8 @@ export namespace Prisma {
     category: string
     price: number
     stock?: number
+    barcode?: string | null
+    sku?: string | null
     schoolId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -511842,6 +511908,8 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
     stock?: IntFieldUpdateOperationsInput | number
+    barcode?: NullableStringFieldUpdateOperationsInput | string | null
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     school?: SchoolUpdateOneRequiredWithoutTuckshopItemsNestedInput
@@ -511853,6 +511921,8 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
     stock?: IntFieldUpdateOperationsInput | number
+    barcode?: NullableStringFieldUpdateOperationsInput | string | null
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     schoolId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -678537,6 +678607,8 @@ export namespace Prisma {
     category: string
     price: number
     stock?: number
+    barcode?: string | null
+    sku?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -682986,6 +683058,8 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
     stock?: IntFieldUpdateOperationsInput | number
+    barcode?: NullableStringFieldUpdateOperationsInput | string | null
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sales?: TuckshopSaleUpdateManyWithoutItemNestedInput
@@ -682997,6 +683071,8 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
     stock?: IntFieldUpdateOperationsInput | number
+    barcode?: NullableStringFieldUpdateOperationsInput | string | null
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sales?: TuckshopSaleUncheckedUpdateManyWithoutItemNestedInput
@@ -683008,6 +683084,8 @@ export namespace Prisma {
     category?: StringFieldUpdateOperationsInput | string
     price?: FloatFieldUpdateOperationsInput | number
     stock?: IntFieldUpdateOperationsInput | number
+    barcode?: NullableStringFieldUpdateOperationsInput | string | null
+    sku?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
